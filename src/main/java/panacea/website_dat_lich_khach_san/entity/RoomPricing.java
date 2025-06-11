@@ -5,14 +5,13 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Table(name = "ROOM_PRICING")
-
-@Setter
 @Getter
-@Data
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomPricing {
@@ -33,10 +32,10 @@ public class RoomPricing {
     private BigDecimal giaTri;
 
     @Column(name = "ngay_bat_dau", nullable = false)
-    private java.time.LocalDate ngayBatDau;
+    private LocalDate ngayBatDau;
 
     @Column(name = "ngay_ket_thuc", nullable = false)
-    private java.time.LocalDate ngayKetThuc;
+    private LocalDate ngayKetThuc;
 
     @Column(name = "ap_dung_cho", length = 100)
     private String apDungCho = "All";
@@ -58,14 +57,27 @@ public class RoomPricing {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
-    // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
-    private RoomType roomType;
+    // Relationships (commented out since RoomType entity is not available)
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
+    // private RoomType roomType;
 
     // Enums
     public enum LoaiGia {
-        Base, Weekend, Holiday, Peak_Season
+        BASE("Giá cơ bản"),
+        WEEKEND("Cuối tuần"),
+        HOLIDAY("Ngày lễ"),
+        PEAK_SEASON("Mùa cao điểm");
+
+        private final String value;
+
+        LoaiGia(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     @PrePersist
@@ -78,6 +90,9 @@ public class RoomPricing {
         }
         if (this.lastModifiedDate == null) {
             this.lastModifiedDate = System.currentTimeMillis();
+        }
+        if (this.heSoDieuChinh == null) {
+            this.heSoDieuChinh = BigDecimal.ONE;
         }
     }
 

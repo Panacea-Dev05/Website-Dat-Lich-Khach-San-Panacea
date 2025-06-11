@@ -12,7 +12,6 @@ import java.util.UUID;
 @Table(name = "ROOM", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"khach_san_id", "so_phong"})
 })
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -60,14 +59,14 @@ public class Room {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
-    // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
+    // Relationships (commented out since Hotel and RoomType entities are not available)
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
+    // private Hotel hotel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
-    private RoomType roomType;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
+    // private RoomType roomType;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;
@@ -114,4 +113,3 @@ public class Room {
         this.lastModifiedDate = System.currentTimeMillis();
     }
 }
-

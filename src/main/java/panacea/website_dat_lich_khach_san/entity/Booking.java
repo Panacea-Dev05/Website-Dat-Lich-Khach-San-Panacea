@@ -1,6 +1,5 @@
 package panacea.website_dat_lich_khach_san.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -13,7 +12,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "BOOKING")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,14 +26,16 @@ public class Booking {
     @Column(name = "ma_dat_phong", length = 20, nullable = false, unique = true)
     private String maDatPhong;
 
-    @Column(name = "khach_hang_id", nullable = false)
-    private Integer khachHangId;
+    @ManyToOne
+    @JoinColumn(name = "khach_hang_id", nullable = false)
+    private Customer khachHang;
 
     @Column(name = "khach_san_id", nullable = false)
     private Integer khachSanId;
 
-    @Column(name = "promotion_id")
-    private Integer promotionId;
+    @ManyToOne
+    @JoinColumn(name = "promotion_id")
+    private Promotion promotion;
 
     @Column(name = "ngay_nhan_phong", nullable = false)
     private LocalDate ngayNhanPhong;
@@ -105,18 +105,6 @@ public class Booking {
     private Long lastModifiedDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_hang_id", insertable = false, updatable = false)
-    private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "promotion_id", insertable = false, updatable = false)
-    private Promotion promotion;
-
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;
 

@@ -1,6 +1,5 @@
 package panacea.website_dat_lich_khach_san.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "PROMOTION")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor

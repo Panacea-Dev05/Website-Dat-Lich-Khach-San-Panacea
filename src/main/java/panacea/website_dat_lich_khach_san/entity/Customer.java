@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "CUSTOMER")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -82,12 +81,14 @@ public class Customer {
     private Long lastModifiedDate;
 
     // Relationships
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
 
     // Enums
     public enum GioiTinh {
-        NAM("Nam"), NU("Nữ"), KHAC("Khác");
+        NAM("Nam"),
+        NU("Nữ"),
+        KHAC("Khác");
 
         private final String value;
 
@@ -101,7 +102,8 @@ public class Customer {
     }
 
     public enum LoaiKhachHang {
-        CA_NHAN("Cá nhân"), DOANH_NGHIEP("Doanh nghiệp");
+        CA_NHAN("Cá nhân"),
+        DOANH_NGHIEP("Doanh nghiệp");
 
         private final String value;
 
@@ -115,7 +117,9 @@ public class Customer {
     }
 
     public enum TrangThaiCustomer {
-        HOAT_DONG("Hoạt động"), TAM_KHOA("Tạm khóa"), DA_XOA("Đã xóa");
+        HOAT_DONG("Hoạt động"),
+        TAM_KHOA("Tạm khóa"),
+        DA_XOA("Đã xóa");
 
         private final String value;
 

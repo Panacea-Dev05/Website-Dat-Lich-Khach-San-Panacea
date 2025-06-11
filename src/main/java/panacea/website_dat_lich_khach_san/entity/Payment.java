@@ -1,6 +1,5 @@
 package panacea.website_dat_lich_khach_san.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "PAYMENT")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,8 +24,9 @@ public class Payment {
     @Column(name = "ma_thanh_toan", length = 20, nullable = false, unique = true)
     private String maThanhToan;
 
-    @Column(name = "dat_phong_id", nullable = false)
-    private Integer datPhongId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dat_phong_id", nullable = false)
+    private Booking booking;
 
     @Column(name = "so_tien", precision = 15, scale = 2, nullable = false)
     private BigDecimal soTien;
@@ -56,10 +55,8 @@ public class Payment {
     @Column(name = "created_date")
     private Long createdDate;
 
-    // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dat_phong_id", insertable = false, updatable = false)
-    private Booking booking;
+    @Column(name = "last_modified_date")
+    private Long lastModifiedDate;
 
     // Enums
     public enum TrangThaiPayment {
@@ -87,8 +84,16 @@ public class Payment {
         if (this.createdDate == null) {
             this.createdDate = System.currentTimeMillis();
         }
+        if (this.lastModifiedDate == null) {
+            this.lastModifiedDate = System.currentTimeMillis();
+        }
         if (this.ngayThanhToan == null) {
             this.ngayThanhToan = LocalDateTime.now();
         }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.lastModifiedDate = System.currentTimeMillis();
     }
 }

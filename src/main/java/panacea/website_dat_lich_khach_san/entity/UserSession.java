@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "USER_SESSION")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,9 +56,23 @@ public class UserSession {
     @Column(name = "created_date")
     private Long createdDate;
 
+    @Column(name = "last_modified_date")
+    private Long lastModifiedDate;
+
     // Enums
     public enum UserType {
-        Customer, Staff
+        CUSTOMER("Customer"),
+        STAFF("Staff");
+
+        private final String value;
+
+        UserType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     @PrePersist
@@ -70,8 +83,20 @@ public class UserSession {
         if (this.createdDate == null) {
             this.createdDate = System.currentTimeMillis();
         }
+        if (this.lastModifiedDate == null) {
+            this.lastModifiedDate = System.currentTimeMillis();
+        }
         if (this.thoiGianDangNhap == null) {
             this.thoiGianDangNhap = LocalDateTime.now();
         }
+        if (this.trangThai == null) {
+            this.trangThai = "Active";
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.lastModifiedDate = System.currentTimeMillis();
+        this.thoiGianHoatDongCuoi = LocalDateTime.now();
     }
 }
