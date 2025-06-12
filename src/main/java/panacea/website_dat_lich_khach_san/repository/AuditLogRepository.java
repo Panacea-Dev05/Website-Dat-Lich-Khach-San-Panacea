@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.AuditLog;
 @Repository
 
-public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
+public interface AuditLogRepository extends JpaRepository<AuditLog, Integer> {
 }

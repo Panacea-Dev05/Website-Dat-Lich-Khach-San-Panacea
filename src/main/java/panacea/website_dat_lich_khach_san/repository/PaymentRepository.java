@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.Payment;
 
 @Repository
-
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-}
+} 

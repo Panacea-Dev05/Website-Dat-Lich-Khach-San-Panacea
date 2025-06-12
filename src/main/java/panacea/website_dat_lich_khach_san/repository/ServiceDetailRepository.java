@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
 
 @Repository
-public interface ServiceDetailRepository extends JpaRepository<ServiceDetail,Long> {
+public interface ServiceDetailRepository extends JpaRepository<ServiceDetail, Integer> {
 }

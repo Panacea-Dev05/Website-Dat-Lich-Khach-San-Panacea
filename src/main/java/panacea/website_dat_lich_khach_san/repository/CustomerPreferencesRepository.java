@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.CustomerPreferences;
 
 @Repository
 
-public interface CustomerPreferencesRepository extends JpaRepository<CustomerPreferences, Long> {
+public interface CustomerPreferencesRepository extends JpaRepository<CustomerPreferences, Integer> {
 }

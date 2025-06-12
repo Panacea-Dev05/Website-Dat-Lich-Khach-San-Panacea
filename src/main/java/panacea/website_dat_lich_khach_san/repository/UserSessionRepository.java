@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.UserSession;
 
 @Repository
 
-public interface UserSessionRepository extends JpaRepository<UserSession, Long> {
+public interface UserSessionRepository extends JpaRepository<UserSession, Integer> {
 }
