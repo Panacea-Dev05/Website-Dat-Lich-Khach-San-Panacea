@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.Payment;
 
 @Repository
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 }

@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.Room;
 
 @Repository
 
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface RoomRepository extends JpaRepository<Room, Integer> {
 }

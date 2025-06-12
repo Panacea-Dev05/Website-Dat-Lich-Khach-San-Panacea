@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.ReportRevenue;
 
 @Repository
 
-public interface ReportRevenueRepository extends JpaRepository<ReportRevenue, Long> {
+public interface ReportRevenueRepository extends JpaRepository<ReportRevenue, Integer> {
 }
