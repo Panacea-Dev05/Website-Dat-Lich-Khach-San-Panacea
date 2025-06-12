@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.Review;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, Integer> {
-}
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+} 

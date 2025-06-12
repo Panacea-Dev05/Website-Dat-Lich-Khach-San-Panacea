@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
 
 @Repository
-public interface RoomTypeRepository extends JpaRepository<RoomType, Integer> {
-}
+public interface RoomTypeRepository extends JpaRepository<RoomType, Long> {
+} 
