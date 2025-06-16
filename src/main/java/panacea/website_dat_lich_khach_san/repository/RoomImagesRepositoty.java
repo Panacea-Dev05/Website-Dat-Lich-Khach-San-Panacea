@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.RoomImages;
 
 @Repository
 
-public interface RoomImagesRepositoty extends JpaRepository<RoomImages, Long> {
+public interface RoomImagesRepositoty extends JpaRepository<RoomImages, Integer> {
 }

@@ -6,5 +6,5 @@ import panacea.website_dat_lich_khach_san.entity.Promotion;
 
 @Repository
 
-public interface PromotionRepository extends JpaRepository<Promotion, Long> {
+public interface PromotionRepository extends JpaRepository<Promotion, Integer> {
 }
