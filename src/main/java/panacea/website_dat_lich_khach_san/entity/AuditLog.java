@@ -51,12 +51,8 @@ public class AuditLog {
 
     @Column(name = "ly_do_thay_doi", length = 500)
     private String lyDoThayDoi;
-<<<<<<< HEAD
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-=======
     @Column(name = "uuid_id")
->>>>>>> 4e3879d (update entity)
     private UUID uuidId;
 
     @Column(name = "created_date")
