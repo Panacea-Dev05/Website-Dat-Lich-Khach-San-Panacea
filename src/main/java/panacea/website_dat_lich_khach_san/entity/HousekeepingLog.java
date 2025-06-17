@@ -62,9 +62,7 @@ public class HousekeepingLog {
     @Column(name = "hinh_anh_sau", length = 500)
     private String hinhAnhSau; // URLs
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")

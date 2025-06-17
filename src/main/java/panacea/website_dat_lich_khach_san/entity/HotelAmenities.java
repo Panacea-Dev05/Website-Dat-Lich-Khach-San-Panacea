@@ -52,9 +52,7 @@ public class HotelAmenities {
     @Column(name = "icon", length = 50)
     private String icon;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")

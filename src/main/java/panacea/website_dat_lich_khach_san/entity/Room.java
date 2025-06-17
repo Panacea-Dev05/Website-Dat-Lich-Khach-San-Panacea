@@ -26,12 +26,6 @@ public class Room {
     @Column(name = "so_phong", length = 10, nullable = false)
     private String soPhong;
 
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
-
-    @Column(name = "loai_phong_id", nullable = false)
-    private Integer loaiPhongId;
-
     @Column(name = "tang")
     private Byte tang;
 
@@ -48,9 +42,7 @@ public class Room {
     @Column(name = "ghi_chu", length = 500)
     private String ghiChu;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")
@@ -59,14 +51,13 @@ public class Room {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
-    // Relationships (commented out since Hotel and RoomType entities are not available)
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    // private Hotel hotel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "khach_san_id", nullable = false)
+    private Hotel hotel;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
-    // private RoomType roomType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loai_phong_id", nullable = false)
+    private RoomType roomType;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;
