@@ -54,8 +54,6 @@ public class CustomesLoyalty {
     private Status trangThai = Status.HOAT_DONG;
 
     @Column(name = "uuid_id")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID uuidId;
 
     @Column(name = "created_date")
