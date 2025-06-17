@@ -30,8 +30,9 @@ public class Booking {
     @JoinColumn(name = "khach_hang_id", nullable = false)
     private Customer khachHang;
 
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", nullable = false)
+    private Hotel hotel;
 
     @ManyToOne
     @JoinColumn(name = "promotion_id")
@@ -93,9 +94,7 @@ public class Booking {
     @Column(name = "ly_do_huy", length = 500)
     private String lyDoHuy;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")

@@ -55,9 +55,7 @@ public class CustomerCommunication {
     @Column(name = "template_id", length = 50)
     private String templateId;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")

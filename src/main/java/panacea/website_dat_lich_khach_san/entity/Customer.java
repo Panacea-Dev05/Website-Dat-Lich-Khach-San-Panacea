@@ -69,9 +69,7 @@ public class Customer {
     @Column(name = "trang_thai", length = 20)
     private TrangThaiCustomer trangThai = TrangThaiCustomer.HOAT_DONG;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")

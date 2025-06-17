@@ -21,8 +21,9 @@ public class RoomPricing {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "loai_phong_id", nullable = false)
-    private Integer loaiPhongId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loai_phong_id", nullable = false)
+    private RoomType roomType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_gia", length = 20)
@@ -46,9 +47,7 @@ public class RoomPricing {
     @Column(name = "trang_thai", length = 20)
     private String trangThai = "Hoạt động";
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")
@@ -56,11 +55,6 @@ public class RoomPricing {
 
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
-
-    // Relationships (commented out since RoomType entity is not available)
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "loai_phong_id", insertable = false, updatable = false)
-    // private RoomType roomType;
 
     // Enums
     public enum LoaiGia {
