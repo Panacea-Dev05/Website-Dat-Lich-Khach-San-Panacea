@@ -3,6 +3,10 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
+import jakarta.persistence.Convert;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHangConverter;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiCustomerConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,9 +59,9 @@ public class Customer {
     @Column(name = "dia_chi", length = 200)
     private String diaChi;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = LoaiKhachHangConverter.class)
     @Column(name = "loai_khach_hang", length = 20)
-    private LoaiKhachHang loaiKhachHang = LoaiKhachHang.CA_NHAN;
+    private LoaiKhachHang loaiKhachHang;
 
     @Column(name = "diem_tich_luy")
     private Integer diemTichLuy = 0;
@@ -65,13 +69,11 @@ public class Customer {
     @Column(name = "mat_khau_hash", length = 255, nullable = false)
     private String matKhauHash;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TrangThaiCustomerConverter.class)
     @Column(name = "trang_thai", length = 20)
     private TrangThaiCustomer trangThai = TrangThaiCustomer.HOAT_DONG;
 
-    @Column(name = "uuid_id", columnDefinition = "uniqueidentifier")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_id")
     private UUID uuidId;
 
     @Column(name = "created_date")
@@ -93,21 +95,6 @@ public class Customer {
         private final String value;
 
         GioiTinh(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    public enum LoaiKhachHang {
-        CA_NHAN("Cá nhân"),
-        DOANH_NGHIEP("Doanh nghiệp");
-
-        private final String value;
-
-        LoaiKhachHang(String value) {
             this.value = value;
         }
 

@@ -54,7 +54,7 @@ public class RoomImages {
     private String trangThai = "Hoạt động";
 
     @Column(name = "uuid_id")
-    private UUID uuidId = UUID.randomUUID();
+    private UUID uuidId;
 
     @Column(name = "created_date")
     private Long createdDate;

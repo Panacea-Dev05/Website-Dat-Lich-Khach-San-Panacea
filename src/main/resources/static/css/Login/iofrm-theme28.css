@@ -1,0 +1,633 @@
+/*------------------------------------------------------------------
+ * Theme Name: iofrm - theme
+ * Theme URI: http://www.brandio.io/envato/iofrm
+ * Author: Brandio
+ * Author URI: http://www.brandio.io/
+ * Copyright 2019 Brandio.
+ -------------------------------------------------------------------*/
+/*------------------------------------------------------------------
+[Table of contents]
+
+1. General Styles.
+2. Responsive Styles.
+-------------------------------------------------------------------*/
+/* -----------------------------------
+    1 - General Styles
+------------------------------------*/
+body {
+    background-color: transparent;
+}
+
+.form-body {
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
+}
+
+.form-body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../Login/images/hotel_1.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(1.35) contrast(1.05) saturate(1.1) blur(1px);
+    z-index: -1;
+}
+
+.website-logo {
+    display: inline-block;
+    top: 50px;
+    left: 50px;
+    right: initial;
+    bottom: initial;
+}
+
+.website-logo img {
+    width: 100px;
+}
+
+.website-logo .logo {
+    background-image: url("../images/logo-light.svg");
+}
+
+.website-logo .logo img {
+    width: 100px;
+}
+
+.website-logo-inside img {
+    width: 100px;
+}
+
+.website-logo-inside .logo {
+    background-image: url("../images/logo-light.svg");
+}
+
+.website-logo-inside .logo img {
+    width: 100px;
+}
+
+.img-holder {
+    width: 550px;
+    background-color: #000000;
+}
+
+.img-holder .info-holder h3 {
+    color: #fff;
+    text-align: left;
+}
+
+.img-holder .info-holder h3 span {
+    color: #fff;
+}
+
+.img-holder .info-holder i {
+    color: #fff;
+}
+
+.img-holder .info-holder h2 {
+    color: #fff;
+    text-align: left;
+}
+
+.img-holder .info-holder h2 span {
+    color: #fff;
+}
+
+.img-holder .info-holder p {
+    color: #fff;
+    text-align: left;
+}
+
+.img-holder .info-holder img {
+    max-width: 378px;
+}
+
+.img-holder .bg {
+    opacity: 0.23;
+    background-image: url("../images/hotel_1.png");
+}
+
+.img-holder .bottom-view {
+    color: #fff;
+}
+
+.form-holder {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(1px);
+}
+
+.form-content {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    padding: 45px 40px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    max-width: 550px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.form-content .form-items {
+    max-width: 100%;
+    text-align: center;
+    padding: 0;
+}
+
+.form-content h3 {
+    color: #ffffff;
+    font-size: 2.2em;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 20px;
+    white-space: nowrap;
+}
+
+.form-content p {
+    color: #ffffff;
+    font-size: 1.1em;
+    margin-top: 5px;
+    margin-bottom: 35px;
+    text-shadow: none;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0.95;
+}
+
+.form-content .page-links {
+    margin-bottom: 35px;
+}
+
+.form-content .page-links a {
+    color: #ffffff;
+    font-size: 1.1em;
+    text-decoration: none;
+    position: relative;
+    padding: 0 10px;
+    transition: all 0.3s ease;
+    opacity: 0.95;
+}
+
+.form-content .page-links .mx-2 {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.1em;
+}
+
+.form-content .page-links a:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.form-content .other-links {
+    margin-top: 20px;
+}
+
+.form-content .other-links p {
+    margin-bottom: 15px;
+    font-size: 0.95em;
+}
+
+.form-content .social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.form-content .social-buttons .btn {
+    min-width: 160px;
+    padding: 12px 20px;
+    font-size: 1em;
+}
+
+.form-content .btn-primary {
+    background: #4267B2;
+    border: none;
+}
+
+.form-content .btn-danger {
+    background: #DB4437;
+    border: none;
+}
+
+.form-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    opacity: 0.95;
+}
+
+.form-content .form-group {
+    color: #fff;
+}
+
+.form-content .form-items.with-bg {
+    background-color: #fff;
+}
+
+.form-content .form-icon {
+    margin-top: calc(-42px - 35px);
+}
+
+.form-content .form-icon .icon-holder {
+    background-color: #4A77F7;
+}
+
+.form-content label {
+    color: #fff;
+    text-align: left;
+}
+
+.form-content .form-sent .tick-holder .tick-icon {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.form-content .form-sent .tick-holder .tick-icon:before {
+    background-color: #fff;
+}
+
+.form-content .form-sent .tick-holder .tick-icon:after {
+    background-color: #fff;
+}
+
+.form-content .form-sent h3 {
+    color: #fff;
+}
+
+.form-content .form-sent p {
+    color: #fff;
+}
+
+.form-content .form-sent .info-holder {
+    color: #fff;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.form-content .form-sent .info-holder span {
+    color: #fff;
+}
+
+.form-content .form-sent .info-holder a {
+    color: #fff;
+}
+
+@keyframes tick-anime3 {
+    0% {
+        background-color: rgba(255, 255, 255, 0);
+        -webkit-transform: rotate(35deg) scale(2);
+        -moz-transform: rotate(35deg) scale(2);
+        -ms-transform: rotate(35deg) scale(2);
+        transform: rotate(35deg) scale(2);
+    }
+
+    100% {
+        background-color: rgba(255, 255, 255, 0.2);
+        -webkit-transform: rotate(45deg) scale(1);
+        -moz-transform: rotate(45deg) scale(1);
+        -ms-transform: rotate(45deg) scale(1);
+        transform: rotate(45deg) scale(1);
+    }
+}
+
+.alert {
+    color: #fff;
+}
+
+.alert.alert-primary {
+    background-color: rgba(226, 240, 255, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-primary hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-secondary {
+    background-color: rgba(240, 240, 240, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-secondary hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-success {
+    background-color: rgba(247, 255, 240, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-success hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-danger {
+    background-color: rgba(255, 250, 250, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-danger hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-warning {
+    background-color: rgba(255, 248, 225, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-warning hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-info {
+    background-color: rgba(220, 237, 241, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-info hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-light {
+    background-color: rgba(254, 254, 254, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-light hr {
+    border-top-color: #fff;
+}
+
+.alert.alert-dark {
+    background-color: rgba(214, 216, 217, 0.1);
+    border-color: #fff;
+}
+
+.alert.alert-dark hr {
+    border-top-color: #fff;
+}
+
+.alert.with-icon.alert-primary:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-secondary:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-success:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-danger:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-warning:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-info:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-light:before {
+    color: #fff;
+}
+
+.alert.with-icon.alert-dark:before {
+    color: #fff;
+}
+
+.alert a, .alert a.alert-link {
+    color: #fff;
+}
+
+.alert .close {
+    color: #fff;
+}
+
+.alert .close span {
+    color: #fff;
+}
+
+.form-subtitle {
+    color: #fff;
+}
+
+.rad-with-details .more-info {
+    color: #fff;
+}
+
+.form-body.without-side .website-logo-inside .logo {
+    background-image: url("../images/logo-light.svg");
+}
+
+.form-body.without-side h3 {
+    color: #000;
+}
+
+.form-body.without-side p {
+    color: #000;
+}
+
+.form-body.without-side label {
+    color: #000;
+}
+
+.form-body.without-side .img-holder .info-holder img {
+    display: none;
+}
+
+.form-body.without-side .form-content .form-items {
+    padding: 35px 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    -webkit-box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.16);
+    border: 0;
+}
+
+.form-body.without-side .form-content .form-items .other-links {
+    margin: 38px 0 30px 0;
+}
+
+.form-body.without-side .form-content .form-items .other-links .text {
+    color: #000;
+}
+
+.form-body.without-side .form-content .form-items .other-links a {
+    color: #000;
+    background-color: #F7F7F7;
+}
+
+.form-body.without-side .form-content .page-links a {
+    color: #000;
+}
+
+.form-body.without-side .form-content .page-links a:after {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.form-body.without-side .form-content .page-links a.active:after {
+    background-color: #fff;
+}
+
+.form-body.without-side .form-content .page-links a:hover:after, .form-body.without-side .form-content .page-links a:focus:after {
+    background-color: #fff;
+}
+
+.form-body.without-side .form-content input, .form-body.without-side .form-content .dropdown-toggle.btn-default {
+    border: 0;
+    background-color: rgba(255, 255, 255, 0.07);
+    color: #8D8D8D;
+}
+
+.form-body.without-side .form-content input:hover, .form-body.without-side .form-content input:focus, .form-body.without-side .form-content .dropdown-toggle.btn-default:hover, .form-body.without-side .form-content .dropdown-toggle.btn-default:focus {
+    border: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #8D8D8D;
+}
+
+.form-body.without-side .form-content .form-button .ibtn {
+    background-color: #29A4FF;
+    color: #fff;
+    -webkit-box-shadow: 0 0 0 rgba(41, 162, 255, 0.4);
+    box-shadow: 0 0 0 rgba(41, 162, 255, 0.4);
+    border: 0;
+}
+
+.form-body.without-side .form-content .form-button .ibtn:hover, .form-body.without-side .form-content .form-button .ibtn:focus {
+    background-color: #1a8be0;
+    color: #fff;
+    -webkit-box-shadow: 0 0 6px rgba(41, 162, 255, 0.4);
+    box-shadow: 0 0 6px rgba(41, 162, 255, 0.4);
+    border: 0;
+}
+
+.form-body.without-side .form-content .form-button a:not(.btn) {
+    color: #fff;
+}
+
+.type-animation > *:before {
+    background-color: #fff;
+}
+
+.type-animation > *:after {
+    background-color: #000000;
+}
+
+@keyframes caret {
+    0%, 100% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: #fff;
+    }
+}
+
+.bg-accent {
+    background-color: #000;
+}
+
+.bg-second {
+    background-color: #F2F2F2;
+}
+
+.custom-borders {
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.custom-borders:first-child {
+    border-top: 0;
+}
+
+.custom-borders:last-child {
+    border-bottom: 0;
+}
+
+.form-left .form-holder {
+    margin-left: inherit;
+    margin-right: 550px;
+}
+
+/* -----------------------------------
+    2 - Responsive Styles
+------------------------------------*/
+@media (max-width: 992px) {
+    .form-left .form-holder {
+        margin-right: 0;
+    }
+
+    .form-holder {
+        margin-left: 0;
+    }
+
+    .website-logo {
+        top: 50px;
+        left: 50px;
+        right: initial;
+        bottom: initial;
+    }
+
+    .form-content {
+        width: 95%;
+        padding: 30px;
+    }
+    
+    .form-content h3 {
+        font-size: 2em;
+    }
+    
+    .form-content .btn {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-content {
+        padding: 35px 25px;
+        max-width: 90%;
+    }
+
+    .form-content h3 {
+        font-size: 1.8em;
+        margin-bottom: 8px;
+        padding: 0 10px;
+        white-space: nowrap;
+    }
+    
+    .form-content .form-items {
+        padding: 0 10px;
+    }
+
+    .form-content .social-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .social-buttons .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .form-content p {
+        margin-top: 3px;
+        margin-bottom: 30px;
+        font-size: 1em;
+    }
+}

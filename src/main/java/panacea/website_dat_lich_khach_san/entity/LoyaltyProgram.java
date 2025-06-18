@@ -28,7 +28,7 @@ public class LoyaltyProgram {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "cap_do", length = 20)
-    private String capDo;
+    private LoyaltyLevel capDo;
 
     @Column(name = "diem_toi_thieu")
     private Integer diemToiThieu;
@@ -51,8 +51,6 @@ public class LoyaltyProgram {
     private Status trangThai = Status.HOAT_DONG;
 
     @Column(name = "uuid_id")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID uuidId;
 
     @Column(name = "created_date")
