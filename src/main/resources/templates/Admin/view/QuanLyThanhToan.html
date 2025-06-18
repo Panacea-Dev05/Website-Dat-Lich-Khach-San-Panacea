@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quản Lý Thanh Toán - Panacea Hotel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/quanlythanhtoan.css}">
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+      <span class="material-icons" aria-hidden="true">hotel</span>
+      <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+    </div>
+    <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+      <span class="material-icons">menu</span>
+    </button>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
+    <nav>
+      <ul>
+        <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
+        <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a></li>
+        <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a></li>
+        <li><a href="#" class="active" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a></li>
+        <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến mãi</a></li>
+        <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a></li>
+        <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
+        <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống kê</a></li>
+        <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main role="main" tabindex="0">
+    <h1>Quản lý thanh toán</h1>
+    <section class="content-section" id="contentSection">
+      <button class="btn" id="btnAddPayment">Tạo thanh toán mới</button>
+      <table aria-label="Danh sách thanh toán" id="paymentTable">
+        <thead>
+        <tr>
+          <th>STT</th>
+          <th>Mã thanh toán</th>
+          <th>Mã booking</th>
+          <th>Ngày</th>
+          <th>Số tiền (VNĐ)</th>
+          <th>Phương thức</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody id="paymentTableBody">
+        <!-- Dữ liệu thanh toán hiển thị ở đây -->
+        </tbody>
+      </table>
+
+      <!-- Form tạo/sửa thanh toán -->
+      <form id="paymentForm" style="display:none; margin-top: 2rem;">
+        <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo thanh toán mới</h2>
+        <label for="paymentCode">Mã thanh toán</label>
+        <input type="text" id="paymentCode" name="paymentCode" required placeholder="TN001" pattern="^(TN)[0-9]{3,}$" title="Mã bắt đầu TN theo sau là số" />
+        <label for="bookingCode">Mã booking</label>
+        <input type="text" id="bookingCode" name="bookingCode" required placeholder="BK001" pattern="^(BK)[0-9]{3,}$" title="Mã booking bắt đầu BK theo sau là số" />
+        <label for="paymentDate">Ngày thanh toán</label>
+        <input type="date" id="paymentDate" name="paymentDate" required />
+        <label for="amount">Số tiền (VNĐ)</label>
+        <input type="number" id="amount" name="amount" required min="0" step="1000" />
+        <label for="method">Phương thức</label>
+        <select id="method" name="method" required>
+          <option value="" disabled selected>Chọn phương thức</option>
+          <option value="Online">Thanh toán Online</option>
+          <option value="Cash">Tiền mặt</option>
+          <option value="VNPay">VNPay</option>
+          <option value="MoMo">MoMo</option>
+          <option value="Stripe">Stripe</option>
+        </select>
+        <label for="status">Trạng thái</label>
+        <select id="status" name="status" required>
+          <option value="" disabled selected>Chọn trạng thái</option>
+          <option value="Completed">Hoàn thành</option>
+          <option value="Pending">Chờ xử lý</option>
+          <option value="Failed">Thất bại</option>
+          <option value="Refunded">Hoàn tiền</option>
+        </select>
+        <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+          <button type="submit" class="btn" id="submitBtn">Lưu thanh toán</button>
+          <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+  </footer>
+</div>
+
+<script th:src="@{/js/quanlythanhtoan.js}"></script>
+</body>
+</html>
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cài Đặt Hệ Thống - Panacea Hotel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/caidathethong.css}">
+</head>
+
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+        <span class="material-icons" aria-hidden="true">hotel</span>
+        <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+      </div>
+      <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+        <span class="material-icons">menu</span>
+      </button>
+    </header>
+
+    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
+      <nav>
+        <ul>
+          <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
+          <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a>
+          </li>
+          <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a>
+          </li>
+          <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a>
+          </li>
+          <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến
+              mãi</a></li>
+          <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a>
+          </li>
+          <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
+          <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống
+              kê</a></li>
+          <li><a href="#" class="active" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ
+              thống</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main role="main" tabindex="0">
+      <h1>Cài Đặt Hệ Thống</h1>
+      <section class="content-section" id="contentSection">
+
+        <form id="settingsForm">
+          <div class="form-group">
+            <h2>Cấu hình chung</h2>
+          </div>
+
+          <label for="hotelName">Tên khách sạn</label>
+          <input type="text" id="hotelName" name="hotelName" placeholder="Tên khách sạn" required
+            value="Panacea Hotel Central" />
+
+          <label for="hotelAddress">Địa chỉ</label>
+          <input type="text" id="hotelAddress" name="hotelAddress" placeholder="Địa chỉ" required
+            value="123 Đường Lê Lợi, TP.HCM" />
+
+          <label for="hotelStars">Số sao</label>
+          <select id="hotelStars" name="hotelStars" required>
+            <option value="1">1 sao</option>
+            <option value="2">2 sao</option>
+            <option value="3">3 sao</option>
+            <option value="4" selected>4 sao</option>
+            <option value="5">5 sao</option>
+          </select>
+
+          <label for="timezone">Múi giờ</label>
+          <select id="timezone" name="timezone" required>
+            <option value="Asia/Ho_Chi_Minh" selected>Asia/Ho_Chi_Minh (GMT+7)</option>
+            <option value="Asia/Bangkok">Asia/Bangkok (GMT+7)</option>
+            <option value="Asia/Singapore">Asia/Singapore (GMT+8)</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (GMT+9)</option>
+            <option value="UTC">UTC (GMT+0)</option>
+          </select>
+
+          <div class="form-group">
+            <h2>Bảo mật</h2>
+          </div>
+
+          <label for="passwordPolicy">Chính sách mật khẩu</label>
+          <select id="passwordPolicy" name="passwordPolicy" required>
+            <option value="basic" selected>Cơ bản - tối thiểu 8 ký tự</option>
+            <option value="strong">Mạnh - bao gồm chữ hoa, thường, số & ký tự đặc biệt</option>
+          </select>
+
+          <label for="passwordExpiry">Hết hạn mật khẩu (ngày)</label>
+          <input type="number" id="passwordExpiry" name="passwordExpiry" min="0" max="180" value="90" />
+
+          <label for="rateLimiting">Giới hạn số request/IP (phút)</label>
+          <input type="number" id="rateLimiting" name="rateLimiting" min="1" max="60" value="10" />
+
+          <div class="form-group">
+            <h2>Thông báo</h2>
+          </div>
+
+          <label for="emailNotifications">Bật email thông báo</label>
+          <label class="switch">
+            <input type="checkbox" id="emailNotifications" checked />
+            <span class="slider"></span>
+          </label>
+
+          <label for="smsNotifications">Bật SMS thông báo</label>
+          <label class="switch">
+            <input type="checkbox" id="smsNotifications" />
+            <span class="slider"></span>
+          </label>
+
+          <label for="pushNotifications">Bật thông báo đẩy</label>
+          <label class="switch">
+            <input type="checkbox" id="pushNotifications" checked />
+            <span class="slider"></span>
+          </label>
+
+          <div style="grid-column: 1 / span 2; margin-top: 2rem;">
+            <button type="submit" class="btn">Lưu cài đặt</button>
+            <button type="button" class="btn" style="background:#ef4444; margin-left: 12px;" id="btnReset">Đặt lại mặc
+              định</button>
+          </div>
+
+        </form>
+
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+    </footer>
+  </div>
+
+  <script th:src="@{/js/caidathethong.js}"></script>
+</body>
+
+</html>

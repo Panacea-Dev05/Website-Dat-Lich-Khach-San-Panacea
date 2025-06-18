@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quản Lý Khuyến Mãi - Panacea Hotel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/quanlykhuyenmai.css}">
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+      <span class="material-icons" aria-hidden="true">hotel</span>
+      <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+    </div>
+    <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+      <span class="material-icons">menu</span>
+    </button>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
+    <nav>
+      <ul>
+        <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
+        <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a></li>
+        <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a></li>
+        <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a></li>
+        <li><a href="#" class="active" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến mãi</a></li>
+        <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a></li>
+        <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
+        <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống kê</a></li>
+        <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main role="main" tabindex="0">
+    <h1>Quản lý khuyến mãi</h1>
+    <section class="content-section" id="contentSection">
+      <button class="btn" id="btnAddPromotion">Tạo chương trình khuyến mãi</button>
+      <table aria-label="Danh sách khuyến mãi" id="promotionTable">
+        <thead>
+        <tr>
+          <th>STT</th>
+          <th>Mã khuyến mãi</th>
+          <th>Tên chương trình</th>
+          <th>Giá trị giảm (%)</th>
+          <th>Ngày bắt đầu</th>
+          <th>Ngày kết thúc</th>
+          <th>Trạng thái</th>
+          <th>Mô tả</th>
+          <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody id="promotionTableBody">
+        <!-- Dữ liệu khuyến mãi hiển thị ở đây -->
+        </tbody>
+      </table>
+
+      <!-- Form tạo/sửa khuyến mãi -->
+      <form id="promotionForm" style="display:none; margin-top: 2rem;">
+        <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo chương trình khuyến mãi</h2>
+        <label for="promoCode">Mã khuyến mãi</label>
+        <input type="text" id="promoCode" name="promoCode" required placeholder="KM001" pattern="^KM[0-9]{3,}$" title="Mã bắt đầu KM theo sau là số" />
+        <label for="promoName">Tên chương trình</label>
+        <input type="text" id="promoName" name="promoName" required placeholder="Khuyến mãi hè" />
+        <label for="discountPercent">Giá trị giảm (%)</label>
+        <input type="number" id="discountPercent" name="discountPercent" required min="0" max="100" />
+        <label for="startDate">Ngày bắt đầu</label>
+        <input type="date" id="startDate" name="startDate" required />
+        <label for="endDate">Ngày kết thúc</label>
+        <input type="date" id="endDate" name="endDate" required />
+        <label for="status">Trạng thái</label>
+        <select id="status" name="status" required>
+          <option value="" disabled selected>Chọn trạng thái</option>
+          <option value="Active">Hoạt động</option>
+          <option value="Disabled">Vô hiệu hóa</option>
+        </select>
+        <label for="description">Mô tả</label>
+        <textarea id="description" name="description" placeholder="Mô tả chi tiết chương trình"></textarea>
+        <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+          <button type="submit" class="btn" id="submitBtn">Lưu khuyến mãi</button>
+          <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+  </footer>
+</div>
+
+<script th:src="@{/js/quanlykhuyenmai.js}"></script>
+</body>
+</html>
+
