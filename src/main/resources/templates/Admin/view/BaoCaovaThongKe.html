@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Báo Cáo & Thống Kê Mở Rộng - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/Admin/baocao-thongke.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+            <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </header>
+
+        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
+            <nav>
+                <ul>
+                    <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý
+                            phòng</a></li>
+                    <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt
+                            phòng</a></li>
+                    <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách
+                            hàng</a></li>
+                    <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh
+                            toán</a></li>
+                    <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý
+                            khuyến mãi</a></li>
+                    <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh
+                            giá</a></li>
+                    <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a>
+                    </li>
+                    <li><a href="#" class="active" data-section="reports"><span class="material-icons">bar_chart</span>
+                            Báo cáo &amp; Thống kê</a></li>
+                    <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ
+                            thống</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main role="main" tabindex="0">
+            <h1>Báo Cáo & Thống Kê Mở Rộng</h1>
+
+            <section class="content-section">
+                <h2>Doanh thu theo tháng (triệu VNĐ)</h2>
+                <canvas id="revenueChart" aria-label="Biểu đồ doanh thu theo tháng" role="img"></canvas>
+            </section>
+
+            <section class="content-section">
+                <h2>Công suất phòng theo tháng (%)</h2>
+                <canvas id="occupancyChart" aria-label="Biểu đồ công suất phòng" role="img"></canvas>
+            </section>
+
+            <section class="content-section">
+                <h2>Khách hàng theo loại</h2>
+                <canvas id="customerChart" aria-label="Biểu đồ khách hàng" role="img"></canvas>
+            </section>
+
+            <section class="content-section">
+                <h2>Hiệu quả chương trình khuyến mãi</h2>
+                <canvas id="promotionEffectivenessChart" aria-label="Biểu đồ hiệu quả khuyến mãi" role="img"></canvas>
+            </section>
+
+            <section class="content-section">
+                <h2>Điểm đánh giá trung bình theo tiêu chí</h2>
+                <canvas id="ratingSummaryChart" aria-label="Biểu đồ điểm đánh giá trung bình" role="img"></canvas>
+            </section>
+        </main>
+
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+
+    <script th:src="@{/js/Admin/baocao-thongke.js}"></script>
+</body>
+
+</html>
