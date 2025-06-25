@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8" />
@@ -22,73 +22,103 @@
       </button>
     </header>
 
-    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-      <nav>
-        <ul>
-          <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
-          <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a>
-          </li>
-          <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a>
-          </li>
-          <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a>
-          </li>
-          <li><a href="#" class="active" data-section="promotions"><span class="material-icons">local_offer</span> Quản
-              lý khuyến mãi</a></li>
-          <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a>
-          </li>
-          <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
-          <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống
-              kê</a></li>
-          <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
-        </ul>
-      </nav>
-    </aside>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
       <h1>Quản lý khuyến mãi</h1>
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddPromotion">Tạo chương trình khuyến mãi</button>
+        <button class="btn" id="btnAddPromotion">Thêm khuyến mãi mới</button>
         <table aria-label="Danh sách khuyến mãi" id="promotionTable">
           <thead>
             <tr>
               <th>STT</th>
-              <th>Mã khuyến mãi</th>
-              <th>Tên chương trình</th>
-              <th>Giá trị giảm (%)</th>
+              <th>Mã KM</th>
+              <th>Tên khuyến mãi</th>
+              <th>Loại giảm giá</th>
+              <th>Giá trị giảm</th>
               <th>Ngày bắt đầu</th>
               <th>Ngày kết thúc</th>
               <th>Trạng thái</th>
-              <th>Mô tả</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="promotionTableBody">
-            <!-- Dữ liệu khuyến mãi hiển thị ở đây -->
+            <!-- Dữ liệu khuyến mãi từ controller -->
+            <tr th:each="promotion, stat : ${promotions}">
+              <td th:text="${stat.count}">1</td>
+              <td th:text="${promotion.maKhuyenMai}">KM001</td>
+              <td th:text="${promotion.tenKhuyenMai}">Giảm giá mùa hè</td>
+              <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? 'Phần trăm' : 'Số tiền'}">Phần trăm</td>
+              <td
+                th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? promotion.giaTriGiam + '%' : #numbers.formatDecimal(promotion.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
+                20%</td>
+              <td th:text="${#temporals.format(promotion.ngayBatDau, 'dd/MM/yyyy')}">01/06/2024</td>
+              <td th:text="${#temporals.format(promotion.ngayKetThuc, 'dd/MM/yyyy')}">31/08/2024</td>
+              <td>
+                <span th:class="${promotion.trangThai == 'HOAT_DONG' ? 'status-active' : 
+                                  promotion.trangThai == 'TAM_NGUNG' ? 'status-paused' : 'status-expired'}" th:text="${promotion.trangThai == 'HOAT_DONG' ? 'Hoạt động' : 
+                                promotion.trangThai == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn'}">
+                  Hoạt động
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" th:onclick="'editPromotion(' + ${promotion.id} + ')'" title="Sửa">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" th:onclick="'deletePromotion(' + ${promotion.id} + ')'" title="Xóa">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
 
-        <!-- Form tạo/sửa khuyến mãi -->
+        <!-- Form thêm/sửa khuyến mãi -->
         <form id="promotionForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo chương trình khuyến mãi</h2>
-          <label for="promoCode">Mã khuyến mãi</label>
-          <input type="text" id="promoCode" name="promoCode" required placeholder="KM001" pattern="^KM[0-9]{3,}$"
-            title="Mã bắt đầu KM theo sau là số" />
-          <label for="promoName">Tên chương trình</label>
-          <input type="text" id="promoName" name="promoName" required placeholder="Khuyến mãi hè" />
-          <label for="discountPercent">Giá trị giảm (%)</label>
-          <input type="number" id="discountPercent" name="discountPercent" required min="0" max="100" />
-          <label for="startDate">Ngày bắt đầu</label>
-          <input type="date" id="startDate" name="startDate" required />
-          <label for="endDate">Ngày kết thúc</label>
-          <input type="date" id="endDate" name="endDate" required />
-          <label for="status">Trạng thái</label>
-          <select id="status" name="status" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
-            <option value="Active">Hoạt động</option>
-            <option value="Disabled">Vô hiệu hóa</option>
+          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khuyến mãi mới</h2>
+          <input type="hidden" id="promotionId" name="promotionId" />
+
+          <label for="maKhuyenMai">Mã khuyến mãi</label>
+          <input type="text" id="maKhuyenMai" name="maKhuyenMai" required placeholder="KM001" />
+
+          <label for="tenKhuyenMai">Tên khuyến mãi</label>
+          <input type="text" id="tenKhuyenMai" name="tenKhuyenMai" required placeholder="Giảm giá mùa hè" />
+
+          <label for="moTa">Mô tả</label>
+          <textarea id="moTa" name="moTa" placeholder="Mô tả chi tiết khuyến mãi"></textarea>
+
+          <label for="loaiGiamGia">Loại giảm giá</label>
+          <select id="loaiGiamGia" name="loaiGiamGia" required>
+            <option value="" disabled selected>Chọn loại giảm giá</option>
+            <option value="PHAN_TRAM">Phần trăm (%)</option>
+            <option value="SO_TIEN">Số tiền (VNĐ)</option>
           </select>
-          <label for="description">Mô tả</label>
-          <textarea id="description" name="description" placeholder="Mô tả chi tiết chương trình"></textarea>
+
+          <label for="giaTriGiam">Giá trị giảm</label>
+          <input type="number" id="giaTriGiam" name="giaTriGiam" required min="0" step="0.01" placeholder="20" />
+
+          <label for="giamToiDa">Giảm tối đa (VNĐ)</label>
+          <input type="number" id="giamToiDa" name="giamToiDa" min="0" step="1000" placeholder="500000" />
+
+          <label for="ngayBatDau">Ngày bắt đầu</label>
+          <input type="date" id="ngayBatDau" name="ngayBatDau" required />
+
+          <label for="ngayKetThuc">Ngày kết thúc</label>
+          <input type="date" id="ngayKetThuc" name="ngayKetThuc" required />
+
+          <label for="soLuongToiDa">Số lượng tối đa</label>
+          <input type="number" id="soLuongToiDa" name="soLuongToiDa" min="0" placeholder="100" />
+
+          <label for="dieuKienApDung">Điều kiện áp dụng</label>
+          <textarea id="dieuKienApDung" name="dieuKienApDung" placeholder="Điều kiện áp dụng khuyến mãi"></textarea>
+
+          <label for="trangThai">Trạng thái</label>
+          <select id="trangThai" name="trangThai" required>
+            <option value="HOAT_DONG" selected>Hoạt động</option>
+            <option value="TAM_NGUNG">Tạm ngưng</option>
+            <option value="HET_HAN">Hết hạn</option>
+          </select>
+
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
             <button type="submit" class="btn" id="submitBtn">Lưu khuyến mãi</button>
             <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>

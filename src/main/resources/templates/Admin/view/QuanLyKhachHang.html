@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8" />
@@ -22,27 +22,7 @@
       </button>
     </header>
 
-    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-      <nav>
-        <ul>
-          <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
-          <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a>
-          </li>
-          <li><a href="#" class="active" data-section="customers"><span class="material-icons">people</span> Quản lý
-              khách hàng</a></li>
-          <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a>
-          </li>
-          <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến
-              mãi</a></li>
-          <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a>
-          </li>
-          <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
-          <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống
-              kê</a></li>
-          <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
-        </ul>
-      </nav>
-    </aside>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
       <h1>Quản lý khách hàng</h1>
@@ -62,15 +42,37 @@
             </tr>
           </thead>
           <tbody id="customerTableBody">
-            <!-- Dữ liệu khách hàng hiển thị ở đây -->
+            <!-- Dữ liệu khách hàng từ controller -->
+            <tr th:each="customer, stat : ${customers}">
+              <td th:text="${stat.count}">1</td>
+              <td th:text="${customer.id}">1</td>
+              <td th:text="${customer.name}">Nguyễn Văn A</td>
+              <td th:text="${customer.email}">nguyenvana@email.com</td>
+              <td th:text="${customer.phone}">0903123456</td>
+              <td th:text="${customer.address}">Hà Nội</td>
+              <td>
+                <span th:class="${customer.status == 'Active' ? 'status-active' : 'status-locked'}"
+                  th:text="${customer.status == 'Active' ? 'Hoạt động' : 'Khóa'}">
+                  Hoạt động
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" th:onclick="'editCustomer(' + ${customer.id} + ')'" title="Sửa">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" th:onclick="'deleteCustomer(' + ${customer.id} + ')'" title="Xóa">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
 
         <!-- Form thêm/sửa khách hàng -->
         <form id="customerForm" style="display:none; margin-top: 2rem;">
           <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khách hàng mới</h2>
-          <label for="customerId">ID</label>
-          <input type="text" id="customerId" name="customerId" readonly placeholder="Tự động tạo" disabled />
+          <input type="hidden" id="customerId" name="customerId" />
+
           <label for="customerName">Tên</label>
           <input type="text" id="customerName" name="customerName" required placeholder="Nhập tên khách hàng" />
           <label for="customerEmail">Email</label>
