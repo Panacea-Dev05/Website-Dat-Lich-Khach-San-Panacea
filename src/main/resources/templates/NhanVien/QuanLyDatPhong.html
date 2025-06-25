@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Đặt phòng - Panacea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <style>
+        :root {
+            --color-bg: #f9fafb;
+            --color-text: #1f2937;
+            --color-accent: #10b981;
+            --color-accent-dark: #059669;
+            --color-border: #d1d5db;
+            --color-table-head: #d1fae5;
+            --color-head-text: #065f46;
+            --color-hover: #a7f3d0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+        header {
+            background: linear-gradient(90deg, var(--color-accent), var(--color-accent-dark));
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+        h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--color-head-text);
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        input, select, textarea {
+            padding: 10px;
+            border: 1.5px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        .btn {
+            background: var(--color-accent);
+            color: white;
+            padding: 10px 20px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            background: var(--color-accent-dark);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+        th {
+            background: var(--color-table-head);
+            color: var(--color-head-text);
+        }
+        tr:nth-child(even) {
+            background: #f3f4f6;
+        }
+        tr:hover {
+            background: var(--color-hover);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="Home.html" style="color: white; text-decoration: none; font-weight: 700; font-size: 1.5rem; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.3s;">
+        <span class="material-icons" style="font-size: 24px;">home</span>Panacea Hotel - Quản lý Đặt phòng
+    </a>
+    <button class="btn"><span class="material-icons">logout</span>Đăng xuất</button>
+</header>
+<main>
+    <!-- Tạo booking mới -->
+    <div class="section">
+        <h2><span class="material-icons">add_box</span> Tạo đặt phòng mới</h2>
+        <form style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Khách hàng</label>
+                <select>
+                    <option disabled selected>Chọn khách hàng...</option>
+                    <option value="KH001">Lê Văn A</option>
+                    <option value="KH002">Nguyễn Thị B</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Phòng</label>
+                <select>
+                    <option disabled selected>Chọn phòng...</option>
+                    <option value="101">Deluxe - Phòng 101</option>
+                    <option value="203">Suite - Phòng 203</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Ngày nhận phòng</label>
+                <input type="date" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Ngày trả phòng</label>
+                <input type="date" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Người lớn</label>
+                <input type="number" min="1" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Trẻ em</label>
+                <input type="number" min="0" />
+            </div>
+            <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 0.5rem;">
+                <label>Mã khuyến mãi</label>
+                <input type="text" placeholder="Nhập mã giảm giá nếu có..." />
+            </div>
+            <div style="grid-column: span 2; text-align: right;">
+                <button class="btn"><span class="material-icons">check_circle</span> Tạo booking</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Danh sách booking -->
+    <div class="section">
+        <h2><span class="material-icons">list_alt</span> Danh sách đặt phòng</h2>
+        <form style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <input type="text" placeholder="Tìm theo khách hàng..." style="flex: 1" />
+            <input type="date" />
+            <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
+        </form>
+        <table>
+            <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Khách hàng</th>
+                <th>Phòng</th>
+                <th>Ngày nhận</th>
+                <th>Ngày trả</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>BK202501</td>
+                <td>Lê Văn A</td>
+                <td>Deluxe - 101</td>
+                <td>2025-06-20</td>
+                <td>2025-06-23</td>
+                <td>Chờ xác nhận</td>
+                <td style="display: flex; gap: 6px; flex-wrap: wrap">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <button class="btn"><span class="material-icons">visibility</span>Xem</button>
+                        <button class="btn"><span class="material-icons">edit</span>Sửa</button>
+                        <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <button class="btn"><span class="material-icons">check</span>Xác nhận</button>
+                        <button class="btn"><span class="material-icons">login</span>Check-in</button>
+                        <button class="btn"><span class="material-icons">logout</span>Check-out</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Chi tiết booking -->
+    <div class="section">
+        <h2><span class="material-icons">info</span> Chi tiết đặt phòng</h2>
+        <p><strong>Khách hàng:</strong> Lê Văn A</p>
+        <p><strong>Phòng:</strong> Deluxe - 101</p>
+        <p><strong>Ngày nhận:</strong> 20/06/2025</p>
+        <p><strong>Ngày trả:</strong> 23/06/2025</p>
+        <p><strong>Người lớn:</strong> 2 | <strong>Trẻ em:</strong> 1</p>
+        <p><strong>Khuyến mãi:</strong> SUMMER20</p>
+        <p><strong>Dịch vụ kèm theo:</strong> Ăn sáng, Spa</p>
+        <p><strong>Trạng thái:</strong> Đã xác nhận</p>
+        <p><strong>Tổng tiền:</strong> 3.600.000 VND</p>
+        <button class="btn"><span class="material-icons">done</span>Check-out</button>
+    </div>
+</main>
+</body>
+</html>
