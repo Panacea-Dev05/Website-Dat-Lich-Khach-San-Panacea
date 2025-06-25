@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản Lý Phòng - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlyphong.css}">
+</head>
+
+<body>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+            <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </header>
+
+        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-section="rooms"><span class="material-icons">meeting_room</span>
+                            Quản lý phòng</a></li>
+                    <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt
+                            phòng</a></li>
+                    <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách
+                            hàng</a></li>
+                    <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh
+                            toán</a></li>
+                    <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý
+                            khuyến mãi</a></li>
+                    <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh
+                            giá</a></li>
+                    <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a>
+                    </li>
+                    <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp;
+                            Thống kê</a></li>
+                    <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ
+                            thống</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main role="main" tabindex="0">
+            <h1>Quản lý phòng</h1>
+            <section class="content-section" id="contentSection">
+                <button class="btn" id="btnAddRoom">Thêm phòng mới</button>
+                <table aria-label="Danh sách phòng khách sạn" id="roomTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Số phòng</th>
+                            <th>Loại phòng</th>
+                            <th>Tầng</th>
+                            <th>View</th>
+                            <th>Giá cơ bản</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roomTableBody">
+                        <!-- Dữ liệu phòng sẽ hiển thị tại đây -->
+                    </tbody>
+                </table>
+
+                <!-- Form thêm/sửa phòng -->
+                <form id="roomForm" style="display:none; margin-top: 2rem;">
+                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm phòng mới</h2>
+                    <label for="roomNumber">Số phòng</label>
+                    <input type="text" id="roomNumber" name="roomNumber" required placeholder="VD: 101"
+                        pattern="^[0-9]+$" title="Chỉ nhập số" />
+
+                    <label for="roomType">Loại phòng</label>
+                    <select id="roomType" name="roomType" required>
+                        <option value="" disabled selected>Chọn loại phòng</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                    </select>
+
+                    <label for="floor">Tầng</label>
+                    <input type="number" id="floor" name="floor" required min="1" max="100" placeholder="1" />
+
+                    <label for="view">View</label>
+                    <select id="view" name="view" required>
+                        <option value="" disabled selected>Chọn view</option>
+                        <option value="City">Thành phố</option>
+                        <option value="Pool">Hồ bơi</option>
+                        <option value="Sea">Biển</option>
+                        <option value="Garden">Vườn</option>
+                    </select>
+
+                    <label for="basePrice">Giá cơ bản (VNĐ)</label>
+                    <input type="number" id="basePrice" name="basePrice" required min="0" step="1000"
+                        placeholder="1200000" />
+
+                    <label for="status">Trạng thái</label>
+                    <select id="status" name="status" required>
+                        <option value="" disabled selected>Chọn trạng thái</option>
+                        <option value="Available">Sẵn sàng</option>
+                        <option value="Maintenance">Bảo trì</option>
+                        <option value="Cleaning">Dọn dẹp</option>
+                    </select>
+
+                    <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+                        <button type="submit" class="btn" id="submitBtn">Lưu phòng</button>
+                        <button type="button" class="btn" id="cancelBtn"
+                            style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+
+    <script th:src="@{/js/Admin/quanlyphong.js}"></script>
+</body>
+
+</html>
