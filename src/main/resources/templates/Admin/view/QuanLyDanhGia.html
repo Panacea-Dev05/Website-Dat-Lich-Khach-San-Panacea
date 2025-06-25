@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8" />
@@ -22,85 +22,117 @@
             </button>
         </header>
 
-        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-            <nav>
-                <ul>
-                    <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý
-                            phòng</a></li>
-                    <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt
-                            phòng</a></li>
-                    <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách
-                            hàng</a></li>
-                    <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh
-                            toán</a></li>
-                    <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý
-                            khuyến mãi</a></li>
-                    <li><a href="#" class="active" data-section="reviews"><span
-                                class="material-icons">rate_review</span> Quản lý đánh giá</a></li>
-                    <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a>
-                    </li>
-                    <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp;
-                            Thống kê</a></li>
-                    <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ
-                            thống</a></li>
-                </ul>
-            </nav>
-        </aside>
+        <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
             <h1>Quản lý đánh giá</h1>
             <section class="content-section" id="contentSection">
-                <button class="btn" id="btnAddReview">Tạo đánh giá mới</button>
+                <button class="btn" id="btnAddReview">Thêm đánh giá mới</button>
                 <table aria-label="Danh sách đánh giá" id="reviewTable">
                     <thead>
                         <tr>
                             <th>STT</th>
-                            <th>Mã đánh giá</th>
                             <th>Khách hàng</th>
-                            <th>Booking</th>
-                            <th>Điểm</th>
+                            <th>Phòng</th>
+                            <th>Điểm đánh giá</th>
                             <th>Nội dung</th>
+                            <th>Ngày đánh giá</th>
                             <th>Trạng thái</th>
-                            <th>Phản hồi</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="reviewTableBody">
-                        <!-- Dữ liệu đánh giá hiển thị ở đây -->
+                        <!-- Dữ liệu đánh giá từ controller -->
+                        <tr th:each="review, stat : ${reviews}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${review.customerName}">Nguyễn Văn A</td>
+                            <td th:text="${review.roomNumber}">101</td>
+                            <td>
+                                <div class="rating">
+                                    <span class="stars" th:style="'--rating: ' + ${review.rating} + ';'">
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                    </span>
+                                    <span th:text="${review.rating} + '/5'">4.5/5</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="comment-preview" th:text="${#strings.abbreviate(review.comment, 50)}">
+                                    Phòng rất sạch sẽ, nhân viên phục vụ tốt...
+                                </div>
+                            </td>
+                            <td th:text="${#temporals.format(review.createdDate, 'dd/MM/yyyy')}">15/12/2024</td>
+                            <td>
+                                <span th:class="${review.status == 'Approved' ? 'status-approved' : 
+                                                  review.status == 'Pending' ? 'status-pending' : 'status-rejected'}"
+                                    th:text="${review.status == 'Approved' ? 'Đã duyệt' : 
+                                                review.status == 'Pending' ? 'Chờ duyệt' : 'Từ chối'}">
+                                    Đã duyệt
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-view" th:onclick="'viewReview(' + ${review.id} + ')'"
+                                    title="Xem chi tiết">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                                <button class="btn-edit" th:onclick="'editReview(' + ${review.id} + ')'" title="Sửa">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn-delete" th:onclick="'deleteReview(' + ${review.id} + ')'"
+                                    title="Xóa">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
-                <!-- Form tạo/sửa đánh giá -->
+                <!-- Form thêm/sửa đánh giá -->
                 <form id="reviewForm" style="display:none; margin-top: 2rem;">
-                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo đánh giá mới</h2>
-                    <label for="reviewCode">Mã đánh giá</label>
-                    <input type="text" id="reviewCode" name="reviewCode" required placeholder="DG001"
-                        pattern="^DG[0-9]{3,}$" title="Mã đánh giá bắt đầu DG theo sau là số" />
-                    <label for="customerName">Khách hàng</label>
-                    <input type="text" id="customerName" name="customerName" required placeholder="Tên khách hàng" />
-                    <label for="bookingCode">Mã booking</label>
-                    <input type="text" id="bookingCode" name="bookingCode" required placeholder="BK001"
-                        pattern="^(BK)[0-9]{3,}$" title="Mã booking bắt đầu BK theo sau là số" />
-                    <label for="rating">Điểm (1-5)</label>
-                    <select id="rating" name="rating" required>
-                        <option value="" disabled selected>Chọn điểm</option>
-                        <option value="1">1 - Rất kém</option>
-                        <option value="2">2 - Kém</option>
-                        <option value="3">3 - Trung bình</option>
-                        <option value="4">4 - Tốt</option>
-                        <option value="5">5 - Xuất sắc</option>
+                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm đánh giá mới</h2>
+                    <input type="hidden" id="reviewId" name="reviewId" />
+
+                    <label for="customerId">Khách hàng</label>
+                    <select id="customerId" name="customerId" required>
+                        <option value="" disabled selected>Chọn khách hàng</option>
+                        <option value="1">Nguyễn Văn A</option>
+                        <option value="2">Trần Thị B</option>
                     </select>
-                    <label for="content">Nội dung đánh giá</label>
-                    <textarea id="content" name="content" required placeholder="Nhập nội dung đánh giá"></textarea>
+
+                    <label for="roomId">Phòng</label>
+                    <select id="roomId" name="roomId" required>
+                        <option value="" disabled selected>Chọn phòng</option>
+                        <option value="1">Phòng 101 - Standard</option>
+                        <option value="2">Phòng 102 - Deluxe</option>
+                    </select>
+
+                    <label for="rating">Điểm đánh giá</label>
+                    <div class="rating-input">
+                        <input type="number" id="rating" name="rating" required min="1" max="5" step="0.5"
+                            placeholder="4.5" />
+                        <div class="stars-display">
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                        </div>
+                    </div>
+
+                    <label for="comment">Nội dung đánh giá</label>
+                    <textarea id="comment" name="comment" required placeholder="Nhập nội dung đánh giá chi tiết..."
+                        rows="4"></textarea>
+
                     <label for="status">Trạng thái</label>
                     <select id="status" name="status" required>
-                        <option value="" disabled selected>Chọn trạng thái</option>
-                        <option value="Published">Hiển thị</option>
-                        <option value="Hidden">Ẩn</option>
-                        <option value="Pending">Chờ duyệt</option>
+                        <option value="Pending" selected>Chờ duyệt</option>
+                        <option value="Approved">Đã duyệt</option>
+                        <option value="Rejected">Từ chối</option>
                     </select>
-                    <label for="reply">Phản hồi khách sạn</label>
-                    <textarea id="reply" name="reply" placeholder="Phản hồi khách hàng (không bắt buộc)"></textarea>
+
                     <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
                         <button type="submit" class="btn" id="submitBtn">Lưu đánh giá</button>
                         <button type="button" class="btn" id="cancelBtn"
