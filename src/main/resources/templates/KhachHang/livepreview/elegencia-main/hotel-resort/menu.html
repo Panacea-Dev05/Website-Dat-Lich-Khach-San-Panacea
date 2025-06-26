@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us"
-    prefix="content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ og: http://ogp.me/ns# rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema#">
+    prefix="content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ og: http://ogp.me/ns# rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema#"
+    class="no-js" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -33,11 +34,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>This Page Does Not Exist</title>
     <meta name="description" content="Oops, looks like the page is lost.">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
     <link href="https://fonts.googleapis.com/css?family=DM+Sans:300,300i,400,400i,600,600i,700,700i,800,800i"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,600,600i,700,700i,800,800i"
         rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
 
     <script type="text/javascript" async=""
         src="https://www.googletagmanager.com/gtag/js?id=G-9Q6H0QETRF&amp;cx=c&amp;_slc=1"></script>
@@ -63,7 +67,7 @@
         style="display: none; visibility: hidden;">
     </iframe>
     <div class="page-not-found">
-        <img class="image" alt="Page Not Found" src="/htdocs_error/page_not_found.svg" />
+        <img class="image" alt="Page Not Found" th:src="@{/css/KhachHang/assets/img/page_not_found.svg}" />
         <h1 class="title">This Page Does Not Exist</h1>
         <p class="text">
             Sorry, the page you are looking for could not be found. It's just an
@@ -127,5 +131,16 @@
 
     }
 </style>
+
+<script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
+<script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
 
 </html>

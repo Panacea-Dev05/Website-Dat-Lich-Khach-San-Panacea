@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 
 
 <!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/resort.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:22:46 GMT -->
@@ -13,10 +13,10 @@
     <link rel="icon" href="../assets/img/favicon.svg" />
     <!-- Site Title -->
     <title>Elegencia - Royale Restaurant HTML Template</title>
-    <link rel="stylesheet" href="../assets/css/plugins/bootstrap.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/lightgallery.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/swiper.min.css" />
-    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
 </head>
 
 <body>
@@ -74,7 +74,7 @@
                     <a href="room.html" class="logo">Book Now</a>
                 </div>
                 <div class="center-log">
-                    <a href="index.html"><img src="../assets/img/logo.png" alt="..."></a>
+                    <a href="index.html"><img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="..."></a>
                 </div>
                 <button class="ak-menu-toggle" id="akMenuToggle" type="button">
                     <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
@@ -86,23 +86,23 @@
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
                         <a href="index.html">Home</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_1.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
                         <a href="about-hotel-resort.html">About</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_about.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
                         <a href="blog.html">Blog</a>
-                        <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
+                        <img class="top-main-menu-img menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_menu.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
                         <a href="resort.html">Resort</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_chef.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
                         <a href="index.html">Hotel</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
                     </li>
                 </ul>
             </div>
@@ -113,7 +113,7 @@
                 <div class="ak-main_header_in">
                     <div class="ak-main_header_left">
                         <a class="ak-site_branding" href="index.html">
-                            <img src="../assets/img/logo.png" alt="...">
+                            <img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="...">
                         </a>
                     </div>
                     <div class="ak-main_header_right">
@@ -647,10 +647,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -671,10 +671,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -695,10 +695,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -1207,6 +1207,15 @@
     </div>
     <!-- End Video Popup -->
     <!-- Script -->
+    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
     <script src="../assets/js/plugins/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/plugins/isotope.pkg.min.js"></script>
     <script src="../assets/js/plugins/swiper.min.js"></script>
