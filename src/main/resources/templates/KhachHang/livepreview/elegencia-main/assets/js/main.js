@@ -79,6 +79,7 @@
           .delay(800)
           .queue(function () {
             $(this).remove();
+            window.location.href = '/khachhang/about';
           })
           .fadeOut();
       }

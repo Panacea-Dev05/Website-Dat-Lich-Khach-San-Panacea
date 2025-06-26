@@ -30,20 +30,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/oauth2/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/nhanvien/**").hasRole("NHANVIEN")
-                .requestMatchers("/khachhang/**").hasRole("KHACHHANG")
-                .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
-                .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService()))
-                .defaultSuccessUrl("/api/auth/current-role", true)
-            )
-            .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/img/**",      // <-- Thêm dòng này
+                                "/images/**",
+                                "/fonts/**",
+                                "/vendor/**",
+                                "/assets/**",   // <-- Thêm dòng này
+                                "/KhachHang/**",// <-- Sửa dòng này (xóa /assets)
+                                "/login",
+                                "/oauth2/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/nhanvien/**").hasRole("NHANVIEN")
+                        .requestMatchers("/khachhang/**").hasRole("KHACHHANG")
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService()))
+                        .defaultSuccessUrl("/api/auth/current-role", true)
+                )
+                .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
         return http.build();
     }
 
