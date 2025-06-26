@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+</head>
+
+<body>
+
+        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính" th:fragment="sidebar">
+                <nav>
+                        <ul>
+                                <li><a th:href="@{/admin/hotels}" data-section="hotels"><span
+                                                        class="material-icons">business</span>
+                                                Quản lý khách sạn</a></li>
+                                <li><a th:href="@{/admin/rooms}" data-section="rooms"><span
+                                                        class="material-icons">meeting_room</span>
+                                                Quản lý phòng</a></li>
+                                <li><a th:href="@{/admin/bookings}" data-section="bookings"><span
+                                                        class="material-icons">book_online</span> Quản lý đặt phòng</a>
+                                </li>
+                                <li><a th:href="@{/admin/customers}" data-section="customers"><span
+                                                        class="material-icons">people</span>
+                                                Quản lý khách hàng</a></li>
+                                <li><a th:href="@{/admin/payments}" data-section="payments"><span
+                                                        class="material-icons">payment</span>
+                                                Quản lý thanh toán</a></li>
+                                <li><a th:href="@{/admin/promotions}" data-section="promotions"><span
+                                                        class="material-icons">local_offer</span> Quản lý khuyến mãi</a>
+                                </li>
+                                <li><a th:href="@{/admin/reviews}" data-section="reviews"><span
+                                                        class="material-icons">rate_review</span> Quản lý đánh giá</a>
+                                </li>
+                                <li><a th:href="@{/admin/staff}" data-section="staff"><span
+                                                        class="material-icons">badge</span> Quản lý
+                                                nhân viên</a></li>
+                                <li><a th:href="@{/admin/reports}" data-section="reports"><span
+                                                        class="material-icons">bar_chart</span>
+                                                Báo cáo &amp; Thống kê</a></li>
+                                <li><a th:href="@{/admin/system}" data-section="settings"><span
+                                                        class="material-icons">settings</span>
+                                                Cài đặt hệ thống</a></li>
+                                <a th:href="@{/logout}">Đăng xuất</a>
+                        </ul>
+                </nav>
+        </aside>
+
+</body>
+
+</html>

@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class NhanVienController {
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "NhanVienDashboard";
+        return "NhanVien/Home";
     }
 } 

@@ -2,8 +2,6 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -122,11 +120,9 @@ public class Booking {
         DA_HUY("Đã hủy");
 
         private final String value;
-
         TrangThaiDatPhong(String value) {
             this.value = value;
         }
-
         public String getValue() {
             return value;
         }
@@ -139,11 +135,9 @@ public class Booking {
         HOAN_TIEN("Hoàn tiền");
 
         private final String value;
-
         TrangThaiThanhToan(String value) {
             this.value = value;
         }
-
         public String getValue() {
             return value;
         }

@@ -13,6 +13,7 @@ public class LoginController {
         if (principal != null) {
             String role = principal.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("");
             if (role.equals("ROLE_ADMIN")) return new ModelAndView("redirect:/admin/dashboard");
+            if (role.equals("ROLE_ADMIN")) return new ModelAndView("redirect:/admin/bookings");
             if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/dashboard");
             if (role.equals("ROLE_KHACHHANG")) return new ModelAndView("redirect:/khachhang/dashboard");
         }

@@ -39,8 +39,8 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/fonts/**",
                                 "/vendor/**",
-                                "/assets/**",   // <-- Thêm dòng này
-                                "/KhachHang/**",// <-- Sửa dòng này (xóa /assets)
+                                "/assets/**",
+                                "/KhachHang/**",
                                 "/login",
                                 "/oauth2/**"
                         ).permitAll()

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cài Đặt Hệ Thống - Panacea Hotel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/Admin/caidathethong.css}">
+</head>
+
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+        <span class="material-icons" aria-hidden="true">hotel</span>
+        <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+      </div>
+      <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+        <span class="material-icons">menu</span>
+      </button>
+    </header>
+
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+
+    <main role="main" tabindex="0">
+      <h1>Cài đặt hệ thống</h1>
+
+      <!-- Thông tin hệ thống -->
+      <section class="content-section">
+        <h2>Thông tin hệ thống</h2>
+        <div class="system-info">
+          <div class="info-item">
+            <label>Tên hệ thống:</label>
+            <span th:text="${systemName}">Panacea Hotel Management System</span>
+          </div>
+          <div class="info-item">
+            <label>Phiên bản:</label>
+            <span th:text="${version}">1.0.0</span>
+          </div>
+          <div class="info-item">
+            <label>Chế độ bảo trì:</label>
+            <span th:text="${maintenanceMode ? 'Bật' : 'Tắt'}"
+              th:class="${maintenanceMode ? 'status-maintenance' : 'status-active'}">Tắt</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cài đặt chung -->
+      <section class="content-section">
+        <h2>Cài đặt chung</h2>
+        <form id="generalSettingsForm">
+          <div class="form-group">
+            <label for="siteName">Tên website</label>
+            <input type="text" id="siteName" name="siteName" value="Panacea Hotel" />
+          </div>
+
+          <div class="form-group">
+            <label for="siteDescription">Mô tả website</label>
+            <textarea id="siteDescription" name="siteDescription">Hệ thống quản lý khách sạn Panacea</textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="contactEmail">Email liên hệ</label>
+            <input type="email" id="contactEmail" name="contactEmail" value="contact@panacea.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="contactPhone">Số điện thoại liên hệ</label>
+            <input type="text" id="contactPhone" name="contactPhone" value="028 1234 5678" />
+          </div>
+
+          <button type="submit" class="btn">Lưu cài đặt chung</button>
+        </form>
+      </section>
+
+      <!-- Cài đặt bảo mật -->
+      <section class="content-section">
+        <h2>Cài đặt bảo mật</h2>
+        <form id="securitySettingsForm">
+          <div class="form-group">
+            <label for="sessionTimeout">Thời gian timeout phiên (phút)</label>
+            <input type="number" id="sessionTimeout" name="sessionTimeout" value="30" min="5" max="480" />
+          </div>
+
+          <div class="form-group">
+            <label for="maxLoginAttempts">Số lần đăng nhập tối đa</label>
+            <input type="number" id="maxLoginAttempts" name="maxLoginAttempts" value="5" min="3" max="10" />
+          </div>
+
+          <div class="form-group">
+            <label for="passwordMinLength">Độ dài mật khẩu tối thiểu</label>
+            <input type="number" id="passwordMinLength" name="passwordMinLength" value="8" min="6" max="20" />
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="requireSpecialChar" name="requireSpecialChar" />
+              Yêu cầu ký tự đặc biệt trong mật khẩu
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="enableTwoFactor" name="enableTwoFactor" />
+              Bật xác thực 2 yếu tố
+            </label>
+          </div>
+
+          <button type="submit" class="btn">Lưu cài đặt bảo mật</button>
+        </form>
+      </section>
+
+      <!-- Cài đặt email -->
+      <section class="content-section">
+        <h2>Cài đặt email</h2>
+        <form id="emailSettingsForm">
+          <div class="form-group">
+            <label for="smtpHost">SMTP Host</label>
+            <input type="text" id="smtpHost" name="smtpHost" value="smtp.gmail.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="smtpPort">SMTP Port</label>
+            <input type="number" id="smtpPort" name="smtpPort" value="587" />
+          </div>
+
+          <div class="form-group">
+            <label for="smtpUsername">SMTP Username</label>
+            <input type="text" id="smtpUsername" name="smtpUsername" value="noreply@panacea.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="smtpPassword">SMTP Password</label>
+            <input type="password" id="smtpPassword" name="smtpPassword" />
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="enableSSL" name="enableSSL" checked />
+              Sử dụng SSL/TLS
+            </label>
+          </div>
+
+          <button type="submit" class="btn">Lưu cài đặt email</button>
+        </form>
+      </section>
+
+      <!-- Cài đặt hệ thống -->
+      <section class="content-section">
+        <h2>Quản lý hệ thống</h2>
+        <div class="system-actions">
+          <div class="action-item">
+            <h3>Chế độ bảo trì</h3>
+            <p>Bật/tắt chế độ bảo trì hệ thống</p>
+            <button class="btn" th:onclick="'toggleMaintenance(' + ${!maintenanceMode} + ')'"
+              th:text="${maintenanceMode ? 'Tắt bảo trì' : 'Bật bảo trì'}">
+              Bật bảo trì
+            </button>
+          </div>
+
+          <div class="action-item">
+            <h3>Sao lưu dữ liệu</h3>
+            <p>Tạo bản sao lưu toàn bộ dữ liệu hệ thống</p>
+            <button class="btn" onclick="createBackup()">Tạo backup</button>
+          </div>
+
+          <div class="action-item">
+            <h3>Xóa cache</h3>
+            <p>Xóa cache hệ thống để cải thiện hiệu suất</p>
+            <button class="btn" onclick="clearCache()">Xóa cache</button>
+          </div>
+
+          <div class="action-item">
+            <h3>Kiểm tra cập nhật</h3>
+            <p>Kiểm tra phiên bản mới của hệ thống</p>
+            <button class="btn" onclick="checkUpdates()">Kiểm tra</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+    </footer>
+  </div>
+
+  <script th:src="@{/js/Admin/caidathethong.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Thanh toán - Panacea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        header {
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+        .section {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: #065f46;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        input, select, textarea {
+            padding: 12px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        .btn {
+            background: #10b981;
+            color: white;
+            padding: 10px 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+        }
+        .btn:hover {
+            background: #059669;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+        }
+        th {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f3f4f6;
+        }
+        tr:hover {
+            background-color: #a7f3d0;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="Home.html" style="color: white; text-decoration: none; font-weight: 700; font-size: 1.5rem; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.3s;">
+        <span class="material-icons" style="font-size: 24px;">home</span>Panacea Hotel - Quản lý Thanh Toán
+    </a>
+    <button class="btn"><span class="material-icons">logout</span>Đăng xuất</button>
+</header>
+<main>
+    <!-- Tạo giao dịch thanh toán -->
+    <div class="section">
+        <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
+        <form>
+            <div><label>Mã booking</label><select><option>Chọn booking...</option></select></div>
+            <div><label>Số tiền</label><input type="number" placeholder="VND" /></div>
+            <div><label>Phương thức</label><select><option>Tiền mặt</option><option>VNPay</option><option>MoMo</option><option>Stripe</option></select></div>
+            <div><label>Nội dung</label><input type="text" /></div>
+            <div><label>Mã giao dịch (nếu có)</label><input type="text" /></div>
+            <div style="align-self:end">
+                <button class="btn"><span class="material-icons">add</span>Tạo</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Danh sách thanh toán -->
+    <div class="section">
+        <h2><span class="material-icons">receipt</span> Lịch sử thanh toán</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Mã thanh toán</th>
+                <th>Booking</th>
+                <th>Phương thức</th>
+                <th>Số tiền</th>
+                <th>Trạng thái</th>
+                <th>Ngày thanh toán</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>PAY123</td>
+                <td>BK001</td>
+                <td>VNPay</td>
+                <td>2.500.000</td>
+                <td>Thành công</td>
+                <td>2025-06-18</td>
+                <td>
+                    <div class="actions">
+                        <button class="btn"><span class="material-icons">print</span>In hóa đơn</button>
+                        <button class="btn"><span class="material-icons">undo</span>Hoàn tiền</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
