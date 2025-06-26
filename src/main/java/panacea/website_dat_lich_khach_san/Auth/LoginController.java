@@ -16,6 +16,6 @@ public class LoginController {
             if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/dashboard");
             if (role.equals("ROLE_KHACHHANG")) return new ModelAndView("redirect:/khachhang/dashboard");
         }
-        return new ModelAndView("Login");
+        return new ModelAndView("Login/login24");
     }
 }
