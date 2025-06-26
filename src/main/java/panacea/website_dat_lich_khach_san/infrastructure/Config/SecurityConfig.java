@@ -39,7 +39,7 @@ public class SecurityConfig {
                         "/images/**",
                         "/fonts/**",
                         "/vendor/**",
-                        "/assets/**",   
+                        "/assets/**",
                         "/KhachHang/**",
                         "/login",
                         "/oauth2/**"
