@@ -12,7 +12,7 @@
     <!-- Favicon Icon -->
     <link rel="icon" href="../assets/img/favicon.svg" />
     <!-- Site Title -->
-    <title>Elegencia - Royale Restaurant HTML Template</title>
+    <title>Panacea - Royale Restaurant HTML Template</title>
     <link rel="stylesheet" href="../assets/css/plugins/bootstrap.min.css" />
     <link rel="stylesheet" href="../assets/css/plugins/lightgallery.min.css" />
     <link rel="stylesheet" href="../assets/css/plugins/swiper.min.css" />
@@ -27,39 +27,13 @@
             <div class="animation-preloader">
                 <div class="spinner"></div>
                 <div class="txt-loading">
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
-                    </span>
-
-                    <span data-text-preloader="L" class="letters-loading">
-                        L
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
-                    </span>
-
-                    <span data-text-preloader="G" class="letters-loading">
-                        G
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
-                    </span>
-
-                    <span data-text-preloader="N" class="letters-loading">
-                        N
-                    </span>
-
-                    <span data-text-preloader="C" class="letters-loading">
-                        C
-                    </span>
-                    <span data-text-preloader="I" class="letters-loading">
-                        I
-                    </span>
-                    <span data-text-preloader="A" class="letters-loading">
-                        A
-                    </span>
+                    <span data-text-preloader="P" class="letters-loading">P</span>
+                    <span data-text-preloader="A" class="letters-loading">A</span>
+                    <span data-text-preloader="N" class="letters-loading">N</span>
+                    <span data-text-preloader="A" class="letters-loading">A</span>
+                    <span data-text-preloader="C" class="letters-loading">C</span>
+                    <span data-text-preloader="E" class="letters-loading">E</span>
+                    <span data-text-preloader="A" class="letters-loading">A</span>
                 </div>
             </div>
             <div class="loader-section section-left"></div>
@@ -71,10 +45,10 @@
         <div class="header-top">
             <div class="wrapper">
                 <div class="header-logo">
-                    <a href="room.html" class="logo">Book Now</a>
+                    <a th:href="@{/khachhang/rooms}" class="logo">Book Now</a>
                 </div>
                 <div class="center-log">
-                    <a href="index.html"><img src="../assets/img/logo.png" alt="..."></a>
+                    <a th:href="@{/khachhang}"><img src="../assets/img/logo.png" alt="..."></a>
                 </div>
                 <button class="ak-menu-toggle" id="akMenuToggle" type="button">
                     <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
@@ -85,24 +59,22 @@
                 </button>
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
-                        <a href="index.html">Home</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
+                        <a th:href="@{/khachhang}">HOME</a>
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="about-hotel-resort.html">About</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
+                        <a th:href="@{/khachhang/about}">ABOUT</a>
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="blog.html">Blog</a>
-                        <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
+                        <a th:href="@{/khachhang/rooms}">ROOM</a>
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="resort.html">Resort</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
+                        <a th:href="@{/khachhang/events}">EVENT</a>
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="index.html">Hotel</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
+                        <a th:href="@{/khachhang/blog}">BLOG</a>
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/restaurant}">PAGES</a>
                     </li>
                 </ul>
             </div>
@@ -112,7 +84,7 @@
             <div class="container">
                 <div class="ak-main_header_in">
                     <div class="ak-main_header_left">
-                        <a class="ak-site_branding" href="index.html">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
                             <img src="../assets/img/logo.png" alt="...">
                         </a>
                     </div>
@@ -120,73 +92,43 @@
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
-                                        <li>
-                                            <a href="index.html">Hotel</a>
-                                        </li>
-                                        <li>
-                                            <a href="resort.html">Resort</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang}">Hotel</a></li>
+                                        <li><a th:href="@{/khachhang/resort}">Resort</a></li>
                                     </ul>
                                 </li>
-                                <li>
-                                    <a href="about-hotel-resort.html">About</a>
-                                </li>
+                                <li><a th:href="@{/khachhang/about}">About</a></li>
                                 <li class="menu-item-has-children">
-                                    <a href="room.html">Room</a>
+                                    <a th:href="@{/khachhang/rooms}">Room</a>
                                     <ul>
-                                        <li>
-                                            <a href="room.html">Room</a>
-                                        </li>
-                                        <li>
-                                            <a href="single-room.html">Single Room</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/rooms}">Room</a></li>
+                                        <li><a th:href="@{/khachhang/room-detail}">Single Room</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="event-list.html">Event</a>
+                                    <a th:href="@{/khachhang/events}">Event</a>
                                     <ul>
-                                        <li>
-                                            <a href="event-list.html">Event</a>
-                                        </li>
-                                        <li>
-                                            <a href="event-single-page.html">Single Event</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                        <li><a th:href="@{/khachhang/event-detail}">Single Event</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
-                                        <li>
-                                            <a href="blog.html">Blog</a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-details.html">Blog Details</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                        <li><a th:href="@{/khachhang/blog-detail}">Blog Details</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
                                     <a href="#">Pages</a>
                                     <ul>
-                                        <li>
-                                            <a href="restaurent.html">Restaurant</a>
-                                        </li>
-                                        <li>
-                                            <a href="spa-wellness.html">Spa Wellness</a>
-                                        </li>
-                                        <li>
-                                            <a href="hotel-facilities.html">Hotel Facilities</a>
-                                        </li>
-                                        <li>
-                                            <a href="comming.html">Comming Soon</a>
-                                        </li>
-                                        <li>
-                                            <a href="faq.html">faq</a>
-                                        </li>
-                                        <li>
-                                            <a href="404.html">404 Page</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/restaurant}">Restaurant</a></li>
+                                        <li><a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a></li>
+                                        <li><a th:href="@{/khachhang/facilities}">Hotel Facilities</a></li>
+                                        <li><a th:href="@{/khachhang/coming-soon}">Coming Soon</a></li>
+                                        <li><a th:href="@{/khachhang/faq}">FAQ</a></li>
+                                        <li><a th:href="@{/khachhang/404}">404 Page</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -404,14 +346,14 @@
                                     <img src="../assets/img/room_1.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
-                                            <a href="single-room.html" class="text-btn1 text-uppercase">
+                                            <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
                                                 Starts At $259
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
-                                    <a href="single-room.html" class="room-card-title">
+                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title">
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
@@ -427,7 +369,7 @@
 
                                 </div>
                                 <div class="room-footer">
-                                    <a class="room-card-bottom-text" href="single-room.html">room details
+                                    <a class="room-card-bottom-text" th:href="@{/khachhang/room-detail}">room details
                                         <span class="ms-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                                 viewBox="0 0 31 31" fill="none">
@@ -454,14 +396,14 @@
                                     <img src="../assets/img/room_2.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
-                                            <a href="single-room.html" class="text-btn1 text-uppercase">
+                                            <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
                                                 Starts At $259
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
-                                    <a href="single-room.html" class="room-card-title">
+                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title">
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
@@ -476,7 +418,7 @@
                                     </p>
                                 </div>
                                 <div class="room-footer">
-                                    <a class="room-card-bottom-text" href="single-room.html">room details
+                                    <a class="room-card-bottom-text" th:href="@{/khachhang/room-detail}">room details
                                         <span class="ms-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                                 viewBox="0 0 31 31" fill="none">
@@ -501,7 +443,7 @@
                     </div>
                     <div class="ak-height-80 ak-height-lg-30"></div>
                     <div class="text-btn text-md-center">
-                        <a href="room.html" class="text-btn1 type-2 text-uppercase">
+                        <a th:href="@{/khachhang/rooms}" class="text-btn1 type-2 text-uppercase">
                             View More
                         </a>
                     </div>
@@ -762,10 +704,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -786,10 +728,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -810,10 +752,10 @@
                                                 alt="...">
                                             <h6 class="testimonial-info-title">Steven K. Roberts</h6>
                                             <p class="short-title">From USA</p>
-                                            <p class="testimonial-info-subtitle">“Their talented team of passionate
+                                            <p class="testimonial-info-subtitle">"Their talented team of passionate
                                                 chefs masterfully crafts each dish, combining the finest ingredients
                                                 with innovative techniques to present culinary creations that are as
-                                                visually stunning as they are delicious.”</p>
+                                                visually stunning as they are delicious."</p>
                                         </div>
                                     </div>
                                     <div class="testimonial-icon-1">
@@ -1061,13 +1003,13 @@
                                         <div class="room-card-info m-0">
                                             <p class="room-card-date">06 July 2023</p>
                                         </div>
-                                        <a href="single-room.html" class="room-card-title size-2">
+                                        <a th:href="@{/khachhang/room-detail}" class="room-card-title size-2">
                                             Dining Make Moment
                                         </a>
 
                                     </div>
                                     <div class="room-footer">
-                                        <a class="room-card-bottom-text color-1" href="single-room.html">Read More</a>
+                                        <a class="room-card-bottom-text color-1" th:href="@{/khachhang/room-detail}">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -1080,12 +1022,12 @@
                                         <div class="room-card-info m-0">
                                             <p class="room-card-date">27 July 2023</p>
                                         </div>
-                                        <a href="single-room.html" class="room-card-title size-2">
+                                        <a th:href="@{/khachhang/room-detail}" class="room-card-title size-2">
                                             Haven of Our Luxurious Hotel
                                         </a>
                                     </div>
                                     <div class="room-footer">
-                                        <a class="room-card-bottom-text color-1" href="single-room.html">Read More</a>
+                                        <a class="room-card-bottom-text color-1" th:href="@{/khachhang/room-detail}">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -1102,7 +1044,7 @@
                             </div>
                             <div class="feature-text cs_color_2">
                                 <div class=" title-link">
-                                    <a href="event-single-page.html" class="title">
+                                    <a th:href="@{/khachhang/event-detail}" class="title">
                                         Corporate Meetup
                                     </a>
                                 </div>
@@ -1117,7 +1059,7 @@
                             </div>
                             <div class="feature-text cs_color_2">
                                 <div class="title-link">
-                                    <a href="event-single-page.html" class="title">
+                                    <a th:href="@{/khachhang/event-detail}" class="title">
                                         Corporate Meetup
                                     </a>
                                 </div>

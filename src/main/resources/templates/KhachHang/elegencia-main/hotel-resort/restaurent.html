@@ -119,73 +119,43 @@
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
-                                        <li>
-                                            <a href="index.html">Hotel</a>
-                                        </li>
-                                        <li>
-                                            <a href="resort.html">Resort</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang}">Hotel</a></li>
+                                        <li><a th:href="@{/khachhang/resort}">Resort</a></li>
                                     </ul>
                                 </li>
-                                <li>
-                                    <a href="about-hotel-resort.html">About</a>
-                                </li>
+                                <li><a th:href="@{/khachhang/about}">About</a></li>
                                 <li class="menu-item-has-children">
-                                    <a href="room.html">Room</a>
+                                    <a th:href="@{/khachhang/rooms}">Room</a>
                                     <ul>
-                                        <li>
-                                            <a href="room.html">Room</a>
-                                        </li>
-                                        <li>
-                                            <a href="single-room.html">Single Room</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/rooms}">Room</a></li>
+                                        <li><a th:href="@{/khachhang/room-detail}">Single Room</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="event-list.html">Event</a>
+                                    <a th:href="@{/khachhang/events}">Event</a>
                                     <ul>
-                                        <li>
-                                            <a href="event-list.html">Event</a>
-                                        </li>
-                                        <li>
-                                            <a href="event-single-page.html">Single Event</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                        <li><a th:href="@{/khachhang/event-detail}">Single Event</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
-                                        <li>
-                                            <a href="blog.html">Blog</a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-details.html">Blog Details</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                        <li><a th:href="@{/khachhang/blog-detail}">Blog Details</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
                                     <a href="#">Pages</a>
                                     <ul>
-                                        <li>
-                                            <a href="restaurent.html">Restaurant</a>
-                                        </li>
-                                        <li>
-                                            <a href="spa-wellness.html">Spa Wellness</a>
-                                        </li>
-                                        <li>
-                                            <a href="hotel-facilities.html">Hotel Facilities</a>
-                                        </li>
-                                        <li>
-                                            <a href="comming.html">Comming Soon</a>
-                                        </li>
-                                        <li>
-                                            <a href="faq.html">faq</a>
-                                        </li>
-                                        <li>
-                                            <a href="404.html">404 Page</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/restaurant}">Restaurant</a></li>
+                                        <li><a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a></li>
+                                        <li><a th:href="@{/khachhang/facilities}">Hotel Facilities</a></li>
+                                        <li><a th:href="@{/khachhang/coming-soon}">Coming Soon</a></li>
+                                        <li><a th:href="@{/khachhang/faq}">FAQ</a></li>
+                                        <li><a th:href="@{/khachhang/404}">404 Page</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -379,31 +349,6 @@
                 </div>
                 <div class="ak-height-65 ak-height-lg-30"></div>
                 <div class="ak-menu-list">
-                    <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
-                        <div class="food-menu style-1">
-                            <div class="food-menu-section-1">
-                                <div class="food-menu-title">
-                                    <p>Spaghetti alla Carbonara</p>
-                                </div>
-                                <div class="food-menu-hr">
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                </div>
-                                <div class="food-menu-price">
-                                    <p>$49</p>
-                                </div>
-                            </div>
-                            <div class="food-menu-section-2">
-                                <div class="food-menu-subsitle">
-                                    <p>Lorem passionate chefs masterfully</p>
-                                </div>
-                                <div class="food-menu-price-subsitle">
-                                    <p>Extra free juice</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="ak-menu-list-section-1">
                         <img src="../assets/img/item-show_3.png" alt="...">
                         <div class="food-menu style-1">

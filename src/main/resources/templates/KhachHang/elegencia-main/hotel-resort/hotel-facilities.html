@@ -84,24 +84,24 @@
                 </button>
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
-                        <a href="index.html">Home</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Home</a>
+                        <img class="top-main-menu-img" th:src="@{/assets/img/fullWM_1.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="about-hotel-resort.html">About</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
+                        <a th:href="@{/khachhang/about}">About</a>
+                        <img class="top-main-menu-img" th:src="@{/assets/img/fullWM_about.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="blog.html">Blog</a>
-                        <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
+                        <a th:href="@{/khachhang/blog}">Blog</a>
+                        <img class="top-main-menu-img menu-img" th:src="@{/assets/img/fullWM_menu.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="resort.html">Resort</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
+                        <a th:href="@{/khachhang/resort}">Resort</a>
+                        <img class="top-main-menu-img" th:src="@{/assets/img/fullWM_chef.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="index.html">Hotel</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Hotel</a>
+                        <img class="top-main-menu-img" th:src="@{/assets/img/fullWM_contact.jpg}" alt="...">
                     </li>
                 </ul>
             </div>
@@ -119,73 +119,43 @@
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
-                                        <li>
-                                            <a href="index.html">Hotel</a>
-                                        </li>
-                                        <li>
-                                            <a href="resort.html">Resort</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang}">Hotel</a></li>
+                                        <li><a th:href="@{/khachhang/resort}">Resort</a></li>
                                     </ul>
                                 </li>
-                                <li>
-                                    <a href="about-hotel-resort.html">About</a>
-                                </li>
+                                <li><a th:href="@{/khachhang/about}">About</a></li>
                                 <li class="menu-item-has-children">
-                                    <a href="room.html">Room</a>
+                                    <a th:href="@{/khachhang/rooms}">Room</a>
                                     <ul>
-                                        <li>
-                                            <a href="room.html">Room</a>
-                                        </li>
-                                        <li>
-                                            <a href="single-room.html">Single Room</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/rooms}">Room</a></li>
+                                        <li><a th:href="@{/khachhang/room-detail}">Single Room</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="event-list.html">Event</a>
+                                    <a th:href="@{/khachhang/events}">Event</a>
                                     <ul>
-                                        <li>
-                                            <a href="event-list.html">Event</a>
-                                        </li>
-                                        <li>
-                                            <a href="event-single-page.html">Single Event</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                        <li><a th:href="@{/khachhang/event-detail}">Single Event</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
-                                        <li>
-                                            <a href="blog.html">Blog</a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-details.html">Blog Details</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                        <li><a th:href="@{/khachhang/blog-detail}">Blog Details</a></li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
                                     <a href="#">Pages</a>
                                     <ul>
-                                        <li>
-                                            <a href="restaurent.html">Restaurant</a>
-                                        </li>
-                                        <li>
-                                            <a href="spa-wellness.html">Spa Wellness</a>
-                                        </li>
-                                        <li>
-                                            <a href="hotel-facilities.html">Hotel Facilities</a>
-                                        </li>
-                                        <li>
-                                            <a href="comming.html">Comming Soon</a>
-                                        </li>
-                                        <li>
-                                            <a href="faq.html">faq</a>
-                                        </li>
-                                        <li>
-                                            <a href="404.html">404 Page</a>
-                                        </li>
+                                        <li><a th:href="@{/khachhang/restaurant}">Restaurant</a></li>
+                                        <li><a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a></li>
+                                        <li><a th:href="@{/khachhang/facilities}">Hotel Facilities</a></li>
+                                        <li><a th:href="@{/khachhang/coming-soon}">Coming Soon</a></li>
+                                        <li><a th:href="@{/khachhang/faq}">FAQ</a></li>
+                                        <li><a th:href="@{/khachhang/404}">404 Page</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -374,12 +344,12 @@
                             </div>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="index.html">Home</a></li>
-                                    <li><a href="resort.html">Resort</a></li>
-                                    <li><a href="about-hotel-resort.html">About</a></li>
-                                    <li><a href="event-list.html">Event</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="single-room.html">Room</a></li>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/rooms}">Room</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -419,7 +389,7 @@
 
                             </div>
                             <div class="footer-btn">
-                                <a href="single-room.html">
+                                <a th:href="@{/khachhang/room-detail}" class="room-card-title">
                                     <div class="ak-btn style-5">
                                         Booking
                                     </div>

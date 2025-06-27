@@ -70,10 +70,10 @@
         <div class="header-top">
             <div class="wrapper">
                 <div class="header-logo">
-                    <a href="reservations.html" class="logo">Reservation</a>
+                    <a th:href="@{/khachhang/reservations}" class="logo">Reservation</a>
                 </div>
                 <div class="center-log">
-                    <a href="index.html"><img src="../assets/img/logo.png" alt="..."></a>
+                    <a th:href="@{/khachhang}"><img src="../assets/img/logo.png" alt="..."></a>
                 </div>
                 <button class="ak-menu-toggle" id="akMenuToggle" type="button">
                     <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
@@ -86,23 +86,23 @@
 
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
-                        <a href="index.html">Home</a>
+                        <a th:href="@{/khachhang}">Home</a>
                         <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="about.html">About</a>
+                        <a th:href="@{/khachhang/about}">About</a>
                         <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="menu.html">Menu</a>
+                        <a th:href="@{/khachhang/menu}">Menu</a>
                         <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="chef.html">Chef</a>
+                        <a th:href="@{/khachhang/chef}">Chef</a>
                         <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="contact-2.html">Contact</a>
+                        <a th:href="@{/khachhang/contact}">Contact</a>
                         <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
                     </li>
                 </ul>
@@ -114,7 +114,7 @@
             <div class="container">
                 <div class="ak-main_header_in">
                     <div class="ak-main_header_left">
-                        <a class="ak-site_branding" href="index.html">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
                             <img src="../assets/img/logo.png" alt="...">
                         </a>
                     </div>
@@ -122,77 +122,77 @@
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
                                         <li>
-                                            <a href="index.html">Home 1</a>
+                                            <a th:href="@{/khachhang}">Home 1</a>
                                         </li>
                                         <li>
-                                            <a href="home-2.html">Home 2</a>
+                                            <a th:href="@{/khachhang/home-2}">Home 2</a>
                                         </li>
                                         <li>
-                                            <a href="home-3.html">Home 3</a>
+                                            <a th:href="@{/khachhang/home-3}">Home 3</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="about.html">About</a>
+                                    <a th:href="@{/khachhang/about}">About</a>
                                 </li>
                                 <li>
-                                    <a href="menu.html">Menu</a>
+                                    <a th:href="@{/khachhang/menu}">Menu</a>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="chef.html">Chef</a>
+                                    <a th:href="@{/khachhang/chef}">Chef</a>
                                     <ul>
                                         <li>
-                                            <a href="chef.html">Chef</a>
+                                            <a th:href="@{/khachhang/chef}">Chef</a>
                                         </li>
                                         <li>
-                                            <a href="meet-the-chef.html">Meet The Chef</a>
+                                            <a th:href="@{/khachhang/meet-the-chef}">Meet The Chef</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="portfolio.html">Portfolio</a>
+                                    <a th:href="@{/khachhang/portfolio}">Portfolio</a>
                                     <ul>
                                         <li>
-                                            <a href="portfolio.html">Portfolio</a>
+                                            <a th:href="@{/khachhang/portfolio}">Portfolio</a>
                                         </li>
                                         <li>
-                                            <a href="portfolio-details.html">Portfolio Details</a>
+                                            <a th:href="@{/khachhang/portfolio-details}">Portfolio Details</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
                                         <li>
-                                            <a href="blog.html">Blog</a>
+                                            <a th:href="@{/khachhang/blog}">Blog</a>
                                         </li>
                                         <li>
-                                            <a href="blog-details.html">Blog Details</a>
+                                            <a th:href="@{/khachhang/blog-detail}">Blog Details</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="#">Pages</a>
+                                    <a th:href="@{/khachhang}">Pages</a>
                                     <ul>
                                         <li>
-                                            <a href="contact-2.html">Contact</a>
+                                            <a th:href="@{/khachhang/contact}">Contact</a>
                                         </li>
                                         <li>
-                                            <a href="reservations.html">Reservations</a>
+                                            <a th:href="@{/khachhang/reservations}">Reservations</a>
                                         </li>
                                         <li>
-                                            <a href="gallery.html">Gallery</a>
+                                            <a th:href="@{/khachhang/gallery}">Gallery</a>
                                         </li>
 
 
                                         <li>
-                                            <a href="404.html">404 Page</a>
+                                            <a th:href="@{/khachhang/404}">404 Page</a>
                                         </li>
                                         <li>
-                                            <a href="comming.html">Comming Soon</a>
+                                            <a th:href="@{/khachhang/coming-soon}">Coming Soon</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -212,7 +212,7 @@
                 <div class="ak-commmon-heading">
                     <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
                         <div class="ak-section-subtitle">
-                            <a href="index.html">Home</a> / Portfolio
+                            <a th:href="@{/khachhang}">Home</a> / Portfolio
                         </div>
                         <h2 class="ak-section-title  page-title-anim">Portfolio</h2>
                     </div>
@@ -227,7 +227,7 @@
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/food_item_1.jpg" alt="..." />
 
@@ -245,7 +245,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_2.jpg" alt="..." />
                         </div>
@@ -262,7 +262,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_3.jpg" alt="..." />
                         </div>
@@ -279,7 +279,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_4.jpg" alt="..." />
                         </div>
@@ -296,7 +296,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_5.jpg" alt="..." />
                         </div>
@@ -313,7 +313,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_6.jpg" alt="..." />
                         </div>
@@ -330,7 +330,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_7.jpg" alt="..." />
                         </div>
@@ -347,7 +347,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_8.jpg" alt="..." />
                         </div>
@@ -364,7 +364,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <a href="portfolio-details.html" class="ak-card ak-style-1">
+                    <a th:href="@{/khachhang/portfolio-details}" class="ak-card ak-style-1">
                         <div class="ak-card-img">
                             <img src="../assets/img/portfolio_9.jpg" alt="..." />
                         </div>
@@ -417,12 +417,12 @@
                             </div>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="index.html">Home</a></li>
-                                    <li><a href="about.html">About</a></li>
-                                    <li><a href="menu.html">Menu</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="chef.html">Chef</a></li>
-                                    <li><a href="contact-2.html">Conatct</a></li>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/menu}">Menu</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/chef}">Chef</a></li>
+                                    <li><a th:href="@{/khachhang/contact}">Conatct</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -444,7 +444,7 @@
                                 <p>FRIDAY & SATURDAY: 11:30AM - 12AM</p>
                             </div>
                             <div class="footer-btn">
-                                <a href="reservations.html">
+                                <a th:href="@{/khachhang/reservations}">
                                     <div class="ak-btn style-5">
                                         Reservations
                                     </div>
