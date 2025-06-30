@@ -10,13 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Thememarch" />
     <!-- Favicon Icon -->
-    <link rel="icon" href="../assets/img/favicon.svg" />
+    <link rel="icon" th:href="@{/css/KhachHang/assets/img/favicon.svg}" />
     <!-- Site Title -->
     <title>Panacea - Royale Restaurant HTML Template</title>
-    <link rel="stylesheet" href="../assets/css/plugins/bootstrap.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/lightgallery.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/swiper.min.css" />
-    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
 </head>
 
 <body>
@@ -64,10 +64,10 @@
         <div class="header-top">
             <div class="wrapper">
                 <div class="header-logo">
-                    <a href="room.html" class="logo">Book Now</a>
+                    <a th:href="@{/khachhang/room}" class="logo">Book Now</a>
                 </div>
                 <div class="center-log">
-                    <a href="index.html"><img src="../assets/img/logo.png" alt="..."></a>
+                    <a th:href="@{/khachhang}"><img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="..."></a>
                 </div>
                 <button class="ak-menu-toggle" id="akMenuToggle" type="button">
                     <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
@@ -78,24 +78,24 @@
                 </button>
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
-                        <a href="index.html">Home</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Home</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_1.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="about-hotel-resort.html">About</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
+                        <a th:href="@{/khachhang/about}">About</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_about.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="blog.html">Blog</a>
-                        <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
+                        <a th:href="@{/khachhang/blog}">Blog</a>
+                        <img class="top-main-menu-img menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_menu.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="resort.html">Resort</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
+                        <a th:href="@{/khachhang/resort}">Resort</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_chef.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="index.html">Hotel</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Hotel</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
                     </li>
                 </ul>
             </div>
@@ -105,57 +105,57 @@
             <div class="container">
                 <div class="ak-main_header_in">
                     <div class="ak-main_header_left">
-                        <a class="ak-site_branding" href="index.html">
-                            <img src="../assets/img/logo.png" alt="...">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
+                            <img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="...">
                         </a>
                     </div>
                     <div class="ak-main_header_right">
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
                                         <li>
-                                            <a href="index.html">Hotel</a>
+                                            <a th:href="@{/khachhang}">Hotel</a>
                                         </li>
                                         <li>
-                                            <a href="resort.html">Resort</a>
+                                            <a th:href="@{/khachhang/resort}">Resort</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="about-hotel-resort.html">About</a>
+                                    <a th:href="@{/khachhang/about}">About</a>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="room.html">Room</a>
+                                    <a th:href="@{/khachhang/room}">Room</a>
                                     <ul>
                                         <li>
-                                            <a href="room.html">Room</a>
+                                            <a th:href="@{/khachhang/room}">Room</a>
                                         </li>
                                         <li>
-                                            <a href="single-room.html">Single Room</a>
+                                            <a th:href="@{/khachhang/single-room}">Single Room</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="event-list.html">Event</a>
+                                    <a th:href="@{/khachhang/event-list}">Event</a>
                                     <ul>
                                         <li>
-                                            <a href="event-list.html">Event</a>
+                                            <a th:href="@{/khachhang/event-list}">Event</a>
                                         </li>
                                         <li>
-                                            <a href="event-single-page.html">Single Event</a>
+                                            <a th:href="@{/khachhang/event-single-page}">Single Event</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
                                         <li>
-                                            <a href="blog.html">Blog</a>
+                                            <a th:href="@{/khachhang/blog}">Blog</a>
                                         </li>
                                         <li>
-                                            <a href="blog-details.html">Blog Details</a>
+                                            <a th:href="@{/khachhang/blog-details}">Blog Details</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -163,22 +163,22 @@
                                     <a href="#">Pages</a>
                                     <ul>
                                         <li>
-                                            <a href="restaurent.html">Restaurant</a>
+                                            <a th:href="@{/khachhang/restaurant}">Restaurant</a>
                                         </li>
                                         <li>
-                                            <a href="spa-wellness.html">Spa Wellness</a>
+                                            <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
                                         </li>
                                         <li>
-                                            <a href="hotel-facilities.html">Hotel Facilities</a>
+                                            <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
                                         </li>
                                         <li>
-                                            <a href="comming.html">Comming Soon</a>
+                                            <a th:href="@{/khachhang/coming}">Comming Soon</a>
                                         </li>
                                         <li>
-                                            <a href="faq.html">faq</a>
+                                            <a th:href="@{/khachhang/faq}">faq</a>
                                         </li>
                                         <li>
-                                            <a href="404.html">404 Page</a>
+                                            <a th:href="@{/khachhang/404}">404 Page</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -194,11 +194,11 @@
     <div id="scrollsmoother-container">
         <!-- Start Hero -->
         <Section>
-            <div class="ak-commmon-hero ak-style1 ak-bg" data-src="../assets/img/banner_top_all.png">
+            <div class="ak-commmon-hero ak-style1 ak-bg" th:data-src="@{/css/KhachHang/assets/img/banner_top_all.png}">
                 <div class="ak-commmon-heading">
                     <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
                         <div class="ak-section-subtitle">
-                            <a href="index.html">Home</a> / Single Blog
+                            <a th:href="@{/khachhang}">Home</a> / Single Blog
                         </div>
                         <h2 class="ak-section-title page-title-anim">Single Blog</h2>
                     </div>
@@ -222,7 +222,7 @@
                 <div class="col-md-8">
                     <div class="blog-content" id="scrollGaleria">
                         <div class="ak-height-50 ak-height-lg-30"></div>
-                        <img class="imagesZoom" src="../assets/img/blog_detalis.jpg" alt="...">
+                        <img class="imagesZoom" th:src="@{/css/KhachHang/assets/img/blog_detalis.jpg}" alt="...">
                         <div class="ak-height-75 ak-height-lg-30"></div>
                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
                             been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
@@ -237,18 +237,18 @@
                         <div class="quote-option">
                             <div class="testimonial-section">
                                 <div class="testimonial-icon-1">
-                                    <img src="../assets/img/testimonial_icon_l.svg" alt="...">
+                                    <img th:src="@{/css/KhachHang/assets/img/testimonial_icon_l.svg}" alt="...">
                                 </div>
                                 <div class="testimonial-info-section">
                                     <div class="testimonial-info">
-                                        <p class="testimonial-info-subtitle">“Their talented team of Lorem Ipsum is
+                                        <p class="testimonial-info-subtitle">"Their talented team of Lorem Ipsum is
                                             simply dummy text of the printing and typesetting industry. Lorem Ipsum has
                                             been the industry's standard dummy text ever since the 1500s, when an
                                             unknown printer.</p>
                                     </div>
                                 </div>
                                 <div class="testimonial-icon-1">
-                                    <img src="../assets/img/testimonial_icon_r.svg" alt="...">
+                                    <img th:src="@{/css/KhachHang/assets/img/testimonial_icon_r.svg}" alt="...">
                                 </div>
                             </div>
                         </div>
@@ -267,10 +267,10 @@
                         <!-- Start Video -->
                         <div>
                             <div class="video-section">
-                                <img src="../assets/img/blog_details_video.jpg" alt="..."
+                                <img th:src="@{/css/KhachHang/assets/img/blog_details_video.jpg}" alt="..."
                                     class="video-section-bg-img ak-bg imagesZoom">
                                 <div class="video-section-btn">
-                                    <a href="https://www.youtube.com/watch?v=UsD1MhKBmD4"
+                                    <a th:href="@{https://www.youtube.com/watch?v=UsD1MhKBmD4}"
                                         class="ak-video-block ak-style1 ak-video-open">
                                         <span class="ak-player-btn ak-accent-color">
                                             <span></span>
@@ -289,9 +289,9 @@
                         <div class="ak-height-35 ak-height-lg-30"></div>
                         <div class="social-link">
                             <p>Social Share:</p>
-                            <a href="https://www.facebook.com/">Facebook</a>
-                            <a href="https://bd.linkedin.com/">LinkedIn</a>
-                            <a href="https://www.instagram.com/">Instagram</a>
+                            <a th:href="@{https://www.facebook.com/}">Facebook</a>
+                            <a th:href="@{https://bd.linkedin.com/}">LinkedIn</a>
+                            <a th:href="@{https://www.instagram.com/}">Instagram</a>
 
                         </div>
                         <div class="ak-height-100 ak-height-lg-60"></div>
@@ -302,17 +302,17 @@
                                 <li class="comment">
                                     <div class="comment-body">
                                         <div class="comment-author vcard">
-                                            <img class="avatar" src="../assets/img/author.png" alt="Author">
-                                            <a href="#" class="url">George Steven</a>
+                                            <img class="avatar" th:src="@{/css/KhachHang/assets/img/author.png}" alt="Author">
+                                            <a th:href="@{#}" class="url">George Steven</a>
                                         </div>
                                         <div class="comment-meta">
-                                            <a href="#">Sep 17, 2023 at 10:59 am </a>
+                                            <a th:href="@{#}">Sep 17, 2023 at 10:59 am </a>
                                         </div>
                                         <p>Donec pellentesque luctus tortor finibus blandit. Fusce tincidunt lectus
                                             augue, quis commodo justo tincidunt eget. Praesent at elit diam. Tortor
                                             finibus blandit
                                         </p>
-                                        <div class="reply"><a class="comment-reply-link" href="#">
+                                        <div class="reply"><a class="comment-reply-link" th:href="@{#}">
                                                 Reply
                                                 <svg width="16" height="14" viewBox="0 0 16 14" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -327,15 +327,15 @@
                                         <li class="comment">
                                             <div class="comment-body">
                                                 <div class="comment-author vcard">
-                                                    <img class="avatar" src="../assets/img/testimonial_1.jpg"
+                                                    <img class="avatar" th:src="@{/css/KhachHang/assets/img/testimonial_1.jpg}"
                                                         alt="Author">
-                                                    <a href="#" class="url">Sarah Taylor</a>
+                                                    <a th:href="@{#}" class="url">Sarah Taylor</a>
                                                 </div>
                                                 <div class="comment-meta">
-                                                    <a href="#">Sep 17, 2023 at 5:59 pm </a>
+                                                    <a th:href="@{#}">Sep 17, 2023 at 5:59 pm </a>
                                                 </div>
                                                 <p>Thanks bro 🙂</p>
-                                                <div class="reply"><a class="comment-reply-link" href="#">
+                                                <div class="reply"><a class="comment-reply-link" th:href="@{#}">
                                                         Reply
                                                         <svg width="16" height="14" viewBox="0 0 16 14" fill="none"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -355,7 +355,7 @@
                         <div class="contact-content">
                             <div class="contact-form">
                                 <h2 class="contact-form-title anim-title-2 ak-white-color">Post A Comment</h2>
-                                <from action="https://elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/jsfdjks.php" method="post">
+                                <from th:action="@{https://elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/jsfdjks.php}" method="post">
                                     <div class="from-input">
                                         <input placeholder="Name" class="col-md-5 col-12" type="text" name="fristname"
                                             id="fristname">
@@ -398,31 +398,31 @@
                         <div>
                             <h5>Popular Category</h5>
                             <div class="category-list">
-                                <a href="#">Cheeseburgers</a>
-                                <a href="#">Paneer Pakora</a>
-                                <a href="#">Hors D'oeuvres</a>
-                                <a href="#">Spaghetti Carbonara </a>
-                                <a href="#">Croquetas de jamón</a>
+                                <a th:href="@{#}">Cheeseburgers</a>
+                                <a th:href="@{#}">Paneer Pakora</a>
+                                <a th:href="@{#}">Hors D'oeuvres</a>
+                                <a th:href="@{#}">Spaghetti Carbonara </a>
+                                <a th:href="@{#}">Croquetas de jamón</a>
 
                             </div>
                         </div>
                         <div class="ak-height-50 ak-height-lg-30"></div>
                         <div class="popular-tag">
-                            <a href="#">Sushi</a>
-                            <a href="#">Sashimi</a>
-                            <a href="#">Moussaka</a>
-                            <a href="#">Moussaka</a>
-                            <a href="#">Antipasto</a>
-                            <a href="#">antipasto</a>
-                            <a href="#">Apple pie</a>
+                            <a th:href="@{#}">Sushi</a>
+                            <a th:href="@{#}">Sashimi</a>
+                            <a th:href="@{#}">Moussaka</a>
+                            <a th:href="@{#}">Moussaka</a>
+                            <a th:href="@{#}">Antipasto</a>
+                            <a th:href="@{#}">antipasto</a>
+                            <a th:href="@{#}">Apple pie</a>
 
                         </div>
                         <div class="ak-height-50 ak-height-lg-30"></div>
                         <div class="author-info">
-                            <img class="author-img" src="../assets/img/author.png" alt="...">
+                            <img class="author-img" th:src="@{/css/KhachHang/assets/img/author.png}" alt="...">
                             <h6 class="author-title">Baskerville</h6>
                             <p class="author-text">I'm are lorem ipsum pass <br> ages of available,</p>
-                            <a href="https://www.facebook.com/" class="author-icon">
+                            <a th:href="@{https://www.facebook.com/}" class="author-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="15" viewBox="0 0 8 15"
                                     fill="none">
                                     <path
@@ -430,7 +430,7 @@
                                         fill="white" />
                                 </svg>
                             </a>
-                            <a href="https://twitter.com/?lang=en" class="author-icon">
+                            <a th:href="@{https://twitter.com/?lang=en}" class="author-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15"
                                     fill="none">
                                     <path
@@ -438,7 +438,7 @@
                                         fill="white" />
                                 </svg>
                             </a>
-                            <a href="https://bd.linkedin.com/" class="author-icon">
+                            <a th:href="@{https://bd.linkedin.com/}" class="author-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"
                                     fill="none">
                                     <path
@@ -467,37 +467,37 @@
             <div class="row row-cols-1 row-cols-md-3 g-4" id="pagination-container">
                 <div class="col ak-border border-none-bottom drop-anim-gallery">
                     <div class="blog h-100">
-                        <img src="../assets/img/blog_4.jpg" class="blog-img-top" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_4.jpg}" class="blog-img-top" alt="...">
                         <div class="blog-body">
                             <p class="blog-time">06 June 2023</p>
-                            <a href="blog-details.html">
+                            <a th:href="@{/khachhang/blog-details}">
                                 <h6 class="blog-title">Exquisite Dining Make Moment</h6>
                             </a>
-                            <a href="blog-details.html" class="blog-text">Read More</a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
                         </div>
                     </div>
                 </div>
                 <div class="col ak-border border-none-bottom drop-anim-gallery">
                     <div class="blog h-100">
-                        <img src="../assets/img/blog_5.jpg" class="blog-img-top" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_5.jpg}" class="blog-img-top" alt="...">
                         <div class="blog-body">
                             <p class="blog-time">06 June 2023</p>
-                            <a href="blog-details.html">
+                            <a th:href="@{/khachhang/blog-details}">
                                 <h6 class="blog-title">Exquisite Dining Make Moment</h6>
                             </a>
-                            <a href="blog-details.html" class="blog-text">Read More</a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
                         </div>
                     </div>
                 </div>
                 <div class="col ak-border border-none-right border-none-bottom">
                     <div class="blog h-100">
-                        <img src="../assets/img/blog_6.jpg" class="blog-img-top" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_6.jpg}" class="blog-img-top" alt="...">
                         <div class="blog-body">
                             <p class="blog-time">06 June 2023</p>
-                            <a href="blog-details.html">
+                            <a th:href="@{/khachhang/blog-details}">
                                 <h6 class="blog-title">Exquisite Dining Make Moment</h6>
                             </a>
-                            <a href="blog-details.html" class="blog-text">Read More</a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
                         </div>
                     </div>
                 </div>
@@ -520,7 +520,7 @@
                                         stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <img src="../assets/img/Elegencia.png" alt="...">
+                            <img th:src="@{/css/KhachHang/assets/img/Elegencia.png}" alt="...">
                         </div>
                     </div>
 
@@ -530,30 +530,30 @@
                     <div class="footer-main">
                         <div class="footer-eamil-menu">
                             <div class="footer-email">
-                                <a href="mailto:info@example.com">
+                                <a th:href="@{mailto:info@example.com}">
                                     info@example.com
                                 </a>
                             </div>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="index.html">Home</a></li>
-                                    <li><a href="resort.html">Resort</a></li>
-                                    <li><a href="about-hotel-resort.html">About</a></li>
-                                    <li><a href="event-list.html">Event</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="single-room.html">Room</a></li>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/event-list}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/single-room}">Room</a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="ak-height-75 ak-height-lg-5"></div>
                         <div class="footer-info">
                             <div class="fooer-phn">
-                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                                <a th:href="@{tel:1-800-915-6271}">1-800-915-6271</a>
                                 <br>
-                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                                <a th:href="@{tel:1-800-915-6271}">1-800-915-6271</a>
                             </div>
                             <div class="footer-address">
-                                <a href="https://maps.app.goo.gl/gAd1JdfRW5d6eHkn7" target="_blank">
+                                <a th:href="@{https://maps.app.goo.gl/gAd1JdfRW5d6eHkn7}" target="_blank">
                                     2726 Av. PapineauMontreal,<br>QC H2K 4J6, Canada
                                 </a>
                             </div>
@@ -581,7 +581,7 @@
 
                             </div>
                             <div class="footer-btn">
-                                <a href="single-room.html">
+                                <a th:href="@{/khachhang/single-room}">
                                     <div class="ak-btn style-5">
                                         Booking
                                     </div>
@@ -629,16 +629,16 @@
     </div>
     <!-- End Video Popup -->
     <!-- Script -->
-    <script src="../assets/js/plugins/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/plugins/isotope.pkg.min.js"></script>
-    <script src="../assets/js/plugins/swiper.min.js"></script>
-    <script src="../assets/js/plugins/lightgallery.min.js"></script>
-    <script src="../assets/js/plugins/ScrollSmoother.min.js"></script>
-    <script src="../assets/js/plugins/SplitText.min.js"></script>
-    <script src="../assets/js/plugins/ScrollTrigger.min.js"></script>
-    <script src="../assets/js/plugins/ScrollToPlugin.min.js"></script>
-    <script src="../assets/js/plugins/gsap.min.js"></script>
-    <script src="../assets/js/main.js"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
 </body>
 
 

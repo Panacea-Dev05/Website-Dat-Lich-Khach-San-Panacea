@@ -166,27 +166,22 @@
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="#">Pages</a>
-                                    <ul>
-                                        <li>
-                                            <a th:href="@{/khachhang/restaurent}">Restaurant</a>
-                                        </li>
-                                        <li>
-                                            <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
-                                        </li>
-                                        <li>
-                                            <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
-                                        </li>
-                                        <li>
-                                            <a th:href="@{/khachhang/comming}">Comming Soon</a>
-                                        </li>
-                                        <li>
-                                            <a th:href="@{/khachhang/faq}">faq</a>
-                                        </li>
-                                        <li>
-                                            <a th:href="@{/khachhang/404}">404 Page</a>
-                                        </li>
-                                    </ul>
+                                    <a th:href="@{/khachhang/restaurent}">Restaurant</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/comming}">Comming Soon</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/faq}">faq</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/404}">404 Page</a>
                                 </li>
                             </ul>
                         </div>
@@ -204,7 +199,7 @@
                 <div class="ak-commmon-heading">
                     <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
                         <div class="ak-section-subtitle">
-                            <a href="index.html">Home</a> / Room Details
+                            <a th:href="@{/khachhang}">Home</a> / Room Details
                         </div>
                         <h2 class="ak-section-title page-title-anim">Luxury Room</h2>
                     </div>
@@ -220,7 +215,7 @@
             <div class="row" id="containerAround">
                 <div class="col-md-8">
                     <div class="blog-content" id="scrollGaleria">
-                        <img class="imagesZoom" th:src="@{/css/KhachHang/assets/img/single_room_1.jpg}" alt="...">
+                        <img th:src="@{/assets/img/single_room_1.jpg}" alt="...">
                         <div class="ak-height-75 ak-height-lg-30"></div>
                         <div class="d-flex justify-content-between flex-wrap me-3 align-items-center">
                             <div class="blog-details">
@@ -234,7 +229,7 @@
                                 </div>
                             </div>
                             <div class="text-btn mt-5 mt-lg-0">
-                                <a href="#" class="text-btn1 text-uppercase">
+                                <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
                                     Price $150.0 Per Night
                                 </a>
                             </div>
@@ -379,14 +374,14 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <h2>5.00</h2>
                                     <div>
-                                        <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
+                                        <img th:src="@{/assets/img/review_start.svg}" alt="...">
                                         <p>5 Reviews</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="text-btn text-end">
-                                    <a href="#" class="text-btn1 text-uppercase">
+                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
                                         GIVE A REVIEW
                                     </a>
                                 </div>
@@ -408,7 +403,7 @@
                                 <h2 class="contact-form-title anim-title-2 ak-white-color">Post A Review</h2>
                                 <div>
                                     <p>5 Reviews</p>
-                                    <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
+                                    <img th:src="@{/assets/img/review_start.svg}" alt="...">
                                 </div>
                                 <div class="ak-height-25 ak-height-lg-20"></div>
                                 <form>
@@ -578,17 +573,17 @@
                     <div class="col">
                         <div class="room-card">
                             <div class="room-card-img">
-                                <img th:src="@{/css/KhachHang/assets/img/room_1.jpg}" class="room-card-img-top" alt="...">
+                                <img th:src="@{/assets/img/room_1.jpg}" class="room-card-img-top" alt="...">
                                 <div class="room-card-img-btn">
                                     <div class="text-btn">
-                                        <a href="single-room.html" class="text-btn1 text-uppercase">
+                                        <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
                                             Starts At $259
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="room-card-body">
-                                <a href="single-room.html" class="room-card-title">
+                                <a th:href="@{/khachhang/single-room}" class="room-card-title">
                                     The Royal Serenity Suite
                                 </a>
                                 <div class="room-card-info">
@@ -604,7 +599,7 @@
 
                             </div>
                             <div class="room-footer">
-                                <a class="room-card-bottom-text" href="single-room.html">room details
+                                <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
                                     <span class="ms-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                             viewBox="0 0 31 31" fill="none">
@@ -628,17 +623,17 @@
                     <div class="col">
                         <div class="room-card">
                             <div class="room-card-img">
-                                <img th:src="@{/css/KhachHang/assets/img/room_2.jpg}" class="room-card-img-top" alt="...">
+                                <img th:src="@{/assets/img/room_2.jpg}" class="room-card-img-top" alt="...">
                                 <div class="room-card-img-btn">
                                     <div class="text-btn">
-                                        <a href="single-room.html" class="text-btn1 text-uppercase">
+                                        <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
                                             Starts At $259
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="room-card-body">
-                                <a href="single-room.html" class="room-card-title">
+                                <a th:href="@{/khachhang/single-room}" class="room-card-title">
                                     The Platinum Paradiso Suite
                                 </a>
                                 <div class="room-card-info">
@@ -653,7 +648,7 @@
                                 </p>
                             </div>
                             <div class="room-footer">
-                                <a class="room-card-bottom-text" href="single-room.html">room details
+                                <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
                                     <span class="ms-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                             viewBox="0 0 31 31" fill="none">
@@ -695,7 +690,7 @@
                                         stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <img th:src="@{/css/KhachHang/assets/img/Elegencia.png}" alt="...">
+                            <img th:src="@{/assets/img/Elegencia.png}" alt="...">
                         </div>
                     </div>
 
@@ -711,12 +706,12 @@
                             </div>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="index.html">Home</a></li>
-                                    <li><a href="resort.html">Resort</a></li>
-                                    <li><a href="about-hotel-resort.html">About</a></li>
-                                    <li><a href="event-list.html">Event</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="single-room.html">Room</a></li>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/event-list}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/room}">Room</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -756,7 +751,7 @@
 
                             </div>
                             <div class="footer-btn">
-                                <a href="single-room.html">
+                                <a th:href="@{/khachhang/single-room}">
                                     <div class="ak-btn style-5">
                                         Booking
                                     </div>
@@ -804,16 +799,16 @@
     </div>
     <!-- End Video Popup -->
     <!-- Script -->
-    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
-    <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/gsap.min.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
 </body>
 
 

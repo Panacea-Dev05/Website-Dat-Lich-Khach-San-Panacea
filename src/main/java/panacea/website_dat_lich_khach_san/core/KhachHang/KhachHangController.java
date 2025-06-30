@@ -13,7 +13,7 @@ public class KhachHangController {
     }
 
     // Trang chủ khách hàng
-    @GetMapping("/")
+    @GetMapping("")
     public String home() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/index";
     }
@@ -25,14 +25,26 @@ public class KhachHangController {
     }
 
     // Trang phòng
-    @GetMapping("/rooms")
+    @GetMapping("/room")
     public String rooms() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
     }
 
+    // Trang phòng (alias)
+    @GetMapping("/rooms")
+    public String roomsAlias() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
+    }
+
     // Trang chi tiết phòng
-    @GetMapping("/room-detail")
+    @GetMapping("/single-room")
     public String roomDetail() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
+    }
+
+    // Trang chi tiết phòng (alias)
+    @GetMapping("/room-detail")
+    public String roomDetailAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
     }
 
@@ -45,7 +57,7 @@ public class KhachHangController {
     // Trang nhà hàng
     @GetMapping("/restaurant")
     public String restaurant() {
-        return "KhachHang/livepreview/elegencia-main/hotel-resort/restaurent";
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/restaurant";
     }
 
     // Trang spa & wellness
@@ -55,20 +67,38 @@ public class KhachHangController {
     }
 
     // Trang tiện ích khách sạn
-    @GetMapping("/facilities")
+    @GetMapping("/hotel-facilities")
     public String facilities() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/hotel-facilities";
     }
 
+    // Trang tiện ích khách sạn (alias)
+    @GetMapping("/facilities")
+    public String facilitiesAlias() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/hotel-facilities";
+    }
+
     // Trang sự kiện
-    @GetMapping("/events")
+    @GetMapping("/event-list")
     public String events() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/event-list";
     }
 
+    // Trang sự kiện (alias)
+    @GetMapping("/events")
+    public String eventsAlias() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/event-list";
+    }
+
     // Trang chi tiết sự kiện
-    @GetMapping("/event-detail")
+    @GetMapping("/event-single-page")
     public String eventDetail() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/event-single-page";
+    }
+
+    // Trang chi tiết sự kiện (alias)
+    @GetMapping("/event-detail")
+    public String eventDetailAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/event-single-page";
     }
 
@@ -79,8 +109,14 @@ public class KhachHangController {
     }
 
     // Trang chi tiết blog
-    @GetMapping("/blog-detail")
+    @GetMapping("/blog-details")
     public String blogDetail() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/blog-details";
+    }
+
+    // Trang chi tiết blog (alias)
+    @GetMapping("/blog-detail")
+    public String blogDetailAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/blog-details";
     }
 
@@ -102,6 +138,12 @@ public class KhachHangController {
         return "KhachHang/livepreview/elegencia-main/reservations";
     }
 
+    // Trang đặt phòng (alias)
+    @GetMapping("/reservations")
+    public String reservations() {
+        return "KhachHang/livepreview/elegencia-main/reservations";
+    }
+
     // Trang 404
     @GetMapping("/404")
     public String notFound() {
@@ -109,8 +151,14 @@ public class KhachHangController {
     }
 
     // Trang coming soon
-    @GetMapping("/coming-soon")
+    @GetMapping("/coming")
     public String comingSoon() {
+        return "KhachHang/livepreview/elegencia-main/hotel-resort/comming";
+    }
+
+    // Trang coming soon (alias)
+    @GetMapping("/coming-soon")
+    public String comingSoonAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/comming";
     }
 }
