@@ -10,13 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Thememarch" />
     <!-- Favicon Icon -->
-    <link rel="icon" href="../assets/img/favicon.svg" />
+    <link rel="icon" th:href="@{/css/KhachHang/assets/img/favicon.svg}" />
     <!-- Site Title -->
     <title>Panacea - Royale Restaurant HTML Template</title>
-    <link rel="stylesheet" href="../assets/css/plugins/bootstrap.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/lightgallery.min.css" />
-    <link rel="stylesheet" href="../assets/css/plugins/swiper.min.css" />
-    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
 </head>
 
 <body>
@@ -64,10 +64,10 @@
         <div class="header-top">
             <div class="wrapper">
                 <div class="header-logo">
-                    <a href="room.html" class="logo">Book Now</a>
+                    <a th:href="@{/khachhang/booking}" class="logo">Book Now</a>
                 </div>
                 <div class="center-log">
-                    <a href="index.html"><img src="../assets/img/logo.png" alt="..."></a>
+                    <a th:href="@{/khachhang}"><img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="..."></a>
                 </div>
                 <button class="ak-menu-toggle" id="akMenuToggle" type="button">
                     <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
@@ -78,24 +78,24 @@
                 </button>
                 <ul class="top-main-menu">
                     <li class="top-main-menu-li">
-                        <a href="index.html">Home</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_1.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Home</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_1.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="about-hotel-resort.html">About</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_about.jpg" alt="...">
+                        <a th:href="@{/khachhang/about}">About</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_about.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="blog.html">Blog</a>
-                        <img class="top-main-menu-img menu-img" src="../assets/img/fullWM_menu.jpg" alt="...">
+                        <a th:href="@{/khachhang/blog}">Blog</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_menu.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="resort.html">Resort</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_chef.jpg" alt="...">
+                        <a th:href="@{/khachhang/resort}">Resort</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_chef.jpg}" alt="...">
                     </li>
                     <li class="top-main-menu-li">
-                        <a href="index.html">Hotel</a>
-                        <img class="top-main-menu-img" src="../assets/img/fullWM_contact.jpg" alt="...">
+                        <a th:href="@{/khachhang}">Hotel</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
                     </li>
                 </ul>
             </div>
@@ -105,57 +105,57 @@
             <div class="container">
                 <div class="ak-main_header_in">
                     <div class="ak-main_header_left">
-                        <a class="ak-site_branding" href="index.html">
-                            <img src="../assets/img/logo.png" alt="...">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
+                            <img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="...">
                         </a>
                     </div>
                     <div class="ak-main_header_right">
                         <div class="ak-nav ak-medium">
                             <ul class="ak-nav_list">
                                 <li class="menu-item-has-children">
-                                    <a href="index.html">Home</a>
+                                    <a th:href="@{/khachhang}">Home</a>
                                     <ul>
                                         <li>
-                                            <a href="index.html">Hotel</a>
+                                            <a th:href="@{/khachhang}">Hotel</a>
                                         </li>
                                         <li>
-                                            <a href="resort.html">Resort</a>
+                                            <a th:href="@{/khachhang/resort}">Resort</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="about-hotel-resort.html">About</a>
+                                    <a th:href="@{/khachhang/about}">About</a>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="room.html">Room</a>
+                                    <a th:href="@{/khachhang/rooms}">Room</a>
                                     <ul>
                                         <li>
-                                            <a href="room.html">Room</a>
+                                            <a th:href="@{/khachhang/rooms}">Room</a>
                                         </li>
                                         <li>
-                                            <a href="single-room.html">Single Room</a>
+                                            <a th:href="@{/khachhang/room-detail}">Single Room</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="event-list.html">Event</a>
+                                    <a th:href="@{/khachhang/events}">Event</a>
                                     <ul>
                                         <li>
-                                            <a href="event-list.html">Event</a>
+                                            <a th:href="@{/khachhang/events}">Event</a>
                                         </li>
                                         <li>
-                                            <a href="event-single-page.html">Single Event</a>
+                                            <a th:href="@{/khachhang/event-detail}">Single Event</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a href="blog.html">Blog</a>
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
                                     <ul>
                                         <li>
-                                            <a href="blog.html">Blog</a>
+                                            <a th:href="@{/khachhang/blog}">Blog</a>
                                         </li>
                                         <li>
-                                            <a href="blog-details.html">Blog Details</a>
+                                            <a th:href="@{/khachhang/blog-detail}">Blog Details</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -163,22 +163,22 @@
                                     <a href="#">Pages</a>
                                     <ul>
                                         <li>
-                                            <a href="restaurent.html">Restaurant</a>
+                                            <a th:href="@{/khachhang/restaurant}">Restaurant</a>
                                         </li>
                                         <li>
-                                            <a href="spa-wellness.html">Spa Wellness</a>
+                                            <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
                                         </li>
                                         <li>
-                                            <a href="hotel-facilities.html">Hotel Facilities</a>
+                                            <a th:href="@{/khachhang/facilities}">Hotel Facilities</a>
                                         </li>
                                         <li>
-                                            <a href="comming.html">Comming Soon</a>
+                                            <a th:href="@{/khachhang/coming-soon}">Comming Soon</a>
                                         </li>
                                         <li>
-                                            <a href="faq.html">faq</a>
+                                            <a th:href="@{/khachhang/faq}">faq</a>
                                         </li>
                                         <li>
-                                            <a href="404.html">404 Page</a>
+                                            <a th:href="@{/khachhang/404}">404 Page</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -198,7 +198,7 @@
                 <div class="ak-commmon-heading">
                     <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
                         <div class="ak-section-subtitle">
-                            <a href="index.html">Home</a> / Restaurant
+                            <a th:href="@{/khachhang}">Home</a> / Restaurant
                         </div>
                         <h2 class="ak-section-title page-title-anim">Restaurant</h2>
                     </div>
@@ -222,7 +222,7 @@
                         <div class="swiper-slide">
                             <div class="ak-card ak-style-1">
                                 <a href="portfolio-details.html" class="ak-card-img">
-                                    <img src="../assets/img/food_item_1.jpg" alt="..." />
+                                    <img th:src="@{/css/KhachHang/assets/img/food_item_1.jpg}" alt="..." />
                                 </a>
                                 <div class="card-info">
                                     <div class="card-text style-1">
@@ -241,7 +241,7 @@
                         <div class="swiper-slide">
                             <div class="ak-card ak-style-1">
                                 <a href="portfolio-details.html" class="ak-card-img">
-                                    <img src="../assets/img/food_item_2.jpg" alt="..." />
+                                    <img th:src="@{/css/KhachHang/assets/img/food_item_2.jpg}" alt="..." />
 
                                 </a>
                                 <div class="card-info">
@@ -261,7 +261,7 @@
                         <div class="swiper-slide">
                             <div class="ak-card ak-style-1">
                                 <a href="portfolio-details.html" class="ak-card-img">
-                                    <img src="../assets/img/food_item_3.jpg" alt="..." />
+                                    <img th:src="@{/css/KhachHang/assets/img/food_item_3.jpg}" alt="..." />
                                 </a>
                                 <div class="card-info">
                                     <div class="card-text style-1">
@@ -280,7 +280,7 @@
                         <div class="swiper-slide">
                             <div class="ak-card ak-style-1">
                                 <a href="portfolio-details.html" class="ak-card-img">
-                                    <img src="../assets/img/food_item_5.jpg" alt="..." />
+                                    <img th:src="@{/css/KhachHang/assets/img/food_item_5.jpg}" alt="..." />
                                 </a>
                                 <div class="card-info">
                                     <div class="card-text style-1">
@@ -299,7 +299,7 @@
                         <div class="swiper-slide">
                             <div class="ak-card ak-style-1">
                                 <a href="portfolio-details.html" class="ak-card-img">
-                                    <img src="../assets/img/food_item_4.jpg" alt="..." />
+                                    <img th:src="@{/css/KhachHang/assets/img/food_item_4.jpg}" alt="..." />
                                 </a>
                                 <div class="card-info">
                                     <div class="card-text style-1">
@@ -362,7 +362,7 @@
 
         <!-- Start Food Menu Bar Items-->
         <section class="set-bg-img-section">
-            <img src="../assets/img/barMenuBg.png" alt="..." data-speed="1.1" class="bg-img ak-bg imagesZoom">
+            <img th:src="@{/css/KhachHang/assets/img/barMenuBg.png}" alt="..." data-speed="1.1" class="bg-img ak-bg imagesZoom">
             <div class="ak-height-150 ak-height-lg-60"></div>
             <div class="container">
                 <div class="ak-section-heading ak-style-1 ak-type-1">
@@ -374,7 +374,7 @@
                 <div class="ak-height-65 ak-height-lg-30"></div>
                 <div class="ak-menu-list">
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -399,7 +399,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -424,7 +424,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -449,7 +449,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -474,7 +474,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -499,7 +499,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -524,7 +524,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -549,57 +549,7 @@
                         </div>
                     </div>
                     <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
-                        <div class="food-menu style-1">
-                            <div class="food-menu-section-1">
-                                <div class="food-menu-title">
-                                    <p>Spaghetti alla Carbonara</p>
-                                </div>
-                                <div class="food-menu-hr">
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                </div>
-                                <div class="food-menu-price">
-                                    <p>$49</p>
-                                </div>
-                            </div>
-                            <div class="food-menu-section-2">
-                                <div class="food-menu-subsitle">
-                                    <p>Lorem passionate chefs masterfully</p>
-                                </div>
-                                <div class="food-menu-price-subsitle">
-                                    <p>Extra free juice</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
-                        <div class="food-menu style-1">
-                            <div class="food-menu-section-1">
-                                <div class="food-menu-title">
-                                    <p>Spaghetti alla Carbonara</p>
-                                </div>
-                                <div class="food-menu-hr">
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                    <div class="food-menu-hr style-1 anim-3"></div>
-                                </div>
-                                <div class="food-menu-price">
-                                    <p>$49</p>
-                                </div>
-                            </div>
-                            <div class="food-menu-section-2">
-                                <div class="food-menu-subsitle">
-                                    <p>Lorem passionate chefs masterfully</p>
-                                </div>
-                                <div class="food-menu-price-subsitle">
-                                    <p>Extra free juice</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ak-menu-list-section-1">
-                        <img src="../assets/img/item-show_3.png" alt="...">
+                        <img th:src="@{/css/KhachHang/assets/img/item-show_3.png}" alt="...">
                         <div class="food-menu style-1">
                             <div class="food-menu-section-1">
                                 <div class="food-menu-title">
@@ -645,7 +595,7 @@
                                         stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <img src="../assets/img/Elegencia.png" alt="...">
+                            <img th:src="@{/css/KhachHang/assets/img/Elegencia.png}" alt="...">
                         </div>
                     </div>
 
@@ -754,16 +704,16 @@
     </div>
     <!-- End Video Popup -->
     <!-- Script -->
-    <script src="../assets/js/plugins/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/plugins/isotope.pkg.min.js"></script>
-    <script src="../assets/js/plugins/swiper.min.js"></script>
-    <script src="../assets/js/plugins/lightgallery.min.js"></script>
-    <script src="../assets/js/plugins/ScrollSmoother.min.js"></script>
-    <script src="../assets/js/plugins/SplitText.min.js"></script>
-    <script src="../assets/js/plugins/ScrollTrigger.min.js"></script>
-    <script src="../assets/js/plugins/ScrollToPlugin.min.js"></script>
-    <script src="../assets/js/plugins/gsap.min.js"></script>
-    <script src="../assets/js/main.js"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
 
 </body>
 

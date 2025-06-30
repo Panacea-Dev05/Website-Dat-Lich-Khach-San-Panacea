@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/khachhang")
+
 public class KhachHangController {
     @GetMapping("/dashboard")
     public String dashboard() {
