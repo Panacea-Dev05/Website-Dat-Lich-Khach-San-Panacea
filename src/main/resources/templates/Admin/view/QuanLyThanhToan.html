@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8" />
@@ -22,80 +22,94 @@
       </button>
     </header>
 
-    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-      <nav>
-        <ul>
-          <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
-          <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt phòng</a>
-          </li>
-          <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a>
-          </li>
-          <li><a href="#" class="active" data-section="payments"><span class="material-icons">payment</span> Quản lý
-              thanh toán</a></li>
-          <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến
-              mãi</a></li>
-          <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a>
-          </li>
-          <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
-          <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống
-              kê</a></li>
-          <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
-        </ul>
-      </nav>
-    </aside>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
       <h1>Quản lý thanh toán</h1>
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddPayment">Tạo thanh toán mới</button>
+        <button class="btn" id="btnAddPayment">Thêm thanh toán mới</button>
         <table aria-label="Danh sách thanh toán" id="paymentTable">
           <thead>
             <tr>
               <th>STT</th>
               <th>Mã thanh toán</th>
-              <th>Mã booking</th>
-              <th>Ngày</th>
-              <th>Số tiền (VNĐ)</th>
+              <th>Mã đặt phòng</th>
+              <th>Khách hàng</th>
+              <th>Số tiền</th>
               <th>Phương thức</th>
+              <th>Ngày thanh toán</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="paymentTableBody">
-            <!-- Dữ liệu thanh toán hiển thị ở đây -->
+            <!-- Dữ liệu thanh toán từ controller -->
+            <tr th:each="payment, stat : ${payments}">
+              <td th:text="${stat.count}">1</td>
+              <td th:text="${payment.id}">PAY001</td>
+              <td th:text="${payment.bookingId}">BK001</td>
+              <td th:text="${payment.customerName}">Nguyễn Văn A</td>
+              <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000 VNĐ
+              </td>
+              <td th:text="${payment.paymentMethod}">Thẻ tín dụng</td>
+              <td th:text="${#temporals.format(payment.paymentDate, 'dd/MM/yyyy HH:mm')}">15/12/2024 14:30</td>
+              <td>
+                <span th:class="${payment.status == 'Completed' ? 'status-completed' : 
+                                  payment.status == 'Pending' ? 'status-pending' : 
+                                  payment.status == 'Failed' ? 'status-failed' : 'status-refunded'}" th:text="${payment.status == 'Completed' ? 'Hoàn thành' : 
+                                payment.status == 'Pending' ? 'Chờ xử lý' : 
+                                payment.status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'}">
+                  Hoàn thành
+                </span>
+              </td>
+              <td>
+                <button class="btn-view" th:onclick="'viewPayment(' + ${payment.id} + ')'" title="Xem chi tiết">
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button class="btn-edit" th:onclick="'editPayment(' + ${payment.id} + ')'" title="Sửa">
+                  <span class="material-icons">edit</span>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
 
-        <!-- Form tạo/sửa thanh toán -->
+        <!-- Form thêm/sửa thanh toán -->
         <form id="paymentForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo thanh toán mới</h2>
-          <label for="paymentCode">Mã thanh toán</label>
-          <input type="text" id="paymentCode" name="paymentCode" required placeholder="TN001" pattern="^(TN)[0-9]{3,}$"
-            title="Mã bắt đầu TN theo sau là số" />
-          <label for="bookingCode">Mã booking</label>
-          <input type="text" id="bookingCode" name="bookingCode" required placeholder="BK001" pattern="^(BK)[0-9]{3,}$"
-            title="Mã booking bắt đầu BK theo sau là số" />
-          <label for="paymentDate">Ngày thanh toán</label>
-          <input type="date" id="paymentDate" name="paymentDate" required />
-          <label for="amount">Số tiền (VNĐ)</label>
-          <input type="number" id="amount" name="amount" required min="0" step="1000" />
-          <label for="method">Phương thức</label>
-          <select id="method" name="method" required>
-            <option value="" disabled selected>Chọn phương thức</option>
-            <option value="Online">Thanh toán Online</option>
-            <option value="Cash">Tiền mặt</option>
-            <option value="VNPay">VNPay</option>
-            <option value="MoMo">MoMo</option>
-            <option value="Stripe">Stripe</option>
+          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm thanh toán mới</h2>
+          <input type="hidden" id="paymentId" name="paymentId" />
+
+          <label for="bookingId">Mã đặt phòng</label>
+          <select id="bookingId" name="bookingId" required>
+            <option value="" disabled selected>Chọn đặt phòng</option>
+            <option value="1">BK001 - Nguyễn Văn A</option>
+            <option value="2">BK002 - Trần Thị B</option>
           </select>
+
+          <label for="amount">Số tiền (VNĐ)</label>
+          <input type="number" id="amount" name="amount" required min="0" step="1000" placeholder="3600000" />
+
+          <label for="paymentMethod">Phương thức thanh toán</label>
+          <select id="paymentMethod" name="paymentMethod" required>
+            <option value="" disabled selected>Chọn phương thức</option>
+            <option value="Cash">Tiền mặt</option>
+            <option value="Credit Card">Thẻ tín dụng</option>
+            <option value="Debit Card">Thẻ ghi nợ</option>
+            <option value="Bank Transfer">Chuyển khoản</option>
+            <option value="E-wallet">Ví điện tử</option>
+          </select>
+
+          <label for="paymentDate">Ngày thanh toán</label>
+          <input type="datetime-local" id="paymentDate" name="paymentDate" required />
+
           <label for="status">Trạng thái</label>
           <select id="status" name="status" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
+            <option value="Pending" selected>Chờ xử lý</option>
             <option value="Completed">Hoàn thành</option>
-            <option value="Pending">Chờ xử lý</option>
             <option value="Failed">Thất bại</option>
             <option value="Refunded">Hoàn tiền</option>
           </select>
+
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
             <button type="submit" class="btn" id="submitBtn">Lưu thanh toán</button>
             <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>

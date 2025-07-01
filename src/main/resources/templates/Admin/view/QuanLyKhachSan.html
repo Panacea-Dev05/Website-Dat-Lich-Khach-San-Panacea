@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quản Lý Khách Sạn Panacea</title>
+    <title>Quản Lý Khách Sạn - Panacea Hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlykhachsan.css}">
@@ -22,81 +22,96 @@
             </button>
         </header>
 
-        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-            <nav>
-                <ul>
-                    <li><a href="#" class="active" data-section="rooms"><span class="material-icons">meeting_room</span>
-                            Quản lý phòng</a></li>
-                    <li><a href="#" data-section="bookings"><span class="material-icons">book_online</span> Quản lý đặt
-                            phòng</a></li>
-                    <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách
-                            hàng</a></li>
-                    <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh
-                            toán</a></li>
-                    <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý
-                            khuyến mãi</a></li>
-                    <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh
-                            giá</a></li>
-                    <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a>
-                    </li>
-                    <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp;
-                            Thống kê</a></li>
-                    <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ
-                            thống</a></li>
-                </ul>
-            </nav>
-        </aside>
+        <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
-            <h1>Quản lý phòng</h1>
+            <h1>Quản lý khách sạn</h1>
             <section class="content-section" id="contentSection">
-                <!-- Mẫu bảng danh sách phòng -->
-                <button class="btn" id="btnAddRoom">Thêm phòng mới</button>
-                <table aria-label="Danh sách phòng khách sạn">
+                <button class="btn" id="btnAddHotel">Thêm khách sạn mới</button>
+                <table aria-label="Danh sách khách sạn" id="hotelTable">
                     <thead>
                         <tr>
                             <th>STT</th>
-                            <th>Số phòng</th>
-                            <th>Loại phòng</th>
-                            <th>Tầng</th>
-                            <th>View</th>
-                            <th>Giá cơ bản</th>
+                            <th>Tên khách sạn</th>
+                            <th>Địa chỉ</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Đánh giá</th>
                             <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr tabindex="0">
-                            <td>1</td>
-                            <td>101</td>
-                            <td>Standard</td>
-                            <td>1</td>
-                            <td>Hồ bơi</td>
-                            <td>1,200,000 VNĐ</td>
-                            <td>Sẵn sàng</td>
+                    <tbody id="hotelTableBody">
+                        <!-- Dữ liệu khách sạn từ controller -->
+                        <tr th:each="hotel, stat : ${hotels}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${hotel.tenKhachSan}">Panacea Hotel Central</td>
+                            <td th:text="${hotel.diaChi}">123 Đường ABC, Quận 1, TP.HCM</td>
+                            <td th:text="${hotel.soDienThoai}">028 1234 5678</td>
+                            <td th:text="${hotel.email}">contact@panacea.com</td>
+                            <td th:text="${hotel.soSao}">5</td>
                             <td>
-                                <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;">Sửa</button>
-                                <button class="btn"
-                                    style="padding: 6px 12px; font-size: 0.8rem; background:#ef4444; box-shadow:none;">Xóa</button>
+                                <span
+                                    th:class="${hotel.trangThai == 'HOAT_DONG' ? 'status-active' : (hotel.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-inactive')}"
+                                    th:text="${hotel.trangThai == 'HOAT_DONG' ? 'Hoạt động' : (hotel.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Tạm ngưng')}">
+                                    Hoạt động
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-view" th:onclick="'viewHotel(' + ${hotel.id} + ')'"
+                                    title="Xem chi tiết">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                                <button class="btn-edit" th:onclick="'editHotel(' + ${hotel.id} + ')'" title="Sửa">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn-delete" th:onclick="'deleteHotel(' + ${hotel.id} + ')'" title="Xóa">
+                                    <span class="material-icons">delete</span>
+                                </button>
                             </td>
                         </tr>
-                        <tr tabindex="0" style="background:#ecfdf5;">
-                            <td>2</td>
-                            <td>202</td>
-                            <td>Deluxe</td>
-                            <td>2</td>
-                            <td>Biển</td>
-                            <td>2,500,000 VNĐ</td>
-                            <td>Bảo trì</td>
-                            <td>
-                                <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;">Sửa</button>
-                                <button class="btn"
-                                    style="padding: 6px 12px; font-size: 0.8rem; background:#ef4444; box-shadow:none;">Xóa</button>
-                            </td>
-                        </tr>
-                        <!-- Thêm nhiều phòng như ví dụ -->
                     </tbody>
                 </table>
+
+                <!-- Form thêm/sửa khách sạn -->
+                <form id="hotelForm" style="display:none; margin-top: 2rem;">
+                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khách sạn mới</h2>
+                    <input type="hidden" id="hotelId" name="hotelId" />
+
+                    <label for="name">Tên khách sạn</label>
+                    <input type="text" id="tenKhachSan" name="tenKhachSan" required placeholder="Nhập tên khách sạn" />
+
+                    <label for="address">Địa chỉ</label>
+                    <input type="text" id="diaChi" name="diaChi" required placeholder="Nhập địa chỉ" />
+
+                    <label for="phone">Số điện thoại</label>
+                    <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="028 1234 5678" />
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="contact@panacea.com" />
+
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website" placeholder="https://panacea.com" />
+
+                    <label for="description">Mô tả</label>
+                    <textarea id="moTa" name="moTa" placeholder="Mô tả chi tiết về khách sạn"></textarea>
+
+                    <label for="rating">Đánh giá</label>
+                    <input type="number" id="soSao" name="soSao" min="0" max="5" step="0.1" placeholder="4.5" />
+
+                    <label for="status">Trạng thái</label>
+                    <select id="trangThai" name="trangThai" required>
+                        <option value="HOAT_DONG" selected>Hoạt động</option>
+                        <option value="DONG_CUA">Tạm ngưng</option>
+                        <option value="BAO_TRI">Bảo trì</option>
+                    </select>
+
+                    <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+                        <button type="submit" class="btn" id="submitBtn">Lưu khách sạn</button>
+                        <button type="button" class="btn" id="cancelBtn"
+                            style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                    </div>
+                </form>
             </section>
         </main>
 

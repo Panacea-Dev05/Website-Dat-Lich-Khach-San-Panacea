@@ -32,7 +32,18 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/oauth2/**").permitAll()
+                .requestMatchers(
+                        "/css/**",
+                        "/js/**",
+                        "/img/**",      // <-- Thêm dòng này
+                        "/images/**",
+                        "/fonts/**",
+                        "/vendor/**",
+                        "/assets/**",   
+                        "/KhachHang/**",
+                        "/login",
+                        "/oauth2/**"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/nhanvien/**").hasRole("NHANVIEN")
                 .requestMatchers("/khachhang/**").hasRole("KHACHHANG")

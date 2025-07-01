@@ -14,8 +14,8 @@ public class AuthController {
     public ModelAndView redirectByRole(@AuthenticationPrincipal OAuth2User principal) {
         if (principal == null) return new ModelAndView("redirect:/login");
         String role = principal.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("");
-        if (role.equals("ROLE_ADMIN")) return new ModelAndView("redirect:/admin/dashboard");
-        if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/dashboard");
+        if (role.equals("ROLE_ADMIN")) return new ModelAndView("redirect:/admin/bookings");
+        if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/trangchu");
         if (role.equals("ROLE_KHACHHANG")) return new ModelAndView("redirect:/khachhang/dashboard");
         return new ModelAndView("redirect:/login");
     }

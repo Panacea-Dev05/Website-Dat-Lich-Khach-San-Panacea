@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8" />
@@ -22,91 +22,103 @@
       </button>
     </header>
 
-    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-      <nav>
-        <ul>
-          <li><a href="#" data-section="rooms"><span class="material-icons">meeting_room</span> Quản lý phòng</a></li>
-          <li><a href="#" class="active" data-section="bookings"><span class="material-icons">book_online</span> Quản lý
-              đặt phòng</a></li>
-          <li><a href="#" data-section="customers"><span class="material-icons">people</span> Quản lý khách hàng</a>
-          </li>
-          <li><a href="#" data-section="payments"><span class="material-icons">payment</span> Quản lý thanh toán</a>
-          </li>
-          <li><a href="#" data-section="promotions"><span class="material-icons">local_offer</span> Quản lý khuyến
-              mãi</a></li>
-          <li><a href="#" data-section="reviews"><span class="material-icons">rate_review</span> Quản lý đánh giá</a>
-          </li>
-          <li><a href="#" data-section="staff"><span class="material-icons">badge</span> Quản lý nhân viên</a></li>
-          <li><a href="#" data-section="reports"><span class="material-icons">bar_chart</span> Báo cáo &amp; Thống
-              kê</a></li>
-          <li><a href="#" data-section="settings"><span class="material-icons">settings</span> Cài đặt hệ thống</a></li>
-        </ul>
-      </nav>
-    </aside>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
       <h1>Quản lý đặt phòng</h1>
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddBooking">Tạo booking mới</button>
-        <table aria-label="Danh sách booking" id="bookingTable">
+        <button class="btn" id="btnAddBooking">Thêm đặt phòng mới</button>
+        <table aria-label="Danh sách đặt phòng" id="bookingTable">
           <thead>
             <tr>
               <th>STT</th>
-              <th>Mã booking</th>
+              <th>Mã đặt phòng</th>
               <th>Khách hàng</th>
               <th>Phòng</th>
-              <th>Ngày nhận</th>
-              <th>Ngày trả</th>
-              <th>Số người</th>
+              <th>Ngày check-in</th>
+              <th>Ngày check-out</th>
+              <th>Tổng tiền</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="bookingTableBody">
-            <!-- Dữ liệu booking sẽ hiển thị tại đây -->
+            <!-- Dữ liệu đặt phòng từ controller -->
+            <tr th:each="booking, stat : ${bookings}">
+              <td th:text="${stat.count}">1</td>
+              <td th:text="${booking.id}">BK001</td>
+              <td th:text="${booking.customerName}">Nguyễn Văn A</td>
+              <td th:text="${booking.roomNumber}">101</td>
+              <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">15/12/2024</td>
+              <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">18/12/2024</td>
+              <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000
+                VNĐ</td>
+              <td>
+                <span th:class="${booking.status == 'Confirmed' ? 'status-confirmed' : 
+                                  booking.status == 'Pending' ? 'status-pending' : 
+                                  booking.status == 'Cancelled' ? 'status-cancelled' : 'status-completed'}" th:text="${booking.status == 'Confirmed' ? 'Đã xác nhận' : 
+                                booking.status == 'Pending' ? 'Chờ xác nhận' : 
+                                booking.status == 'Cancelled' ? 'Đã hủy' : 'Hoàn thành'}">
+                  Đã xác nhận
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" th:onclick="'editBooking(' + ${booking.id} + ')'" title="Sửa">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" th:onclick="'deleteBooking(' + ${booking.id} + ')'" title="Xóa">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
 
-        <!-- Form tạo/sửa booking -->
+        <!-- Form thêm/sửa đặt phòng -->
         <form id="bookingForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo booking mới</h2>
+          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm đặt phòng mới</h2>
+          <input type="hidden" id="bookingId" name="bookingId" />
 
-          <label for="bookingCode">Mã booking</label>
-          <input type="text" id="bookingCode" name="bookingCode" required placeholder="VD: BK001"
-            pattern="^BK[0-9]{3,}$" title="Mã booking bắt đầu BK theo sau là số" />
+          <label for="customerId">Khách hàng</label>
+          <select id="customerId" name="customerId" required>
+            <option value="" disabled selected>Chọn khách hàng</option>
+            <option value="1">Nguyễn Văn A</option>
+            <option value="2">Trần Thị B</option>
+          </select>
 
-          <label for="customer">Khách hàng</label>
-          <input type="text" id="customer" name="customer" required placeholder="Tên khách hàng" />
+          <label for="roomId">Phòng</label>
+          <select id="roomId" name="roomId" required>
+            <option value="" disabled selected>Chọn phòng</option>
+            <option value="1">Phòng 101 - Standard</option>
+            <option value="2">Phòng 102 - Deluxe</option>
+          </select>
 
-          <label for="room">Phòng</label>
-          <input type="text" id="room" name="room" required placeholder="Số phòng" pattern="^[0-9]+$"
-            title="Chỉ nhập số phòng" />
-
-          <label for="checkInDate">Ngày nhận</label>
+          <label for="checkInDate">Ngày check-in</label>
           <input type="date" id="checkInDate" name="checkInDate" required />
 
-          <label for="checkOutDate">Ngày trả</label>
+          <label for="checkOutDate">Ngày check-out</label>
           <input type="date" id="checkOutDate" name="checkOutDate" required />
 
-          <label for="numberOfGuests">Số người</label>
-          <input type="number" id="numberOfGuests" name="numberOfGuests" required min="1" max="20" />
+          <label for="totalAmount">Tổng tiền (VNĐ)</label>
+          <input type="number" id="totalAmount" name="totalAmount" required min="0" step="1000" placeholder="3600000" />
 
           <label for="status">Trạng thái</label>
           <select id="status" name="status" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
+            <option value="Pending" selected>Chờ xác nhận</option>
             <option value="Confirmed">Đã xác nhận</option>
-            <option value="Pending">Chờ xác nhận</option>
-            <option value="CheckedIn">Đã nhận phòng</option>
-            <option value="CheckedOut">Đã trả phòng</option>
+            <option value="Completed">Hoàn thành</option>
             <option value="Cancelled">Đã hủy</option>
           </select>
 
+          <label for="specialRequests">Yêu cầu đặc biệt</label>
+          <textarea id="specialRequests" name="specialRequests"
+            placeholder="Yêu cầu đặc biệt của khách hàng"></textarea>
+
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-            <button type="submit" class="btn" id="submitBtn">Lưu booking</button>
+            <button type="submit" class="btn" id="submitBtn">Lưu đặt phòng</button>
             <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
           </div>
         </form>
-
       </section>
     </main>
 

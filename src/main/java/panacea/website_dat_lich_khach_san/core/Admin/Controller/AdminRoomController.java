@@ -1,0 +1,49 @@
+package panacea.website_dat_lich_khach_san.core.Admin.Controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminRoomService;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/admin/rooms")
+public class AdminRoomController {
+    
+    @Autowired
+    private AdminRoomService adminRoomService;
+    
+    @GetMapping
+    public String roomManagement(Model model) {
+        List<RoomDTO> rooms = adminRoomService.getAllRooms();
+        model.addAttribute("rooms", rooms);
+        return "Admin/view/QuanLyPhong";
+    }
+    
+    @GetMapping("/{id}")
+    @ResponseBody
+    public RoomDTO getRoom(@PathVariable Long id) {
+        return adminRoomService.getRoomById(id);
+    }
+    
+    @PostMapping
+    @ResponseBody
+    public RoomDTO createRoom(@RequestBody RoomDTO roomDTO) {
+        return adminRoomService.createRoom(roomDTO);
+    }
+    
+    @PutMapping("/{id}")
+    @ResponseBody
+    public RoomDTO updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
+        return adminRoomService.updateRoom(id, roomDTO);
+    }
+    
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public boolean deleteRoom(@PathVariable Long id) {
+        return adminRoomService.deleteRoom(id);
+    }
+} 
