@@ -3320,9 +3320,27 @@ input[type=checkbox] {
 .ak-site_header.ak-style1 .header-top .wrapper .center-log {
   margin-right: 88px;
 }
+
+/* Logo image size control for center-log */
+.ak-site_header.ak-style1 .header-top .wrapper .center-log img {
+  max-height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
 @media screen and (max-width: 768px) {
   .ak-site_header.ak-style1 .header-top .wrapper .center-log {
     margin-right: 0px;
+  }
+  
+  .ak-site_header.ak-style1 .header-top .wrapper .center-log img {
+    max-height: 45px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .ak-site_header.ak-style1 .header-top .wrapper .center-log img {
+    max-height: 35px;
   }
 }
 .ak-site_header.ak-style1 .header-top .top-main-menu {
@@ -3452,6 +3470,21 @@ input[type=checkbox] {
 }
 .ak-site_branding img {
   max-height: 45px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Responsive logo sizing for ak-site_branding */
+@media screen and (max-width: 768px) {
+  .ak-site_branding img {
+    max-height: 35px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .ak-site_branding img {
+    max-height: 30px;
+  }
 }
 
 @media screen and (min-width: 1200px) {
@@ -4819,10 +4852,6 @@ input[type=checkbox] {
 .food-menu.style-1 .food-menu-section-1 .food-menu-title p {
   font-size: 18px;
   color: var(--yellow-color);
-}
-.food-menu.style-1 .food-menu-section-1 .food-menu-price p {
-  color: #FFD28D;
-  font-size: 18px;
 }
 .food-menu.style-1 .food-menu-section-2 {
   display: flex;
