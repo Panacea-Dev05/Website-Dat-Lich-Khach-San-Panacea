@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/single-room.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:23:06 GMT -->
+<head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Thememarch" />
+    <!-- Favicon Icon -->
+    <link rel="icon" th:href="@{/css/KhachHang/assets/img/favicon.svg}" />
+    <!-- Site Title -->
+    <title>Elegencia - Royale Restaurant HTML Template</title>
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="ak-preloader" class="ak-preloader">
+            <div class="animation-preloader">
+                <div class="spinner"></div>
+                <div class="txt-loading">
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
+                    </span>
+
+                    <span data-text-preloader="L" class="letters-loading">
+                        L
+                    </span>
+
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
+                    </span>
+
+                    <span data-text-preloader="G" class="letters-loading">
+                        G
+                    </span>
+
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
+                    </span>
+
+                    <span data-text-preloader="N" class="letters-loading">
+                        N
+                    </span>
+
+                    <span data-text-preloader="C" class="letters-loading">
+                        C
+                    </span>
+                    <span data-text-preloader="I" class="letters-loading">
+                        I
+                    </span>
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+                </div>
+            </div>
+            <div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+        </div>
+    </div>
+    <!-- Start Header Section -->
+    <header class="ak-site_header ak-style1 ak-sticky_header ak-site_header_full_width">
+        <div class="header-top">
+            <div class="wrapper">
+                <div class="header-logo">
+                    <a th:href="@{/khachhang/room}" class="logo">Book Now</a>
+                </div>
+                <div class="center-log">
+                    <a th:href="@{/khachhang}"><img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="..."></a>
+                </div>
+                <button class="ak-menu-toggle" id="akMenuToggle" type="button">
+                    <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
+                        <path d="M20,2 L2,2" class="bar-1"></path>
+                        <path d="M2,7 L20,7" class="bar-2"></path>
+                        <path d="M30,12 L2,12" class="bar-3"></path>
+                    </svg>
+                </button>
+                <ul class="top-main-menu">
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang}">Home</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_1.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/about}">About</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_about.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/blog}">Blog</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_menu.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/resort}">Resort</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_chef.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang}">Hotel</a>
+                        <img th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="nav-bar-border"></div>
+        <div class="ak-main_header">
+            <div class="container">
+                <div class="ak-main_header_in">
+                    <div class="ak-main_header_left">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
+                            <img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="...">
+                        </a>
+                    </div>
+                    <div class="ak-main_header_right">
+                        <div class="ak-nav ak-medium">
+                            <ul class="ak-nav_list">
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang}">Home</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang}">Hotel</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/resort}">Resort</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a th:href="@{/khachhang/about}">About</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/room}">Room</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/room}">Room</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/single-room}">Single Room</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/event-list}">Event</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/event-list}">Event</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/event-single-page}">Single Event</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/blog}">Blog</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/blog-details}">Blog Details</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/restaurant}">Restaurant</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/coming}">Coming Soon</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/faq}">FAQ</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/404}">404 Page</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header Section -->
+    <div id="scrollsmoother-container">
+        <!-- Start Hero -->
+        <Section>
+            <div class="ak-commmon-hero ak-style1 ak-bg" data-src="/css/KhachHang/assets/img/common_bg_2.png">
+                <div class="ak-commmon-heading">
+                    <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
+                        <div class="ak-section-subtitle">
+                            <a th:href="@{/khachhang}">Home</a> / Room Details
+                        </div>
+                        <h2 class="ak-section-title page-title-anim">Luxury Room</h2>
+                    </div>
+                </div>
+            </div>
+        </Section>
+        <!-- End Hero -->
+
+        <!-- Start Blog Content -->
+        <section class="container">
+            <div class="ak-height-150 ak-height-lg-60"></div>
+
+            <div class="row" id="containerAround">
+                <div class="col-md-8">
+                    <div class="blog-content" id="scrollGaleria">
+                        <img th:src="@{/css/KhachHang/assets/img/single_room_1.jpg}" alt="...">
+                        <div class="ak-height-75 ak-height-lg-30"></div>
+                        <div class="d-flex justify-content-between flex-wrap me-3 align-items-center">
+                            <div class="blog-details">
+                                <h5 class="anim-title-3 ak-white-color">The Royal Serenity Suite</h5>
+                                <div class="blog-details-subtitle text-uppercase">
+                                    <p>90 M2</p>
+                                    <p class="blog-details-date"></p>
+                                    <p>3 beds</p>
+                                    <p class="blog-details-date"></p>
+                                    <p>1 Bathroom</p>
+                                </div>
+                            </div>
+                            <div class="text-btn mt-5 mt-lg-0">
+                                <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
+                                    Price $150.0 Per Night
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ak-height-30 ak-height-lg-30"></div>
+                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have
+                            suffered alteration in some form, by injected humour, or randomised words which don't look
+                            even slightly believable. If you are going to use
+                            a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in
+                            the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined
+                            chunks as necessary, making this the first
+                            true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with
+                            a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The
+                            generated Lorem Ipsum is always repetition,
+                            injected humour, non-characteristic words etc.
+                        </p>
+
+                        <!-- Start Pets and Somke -->
+                        <div class="ak-height-50 ak-height-lg-30"></div>
+                        <div class="blog-details">
+                            <div class="blog-details-subtitle">
+                                <div>
+                                    <h5 class="anim-title-3 ak-white-color">Pets</h5>
+                                    <p>There are many of passages</p>
+                                </div>
+                                <p class="blog-details-date"></p>
+                                <div>
+                                    <h5 class="anim-title-3 ak-white-color">Smoke</h5>
+                                    <p>There are many variations</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Pets and Somke -->
+
+
+                        <!-- Start Extra -->
+                        <div class="ak-height-50 ak-height-lg-30"></div>
+                        <h5 class="anim-title-2 ak-white-color">Children & Extra Guest Beds</h5>
+                        <div class="ak-height-15 ak-height-lg-15"></div>
+                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have
+                            suffered <br> alteration in some form, by injected humour, or randomised words which don't
+                            look even <br> slightly believable.</p>
+
+                        <!-- End Extra -->
+
+                        <!-- Start Services -->
+                        <div>
+                            <div class="ak-height-50 ak-height-lg-30"></div>
+                            <h5 class="ak-white-color">Extra Services</h5>
+                            <div class="ak-height-25 ak-height-lg-20"></div>
+                            <div class="row row-cols-md-3 row-cols-2">
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;
+                                        High-Speed Wi-Fi
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;Business
+                                        Center
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;Swimming
+                                        Pools
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox"
+                                            value="checkbox" />&nbsp;Transportation
+                                        Services
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox"
+                                            value="checkbox" />&nbsp;Recreational
+                                        Activities
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox"
+                                            value="checkbox" />&nbsp;Recreational
+                                        Activities
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox"
+                                            value="checkbox" />&nbsp;Entertainment
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox"
+                                            value="checkbox" />&nbsp;Beautiful
+                                        Grounds
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;Fine
+                                        Dining
+                                        Restaurants
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;Spa and
+                                        Wellness
+                                        Center
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;24/7
+                                        Room
+                                        Service
+                                    </label>
+                                </div>
+                                <div class="col">
+                                    <label class="cbox-cursor">
+                                        <input type="checkbox" checked name="checkbox" value="checkbox" />&nbsp;Safety
+                                        and
+                                        Security
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- End Services -->
+
+
+                        <!-- Start Total Review -->
+                        <div class="ak-height-75 ak-height-lg-30"></div>
+                        <div class="total-review">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h2>5.00</h2>
+                                    <div>
+                                        <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
+                                        <p>5 Reviews</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-btn text-end">
+                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
+                                        GIVE A REVIEW
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- End Total Review -->
+
+                        <div class="ak-height-75 ak-height-lg-30"></div>
+                        <div>
+                            <h3 class="anim-title-2 ak-white-color">Review (0)</h3>
+                            <p>No Review Yet! Review box is empty</p>
+
+                        </div>
+                        <div class="ak-height-100 ak-height-lg-60"></div>
+                        <div class="contact-content">
+                            <div class="contact-form lenght-exget">
+                                <h2 class="contact-form-title anim-title-2 ak-white-color">Post A Review</h2>
+                                <div>
+                                    <p>5 Reviews</p>
+                                    <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
+                                </div>
+                                <div class="ak-height-25 ak-height-lg-20"></div>
+                                <form>
+                                    <div class="from-input">
+                                        <input placeholder="Name" class="col-md-5 col-12" type="text" name="fristname"
+                                            id="fristname">
+                                        <input placeholder="Email" class="col-md-5 col-12" type="email" name="email"
+                                            id="emailid">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <textarea name="textarea" rows="5" class="col-12 col-md-10"
+                                            placeholder="Review"></textarea>
+                                    </div>
+                                    <div class="ak-height-40 ak-height-lg-20"></div>
+                                    <div class="ak-btn style-5">
+                                        <button type="submit">Post Review
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Widget -->
+                <div class="col-md-4">
+                    <div class="ak-height-lg-60"></div>
+                    <div id="infoProduto" class="booking-widget">
+                        <div class="booking-widget-inner">
+                            <div class="text-center">
+                                <h4 class="ak-white-color mb-2">Booking Now</h4>
+                                <p>There are many variations of <br> passages Lorem available..</p>
+                            </div>
+                            <div class="ak-height-50 ak-height-lg-30"></div>
+                            <form action="#">
+                                <div class="check">
+                                    <div class="check-data">
+                                        <p class="check-title">Check In</p>
+                                        <div class=" date-packer">
+                                            <input type="date" value="2023-07-22" name="data-check-in">
+                                            <div class="date-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                                    viewBox="0 0 25 25" fill="none">
+                                                    <mask id="mask0_1166_82205" style="mask-type:luminance"
+                                                        maskUnits="userSpaceOnUse" x="0" y="0" width="25" height="25">
+                                                        <path d="M0.995117 0.140627H24.9951V24.1406H0.995117V0.140627Z"
+                                                            fill="white"></path>
+                                                    </mask>
+                                                    <g mask="url(#mask0_1166_8220)">
+                                                        <path
+                                                            d="M12.0732 18.6094H13.917M17.6152 18.6094H19.4589M6.54198 18.6094H8.38571M12.0732 13.0781H13.917M17.6152 13.0781H19.4589M6.54198 13.0781H8.38571M1.93262 8.45311H24.0683M18.537 5.68749V1.07813M7.46387 5.68749V1.07813M5.63077 23.2031H20.3701C22.4125 23.2031 24.0683 21.5474 24.0683 19.5049V6.62006C24.0683 4.57763 22.4125 2.92186 20.3701 2.92186H5.63077C3.58834 2.92186 1.93262 4.57763 1.93262 6.62006V19.5049C1.93262 21.5474 3.58834 23.2031 5.63077 23.2031Z"
+                                                            stroke="#FFD28D" stroke-miterlimit="10"
+                                                            stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border-height-one my-3"></div>
+                                    <div class="check-data">
+                                        <p class="check-title">Check Out</p>
+                                        <div class=" date-packer">
+                                            <input type="date" value="2023-07-22" name="data-check-out">
+                                            <div class="date-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                                    viewBox="0 0 25 25" fill="none">
+                                                    <mask id="mask0_1166_82205" style="mask-type:luminance"
+                                                        maskUnits="userSpaceOnUse" x="0" y="0" width="25" height="25">
+                                                        <path d="M0.995117 0.140627H24.9951V24.1406H0.995117V0.140627Z"
+                                                            fill="white"></path>
+                                                    </mask>
+                                                    <g mask="url(#mask0_1166_8220)">
+                                                        <path
+                                                            d="M12.0732 18.6094H13.917M17.6152 18.6094H19.4589M6.54198 18.6094H8.38571M12.0732 13.0781H13.917M17.6152 13.0781H19.4589M6.54198 13.0781H8.38571M1.93262 8.45311H24.0683M18.537 5.68749V1.07813M7.46387 5.68749V1.07813M5.63077 23.2031H20.3701C22.4125 23.2031 24.0683 21.5474 24.0683 19.5049V6.62006C24.0683 4.57763 22.4125 2.92186 20.3701 2.92186H5.63077C3.58834 2.92186 1.93262 4.57763 1.93262 6.62006V19.5049C1.93262 21.5474 3.58834 23.2031 5.63077 23.2031Z"
+                                                            stroke="#FFD28D" stroke-miterlimit="10"
+                                                            stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border-height-one my-3"></div>
+                                </div>
+                                <!-- Start Services -->
+                                <div class="number-of-input">
+                                    <p>Adult</p>
+                                    <div class="increase-decrease">
+                                        <div class="value-button" id="decrease" value="Decrease Value">-</div>
+                                        <input class="number-input" type="number" id="number-single-room" value="0" />
+                                        <div class="value-button" id="increase" value="Increase Value">+</div>
+                                    </div>
+                                </div>
+                                <div class="number-of-input">
+                                    <p>Child</p>
+                                    <div class="increase-decrease">
+                                        <div class="value-button" id="decrease" onclick="decreaseValue()"
+                                            value="Decrease Value">-</div>
+                                        <input type="number" class="number-input" id="number" value="0" />
+                                        <div class="value-button" id="increase" onclick="increaseValue()"
+                                            value="Increase Value">+</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="ak-height-50 ak-height-lg-30"></div>
+                                    <h5 class="ak-white-color">Extra Services</h5>
+                                    <div class="ak-height-25 ak-height-lg-20"></div>
+                                    <div class="row row-cols-1">
+                                        <div class="col">
+                                            <label class="cbox-cursor">
+                                                <input type="checkbox" name="service" value="checkbox" />&nbsp;Bar
+                                                Service
+                                            </label>
+                                        </div>
+                                        <div class="col">
+                                            <label class="cbox-cursor">
+                                                <input type="checkbox" name="business" value="checkbox" />&nbsp;Business
+                                                Center
+                                            </label>
+                                        </div>
+                                        <div class="col">
+                                            <label class="cbox-cursor">
+                                                <input type="checkbox" name="Safety" value="checkbox" />&nbsp;Safety
+                                                and Security
+                                            </label>
+                                        </div>
+                                        <div class="col">
+                                            <label class="cbox-cursor">
+                                                <input type="checkbox" name="fine" value="checkbox" />&nbsp;Fine
+                                                Dining Restaurants
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="ak-height-50 ak-height-lg-30"></div>
+                                    <div class="total">
+                                        <p class="text-total">Total Price:</p>
+                                        <h4 class="price">$99.0</h4>
+                                    </div>
+                                    <div class="ak-height-35 ak-height-lg-20"></div>
+                                    <div class="ak-center">
+                                        <div class="ak-btn style-5 color-yellow-bg">
+                                            <button type="submit">Book Now</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ak-height-50 ak-height-lg-30"></div>
+                            </form>
+                            <!-- End Services -->
+                        </div>
+                    </div>
+                </div>
+                <!-- End Widget -->
+            </div>
+        </section>
+        <!-- End Blog Content -->
+
+        <!-- Start Room -->
+        <section>
+            <div class="ak-height-150 ak-height-lg-60"></div>
+            <div class="container">
+                <div class="ak-section-heading ak-style-1 ak-type-1">
+                    <div class="ak-section-subtitle">Similar Room</div>
+                    <h2 class="ak-section-title anim-title">Similar Room</h2>
+                </div>
+                <div class="ak-height-65 ak-height-lg-30"></div>
+                <div class="room-section">
+                    <div class="col">
+                        <div class="room-card">
+                            <div class="room-card-img">
+                                <img th:src="@{/css/KhachHang/assets/img/room_1.jpg}" class="room-card-img-top" alt="...">
+                                <div class="room-card-img-btn">
+                                    <div class="text-btn">
+                                        <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
+                                            Starts At $259
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="room-card-body">
+                                <a th:href="@{/khachhang/single-room}" class="room-card-title">
+                                    The Royal Serenity Suite
+                                </a>
+                                <div class="room-card-info">
+                                    <p>120 m2</p>
+                                    <p class="hr-colum"></p>
+                                    <p>3 beds</p>
+                                    <p class="hr-colum"></p>
+                                    <p>1 Bathroom</p>
+                                </div>
+                                <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random
+                                    text. It has roots in a piece of classical Latin literature.
+                                </p>
+
+                            </div>
+                            <div class="room-footer">
+                                <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
+                                    <span class="ms-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
+                                            viewBox="0 0 31 31" fill="none">
+                                            <g clip-path="url(#clip0_1355_128)">
+                                                <path
+                                                    d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
+                                                    fill="#FFD28D" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_1355_128">
+                                                    <rect width="30" height="30" fill="white"
+                                                        transform="translate(0.5 0.351562)" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="room-card">
+                            <div class="room-card-img">
+                                <img th:src="@{/css/KhachHang/assets/img/room_2.jpg}" class="room-card-img-top" alt="...">
+                                <div class="room-card-img-btn">
+                                    <div class="text-btn">
+                                        <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
+                                            Starts At $259
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="room-card-body">
+                                <a th:href="@{/khachhang/single-room}" class="room-card-title">
+                                    The Platinum Paradiso Suite
+                                </a>
+                                <div class="room-card-info">
+                                    <p>120 m2</p>
+                                    <p class="hr-colum"></p>
+                                    <p>3 beds</p>
+                                    <p class="hr-colum"></p>
+                                    <p>1 Bathroom</p>
+                                </div>
+                                <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random
+                                    text. It has roots in a piece of classical Latin literature.
+                                </p>
+                            </div>
+                            <div class="room-footer">
+                                <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
+                                    <span class="ms-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
+                                            viewBox="0 0 31 31" fill="none">
+                                            <g clip-path="url(#clip0_1355_1282)">
+                                                <path
+                                                    d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
+                                                    fill="#FFD28D" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_1355_1282">
+                                                    <rect width="30" height="30" fill="white"
+                                                        transform="translate(0.5 0.351562)" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="ak-height-150 ak-height-lg-60"></div>
+        </section>
+        <!-- End Room -->
+
+        <!-- Start Footer -->
+        <footer>
+            <div class="ak-footer ak-style-1 color-1">
+                <div class="ak-height-150 ak-height-lg-75"></div>
+                <div class="container ak-hr-container">
+                    <div class="ak-braner-logo type-color-1 footer-logo">
+                        <div class="footer-log-elem">
+                            <div class="footer-log-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="13" viewBox="0 0 30 13"
+                                    fill="none">
+                                    <path d="M28.991 12.2063L14.8322 1L0.67334 12.2063" stroke="white"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <img th:src="@{/css/KhachHang/assets/img/Elegencia.png}" alt="...">
+                        </div>
+                    </div>
+
+                    <div class="ak-height-100 ak-height-lg-60"></div>
+                    <div class="ak-footer-hr-top"></div>
+
+                    <div class="footer-main">
+                        <div class="footer-eamil-menu">
+                            <div class="footer-email">
+                                <a href="mailto:info@example.com">
+                                    info@example.com
+                                </a>
+                            </div>
+                            <div class="footer-menu">
+                                <ul>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/event-list}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/room}">Room</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="ak-height-75 ak-height-lg-5"></div>
+                        <div class="footer-info">
+                            <div class="fooer-phn">
+                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                                <br>
+                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                            </div>
+                            <div class="footer-address">
+                                <a href="https://maps.app.goo.gl/gAd1JdfRW5d6eHkn7" target="_blank">
+                                    2726 Av. PapineauMontreal,<br>QC H2K 4J6, Canada
+                                </a>
+                            </div>
+                            <div class="footer-email">
+                                <form class="email-input">
+                                    <input type="text" class="e-input" name="emailFooter" placeholder="Enter You Email"
+                                        id="emailFooter">
+                                    <button type="submit" class="btn-input">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                            viewBox="0 0 25 25" fill="none">
+                                            <g clip-path="url(#clip0_1316_214)">
+                                                <path
+                                                    d="M20.548 5.84478C20.98 4.64978 19.822 3.49178 18.627 3.92478L4.02203 9.20678C2.82303 9.64078 2.67803 11.2768 3.78103 11.9158L8.44303 14.6148L12.606 10.4518C12.7946 10.2696 13.0472 10.1688 13.3094 10.1711C13.5716 10.1734 13.8224 10.2786 14.0078 10.464C14.1933 10.6494 14.2984 10.9002 14.3007 11.1624C14.303 11.4246 14.2022 11.6772 14.02 11.8658L9.85703 16.0288L12.557 20.6908C13.195 21.7938 14.831 21.6478 15.265 20.4498L20.548 5.84478Z"
+                                                    fill="#040D10" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_1316_214">
+                                                    <rect width="24" height="24" fill="white"
+                                                        transform="translate(0.312988 0.158203)" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </button>
+                                </form>
+
+                            </div>
+                            <div class="footer-btn">
+                                <a th:href="@{/khachhang/single-room}">
+                                    <div class="ak-btn style-5">
+                                        Booking
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ak-footer-hr-bottom qodef-grid-item"></div>
+                    <div class="ak-height-130 ak-height-lg-30"></div>
+
+                    <div class="copy-right-section">
+                        <p class="text-uppercase text-md-center">
+                            Copyright 2023 All Right Reserved
+                        </p>
+                    </div>
+
+                    <div class="ak-height-45 ak-height-lg-30"></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="loading-overlap"></div>
+    <!-- End Footer -->
+    <span class="ak-scrollup">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10L1.7625 11.7625L8.75 4.7875V20H11.25V4.7875L18.225 11.775L20 10L10 0L0 10Z"
+                fill="currentColor" />
+        </svg>
+    </span>
+    <!-- Start Video Popup -->
+    <div class="ak-video-popup">
+        <div class="ak-video-popup-overlay"></div>
+        <div class="ak-video-popup-content">
+            <div class="ak-video-popup-layer"></div>
+            <div class="ak-video-popup-container">
+                <div class="ak-video-popup-align">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="about:blank"></iframe>
+                    </div>
+                </div>
+                <div class="ak-video-popup-close"></div>
+            </div>
+        </div>
+    </div>
+    <!-- End Video Popup -->
+    <!-- Script -->
+    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+</body>
+
+
+<!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/single-room.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:23:06 GMT -->
+</html>

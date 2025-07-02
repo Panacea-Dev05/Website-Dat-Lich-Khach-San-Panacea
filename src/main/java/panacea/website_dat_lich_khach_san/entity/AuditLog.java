@@ -51,6 +51,7 @@ public class AuditLog {
 
     @Column(name = "ly_do_thay_doi", length = 500)
     private String lyDoThayDoi;
+
     @Column(name = "uuid_id")
     private UUID uuidId;
 

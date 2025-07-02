@@ -215,38 +215,4 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-/* Logo size control for Panacea */
-.ak-site_header.ak-style1 .header-top .wrapper .center-log img {
-  max-height: 60px;
-  width: auto;
-  object-fit: contain;
-}
-
-.ak-site_branding img {
-  max-height: 45px;
-  width: auto;
-  object-fit: contain;
-}
-
-/* Responsive logo sizing */
-@media screen and (max-width: 768px) {
-  .ak-site_header.ak-style1 .header-top .wrapper .center-log img {
-    max-height: 45px;
-  }
-
-  .ak-site_branding img {
-    max-height: 35px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .ak-site_header.ak-style1 .header-top .wrapper .center-log img {
-    max-height: 35px;
-  }
-
-  .ak-site_branding img {
-    max-height: 30px;
-  }
 }/*# sourceMappingURL=style.css.map */
