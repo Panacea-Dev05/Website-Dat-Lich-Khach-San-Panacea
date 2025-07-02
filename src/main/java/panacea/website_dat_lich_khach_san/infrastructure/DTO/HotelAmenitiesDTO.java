@@ -10,6 +10,7 @@ public class HotelAmenitiesDTO {
     private String tenTienNghi;
     private String moTa;
     private String trangThai;
+    
     private UUID uuidId;
     private Long createdDate;
     private Long lastModifiedDate;

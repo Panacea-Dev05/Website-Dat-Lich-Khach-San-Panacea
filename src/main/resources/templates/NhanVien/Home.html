@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,6 +14,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background: #f4f7fc;
@@ -24,28 +26,34 @@
             flex-direction: column;
             height: 100vh;
         }
+
         a {
             text-decoration: none;
             color: inherit;
         }
+
         ul {
             list-style: none;
         }
+
         button {
             cursor: pointer;
             border: none;
             background: none;
             font-family: inherit;
         }
+
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-track {
             background: #f4f7fc;
         }
@@ -56,12 +64,13 @@
             grid-template-columns: 280px auto;
             grid-template-rows: 60px auto 40px;
             grid-template-areas:
-        "header header"
-        "sidebar main"
-        "footer footer";
+                "header header"
+                "sidebar main"
+                "footer footer";
             height: 100vh;
             overflow: hidden;
         }
+
         header {
             grid-area: header;
             background: linear-gradient(90deg, #10b981 0%, #059669 100%);
@@ -77,24 +86,29 @@
             z-index: 10;
             box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
         }
+
         header .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
+
         header .logo .material-icons {
             font-size: 32px;
-            filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.15));
         }
+
         header .hotel-name {
             font-size: 1.2rem;
             font-weight: 600;
             user-select: none;
         }
+
         header .mobile-toggle {
             display: none;
             font-size: 36px;
         }
+
         aside.sidebar {
             grid-area: sidebar;
             background: white;
@@ -105,14 +119,17 @@
             overflow-y: auto;
             box-shadow: inset -3px 0 8px -6px rgb(0 0 0 / 0.1);
         }
+
         aside.sidebar nav {
             flex-grow: 1;
         }
+
         aside.sidebar nav ul {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
+
         aside.sidebar nav ul li a {
             padding: 10px 14px;
             border-radius: 12px;
@@ -123,12 +140,14 @@
             color: #334155;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+
         aside.sidebar nav ul li a:hover,
         aside.sidebar nav ul li a.active {
             background: #10b981;
             color: white;
             box-shadow: 0 8px 16px rgb(16 185 129 / 0.2);
         }
+
         aside.sidebar nav ul li a .material-icons {
             font-size: 20px;
             flex-shrink: 0;
@@ -141,9 +160,11 @@
             padding: 2rem 3rem;
             display: flex;
             flex-direction: column;
-            min-height: 0; /* important for scroll */
+            min-height: 0;
+            /* important for scroll */
         }
-        main > h1 {
+
+        main>h1 {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -151,6 +172,7 @@
             text-shadow: 0 0 6px rgb(6 78 59 / 0.1);
             user-select: none;
         }
+
         section.content-section {
             background: white;
             border-radius: 16px;
@@ -159,7 +181,8 @@
             max-width: 100%;
             overflow-x: auto;
         }
-        section.content-section + section.content-section {
+
+        section.content-section+section.content-section {
             margin-top: 2rem;
         }
 
@@ -170,17 +193,21 @@
             table-layout: fixed;
             word-wrap: break-word;
         }
+
         thead {
             background: #d1fae5;
             color: #065f46;
         }
-        th, td {
+
+        th,
+        td {
             padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid #e0f2fe;
             font-weight: 500;
             font-size: 0.95rem;
         }
+
         tbody tr:hover {
             background: #a7f3d0;
             cursor: pointer;
@@ -198,27 +225,32 @@
             transition: all 0.25s ease;
             user-select: none;
         }
+
         .btn:hover {
             background: #059669;
             box-shadow: 0 12px 25px rgb(5 150 105 / 0.35);
             transform: translateY(-2px);
         }
+
         .btn:active {
             transform: translateY(0);
             box-shadow: 0 4px 9px rgb(5 150 105 / 0.35);
         }
+
         /* Forms */
         form {
             display: flex;
             flex-wrap: wrap;
             gap: 20px 32px;
         }
+
         label {
             flex: 1 1 150px;
             font-weight: 600;
             font-size: 0.95rem;
             color: #064e3b;
         }
+
         input[type="text"],
         input[type="email"],
         input[type="number"],
@@ -234,6 +266,7 @@
             outline-color: #10b981;
             transition: border-color 0.3s ease;
         }
+
         input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="number"]:focus,
@@ -242,6 +275,7 @@
         textarea:focus {
             border-color: #059669;
         }
+
         textarea {
             min-height: 100px;
             resize: vertical;
@@ -253,10 +287,12 @@
                 grid-template-columns: 240px auto;
                 grid-template-rows: 60px auto 40px;
             }
+
             main {
                 padding: 1.5rem 2rem;
             }
         }
+
         @media (max-width: 768px) {
             header .mobile-toggle {
                 display: block;
@@ -264,6 +300,7 @@
                 background: transparent;
                 border: none;
             }
+
             aside.sidebar {
                 position: fixed;
                 top: 60px;
@@ -271,21 +308,25 @@
                 height: calc(100% - 60px);
                 width: 280px;
                 box-shadow: 2px 0 10px rgb(0 0 0 / 0.1);
-                background:white;
+                background: white;
                 transition: left 0.3s ease;
                 z-index: 50;
             }
+
             aside.sidebar.open {
                 left: 0;
             }
+
             .app {
                 grid-template-columns: 1fr;
                 grid-template-rows: 60px auto 40px;
             }
+
             main {
                 padding: 1.5rem 1.5rem;
             }
         }
+
         footer {
             grid-area: footer;
             background: #e6f4ea;
@@ -299,17 +340,59 @@
             border-top: 1px solid #c4e1cc;
             user-select: none;
         }
+
         /* Scroll inside main content */
         main::-webkit-scrollbar {
             width: 8px;
         }
+
         main::-webkit-scrollbar-thumb {
             background: #10b981aa;
             border-radius: 5px;
         }
+
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+            z-index: 10;
+            position: sticky;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            background: var(--color-bg);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+                min-width: 70px;
+            }
+        }
     </style>
 
 </head>
+
 <body>
 
 <header>
@@ -317,6 +400,7 @@
         <span class="material-icons" aria-hidden="true">hotel</span>
         <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
     </div>
+    <div style="font-size:1rem;font-weight:500;">Xin chào, <span th:text="${staffName}">Tên nhân viên</span>!</div>
     <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
         <span class="material-icons">menu</span>
     </button>
@@ -324,62 +408,53 @@
 
 <div class="overlay" tabindex="-1"></div>
 
-<div class="app">
-
-    <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính">
-        <nav>
-            <ul>
-                <li><a href="QuanLyDatPhong.html"><span class="material-icons">meeting_room</span> Quản lý đặt phòng</a></li>
-                <li><a href="QuanLyPhong.html"><span class="material-icons">people</span> Quản lý phòng</a></li>
-                <li><a href="DichVu.html"><span class="material-icons">cleaning_services</span> Dọn phòng & bảo trì</a></li>
-<!--                <li> <a href="#"><span class="material-icons">support_agent</span> Yêu cầu khách hàng</a></li>-->
-                <li><a href="ThanhToan.html"><span class="material-icons">payments</span> Thanh toán</a></li>
-                <li><a href="QuanLyKho.html"><span class="material-icons">inventory</span> Quản lý kho</a></li>
-                <li><a href="ThongTinKhachHang.html"><span class="material-icons">person</span> Thông tin khách hàng</a></li>
-                <li><a th:href="@{/logout}"><span class="material-icons">logout</span> Đăng xuất</a></li>
-            </ul>
-
-        </nav>
-    </aside>
-
-    <main class="content" role="main">
-        <h1>Tổng quan hoạt động hôm nay</h1>
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <h1 th:text="'Tổng quan hoạt động hôm nay'"></h1>
 
         <table aria-label="Tổng quan hoạt động hôm nay">
             <thead>
             <tr>
-                <th>STT</th>
-                <th>Hạng mục</th>
-                <th>Số lượng</th>
-                <th>Chi tiết</th>
+                <th th:text="'STT'"></th>
+                <th th:text="'Hạng mục'"></th>
+                <th th:text="'Số lượng'"></th>
+                <th th:text="'Chi tiết'"></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr th:each="item, iterStat : ${overviewList}">
+                <td th:text="${iterStat.index + 1}">1</td>
+                <td th:text="${item.category}">Đặt phòng hôm nay</td>
+                <td th:text="${item.count}">12</td>
+                <td th:text="${item.detail}">Đã xác nhận: 8</td>
+            </tr>
+            <!-- Nếu không có overviewList thì giữ lại các dòng mẫu -->
+            <tr th:if="${overviewList == null}">
                 <td>1</td>
                 <td>Đặt phòng hôm nay</td>
                 <td>12</td>
                 <td>Đã xác nhận: 8</td>
             </tr>
-            <tr>
+            <tr th:if="${overviewList == null}">
                 <td>2</td>
                 <td>Phòng cần dọn</td>
                 <td>7</td>
                 <td>Checkout trong ngày</td>
             </tr>
-            <tr>
+            <tr th:if="${overviewList == null}">
                 <td>3</td>
                 <td>Phòng đang bảo trì</td>
                 <td>2</td>
                 <td>Kết thúc vào mai</td>
             </tr>
-            <tr>
+            <tr th:if="${overviewList == null}">
                 <td>4</td>
                 <td>Giao dịch hôm nay</td>
                 <td>10</td>
                 <td>Thành công: 8</td>
             </tr>
-            <tr>
+            <tr th:if="${overviewList == null}">
                 <td>5</td>
                 <td>Yêu cầu mới</td>
                 <td>3</td>
@@ -391,8 +466,9 @@
 </div>
 
 <footer class="footer">
-    © 2024 Panacea Hotel Booking System - Nhân viên
+    <span th:text="'© 2024 Panacea Hotel Booking System - Nhân viên'"></span>
 </footer>
 
 </body>
+
 </html>
