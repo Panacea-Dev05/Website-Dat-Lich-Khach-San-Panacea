@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Phòng - Panacea</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         :root {
             --color-bg: #f9fafb;
@@ -18,7 +19,6 @@
             --color-table-head: #d1fae5;
             --color-head-text: #065f46;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -34,7 +34,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         main {
             padding: 2rem;
@@ -51,7 +51,7 @@
             padding: 2.5rem 2rem;
             border-radius: 16px;
             margin-bottom: 2.5rem;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
         }
         .section h2 {
             font-size: 1.5rem;
@@ -71,7 +71,7 @@
             flex-wrap: wrap;
             gap: 2rem;
         }
-        form > div {
+        form>div {
             flex: 1 1 calc(50% - 2rem);
             min-width: 260px;
         }
@@ -80,7 +80,9 @@
             margin-bottom: 0.5rem;
             display: block;
         }
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             padding: 12px;
             border: 1.5px solid var(--color-border);
             border-radius: 10px;
@@ -88,7 +90,9 @@
             width: 100%;
             transition: border 0.3s, box-shadow 0.3s;
         }
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: var(--color-accent);
             outline: none;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
@@ -104,7 +108,7 @@
             font-weight: 600;
             border-radius: 10px;
             border: 1px solid var(--color-accent-dark);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background 0.3s, transform 0.2s;
             cursor: pointer;
             display: inline-flex;
@@ -132,7 +136,8 @@
             border-radius: 12px;
             overflow: hidden;
         }
-        th, td {
+        th,
+        td {
             padding: 14px 16px;
             text-align: left;
         }
@@ -146,23 +151,6 @@
         }
         tr:hover {
             background-color: var(--color-hover);
-        }
-        @media (max-width: 768px) {
-            main {
-                padding: 1.5rem;
-            }
-            .section {
-                padding: 2rem 1.5rem;
-            }
-            form > div {
-                flex: 1 1 100%;
-            }
-            body, input, select, textarea, .btn {
-                font-size: 1.1rem;
-            }
-            label {
-                font-size: 1.05rem;
-            }
         }
     </style>
 </head>

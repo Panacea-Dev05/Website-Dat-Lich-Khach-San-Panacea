@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,7 +37,6 @@
             background: none;
             font-family: inherit;
         }
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -49,16 +48,14 @@
         ::-webkit-scrollbar-track {
             background: #f4f7fc;
         }
-
-        /* Layout */
         .app {
             display: grid;
             grid-template-columns: 280px auto;
             grid-template-rows: 60px auto 40px;
             grid-template-areas:
-        "header header"
-        "sidebar main"
-        "footer footer";
+                "header header"
+                "sidebar main"
+                "footer footer";
             height: 100vh;
             overflow: hidden;
         }
@@ -84,7 +81,7 @@
         }
         header .logo .material-icons {
             font-size: 32px;
-            filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.15));
         }
         header .hotel-name {
             font-size: 1.2rem;
@@ -133,7 +130,6 @@
             font-size: 20px;
             flex-shrink: 0;
         }
-
         main {
             grid-area: main;
             background: #f9fafb;
@@ -141,9 +137,9 @@
             padding: 2rem 3rem;
             display: flex;
             flex-direction: column;
-            min-height: 0; /* important for scroll */
+            min-height: 0;
         }
-        main > h1 {
+        main>h1 {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -159,10 +155,9 @@
             max-width: 100%;
             overflow-x: auto;
         }
-        section.content-section + section.content-section {
+        section.content-section+section.content-section {
             margin-top: 2rem;
         }
-
         /* Table */
         table {
             width: 100%;
@@ -185,7 +180,6 @@
             background: #a7f3d0;
             cursor: pointer;
         }
-
         /* Buttons */
         .btn {
             padding: 10px 20px;
@@ -246,7 +240,6 @@
             min-height: 100px;
             resize: vertical;
         }
-
         /* Responsive */
         @media (max-width: 1024px) {
             .app {
@@ -308,7 +301,6 @@
             border-radius: 5px;
         }
     </style>
-
 </head>
 <body>
 
@@ -332,7 +324,6 @@
                 <li><a href="QuanLyDatPhong.html"><span class="material-icons">meeting_room</span> Quản lý đặt phòng</a></li>
                 <li><a href="QuanLyPhong.html"><span class="material-icons">people</span> Quản lý phòng</a></li>
                 <li><a href="DichVu.html"><span class="material-icons">cleaning_services</span> Dọn phòng & bảo trì</a></li>
-<!--                <li> <a href="#"><span class="material-icons">support_agent</span> Yêu cầu khách hàng</a></li>-->
                 <li><a href="ThanhToan.html"><span class="material-icons">payments</span> Thanh toán</a></li>
                 <li><a href="QuanLyKho.html"><span class="material-icons">inventory</span> Quản lý kho</a></li>
                 <li><a href="ThongTinKhachHang.html"><span class="material-icons">person</span> Thông tin khách hàng</a></li>

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Kho - Panacea</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         :root {
             --color-bg: #f9fafb;
@@ -32,6 +33,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         main {
             max-width: 1200px;
@@ -43,7 +45,7 @@
             padding: 2.5rem 2rem;
             border-radius: 16px;
             margin-bottom: 2.5rem;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
         }
         h2 {
             display: flex;
@@ -58,7 +60,7 @@
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 2rem;
         }
-        form > div {
+        form>div {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
@@ -66,7 +68,9 @@
         label {
             font-weight: 600;
         }
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             padding: 12px;
             border: 1.5px solid var(--color-border);
             border-radius: 10px;
@@ -94,7 +98,8 @@
             border-radius: 12px;
             overflow: hidden;
         }
-        th, td {
+        th,
+        td {
             padding: 14px 16px;
             text-align: left;
         }
