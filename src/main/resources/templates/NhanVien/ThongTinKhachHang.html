@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thông tin khách hàng - Panacea</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         :root {
             --color-bg: #f9fafb;
@@ -34,7 +36,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         main {
@@ -48,7 +50,7 @@
             padding: 2.5rem;
             border-radius: 12px;
             margin-bottom: 2.5rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -74,7 +76,9 @@
             display: block;
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             padding: 12px;
             border: 1.5px solid var(--color-border);
             border-radius: 8px;
@@ -83,7 +87,9 @@
             transition: border 0.3s, box-shadow 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: var(--color-accent);
             outline: none;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
@@ -121,7 +127,8 @@
             overflow: hidden;
         }
 
-        th, td {
+        th,
+        td {
             padding: 14px 16px;
             text-align: left;
         }
@@ -144,100 +151,143 @@
             main {
                 padding: 1.5rem;
             }
+
             .section {
                 padding: 2rem 1.5rem;
             }
+
             form {
                 grid-template-columns: 1fr;
             }
         }
 
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
+        .sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+            z-index: 10;
+            position: sticky;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
 
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            background: var(--color-bg);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+                min-width: 70px;
+            }
+        }
     </style>
 </head>
+
 <body>
-<header>
-    <a href="Home.html" style="color: white; text-decoration: none; font-weight: 700; font-size: 1.5rem; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.3s;">
-        <span class="material-icons" style="font-size: 24px;">home</span>Panacea Hotel - Thông Tin Khách Hàng
-    </a>
-    <button class="btn"><span class="material-icons">logout</span>Đăng xuất</button>
-</header>
-<main>
-    <!-- Đăng ký khách hàng -->
-    <div class="section">
-        <h2><span class="material-icons">person_add</span> Đăng ký khách hàng</h2>
-        <form>
-            <div><label>Họ</label><input type="text" /></div>
-            <div><label>Tên</label><input type="text" /></div>
-            <div><label>Email</label><input type="email" /></div>
-            <div><label>Số điện thoại</label><input type="tel" /></div>
-            <div><label>Ngày sinh</label><input type="date" /></div>
-            <div><label>Giới tính</label><select><option>Nam</option><option>Nữ</option><option>Khác</option></select></div>
-            <div><label>Quốc tịch</label><input type="text" /></div>
-            <div><label>Địa chỉ</label><textarea></textarea></div>
-            <div><label>Mật khẩu</label><input type="password" /></div>
-            <div style="display: flex; justify-content: flex-end; align-items: flex-end;">
-                <button class="btn"><span class="material-icons">person_add</span>Đăng ký</button>
-            </div>
-        </form>
-    </div>
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <!-- Đăng ký khách hàng -->
+        <div class="section">
+            <h2><span class="material-icons">person_add</span> <span th:text="'Đăng ký khách hàng'"></span></h2>
+            <form>
+                <div><label>Họ</label><input type="text" /></div>
+                <div><label>Tên</label><input type="text" /></div>
+                <div><label>Email</label><input type="email" /></div>
+                <div><label>Số điện thoại</label><input type="tel" /></div>
+                <div><label>Ngày sinh</label><input type="date" /></div>
+                <div><label>Giới tính</label><select name="gioiTinh">
+                    <tr th:each="kh : ${dsKhachHang}">
+                </select></div>
+                <div><label>Quốc tịch</label><input type="text" /></div>
+                <div><label>Địa chỉ</label><textarea></textarea></div>
+                <div><label>Mật khẩu</label><input type="password" /></div>
+                <div style="display: flex; justify-content: flex-end; align-items: flex-end;">
+                    <button class="btn"><span class="material-icons">person_add</span>Đăng ký</button>
+                </div>
+            </form>
+        </div>
 
-    <!-- Sở thích khách hàng -->
-    <div class="section">
-        <h2><span class="material-icons">favorite</span> Sở thích khách hàng</h2>
-        <form>
-            <div><label>Loại phòng ưa thích</label><select><option>Standard</option><option>Deluxe</option><option>Suite</option></select></div>
-            <div><label>Tầng ưa thích</label><select><option>Thấp</option><option>Trung bình</option><option>Cao</option></select></div>
-            <div><label>View ưa thích</label><input type="text" /></div>
-            <div><label>Thời gian nhận phòng mong muốn</label><input type="time" /></div>
-            <div style="grid-column: span 2;"><label>Dịch vụ ưa thích</label><textarea></textarea></div>
-            <div><label>Hút thuốc</label><select><option>Không hút thuốc</option><option>Hút thuốc</option></select></div>
-            <div><label>Chế độ ăn uống</label><input type="text" placeholder="Chay, Halal, Không gluten..." /></div>
-            <div style="align-self: end; display: flex; justify-content: flex-end;">
-                <button class="btn"><span class="material-icons">save</span>Lưu</button>
-            </div>
-        </form>
-    </div>
+        <!-- Sở thích khách hàng -->
+        <div class="section">
+            <h2><span class="material-icons">favorite</span> <span th:text="'Sở thích khách hàng'"></span></h2>
+            <form>
+                <div><label>Loại phòng ưa thích</label><select name="loaiPhongUaThich">
+                    <option th:each="lp : ${loaiPhongList}" th:value="${lp}" th:text="${lp}"></option>
+                </select></div>
+                <div><label>Tầng ưa thích</label><select name="tangUaThich">
+                    <option th:each="t : ${tangList}" th:value="${t}" th:text="${t}"></option>
+                </select></div>
+                <div><label>View ưa thích</label><input type="text" /></div>
+                <div><label>Thời gian nhận phòng mong muốn</label><input type="time" /></div>
+                <div style="grid-column: span 2;"><label>Dịch vụ ưa thích</label><textarea></textarea></div>
+                <div><label>Hút thuốc</label><select name="hutThuoc">
+                    <option th:each="ht : ${hutThuocList}" th:value="${ht}" th:text="${ht}"></option>
+                </select></div>
+                <div><label>Chế độ ăn uống</label><input type="text" placeholder="Chay, Halal, Không gluten..." />
+                </div>
+                <div style="align-self: end; display: flex; justify-content: flex-end;">
+                    <button class="btn"><span class="material-icons">save</span>Lưu</button>
+                </div>
+            </form>
+        </div>
 
-    <!-- Danh sách khách hàng -->
-    <div class="section">
-        <h2><span class="material-icons">people</span> Danh sách khách hàng</h2>
-        <form style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-            <input type="text" placeholder="Tìm theo tên, email..." style="flex: 1; min-width: 200px;" />
-            <select>
-                <option>Tất cả trạng thái</option>
-                <option>Hoạt động</option>
-                <option>Tạm khóa</option>
-                <option>Đã xóa</option>
-            </select>
-            <button class="btn"><span class="material-icons">search</span>Tìm</button>
-        </form>
-        <table>
-            <thead>
-            <tr>
-                <th>Mã KH</th>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>SĐT</th>
-                <th>Quốc tịch</th>
-                <th>Loại</th>
-                <th>Trạng thái</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>KH001</td>
-                <td>Nguyễn Văn A</td>
-                <td>a.nguyen@example.com</td>
-                <td>0909123456</td>
-                <td>Việt Nam</td>
-                <td>Cá nhân</td>
-                <td>Hoạt động</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</main>
+        <!-- Danh sách khách hàng -->
+        <div class="section">
+            <h2><span class="material-icons">list</span> Danh sách khách hàng</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Họ</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>SĐT</th>
+                    <th>Ngày sinh</th>
+                    <th>Giới tính</th>
+                    <th>Quốc tịch</th>
+                    <th>Địa chỉ</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(dsKhachHang)}">
+                    <td colspan="9">Không có khách hàng nào.</td>
+                </tr>
+                <tr th:each="kh : ${dsKhachHang != null ? dsKhachHang : {}}">
+                    <td th:text="${kh.id}"></td>
+                    <td th:text="${kh.ho}"></td>
+                    <td th:text="${kh.ten}"></td>
+                    <td th:text="${kh.email}"></td>
+                    <td th:text="${kh.soDienThoai}"></td>
+                    <td th:text="${#dates.format(kh.ngaySinh, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${kh.gioiTinh}"></td>
+                    <td th:text="${kh.quocTich}"></td>
+                    <td th:text="${kh.diaChi}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 </body>
+
 </html>
