@@ -395,79 +395,79 @@
 
 <body>
 
-    <header>
-        <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
-            <span class="material-icons" aria-hidden="true">hotel</span>
-            <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
-        </div>
-        <div style="font-size:1rem;font-weight:500;">Xin chào, <span th:text="${staffName}">Tên nhân viên</span>!</div>
-        <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
-            <span class="material-icons">menu</span>
-        </button>
-    </header>
-
-    <div class="overlay" tabindex="-1"></div>
-
-    <div class="app-layout">
-        <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
-        <main class="main-content">
-            <h1 th:text="'Tổng quan hoạt động hôm nay'"></h1>
-
-            <table aria-label="Tổng quan hoạt động hôm nay">
-                <thead>
-                    <tr>
-                        <th th:text="'STT'"></th>
-                        <th th:text="'Hạng mục'"></th>
-                        <th th:text="'Số lượng'"></th>
-                        <th th:text="'Chi tiết'"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="item, iterStat : ${overviewList}">
-                        <td th:text="${iterStat.index + 1}">1</td>
-                        <td th:text="${item.category}">Đặt phòng hôm nay</td>
-                        <td th:text="${item.count}">12</td>
-                        <td th:text="${item.detail}">Đã xác nhận: 8</td>
-                    </tr>
-                    <!-- Nếu không có overviewList thì giữ lại các dòng mẫu -->
-                    <tr th:if="${overviewList == null}">
-                        <td>1</td>
-                        <td>Đặt phòng hôm nay</td>
-                        <td>12</td>
-                        <td>Đã xác nhận: 8</td>
-                    </tr>
-                    <tr th:if="${overviewList == null}">
-                        <td>2</td>
-                        <td>Phòng cần dọn</td>
-                        <td>7</td>
-                        <td>Checkout trong ngày</td>
-                    </tr>
-                    <tr th:if="${overviewList == null}">
-                        <td>3</td>
-                        <td>Phòng đang bảo trì</td>
-                        <td>2</td>
-                        <td>Kết thúc vào mai</td>
-                    </tr>
-                    <tr th:if="${overviewList == null}">
-                        <td>4</td>
-                        <td>Giao dịch hôm nay</td>
-                        <td>10</td>
-                        <td>Thành công: 8</td>
-                    </tr>
-                    <tr th:if="${overviewList == null}">
-                        <td>5</td>
-                        <td>Yêu cầu mới</td>
-                        <td>3</td>
-                        <td>Chưa xử lý</td>
-                    </tr>
-                </tbody>
-            </table>
-        </main>
+<header>
+    <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+        <span class="material-icons" aria-hidden="true">hotel</span>
+        <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
     </div>
+    <div style="font-size:1rem;font-weight:500;">Xin chào, <span th:text="${staffName}">Tên nhân viên</span>!</div>
+    <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+        <span class="material-icons">menu</span>
+    </button>
+</header>
 
-    <footer class="footer">
-        <span th:text="'© 2024 Panacea Hotel Booking System - Nhân viên'"></span>
-    </footer>
+<div class="overlay" tabindex="-1"></div>
+
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <h1 th:text="'Tổng quan hoạt động hôm nay'"></h1>
+
+        <table aria-label="Tổng quan hoạt động hôm nay">
+            <thead>
+            <tr>
+                <th th:text="'STT'"></th>
+                <th th:text="'Hạng mục'"></th>
+                <th th:text="'Số lượng'"></th>
+                <th th:text="'Chi tiết'"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, iterStat : ${overviewList}">
+                <td th:text="${iterStat.index + 1}">1</td>
+                <td th:text="${item.category}">Đặt phòng hôm nay</td>
+                <td th:text="${item.count}">12</td>
+                <td th:text="${item.detail}">Đã xác nhận: 8</td>
+            </tr>
+            <!-- Nếu không có overviewList thì giữ lại các dòng mẫu -->
+            <tr th:if="${overviewList == null}">
+                <td>1</td>
+                <td>Đặt phòng hôm nay</td>
+                <td>12</td>
+                <td>Đã xác nhận: 8</td>
+            </tr>
+            <tr th:if="${overviewList == null}">
+                <td>2</td>
+                <td>Phòng cần dọn</td>
+                <td>7</td>
+                <td>Checkout trong ngày</td>
+            </tr>
+            <tr th:if="${overviewList == null}">
+                <td>3</td>
+                <td>Phòng đang bảo trì</td>
+                <td>2</td>
+                <td>Kết thúc vào mai</td>
+            </tr>
+            <tr th:if="${overviewList == null}">
+                <td>4</td>
+                <td>Giao dịch hôm nay</td>
+                <td>10</td>
+                <td>Thành công: 8</td>
+            </tr>
+            <tr th:if="${overviewList == null}">
+                <td>5</td>
+                <td>Yêu cầu mới</td>
+                <td>3</td>
+                <td>Chưa xử lý</td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<footer class="footer">
+    <span th:text="'© 2024 Panacea Hotel Booking System - Nhân viên'"></span>
+</footer>
 
 </body>
 

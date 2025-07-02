@@ -177,64 +177,64 @@
 </head>
 
 <body>
-    <div class="app-layout">
-        <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
-        <main class="main-content">
-            <!-- Tạo giao dịch thanh toán -->
-            <div class="section">
-                <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
-                <form>
-                    <div><label>Mã booking</label><select name="bookingId">
-                            <option disabled selected>Chọn booking...</option>
-                            <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
-                        </select></div>
-                    <div><label>Số tiền</label><input type="number" placeholder="VND" /></div>
-                    <div><label>Phương thức</label><select name="phuongThuc">
-                            <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt}"></option>
-                        </select></div>
-                    <div><label>Nội dung</label><input type="text" /></div>
-                    <div><label>Mã giao dịch (nếu có)</label><input type="text" /></div>
-                    <div style="align-self:end">
-                        <button class="btn"><span class="material-icons">add</span>Tạo</button>
-                    </div>
-                </form>
-            </div>
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <!-- Tạo giao dịch thanh toán -->
+        <div class="section">
+            <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
+            <form>
+                <div><label>Mã booking</label><select name="bookingId">
+                    <option disabled selected>Chọn booking...</option>
+                    <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
+                </select></div>
+                <div><label>Số tiền</label><input type="number" placeholder="VND" /></div>
+                <div><label>Phương thức</label><select name="phuongThuc">
+                    <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt}"></option>
+                </select></div>
+                <div><label>Nội dung</label><input type="text" /></div>
+                <div><label>Mã giao dịch (nếu có)</label><input type="text" /></div>
+                <div style="align-self:end">
+                    <button class="btn"><span class="material-icons">add</span>Tạo</button>
+                </div>
+            </form>
+        </div>
 
-            <!-- Danh sách thanh toán -->
-            <div class="section">
-                <h2><span class="material-icons">receipt</span> Lịch sử thanh toán</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã thanh toán</th>
-                            <th>Booking</th>
-                            <th>Phương thức</th>
-                            <th>Số tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày thanh toán</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="payment : ${payments}">
-                            <td th:text="${payment.id}"></td>
-                            <td th:text="${payment.booking.id}"></td>
-                            <td th:text="${payment.phuongThuc}"></td>
-                            <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
-                            <td th:text="${payment.trangThai}"></td>
-                            <td th:text="${#dates.format(payment.ngayThanhToan, 'yyyy-MM-dd')}"></td>
-                            <td>
-                                <div class="actions">
-                                    <button class="btn"><span class="material-icons">print</span>In hóa đơn</button>
-                                    <button class="btn"><span class="material-icons">undo</span>Hoàn tiền</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
-    </div>
+        <!-- Danh sách thanh toán -->
+        <div class="section">
+            <h2><span class="material-icons">receipt</span> Lịch sử thanh toán</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Mã thanh toán</th>
+                    <th>Booking</th>
+                    <th>Phương thức</th>
+                    <th>Số tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày thanh toán</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment.id}"></td>
+                    <td th:text="${payment.booking.id}"></td>
+                    <td th:text="${payment.phuongThuc}"></td>
+                    <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${payment.trangThai}"></td>
+                    <td th:text="${#dates.format(payment.ngayThanhToan, 'yyyy-MM-dd')}"></td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn"><span class="material-icons">print</span>In hóa đơn</button>
+                            <button class="btn"><span class="material-icons">undo</span>Hoàn tiền</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 </body>
 
 </html>

@@ -168,121 +168,121 @@
 </head>
 
 <body>
-    <div class="app-layout">
-        <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
-        <main class="main-content">
-            <!-- Tạo booking mới -->
-            <div class="section">
-                <h2><span class="material-icons">add_box</span> Tạo đặt phòng mới</h2>
-                <form style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Khách hàng</label>
-                        <select name="khachHangId">
-                            <option disabled selected>Chọn khách hàng...</option>
-                            <option th:each="kh : ${khachHangs}" th:value="${kh.id}" th:text="${kh.hoTen}"></option>
-                        </select>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Phòng</label>
-                        <select name="phongId">
-                            <option disabled selected>Chọn phòng...</option>
-                            <option th:each="ph : ${phongs}" th:value="${ph.id}" th:text="${ph.tenHienThi}"></option>
-                        </select>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Ngày nhận phòng</label>
-                        <input type="date" />
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Ngày trả phòng</label>
-                        <input type="date" />
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Người lớn</label>
-                        <input type="number" min="1" />
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Trẻ em</label>
-                        <input type="number" min="0" />
-                    </div>
-                    <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label>Mã khuyến mãi</label>
-                        <input type="text" placeholder="Nhập mã giảm giá nếu có..." />
-                    </div>
-                    <div style="grid-column: span 2; text-align: right;">
-                        <button class="btn"><span class="material-icons">check_circle</span> Tạo booking</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Danh sách booking -->
-            <div class="section">
-                <h2><span class="material-icons">list_alt</span> Danh sách đặt phòng</h2>
-                <form style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <input type="text" placeholder="Tìm theo khách hàng..." style="flex: 1" />
-                    <input type="date" />
-                    <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
-                </form>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã</th>
-                            <th>Khách hàng</th>
-                            <th>Phòng</th>
-                            <th>Ngày nhận</th>
-                            <th>Ngày trả</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="booking : ${bookings}">
-                            <td th:text="${booking.id}"></td>
-                            <td th:text="${booking.customer.hoTen}"></td>
-                            <td th:text="${booking.room.soPhong}"></td>
-                            <td th:text="${#dates.format(booking.ngayNhan, 'yyyy-MM-dd')}"></td>
-                            <td th:text="${#dates.format(booking.ngayTra, 'yyyy-MM-dd')}"></td>
-                            <td th:text="${booking.trangThai}"></td>
-                            <td style="display: flex; gap: 6px; flex-wrap: wrap">
-                                <div style="display: flex; flex-direction: column; gap: 6px;">
-                                    <button class="btn"><span class="material-icons">visibility</span>Xem</button>
-                                    <button class="btn"><span class="material-icons">edit</span>Sửa</button>
-                                    <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 6px;">
-                                    <button class="btn"><span class="material-icons">check</span>Xác nhận</button>
-                                    <button class="btn"><span class="material-icons">login</span>Check-in</button>
-                                    <button class="btn"><span class="material-icons">logout</span>Check-out</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Chi tiết booking -->
-            <div class="section">
-                <h2><span class="material-icons">info</span> Chi tiết đặt phòng</h2>
-                <div th:if="${bookingDetail != null}">
-                    <p><strong>Khách hàng:</strong> <span th:text="${bookingDetail.customer.hoTen}"></span></p>
-                    <p><strong>Phòng:</strong> <span th:text="${bookingDetail.room.tenHienThi}"></span></p>
-                    <p><strong>Ngày nhận:</strong> <span
-                            th:text="${#dates.format(bookingDetail.ngayNhan, 'yyyy-MM-dd')}"></span></p>
-                    <p><strong>Ngày trả:</strong> <span
-                            th:text="${#dates.format(bookingDetail.ngayTra, 'yyyy-MM-dd')}"></span></p>
-                    <p><strong>Người lớn:</strong> <span th:text="${bookingDetail.soNguoiLon}"></span> | <strong>Trẻ
-                            em:</strong> <span th:text="${bookingDetail.soTreEm}"></span></p>
-                    <p><strong>Khuyến mãi:</strong> <span th:text="${bookingDetail.khuyenMai}"></span></p>
-                    <p><strong>Dịch vụ kèm theo:</strong> <span th:text="${bookingDetail.dichVuKem}"></span></p>
-                    <p><strong>Trạng thái:</strong> <span th:text="${bookingDetail.trangThai}"></span></p>
-                    <p><strong>Tổng tiền:</strong> <span
-                            th:text="${#numbers.formatDecimal(bookingDetail.tongTien, 0, 'COMMA', 0, 'POINT')}"></span>
-                        VND</p>
-                    <button class="btn"><span class="material-icons">done</span>Check-out</button>
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <!-- Tạo booking mới -->
+        <div class="section">
+            <h2><span class="material-icons">add_box</span> Tạo đặt phòng mới</h2>
+            <form style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Khách hàng</label>
+                    <select name="khachHangId">
+                        <option disabled selected>Chọn khách hàng...</option>
+                        <option th:each="kh : ${khachHangs}" th:value="${kh.id}" th:text="${kh.hoTen}"></option>
+                    </select>
                 </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Phòng</label>
+                    <select name="phongId">
+                        <option disabled selected>Chọn phòng...</option>
+                        <option th:each="ph : ${phongs}" th:value="${ph.id}" th:text="${ph.tenHienThi}"></option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Ngày nhận phòng</label>
+                    <input type="date" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Ngày trả phòng</label>
+                    <input type="date" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Người lớn</label>
+                    <input type="number" min="1" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Trẻ em</label>
+                    <input type="number" min="0" />
+                </div>
+                <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label>Mã khuyến mãi</label>
+                    <input type="text" placeholder="Nhập mã giảm giá nếu có..." />
+                </div>
+                <div style="grid-column: span 2; text-align: right;">
+                    <button class="btn"><span class="material-icons">check_circle</span> Tạo booking</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danh sách booking -->
+        <div class="section">
+            <h2><span class="material-icons">list_alt</span> Danh sách đặt phòng</h2>
+            <form style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" placeholder="Tìm theo khách hàng..." style="flex: 1" />
+                <input type="date" />
+                <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
+            </form>
+            <table>
+                <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Khách hàng</th>
+                    <th>Phòng</th>
+                    <th>Ngày nhận</th>
+                    <th>Ngày trả</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.id}"></td>
+                    <td th:text="${booking.customer.hoTen}"></td>
+                    <td th:text="${booking.room.soPhong}"></td>
+                    <td th:text="${#dates.format(booking.ngayNhan, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(booking.ngayTra, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${booking.trangThai}"></td>
+                    <td style="display: flex; gap: 6px; flex-wrap: wrap">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <button class="btn"><span class="material-icons">visibility</span>Xem</button>
+                            <button class="btn"><span class="material-icons">edit</span>Sửa</button>
+                            <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <button class="btn"><span class="material-icons">check</span>Xác nhận</button>
+                            <button class="btn"><span class="material-icons">login</span>Check-in</button>
+                            <button class="btn"><span class="material-icons">logout</span>Check-out</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Chi tiết booking -->
+        <div class="section">
+            <h2><span class="material-icons">info</span> Chi tiết đặt phòng</h2>
+            <div th:if="${bookingDetail != null}">
+                <p><strong>Khách hàng:</strong> <span th:text="${bookingDetail.customer.hoTen}"></span></p>
+                <p><strong>Phòng:</strong> <span th:text="${bookingDetail.room.tenHienThi}"></span></p>
+                <p><strong>Ngày nhận:</strong> <span
+                        th:text="${#dates.format(bookingDetail.ngayNhan, 'yyyy-MM-dd')}"></span></p>
+                <p><strong>Ngày trả:</strong> <span
+                        th:text="${#dates.format(bookingDetail.ngayTra, 'yyyy-MM-dd')}"></span></p>
+                <p><strong>Người lớn:</strong> <span th:text="${bookingDetail.soNguoiLon}"></span> | <strong>Trẻ
+                    em:</strong> <span th:text="${bookingDetail.soTreEm}"></span></p>
+                <p><strong>Khuyến mãi:</strong> <span th:text="${bookingDetail.khuyenMai}"></span></p>
+                <p><strong>Dịch vụ kèm theo:</strong> <span th:text="${bookingDetail.dichVuKem}"></span></p>
+                <p><strong>Trạng thái:</strong> <span th:text="${bookingDetail.trangThai}"></span></p>
+                <p><strong>Tổng tiền:</strong> <span
+                        th:text="${#numbers.formatDecimal(bookingDetail.tongTien, 0, 'COMMA', 0, 'POINT')}"></span>
+                    VND</p>
+                <button class="btn"><span class="material-icons">done</span>Check-out</button>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+</div>
 </body>
 
 </html>

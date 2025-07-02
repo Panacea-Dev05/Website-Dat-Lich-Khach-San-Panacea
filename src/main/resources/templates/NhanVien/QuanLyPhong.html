@@ -244,130 +244,130 @@
 </head>
 
 <body>
-    <div class="app-layout">
-        <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
-        <main class="main-content">
-            <div class="section">
-                <h2><span class="material-icons">category</span> Tạo loại phòng</h2>
-                <form>
-                    <div>
-                        <label>Tên loại phòng</label>
-                        <input type="text" placeholder="Standard, Deluxe, Suite..." />
-                    </div>
-                    <div>
-                        <label>Diện tích (m²)</label>
-                        <input type="number" step="5" />
-                    </div>
-                    <div>
-                        <label>Số giường</label>
-                        <input type="number" min="1" />
-                    </div>
-                    <div>
-                        <label>Loại giường</label>
-                        <input type="text" placeholder="King, Queen, Twin..." />
-                    </div>
-                    <div>
-                        <label>Sức chứa tối đa</label>
-                        <input type="number" min="1" />
-                    </div>
-                    <div>
-                        <label>Tiện nghi</label>
-                        <textarea placeholder="WiFi, TV, Điều hòa..."></textarea>
-                    </div>
-                    <div>
-                        <label>Mô tả</label>
-                        <textarea placeholder="Mô tả chi tiết..."></textarea>
-                    </div>
-                    <div style="align-self:end">
-                        <button class="btn"><span class="material-icons">add</span>Thêm loại phòng</button>
-                    </div>
-                </form>
-            </div>
+<div class="app-layout">
+    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+    <main class="main-content">
+        <div class="section">
+            <h2><span class="material-icons">category</span> Tạo loại phòng</h2>
+            <form>
+                <div>
+                    <label>Tên loại phòng</label>
+                    <input type="text" placeholder="Standard, Deluxe, Suite..." />
+                </div>
+                <div>
+                    <label>Diện tích (m²)</label>
+                    <input type="number" step="5" />
+                </div>
+                <div>
+                    <label>Số giường</label>
+                    <input type="number" min="1" />
+                </div>
+                <div>
+                    <label>Loại giường</label>
+                    <input type="text" placeholder="King, Queen, Twin..." />
+                </div>
+                <div>
+                    <label>Sức chứa tối đa</label>
+                    <input type="number" min="1" />
+                </div>
+                <div>
+                    <label>Tiện nghi</label>
+                    <textarea placeholder="WiFi, TV, Điều hòa..."></textarea>
+                </div>
+                <div>
+                    <label>Mô tả</label>
+                    <textarea placeholder="Mô tả chi tiết..."></textarea>
+                </div>
+                <div style="align-self:end">
+                    <button class="btn"><span class="material-icons">add</span>Thêm loại phòng</button>
+                </div>
+            </form>
+        </div>
 
-            <div class="section">
-                <h2><span class="material-icons">hotel</span> Thêm/Sửa phòng</h2>
-                <form>
-                    <div>
-                        <label>Số phòng</label>
-                        <input type="text" />
-                    </div>
-                    <div>
-                        <label>Tầng</label>
-                        <input type="number" />
-                    </div>
-                    <div>
-                        <label>View</label>
-                        <input type="text" placeholder="Biển, Vườn, Thành phố..." />
-                    </div>
-                    <div>
-                        <label>Loại phòng</label>
-                        <select name="roomTypeId">
-                            <option disabled selected>Chọn loại phòng...</option>
-                            <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}">
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Trạng thái</label>
-                        <select name="trangThai">
-                            <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Giá cơ bản (VND)</label>
-                        <input type="number" />
-                    </div>
-                    <div>
-                        <label>Ghi chú</label>
-                        <textarea></textarea>
-                    </div>
-                    <div style="align-self:end">
-                        <button class="btn"><span class="material-icons">save</span>Lưu phòng</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="section">
-                <h2><span class="material-icons">list</span> Danh sách phòng</h2>
-                <div class="filter">
-                    <input type="text" placeholder="Tìm kiếm số phòng..." />
-                    <select name="filterTrangThai">
-                        <option value="">Tất cả trạng thái</option>
+        <div class="section">
+            <h2><span class="material-icons">hotel</span> Thêm/Sửa phòng</h2>
+            <form>
+                <div>
+                    <label>Số phòng</label>
+                    <input type="text" />
+                </div>
+                <div>
+                    <label>Tầng</label>
+                    <input type="number" />
+                </div>
+                <div>
+                    <label>View</label>
+                    <input type="text" placeholder="Biển, Vườn, Thành phố..." />
+                </div>
+                <div>
+                    <label>Loại phòng</label>
+                    <select name="roomTypeId">
+                        <option disabled selected>Chọn loại phòng...</option>
+                        <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}">
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label>Trạng thái</label>
+                    <select name="trangThai">
                         <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
                     </select>
-                    <input type="date" />
-                    <input type="number" placeholder="Số người..." />
-                    <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Số phòng</th>
-                            <th>Tầng</th>
-                            <th>Loại</th>
-                            <th>View</th>
-                            <th>Trạng thái</th>
-                            <th>Giá</th>
-                            <th>Ghi chú</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="room : ${rooms}">
-                            <td th:text="${room.soPhong}"></td>
-                            <td th:text="${room.tang}"></td>
-                            <td th:text="${room.roomType.tenLoaiPhong}"></td>
-                            <td th:text="${room.viewPhong}"></td>
-                            <td th:text="${room.trangThai.value}"></td>
-                            <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')}"></td>
-                            <td th:text="${room.ghiChu}"></td>
-                            <td><button class="btn"><span class="material-icons">edit</span>Sửa</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div>
+                    <label>Giá cơ bản (VND)</label>
+                    <input type="number" />
+                </div>
+                <div>
+                    <label>Ghi chú</label>
+                    <textarea></textarea>
+                </div>
+                <div style="align-self:end">
+                    <button class="btn"><span class="material-icons">save</span>Lưu phòng</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2><span class="material-icons">list</span> Danh sách phòng</h2>
+            <div class="filter">
+                <input type="text" placeholder="Tìm kiếm số phòng..." />
+                <select name="filterTrangThai">
+                    <option value="">Tất cả trạng thái</option>
+                    <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
+                </select>
+                <input type="date" />
+                <input type="number" placeholder="Số người..." />
+                <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
             </div>
-        </main>
-    </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Số phòng</th>
+                    <th>Tầng</th>
+                    <th>Loại</th>
+                    <th>View</th>
+                    <th>Trạng thái</th>
+                    <th>Giá</th>
+                    <th>Ghi chú</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="room : ${rooms}">
+                    <td th:text="${room.soPhong}"></td>
+                    <td th:text="${room.tang}"></td>
+                    <td th:text="${room.roomType.tenLoaiPhong}"></td>
+                    <td th:text="${room.viewPhong}"></td>
+                    <td th:text="${room.trangThai.value}"></td>
+                    <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${room.ghiChu}"></td>
+                    <td><button class="btn"><span class="material-icons">edit</span>Sửa</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 </body>
 
 </html>
