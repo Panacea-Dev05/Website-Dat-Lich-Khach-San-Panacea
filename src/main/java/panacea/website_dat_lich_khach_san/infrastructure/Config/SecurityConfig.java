@@ -41,6 +41,7 @@ public class SecurityConfig {
                         "/vendor/**",
                         "/assets/**",
                         "/KhachHang/**",
+                        "/khachhang/**",
                         "/login",
                         "/oauth2/**"
                 ).permitAll()

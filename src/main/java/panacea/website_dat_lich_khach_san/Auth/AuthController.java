@@ -15,8 +15,9 @@ public class AuthController {
         if (principal == null) return new ModelAndView("redirect:/login");
         String role = principal.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("");
         if (role.equals("ROLE_ADMIN")) return new ModelAndView("redirect:/admin/bookings");
-        if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/dashboard");
         if (role.equals("ROLE_KHACHHANG")) return new ModelAndView("redirect:/khachhang");
+        if (role.equals("ROLE_NHANVIEN")) return new ModelAndView("redirect:/nhanvien/trangchu");
+
         return new ModelAndView("redirect:/login");
     }
 }
