@@ -66,11 +66,9 @@ public class Booking {
     @Column(name = "tien_dat_coc", precision = 15, scale = 2)
     private BigDecimal tienDatCoc = BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai_dat_phong", length = 20)
     private TrangThaiDatPhong trangThaiDatPhong = TrangThaiDatPhong.CHO_XAC_NHAN;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai_thanh_toan", length = 20)
     private TrangThaiThanhToan trangThaiThanhToan = TrangThaiThanhToan.CHUA_THANH_TOAN;
 
@@ -119,12 +117,21 @@ public class Booking {
         DA_HOAN_THANH("Đã hoàn thành"),
         DA_HUY("Đã hủy");
 
-        private final String value;
-        TrangThaiDatPhong(String value) {
-            this.value = value;
+        private final String label;
+        TrangThaiDatPhong(String label) {
+            this.label = label;
         }
-        public String getValue() {
-            return value;
+        public String getLabel() {
+            return label;
+        }
+        public static TrangThaiDatPhong fromString(String input) {
+            if (input == null) return null;
+            for (TrangThaiDatPhong ttdp : TrangThaiDatPhong.values()) {
+                if (ttdp.label.equalsIgnoreCase(input)) {
+                    return ttdp;
+                }
+            }
+            throw new IllegalArgumentException("Giá trị không hợp lệ cho TrangThaiDatPhong: " + input);
         }
     }
 
@@ -134,12 +141,19 @@ public class Booking {
         DA_THANH_TOAN("Đã thanh toán"),
         HOAN_TIEN("Hoàn tiền");
 
-        private final String value;
-        TrangThaiThanhToan(String value) {
-            this.value = value;
+        private final String label;
+        TrangThaiThanhToan(String label) {
+            this.label = label;
         }
-        public String getValue() {
-            return value;
+        public String getLabel() {
+            return label;
+        }
+        public static TrangThaiThanhToan fromString(String input) {
+            if (input == null) return null;
+            for (TrangThaiThanhToan t : values()) {
+                if (t.label.equalsIgnoreCase(input)) return t;
+            }
+            throw new IllegalArgumentException("Giá trị không hợp lệ cho TrangThaiThanhToan: " + input);
         }
     }
 

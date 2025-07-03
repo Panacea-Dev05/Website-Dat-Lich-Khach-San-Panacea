@@ -1,13 +1,22 @@
-package panacea.website_dat_lich_khach_san.core.KhachHang;
+package panacea.website_dat_lich_khach_san.core.KhachHang.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
+import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangService;
+import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/khachhang")
 
 public class KhachHangController {
+    @Autowired
+    private KhachHangService khachHangService;
+
     @GetMapping("/dashboard")
     public String dashboard() {
         return "KhachHangDashboard";
@@ -161,5 +170,15 @@ public class KhachHangController {
     @GetMapping("/coming-soon")
     public String comingSoonAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/comming";
+    }
+
+    // Xử lý đặt phòng từ form single-room
+    @PostMapping("/single-room/booking")
+    public String datPhong(@ModelAttribute BookingRequestDTO bookingRequestDTO, Model model) {
+        boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
+        model.addAttribute("result", result);
+        model.addAttribute("email", bookingRequestDTO.getEmailKhach());
+        // Trả về template thông báo chờ xác nhận
+        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
     }
 }

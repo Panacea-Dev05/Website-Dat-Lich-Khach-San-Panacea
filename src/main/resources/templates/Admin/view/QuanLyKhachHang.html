@@ -46,13 +46,13 @@
             <tr th:each="customer, stat : ${customers}">
               <td th:text="${stat.count}">1</td>
               <td th:text="${customer.id}">1</td>
-              <td th:text="${customer.name}">Nguyễn Văn A</td>
+              <td th:text="${customer.ho + ' ' + customer.ten}">Nguyễn Văn A</td>
               <td th:text="${customer.email}">nguyenvana@email.com</td>
-              <td th:text="${customer.phone}">0903123456</td>
-              <td th:text="${customer.address}">Hà Nội</td>
+              <td th:text="${customer.soDienThoai}">0903123456</td>
+              <td th:text="${customer.diaChi}">Hà Nội</td>
               <td>
-                <span th:class="${customer.status == 'Active' ? 'status-active' : 'status-locked'}"
-                  th:text="${customer.status == 'Active' ? 'Hoạt động' : 'Khóa'}">
+                <span th:class="${customer.trangThai == 'HOAT_DONG' ? 'status-active' : 'status-locked'}"
+                  th:text="${customer.trangThai == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}">
                   Hoạt động
                 </span>
               </td>
@@ -84,8 +84,9 @@
           <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
           <label for="customerStatus">Trạng thái</label>
           <select id="customerStatus" name="customerStatus" required>
-            <option value="Active" selected>Hoạt động</option>
-            <option value="Locked">Khóa</option>
+            <option value="" disabled selected>Chọn trạng thái</option>
+            <option th:each="status : ${customerStatuses}" th:value="${status}"
+              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"></option>
           </select>
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
             <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
