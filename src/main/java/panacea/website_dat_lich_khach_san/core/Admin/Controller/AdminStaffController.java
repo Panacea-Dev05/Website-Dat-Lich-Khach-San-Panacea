@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminStaffService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.StaffDTO;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -19,7 +20,11 @@ public class AdminStaffController {
     @GetMapping
     public String staffManagement(Model model) {
         List<StaffDTO> staffList = adminStaffService.getAllStaff();
+        List<String> staffRoles = Arrays.asList("Nhân viên lễ tân", "Nhân viên buồng phòng", "Nhân viên bảo trì", "Quản lý");
+        List<String> staffStatuses = Arrays.asList("HOAT_DONG", "NGHI_VIEC");
         model.addAttribute("staffList", staffList);
+        model.addAttribute("staffRoles", staffRoles);
+        model.addAttribute("staffStatuses", staffStatuses);
         return "Admin/view/QuanLyNhanVien";
     }
     

@@ -1,20 +1,26 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import panacea.website_dat_lich_khach_san.entity.Booking;
-import panacea.website_dat_lich_khach_san.repository.BookingRepository;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDTO;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.BookingDetail;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDTO;
+import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
+import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 
 @Service
 public class AdminBookingService {
     
     @Autowired
     private BookingRepository bookingRepository;
+    
+    @Autowired
+    private BookingDetailRepository bookingDetailRepository;
     
     public List<BookingDTO> getAllBookings() {
         return bookingRepository.findAll().stream()
@@ -40,7 +46,7 @@ public class AdminBookingService {
             booking.setNgayNhanPhong(bookingDTO.getNgayNhanPhong());
             booking.setNgayTraPhong(bookingDTO.getNgayTraPhong());
             booking.setTongThanhToan(bookingDTO.getTongThanhToan());
-            booking.setTrangThaiDatPhong(bookingDTO.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.valueOf(bookingDTO.getTrangThaiDatPhong()) : null);
+            booking.setTrangThaiDatPhong(bookingDTO.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.fromString(bookingDTO.getTrangThaiDatPhong()) : null);
             booking.setGhiChuKhachHang(bookingDTO.getGhiChuKhachHang());
             Booking savedBooking = bookingRepository.save(booking);
             return convertToDTO(savedBooking);
@@ -66,6 +72,17 @@ public class AdminBookingService {
         dto.setTrangThaiDatPhong(booking.getTrangThaiDatPhong() != null ? booking.getTrangThaiDatPhong().name() : null);
         dto.setGhiChuKhachHang(booking.getGhiChuKhachHang());
         dto.setCreatedDate(booking.getCreatedDate());
+        // Set roomNumber from BookingDetail if available
+        java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+        if (details != null && !details.isEmpty() && details.get(0).getRoom() != null) {
+            dto.setRoomNumber(details.get(0).getRoom().getSoPhong());
+        }
+        // Set customerName
+        if (booking.getKhachHang() != null) {
+            dto.setCustomerName(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
+        } else {
+            dto.setCustomerName("Không rõ");
+        }
         return dto;
     }
     
@@ -74,7 +91,7 @@ public class AdminBookingService {
         booking.setNgayNhanPhong(dto.getNgayNhanPhong());
         booking.setNgayTraPhong(dto.getNgayTraPhong());
         booking.setTongThanhToan(dto.getTongThanhToan());
-        booking.setTrangThaiDatPhong(dto.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.valueOf(dto.getTrangThaiDatPhong()) : null);
+        booking.setTrangThaiDatPhong(dto.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.fromString(dto.getTrangThaiDatPhong()) : null);
         booking.setGhiChuKhachHang(dto.getGhiChuKhachHang());
         return booking;
     }

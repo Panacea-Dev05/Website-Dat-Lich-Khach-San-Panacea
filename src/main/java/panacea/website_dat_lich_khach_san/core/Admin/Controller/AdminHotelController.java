@@ -8,6 +8,7 @@ import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.HotelDTO;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,9 @@ public class AdminHotelController {
         List<HotelDTO> hotels = hotelRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+        List<String> hotelStatuses = Arrays.asList("HOAT_DONG", "DONG_CUA", "BAO_TRI");
         model.addAttribute("hotels", hotels);
+        model.addAttribute("hotelStatuses", hotelStatuses);
         return "Admin/view/QuanLyKhachSan";
     }
     

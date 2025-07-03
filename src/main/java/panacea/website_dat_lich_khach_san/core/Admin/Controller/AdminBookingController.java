@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminBookingService;
+import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminCustomerService;
+import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminRoomService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDTO;
 
 import java.util.List;
@@ -16,10 +18,18 @@ public class AdminBookingController {
     @Autowired
     private AdminBookingService adminBookingService;
     
+    @Autowired
+    private AdminCustomerService adminCustomerService;
+    
+    @Autowired
+    private AdminRoomService adminRoomService;
+    
     @GetMapping
     public String bookingManagement(Model model) {
         List<BookingDTO> bookings = adminBookingService.getAllBookings();
         model.addAttribute("bookings", bookings);
+        model.addAttribute("customers", adminCustomerService.getAllCustomers());
+        model.addAttribute("rooms", adminRoomService.getAllRooms());
         return "Admin/view/QuanLyDatPhong";
     }
     

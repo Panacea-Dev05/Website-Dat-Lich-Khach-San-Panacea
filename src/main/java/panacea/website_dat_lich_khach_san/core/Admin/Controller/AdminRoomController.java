@@ -6,7 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminRoomService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -19,7 +21,13 @@ public class AdminRoomController {
     @GetMapping
     public String roomManagement(Model model) {
         List<RoomDTO> rooms = adminRoomService.getAllRooms();
+        List<RoomTypeDTO> roomTypes = adminRoomService.getAllRoomTypes();
+        List<String> roomViews = Arrays.asList("City", "Pool", "Sea", "Garden");
+        List<String> roomStatuses = Arrays.asList("SAN_SANG", "BAO_TRI", "DON_DEP");
         model.addAttribute("rooms", rooms);
+        model.addAttribute("roomTypes", roomTypes);
+        model.addAttribute("roomViews", roomViews);
+        model.addAttribute("roomStatuses", roomStatuses);
         return "Admin/view/QuanLyPhong";
     }
     

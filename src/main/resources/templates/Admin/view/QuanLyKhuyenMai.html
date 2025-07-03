@@ -90,8 +90,8 @@
           <label for="loaiGiamGia">Loại giảm giá</label>
           <select id="loaiGiamGia" name="loaiGiamGia" required>
             <option value="" disabled selected>Chọn loại giảm giá</option>
-            <option value="PHAN_TRAM">Phần trăm (%)</option>
-            <option value="SO_TIEN">Số tiền (VNĐ)</option>
+            <option th:each="type : ${promotionTypes}" th:value="${type}"
+              th:text="${type == 'PHAN_TRAM' ? 'Phần trăm (%)' : 'Số tiền (VNĐ)'}"></option>
           </select>
 
           <label for="giaTriGiam">Giá trị giảm</label>
@@ -114,9 +114,10 @@
 
           <label for="trangThai">Trạng thái</label>
           <select id="trangThai" name="trangThai" required>
-            <option value="HOAT_DONG" selected>Hoạt động</option>
-            <option value="TAM_NGUNG">Tạm ngưng</option>
-            <option value="HET_HAN">Hết hạn</option>
+            <option value="" disabled selected>Chọn trạng thái</option>
+            <option th:each="status : ${promotionStatuses}" th:value="${status}"
+              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}">
+            </option>
           </select>
 
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
