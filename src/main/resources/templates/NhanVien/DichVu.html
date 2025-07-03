@@ -227,11 +227,11 @@
                 <tbody>
                 <tr th:each="service : ${serviceDetails}">
                     <td th:text="${service.id}"></td>
-                    <td th:text="${service.tenDichVu}"></td>
-                    <td th:text="${service.loaiDichVu}"></td>
-                    <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${service.donViTinh}"></td>
-                    <td th:text="${service.trangThai}"></td>
+                    <td th:text="${service.service.tenDichVu}"></td>
+                    <td th:text="${service.service.loaiDichVu}"></td>
+                    <td th:text="${#numbers.formatDecimal(service.donGiaThucTe, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${service.service.donViTinh}"></td>
+                    <td th:text="${service.service.trangThai}"></td>
                     <td>
                         <button class="btn"><span class="material-icons">edit</span>Sửa</button>
                         <button class="btn"><span class="material-icons">cancel</span>Hủy</button>

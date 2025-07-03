@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminCustomerService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -20,6 +21,7 @@ public class AdminCustomerController {
     public String customerManagement(Model model) {
         List<CustomerDTO> customers = adminCustomerService.getAllCustomers();
         model.addAttribute("customers", customers);
+        model.addAttribute("customerStatuses", Arrays.asList("HOAT_DONG", "LOCKED"));
         return "Admin/view/QuanLyKhachHang";
     }
     

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +18,9 @@ public class AdminRoomService {
     
     @Autowired
     private RoomRepository roomRepository;
+    
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
     
     public List<RoomDTO> getAllRooms() {
         return roomRepository.findAll().stream()
@@ -55,6 +61,29 @@ public class AdminRoomService {
             return true;
         }
         return false;
+    }
+    
+    public List<RoomTypeDTO> getAllRoomTypes() {
+        return roomTypeRepository.findAll().stream()
+            .map(this::convertRoomTypeToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    private RoomTypeDTO convertRoomTypeToDTO(RoomType roomType) {
+        RoomTypeDTO dto = new RoomTypeDTO();
+        dto.setId(roomType.getId());
+        dto.setMaLoaiPhong(roomType.getMaLoaiPhong());
+        dto.setTenLoaiPhong(roomType.getTenLoaiPhong());
+        dto.setDienTich(roomType.getDienTich());
+        dto.setSoGiuong(roomType.getSoGiuong());
+        dto.setLoaiGiuong(roomType.getLoaiGiuong());
+        dto.setSucChuaToiDa(roomType.getSucChuaToiDa());
+        dto.setMoTa(roomType.getMoTa());
+        dto.setTienNghi(roomType.getTienNghi());
+        dto.setUuidId(roomType.getUuidId());
+        dto.setCreatedDate(roomType.getCreatedDate());
+        dto.setLastModifiedDate(roomType.getLastModifiedDate());
+        return dto;
     }
     
     private RoomDTO convertToDTO(Room room) {

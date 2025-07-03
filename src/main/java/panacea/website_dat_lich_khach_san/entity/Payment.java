@@ -1,12 +1,25 @@
 package panacea.website_dat_lich_khach_san.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "PAYMENT")
@@ -37,7 +50,7 @@ public class Payment {
     @Column(name = "ma_giao_dich", length = 100)
     private String maGiaoDich;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TrangThaiPaymentConverter.class)
     @Column(name = "trang_thai", length = 20)
     private TrangThaiPayment trangThai = TrangThaiPayment.DANG_XU_LY;
 
@@ -71,6 +84,15 @@ public class Payment {
 
         public String getValue() {
             return value;
+        }
+
+        public static TrangThaiPayment fromLabel(String label) {
+            for (TrangThaiPayment ttp : TrangThaiPayment.values()) {
+                if (ttp.getValue().equalsIgnoreCase(label)) {
+                    return ttp;
+                }
+            }
+            throw new IllegalArgumentException("Không hợp lệ: " + label);
         }
     }
 

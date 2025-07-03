@@ -52,7 +52,7 @@ public class Review {
     @Column(name = "ngay_danh_gia")
     private LocalDateTime ngayDanhGia;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TrangThaiReviewConverter.class)
     @Column(name = "trang_thai", length = 20)
     private TrangThaiReview trangThai = TrangThaiReview.CHO_DUYET;
 
@@ -87,6 +87,15 @@ public class Review {
 
         public String getValue() {
             return value;
+        }
+
+        public static TrangThaiReview fromLabel(String label) {
+            for (TrangThaiReview ttr : TrangThaiReview.values()) {
+                if (ttr.getValue().equalsIgnoreCase(label)) {
+                    return ttr;
+                }
+            }
+            throw new IllegalArgumentException("Không hợp lệ: " + label);
         }
     }
 

@@ -47,7 +47,9 @@
             <tr th:each="booking, stat : ${bookings}">
               <td th:text="${stat.count}">1</td>
               <td th:text="${booking.id}">BK001</td>
-              <td th:text="${booking.customerName}">Nguyễn Văn A</td>
+              <td
+                th:text="${booking.khachHang != null ? booking.khachHang.ho + ' ' + booking.khachHang.ten : 'Không rõ'}">
+                Nguyễn Văn A</td>
               <td th:text="${booking.roomNumber}">101</td>
               <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">15/12/2024</td>
               <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">18/12/2024</td>
@@ -82,15 +84,15 @@
           <label for="customerId">Khách hàng</label>
           <select id="customerId" name="customerId" required>
             <option value="" disabled selected>Chọn khách hàng</option>
-            <option value="1">Nguyễn Văn A</option>
-            <option value="2">Trần Thị B</option>
+            <option th:each="customer : ${customers}" th:value="${customer.id}"
+              th:text="${customer.ho + ' ' + customer.ten}"></option>
           </select>
 
           <label for="roomId">Phòng</label>
           <select id="roomId" name="roomId" required>
             <option value="" disabled selected>Chọn phòng</option>
-            <option value="1">Phòng 101 - Standard</option>
-            <option value="2">Phòng 102 - Deluxe</option>
+            <option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.soPhong + ' - ' + room.roomTypeId}">
+            </option>
           </select>
 
           <label for="checkInDate">Ngày check-in</label>

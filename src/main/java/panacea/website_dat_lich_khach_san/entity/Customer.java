@@ -43,7 +43,6 @@ public class Customer {
     @Column(name = "ngay_sinh")
     private LocalDate ngaySinh;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "gioi_tinh", length = 10)
     private GioiTinh gioiTinh;
 
@@ -92,14 +91,24 @@ public class Customer {
         NU("Nữ"),
         KHAC("Khác");
 
-        private final String value;
+        private final String label;
 
-        GioiTinh(String value) {
-            this.value = value;
+        GioiTinh(String label) {
+            this.label = label;
         }
 
-        public String getValue() {
-            return value;
+        public String getLabel() {
+            return label;
+        }
+
+        public static GioiTinh fromString(String input) {
+            if (input == null) return null;
+            for (GioiTinh gt : GioiTinh.values()) {
+                if (gt.label.equalsIgnoreCase(input)) {
+                    return gt;
+                }
+            }
+            throw new IllegalArgumentException("Giá trị không hợp lệ cho GioiTinh: " + input);
         }
     }
 

@@ -86,9 +86,8 @@
                     <label for="roomType">Loại phòng</label>
                     <select id="roomTypeId" name="roomTypeId" required>
                         <option value="" disabled selected>Chọn loại phòng</option>
-                        <option value="1">Standard</option>
-                        <option value="2">Deluxe</option>
-                        <option value="3">Suite</option>
+                        <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}">
+                        </option>
                     </select>
 
                     <label for="floor">Tầng</label>
@@ -97,10 +96,7 @@
                     <label for="view">View</label>
                     <select id="viewPhong" name="viewPhong" required>
                         <option value="" disabled selected>Chọn view</option>
-                        <option value="City">Thành phố</option>
-                        <option value="Pool">Hồ bơi</option>
-                        <option value="Sea">Biển</option>
-                        <option value="Garden">Vườn</option>
+                        <option th:each="view : ${roomViews}" th:value="${view}" th:text="${view}"></option>
                     </select>
 
                     <label for="basePrice">Giá cơ bản (VNĐ)</label>
@@ -110,9 +106,9 @@
                     <label for="status">Trạng thái</label>
                     <select id="trangThai" name="trangThai" required>
                         <option value="" disabled selected>Chọn trạng thái</option>
-                        <option value="SAN_SANG">Sẵn sàng</option>
-                        <option value="BAO_TRI">Bảo trì</option>
-                        <option value="DON_DEP">Dọn dẹp</option>
+                        <option th:each="status : ${roomStatuses}" th:value="${status}"
+                            th:text="${status == 'SAN_SANG' ? 'Sẵn sàng' : (status == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp')}">
+                        </option>
                     </select>
 
                     <div style="grid-column: 2 / 3; margin-top: 1.5rem;">

@@ -92,7 +92,7 @@ public class AdminCustomerService {
         customer.setEmail(dto.getEmail());
         customer.setSoDienThoai(dto.getSoDienThoai());
         customer.setNgaySinh(dto.getNgaySinh());
-        customer.setGioiTinh(dto.getGioiTinh() != null ? panacea.website_dat_lich_khach_san.entity.Customer.GioiTinh.valueOf(dto.getGioiTinh()) : null);
+        customer.setGioiTinh(dto.getGioiTinh() != null ? panacea.website_dat_lich_khach_san.entity.Customer.GioiTinh.fromString(dto.getGioiTinh()) : null);
         customer.setQuocTich(dto.getQuocTich());
         customer.setSoCmndCccd(dto.getSoCmndCccd());
         customer.setSoHoChieu(dto.getSoHoChieu());

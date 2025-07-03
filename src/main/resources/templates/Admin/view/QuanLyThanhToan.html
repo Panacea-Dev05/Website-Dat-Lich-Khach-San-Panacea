@@ -82,8 +82,8 @@
           <label for="bookingId">Mã đặt phòng</label>
           <select id="bookingId" name="bookingId" required>
             <option value="" disabled selected>Chọn đặt phòng</option>
-            <option value="1">BK001 - Nguyễn Văn A</option>
-            <option value="2">BK002 - Trần Thị B</option>
+            <option th:each="booking : ${bookings}" th:value="${booking.id}"
+              th:text="${booking.maDatPhong + ' - ' + booking.customerName}"></option>
           </select>
 
           <label for="amount">Số tiền (VNĐ)</label>
@@ -92,11 +92,7 @@
           <label for="paymentMethod">Phương thức thanh toán</label>
           <select id="paymentMethod" name="paymentMethod" required>
             <option value="" disabled selected>Chọn phương thức</option>
-            <option value="Cash">Tiền mặt</option>
-            <option value="Credit Card">Thẻ tín dụng</option>
-            <option value="Debit Card">Thẻ ghi nợ</option>
-            <option value="Bank Transfer">Chuyển khoản</option>
-            <option value="E-wallet">Ví điện tử</option>
+            <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
           </select>
 
           <label for="paymentDate">Ngày thanh toán</label>
@@ -104,10 +100,10 @@
 
           <label for="status">Trạng thái</label>
           <select id="status" name="status" required>
-            <option value="Pending" selected>Chờ xử lý</option>
-            <option value="Completed">Hoàn thành</option>
-            <option value="Failed">Thất bại</option>
-            <option value="Refunded">Hoàn tiền</option>
+            <option value="" disabled selected>Chọn trạng thái</option>
+            <option th:each="status : ${paymentStatuses}" th:value="${status}"
+              th:text="${status == 'Completed' ? 'Hoàn thành' : (status == 'Pending' ? 'Chờ xử lý' : (status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'))}">
+            </option>
           </select>
 
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
