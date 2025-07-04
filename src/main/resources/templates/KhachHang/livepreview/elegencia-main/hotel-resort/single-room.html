@@ -438,12 +438,28 @@
                                 <p>There are many variations of <br> passages Lorem available..</p>
                             </div>
                             <div class="ak-height-50 ak-height-lg-30"></div>
-                            <form action="#">
+                            <form id="bookingNowForm" action="/khachhang/single-room/booking" method="post">
+                                <input type="hidden" name="roomId" value="1" />
+                                <input type="hidden" name="hotelId" value="1" />
+                                <!-- Thêm các trường thông tin khách hàng -->
+                                <div class="form-group">
+                                    <input type="text" name="hoKhach" class="form-control booking-now-input" placeholder="Họ" required />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="tenKhach" class="form-control booking-now-input" placeholder="Tên" required />
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="emailKhach" class="form-control booking-now-input" placeholder="Email" required />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="soDienThoai" class="form-control booking-now-input" placeholder="Số điện thoại" required />
+                                </div>
+                                <!-- ... giữ nguyên các div, class, style ... -->
                                 <div class="check">
                                     <div class="check-data">
                                         <p class="check-title">Check In</p>
-                                        <div class=" date-packer">
-                                            <input type="date" value="2023-07-22" name="data-check-in">
+                                        <div class="date-packer">
+                                            <input type="date" name="ngayNhanPhong" value="2023-07-22" />
                                             <div class="date-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                                     viewBox="0 0 25 25" fill="none">
@@ -462,12 +478,11 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="border-height-one my-3"></div>
                                     <div class="check-data">
                                         <p class="check-title">Check Out</p>
-                                        <div class=" date-packer">
-                                            <input type="date" value="2023-07-22" name="data-check-out">
+                                        <div class="date-packer">
+                                            <input type="date" name="ngayTraPhong" value="2023-07-22" />
                                             <div class="date-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                                     viewBox="0 0 25 25" fill="none">
@@ -493,7 +508,7 @@
                                     <p>Adult</p>
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" value="Decrease Value">-</div>
-                                        <input class="number-input" type="number" id="number-single-room" value="0" />
+                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="0" />
                                         <div class="value-button" id="increase" value="Increase Value">+</div>
                                     </div>
                                 </div>
@@ -502,7 +517,7 @@
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" onclick="decreaseValue()"
                                             value="Decrease Value">-</div>
-                                        <input type="number" class="number-input" id="number" value="0" />
+                                        <input type="number" class="number-input" id="number" name="soTreEm" value="0" />
                                         <div class="value-button" id="increase" onclick="increaseValue()"
                                             value="Increase Value">+</div>
                                     </div>
@@ -809,6 +824,92 @@
     <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+
+<!-- Popup Modal -->
+<div id="bookingResultModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
+  <div style="background:#181a20; color:#fff; border-radius:16px; max-width:90vw; width:400px; margin:auto; padding:32px 24px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+    <div id="bookingResultContent"></div>
+    <button onclick="document.getElementById('bookingResultModal').style.display='none'" style="margin-top:24px; padding:10px 32px; border:none; border-radius:8px; background:#FFD28D; color:#181a20; font-weight:600; cursor:pointer;">Đóng</button>
+  </div>
+</div>
+
+<script>
+// Gửi form booking bằng AJAX, show popup kết quả
+const bookingForm = document.getElementById('bookingNowForm');
+if (bookingForm) {
+  bookingForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(bookingForm);
+    const data = {};
+    formData.forEach((v, k) => data[k] = v);
+    try {
+      const res = await fetch(bookingForm.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      showBookingResult(result.success, result.message);
+    } catch (err) {
+      showBookingResult(false, 'Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ hỗ trợ.');
+    }
+  });
+}
+function showBookingResult(success, message) {
+  const modal = document.getElementById('bookingResultModal');
+  const content = document.getElementById('bookingResultContent');
+  if (success) {
+    content.innerHTML = `<h2>Đặt phòng thành công!</h2><p>${message || 'Yêu cầu đặt phòng của bạn đã được gửi. Vui lòng kiểm tra email và chờ xác nhận từ nhân viên.'}</p>`;
+  } else {
+    content.innerHTML = `<h2>Đặt phòng thất bại!</h2><p>${message || 'Đã có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ hỗ trợ.'}</p>`;
+  }
+  modal.style.display = 'flex';
+}
+</script>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;overflow:hidden;">
+      <div class="modal-header" style="border-bottom:0;">
+        <h5 class="modal-title" style="font-weight:700;">Đăng nhập để tiếp tục</h5>
+        <button type="button" class="close" onclick="closeLoginModal()" style="font-size:2rem;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:32px;">
+        <form id="loginForm" method="post" action="/login">
+          <div class="form-group">
+            <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" style="width:100%;">Đăng nhập</button>
+        </form>
+        <div style="margin-top:16px;">
+          <a href="/oauth2/authorization/google" class="btn btn-danger btn-block" style="width:100%;">Đăng nhập với Google</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Login Modal -->
+
+<style>
+.modal {
+  position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
+}
+.modal-dialog { max-width: 400px; width: 100%; }
+</style>
+
+<script>
+function showLoginModal() {
+  document.getElementById('loginModal').style.display = 'flex';
+}
+function closeLoginModal() {
+  document.getElementById('loginModal').style.display = 'none';
+}
+</script>
 </body>
 
 

@@ -6669,4 +6669,28 @@ input[type=checkbox] {
 .ak-accordeon .ak-accordion-item.ak-color-1 .ak-accordion-body {
   background: rgba(241, 241, 241, 0.3);
   font-size: 16px;
-}/*# sourceMappingURL=style.css.map */
+}
+
+/* Modern style for Booking Now inputs (Họ tên, Email, Số điện thoại) */
+.booking-now-input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    border: 1.5px solid #33343a;
+    border-radius: 10px;
+    background: #181a20;
+    color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.booking-now-input:focus {
+    border-color: #FFD28D;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255,210,141,0.15);
+}
+.booking-now-input::placeholder {
+    color: #bdbdbd;
+    opacity: 1;
+    font-size: 1rem;
+}

@@ -15,4 +15,5 @@ public class BookingRequestDTO {
     private String emailKhach;
     private String soDienThoai;
     private String ghiChuKhachHang;
+    private String hoKhach;
 } 
