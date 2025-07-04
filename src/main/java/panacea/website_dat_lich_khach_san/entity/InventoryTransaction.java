@@ -1,12 +1,29 @@
 package panacea.website_dat_lich_khach_san.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDichConverter;
 
 @Entity
 @Table(name = "INVENTORY_TRANSACTION")
@@ -25,7 +42,7 @@ public class InventoryTransaction {
     @Column(name = "vat_pham_id", nullable = false)
     private Integer vatPhamId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = LoaiGiaoDichConverter.class)
     @Column(name = "loai_giao_dich", length = 20)
     private LoaiGiaoDich loaiGiaoDich;
 
@@ -71,16 +88,30 @@ public class InventoryTransaction {
 
     // Enums
     public enum LoaiGiaoDich {
-        NHAP("Nhập"), XUAT("Xuất"), KIEM_KE("Kiểm kê"), HONG("Hỏng");
+        NHAP("Nhập"),
+        XUAT("Xuất"),
+        KIEM_KE("Kiểm kê"),
+        HONG("Hỏng");
 
-        private final String value;
+        private final String label;
 
-        LoaiGiaoDich(String value) {
-            this.value = value;
+        LoaiGiaoDich(String label) {
+            this.label = label;
         }
 
-        public String getValue() {
-            return value;
+        @JsonValue
+        public String getLabel() {
+            return label;
+        }
+
+        @JsonCreator
+        public static LoaiGiaoDich fromLabel(String input) {
+            for (LoaiGiaoDich type : LoaiGiaoDich.values()) {
+                if (type.label.equalsIgnoreCase(input) || type.name().equalsIgnoreCase(input)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Không tìm thấy loại giao dịch: " + input);
         }
     }
 
