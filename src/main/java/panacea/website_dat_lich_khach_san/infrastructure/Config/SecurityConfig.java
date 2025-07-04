@@ -49,8 +49,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/oauth2/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/khachhang/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/khachhang/**").hasRole("KHACHHANG")
+                        .requestMatchers("/khachhang/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/nhanvien/**").hasRole("NHANVIEN")
                         .anyRequest().authenticated()

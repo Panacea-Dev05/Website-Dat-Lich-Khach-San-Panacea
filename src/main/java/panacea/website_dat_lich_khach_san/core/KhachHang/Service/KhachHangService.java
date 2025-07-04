@@ -17,6 +17,18 @@ import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import org.springframework.core.io.ByteArrayResource;
+import java.math.BigDecimal;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamSource;
 
 @Service
 public class KhachHangService {
@@ -63,9 +75,27 @@ public class KhachHangService {
             // Sinh mã đặt phòng tự động
             String maDatPhong = "BOOK" + System.currentTimeMillis();
             booking.setMaDatPhong(maDatPhong);
+            // Đảm bảo các trường số không null/hợp lệ (>= 1 nếu constraint > 0)
+            if (booking.getSoNguoiLon() == null || booking.getSoNguoiLon() < 1) booking.setSoNguoiLon((byte) 1);
+            if (booking.getSoTreEm() == null || booking.getSoTreEm() < 0) booking.setSoTreEm((byte) 0);
+            if (booking.getTongTienPhong() == null || booking.getTongTienPhong().compareTo(BigDecimal.ONE) < 0)
+                booking.setTongTienPhong(new BigDecimal("10000")); // hoặc lấy giá phòng thực tế
+            if (booking.getTongThanhToan() == null || booking.getTongThanhToan().compareTo(BigDecimal.ONE) < 0)
+                booking.setTongThanhToan(booking.getTongTienPhong());
+            if (booking.getTongTienDichVu() == null || booking.getTongTienDichVu().compareTo(BigDecimal.ZERO) < 0)
+                booking.setTongTienDichVu(BigDecimal.ZERO);
+            if (booking.getGiamGiaPromotion() == null || booking.getGiamGiaPromotion().compareTo(BigDecimal.ZERO) < 0)
+                booking.setGiamGiaPromotion(BigDecimal.ZERO);
+            if (booking.getPhiThue() == null || booking.getPhiThue().compareTo(BigDecimal.ZERO) < 0)
+                booking.setPhiThue(BigDecimal.ZERO);
+            if (booking.getTienDatCoc() == null || booking.getTienDatCoc().compareTo(BigDecimal.ZERO) < 0)
+                booking.setTienDatCoc(BigDecimal.ZERO);
             // TODO: set thêm các trường khác nếu cần
 
             bookingRepository.save(booking);
+
+            // --- Đọc ảnh QR Momo tĩnh từ resources ---
+            InputStreamSource qrImage = new ClassPathResource("static/img/momo-qr.png");
 
             // Gửi mail cho khách hàng
             if (mailSender != null) {
@@ -81,6 +111,11 @@ public class KhachHangService {
                     "<li>Số trẻ em: %d</li>" +
                     "<li>Ghi chú: %s</li>" +
                     "</ul>" +
+                    "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
+                    "<img src='cid:qr_momo' width='250' height='250'/>" +
+                    "<p><b>Số tiền cần chuyển: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
+                    "<p><b>Nội dung chuyển khoản: </b>DatPhong_" + maDatPhong + "</p>" +
+                    "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
                     "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
                     "<br><b>Panacea Hotel</b>",
                     dto.getTenKhach(),
@@ -90,7 +125,7 @@ public class KhachHangService {
                     dto.getSoTreEm(),
                     dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có"
                 );
-                sendMail(dto.getEmailKhach(), subject, text);
+                sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
             }
             return true;
         } catch (Exception e) {
@@ -105,6 +140,35 @@ public class KhachHangService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text, true);
+        mailSender.send(message);
+    }
+
+    // Hàm sinh QR code từ chuỗi (dùng ZXing)
+    private byte[] generateQRCodeImage(String text, int width, int height) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            Map<EncodeHintType, Object> hints = new HashMap<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hints);
+            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+            return pngOutputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Gửi mail kèm QR code (ảnh inline từ file)
+    private void sendMailWithQRFile(String to, String subject, String html, InputStreamSource qrImage) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(html, true);
+        if (qrImage != null) {
+            helper.addInline("qr_momo", qrImage, "image/png");
+        }
         mailSender.send(message);
     }
 } 
