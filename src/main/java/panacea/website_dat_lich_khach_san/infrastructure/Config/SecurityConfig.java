@@ -19,6 +19,11 @@ import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.HttpMethod;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import java.io.IOException;
 
 @Configuration
 public class SecurityConfig {
@@ -41,15 +46,28 @@ public class SecurityConfig {
                                 "/vendor/**",
                                 "/assets/**",
                                 "/KhachHang/**",
-                                "/khachhang/**",
                                 "/login",
                                 "/oauth2/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/khachhang/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/khachhang/**").hasRole("KHACHHANG")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/nhanvien/**").hasRole("NHANVIEN")
-                        .requestMatchers("/khachhang/**").hasRole("KHACHHANG")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(new AuthenticationEntryPoint() {
+                    @Override
+                    public void commence(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException authException) throws IOException {
+                        String accept = request.getHeader("Accept");
+                        String xhr = request.getHeader("X-Requested-With");
+                        if ((accept != null && accept.contains("application/json")) ||
+                            (xhr != null && xhr.equalsIgnoreCase("XMLHttpRequest"))) {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        } else {
+                            response.sendRedirect("/login");
+                        }
+                    }
+                }))
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService()))

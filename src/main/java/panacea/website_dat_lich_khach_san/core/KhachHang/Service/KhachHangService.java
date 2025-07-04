@@ -40,9 +40,13 @@ public class KhachHangService {
             // Tạo khách hàng nếu chưa có (giả sử theo email)
             Customer customer = customerRepository.findByEmail(dto.getEmailKhach()).orElseGet(() -> {
                 Customer c = new Customer();
+                c.setHo(dto.getHoKhach());
                 c.setTen(dto.getTenKhach());
                 c.setEmail(dto.getEmailKhach());
                 c.setSoDienThoai(dto.getSoDienThoai());
+                c.setMaKhachHang("KH" + System.currentTimeMillis());
+                c.setMatKhauHash("default"); // hoặc sinh random nếu muốn
+                // Có thể set thêm các trường mặc định khác nếu cần
                 return customerRepository.save(c);
             });
 
@@ -56,6 +60,9 @@ public class KhachHangService {
             booking.setGhiChuKhachHang(dto.getGhiChuKhachHang());
             booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.CHO_XAC_NHAN);
             booking.setNgayDat(LocalDateTime.now());
+            // Sinh mã đặt phòng tự động
+            String maDatPhong = "BOOK" + System.currentTimeMillis();
+            booking.setMaDatPhong(maDatPhong);
             // TODO: set thêm các trường khác nếu cần
 
             bookingRepository.save(booking);

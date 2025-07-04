@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangService;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -170,6 +172,24 @@ public class KhachHangController {
     @GetMapping("/coming-soon")
     public String comingSoonAlias() {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/comming";
+    }
+
+    // Đặt phòng qua AJAX (JSON)
+    @PostMapping(value = "/single-room/booking", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public Object datPhongJson(@RequestBody BookingRequestDTO bookingRequestDTO) {
+        boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
+        if (result) {
+            return java.util.Map.of(
+                "success", true,
+                "message", "Đặt phòng thành công! Vui lòng kiểm tra email để xác nhận."
+            );
+        } else {
+            return java.util.Map.of(
+                "success", false,
+                "message", "Đặt phòng thất bại. Vui lòng thử lại sau."
+            );
+        }
     }
 
     // Xử lý đặt phòng từ form single-room
