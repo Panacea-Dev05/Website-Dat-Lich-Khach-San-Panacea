@@ -277,8 +277,8 @@ textarea {
 .ak-preloader .animation-preloader .txt-loading {
   text-align: center;
   -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   font-size: 55px;
   font-family: "Baskervville", sans-serif;
 }
@@ -369,8 +369,8 @@ textarea {
   .ak-preloader .animation-preloader .txt-loading {
     text-align: center;
     -webkit-user-select: none;
-       -moz-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    user-select: none;
     font-size: 32px;
   }
 }
@@ -824,7 +824,7 @@ hr {
   background-repeat: no-repeat;
   background-position: center;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 .ak-vertical-middle {
@@ -2141,7 +2141,7 @@ input[type=checkbox] {
 ----------------------------------------------------------------*/
 .btn-style-2.button-prev-next-2 {
   -moz-appearance: none;
-       appearance: none;
+  appearance: none;
   -webkit-appearance: none;
   background: none;
   border: none;
@@ -2206,7 +2206,7 @@ input[type=checkbox] {
 
 .btn-style-3 {
   -moz-appearance: none;
-       appearance: none;
+  appearance: none;
   -webkit-appearance: none;
   background: none;
   border: none;
@@ -3332,7 +3332,7 @@ input[type=checkbox] {
   .ak-site_header.ak-style1 .header-top .wrapper .center-log {
     margin-right: 0px;
   }
-  
+
   .ak-site_header.ak-style1 .header-top .wrapper .center-log img {
     max-height: 45px;
   }
@@ -3377,7 +3377,7 @@ input[type=checkbox] {
   opacity: 0;
   display: none;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   width: 0%;
   height: 400px;
 }
@@ -4242,7 +4242,7 @@ input[type=checkbox] {
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   transition: filter 0.5s;
 }
 
@@ -4521,7 +4521,7 @@ input[type=checkbox] {
   }
   .ak-about.ak-style-2 .about-img-2 img {
     -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
     height: 100%;
     width: 100%;
   }
@@ -4558,7 +4558,7 @@ input[type=checkbox] {
   }
   .ak-about.ak-style-1 .ak-about-bg-img img {
     -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
     background-position: center center;
   }
   .ak-about.ak-style-1 .about-section.ak-about-1 {
@@ -4580,7 +4580,7 @@ input[type=checkbox] {
   }
   .ak-about.ak-style-1 .ak-about-bg-img img {
     -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
   }
   .ak-about.ak-style-1 .about-section.ak-about-1 {
     width: 100%;
@@ -4660,7 +4660,7 @@ input[type=checkbox] {
   width: 100%;
   height: 120%;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 .opening-hour .opening-hour-text-section {
   padding: 0px 20% 0px 0px;
@@ -5141,7 +5141,7 @@ input[type=checkbox] {
   height: 100%;
   width: 100%;
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 .booking-system-form.style-2 {
@@ -5196,8 +5196,8 @@ input[type=checkbox] {
 }
 .booking-system-form .ak-form-select {
   -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   width: 100%;
   cursor: pointer;
   border: none;
@@ -5905,8 +5905,8 @@ input[type=checkbox] {
 }
 .select-input-style1 .select-option {
   -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   width: 100%;
   cursor: pointer;
   border: none;
@@ -6671,26 +6671,187 @@ input[type=checkbox] {
   font-size: 16px;
 }
 
-/* Modern style for Booking Now inputs (Họ tên, Email, Số điện thoại) */
-.booking-now-input {
-    width: 100%;
-    padding: 12px 16px;
-    margin-bottom: 14px;
-    border: 1.5px solid #33343a;
-    border-radius: 10px;
-    background: #181a20;
-    color: #fff;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+/* ==== CUSTOM BLOG PAGE STYLE - ONLY FOR blog.html ==== */
+.blog-page-container {
+  background: #101820;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
-.booking-now-input:focus {
-    border-color: #FFD28D;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255,210,141,0.15);
+
+.blog-page-container .ak-blog-card.ak-style1 {
+  background: #181f2a;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+  margin-bottom: 40px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
 }
-.booking-now-input::placeholder {
-    color: #bdbdbd;
-    opacity: 1;
-    font-size: 1rem;
+
+.blog-page-container .ak-blog-card.ak-style1:hover {
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+}
+
+.blog-page-container .ak-blog-card-img img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  transition: transform 0.3s;
+}
+
+.blog-page-container .ak-blog-card.ak-style1:hover .ak-blog-card-img img {
+  transform: scale(1.04);
+}
+
+.blog-page-container .ak-blog-card-content {
+  padding: 32px 28px 24px 28px;
+}
+
+.blog-page-container .ak-blog-card-meta {
+  display: flex;
+  gap: 18px;
+  font-size: 15px;
+  color: #ffd28d;
+  margin-bottom: 10px;
+  opacity: 0.85;
+}
+
+.blog-page-container .ak-blog-card-title {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.blog-page-container .ak-blog-card-title a {
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.blog-page-container .ak-blog-card-title a:hover {
+  color: #ffd28d;
+}
+
+.blog-page-container .ak-blog-card-text {
+  color: #bfc9d1;
+  font-size: 17px;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+
+.blog-page-container .ak-btn.style-1 {
+  background: #ffd28d;
+  color: #181f2a;
+  border-radius: 6px;
+  padding: 8px 22px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.blog-page-container .ak-btn.style-1:hover {
+  background: #fff;
+  color: #181f2a;
+}
+
+.blog-page-container .ak-pagination ul {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.blog-page-container .ak-pagination ul li a {
+  background: #181f2a;
+  color: #ffd28d;
+  border-radius: 5px;
+  padding: 7px 16px;
+  font-size: 16px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.blog-page-container .ak-pagination ul li a.active,
+.blog-page-container .ak-pagination ul li a:hover {
+  background: #ffd28d;
+  color: #181f2a;
+}
+
+/* Sidebar */
+.blog-page-container .ak-sidebar {
+  background: #181f2a;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+}
+
+.blog-page-container .ak-sidebar h5 {
+  color: #ffd28d;
+  font-size: 20px;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.blog-page-container .search-form {
+  display: flex;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.blog-page-container .search-form input[type="text"] {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  background: #232b39;
+  color: #fff;
+  font-size: 16px;
+}
+
+.blog-page-container .search-form button {
+  background: #ffd28d;
+  border: none;
+  color: #181f2a;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.blog-page-container .search-form button:hover {
+  background: #fff;
+}
+
+.blog-page-container .category-list a,
+.blog-page-container .popular-tag a {
+  background: #232b39;
+  color: #ffd28d;
+  border-radius: 4px;
+  padding: 6px 14px;
+  margin: 4px 4px 4px 0;
+  display: inline-block;
+  font-size: 15px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.blog-page-container .category-list a:hover,
+.blog-page-container .popular-tag a:hover {
+  background: #ffd28d;
+  color: #181f2a;
+}
+
+.blog-page-container .ak-sidebar p {
+  color: #bfc9d1;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 991px) {
+  .blog-page-container .ak-blog-card.ak-style1 {
+    margin-bottom: 30px;
+  }
+  .blog-page-container .ak-sidebar {
+    margin-top: 40px;
+  }
 }

@@ -441,18 +441,17 @@
                             <form id="bookingNowForm" action="/khachhang/single-room/booking" method="post">
                                 <input type="hidden" name="roomId" value="1" />
                                 <input type="hidden" name="hotelId" value="1" />
-                                <!-- Thêm các trường thông tin khách hàng -->
                                 <div class="form-group">
-                                    <input type="text" name="hoKhach" class="form-control booking-now-input" placeholder="Họ" required />
+                                    <input type="text" name="hoKhach" class="form-control booking-now-input custom-input-separated" placeholder="First Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="tenKhach" class="form-control booking-now-input" placeholder="Tên" required />
+                                    <input type="text" name="tenKhach" class="form-control booking-now-input custom-input-separated" placeholder="Last Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" name="emailKhach" class="form-control booking-now-input" placeholder="Email" required />
+                                    <input type="email" name="emailKhach" class="form-control booking-now-input custom-input-separated" placeholder="Email" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="soDienThoai" class="form-control booking-now-input" placeholder="Số điện thoại" required />
+                                    <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                                 </div>
                                 <!-- ... giữ nguyên các div, class, style ... -->
                                 <div class="check">
@@ -943,6 +942,22 @@ function decreaseValue() {
   background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
 }
 .modal-dialog { max-width: 400px; width: 100%; }
+.custom-input-separated {
+  background: #ececec !important;
+  border-radius: 10px !important;
+  border: 1px solid #d1d5db !important;
+  padding: 14px 18px !important;
+  font-size: 1.08rem !important;
+  color: #222 !important;
+  margin-bottom: 16px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border 0.2s, background 0.2s;
+}
+.custom-input-separated:focus {
+  border: 1.5px solid #FFD28D !important;
+  background: #f5f5f5 !important;
+}
 </style>
 
 <script>

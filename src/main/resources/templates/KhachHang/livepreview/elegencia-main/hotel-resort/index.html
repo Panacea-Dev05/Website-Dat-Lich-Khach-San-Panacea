@@ -99,6 +99,10 @@
                         <a th:href="@{/khachhang}">Hotel</a>
                         <img th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
                     </li>
+<!--                    <li class="top-main-menu-li">-->
+<!--                        <a th:href="@{/khachhang}">Log Out</a>-->
+<!--                        <img th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">-->
+<!--                    </li>-->
                 </ul>
             </div>
         </div>
@@ -399,14 +403,14 @@
                                     <img src="/css/KhachHang/assets/img/room_1.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
-                                            <a href="single-room.html" class="text-btn1 text-uppercase">
+                                            <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
                                                 Starts At $259
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
-                                    <a href="single-room.html" class="room-card-title">
+                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title">
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
@@ -422,7 +426,7 @@
 
                                 </div>
                                 <div class="room-footer">
-                                    <a class="room-card-bottom-text" href="single-room.html">room details
+                                    <a class="room-card-bottom-text" th:href="@{/khachhang/room-detail}">room details
                                         <span class="ms-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                                 viewBox="0 0 31 31" fill="none">
@@ -449,14 +453,14 @@
                                     <img src="/css/KhachHang/assets/img/room_2.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
-                                            <a href="single-room.html" class="text-btn1 text-uppercase">
+                                            <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
                                                 Starts At $259
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
-                                    <a href="single-room.html" class="room-card-title">
+                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title">
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
@@ -471,7 +475,7 @@
                                     </p>
                                 </div>
                                 <div class="room-footer">
-                                    <a class="room-card-bottom-text" href="single-room.html">room details
+                                    <a class="room-card-bottom-text" th:href="@{/khachhang/room-detail}">room details
                                         <span class="ms-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
                                                 viewBox="0 0 31 31" fill="none">
@@ -496,7 +500,7 @@
                     </div>
                     <div class="ak-height-80 ak-height-lg-30"></div>
                     <div class="text-btn text-md-center">
-                        <a href="room.html" class="text-btn1 type-2 text-uppercase">
+                        <a th:href="@{/khachhang/rooms}" class="text-btn1 type-2 text-uppercase">
                             View More
                         </a>
                     </div>
@@ -542,7 +546,7 @@
                                             " src="/css/KhachHang/assets/img/core-services.jpg" alt="...">
                                             <div class="img-overlap"></div>
                                             <div class="overlap-inerr">
-                                                <a href="#" class="btn-style-3 btn-size btn-style-round"
+                                                <a th:href="@{/khachhang/services}" class="btn-style-3 btn-size btn-style-round"
                                                     aria-disabled="false">
                                                     <span><svg width="20" height="14"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -568,7 +572,7 @@
                                                 alt="...">
                                             <div class="img-overlap"></div>
                                             <div class="overlap-inerr">
-                                                <a href="#" class="btn-style-3 btn-size btn-style-round"
+                                                <a th:href="@{/khachhang/services}" class="btn-style-3 btn-size btn-style-round"
                                                     aria-disabled="false">
                                                     <span><svg width="20" height="14"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -594,7 +598,7 @@
                                                 alt="...">
                                             <div class="img-overlap"></div>
                                             <div class="overlap-inerr">
-                                                <a href="#" class="btn-style-3 btn-size btn-style-round"
+                                                <a th:href="@{/khachhang/services}" class="btn-style-3 btn-size btn-style-round"
                                                     aria-disabled="false">
                                                     <span><svg width="20" height="14"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -620,7 +624,7 @@
                                                 alt="...">
                                             <div class="img-overlap"></div>
                                             <div class="overlap-inerr">
-                                                <a href="#" class="btn-style-3 btn-size btn-style-round"
+                                                <a th:href="@{/khachhang/services}" class="btn-style-3 btn-size btn-style-round"
                                                     aria-disabled="false">
                                                     <span><svg width="20" height="14"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -646,7 +650,7 @@
                                                 alt="...">
                                             <div class="img-overlap"></div>
                                             <div class="overlap-inerr">
-                                                <a href="#" class="btn-style-3 btn-size btn-style-round"
+                                                <a th:href="@{/khachhang/services}" class="btn-style-3 btn-size btn-style-round"
                                                     aria-disabled="false">
                                                     <span><svg width="20" height="14"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -1056,13 +1060,13 @@
                                         <div class="room-card-info m-0">
                                             <p class="room-card-date">06 July 2023</p>
                                         </div>
-                                        <a href="single-room.html" class="room-card-title size-2">
+                                        <a th:href="@{/khachhang/room-detail}" class="room-card-title size-2">
                                             Dining Make Moment
                                         </a>
 
                                     </div>
                                     <div class="room-footer">
-                                        <a class="room-card-bottom-text color-1" href="single-room.html">Read More</a>
+                                        <a class="room-card-bottom-text color-1" th:href="@{/khachhang/room-detail}">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -1075,12 +1079,12 @@
                                         <div class="room-card-info m-0">
                                             <p class="room-card-date">27 July 2023</p>
                                         </div>
-                                        <a href="single-room.html" class="room-card-title size-2">
+                                        <a th:href="@{/khachhang/room-detail}" class="room-card-title size-2">
                                             Haven of Our Luxurious Hotel
                                         </a>
                                     </div>
                                     <div class="room-footer">
-                                        <a class="room-card-bottom-text color-1" href="single-room.html">Read More</a>
+                                        <a class="room-card-bottom-text color-1" th:href="@{/khachhang/room-detail}">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -1153,18 +1157,18 @@
                     <div class="footer-main">
                         <div class="footer-eamil-menu">
                             <div class="footer-email">
-                                <a href="mailto:info@example.com">
-                                    info@example.com
+                                <a th:href="@{mailto:Panecea@gmail.com}">
+                                    Panecea@gmail.com
                                 </a>
                             </div>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="index.html">Home</a></li>
-                                    <li><a href="resort.html">Resort</a></li>
-                                    <li><a href="about-hotel-resort.html">About</a></li>
-                                    <li><a href="event-list.html">Event</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="single-room.html">Room</a></li>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/room-detail}">Room</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -1204,7 +1208,7 @@
 
                             </div>
                             <div class="footer-btn">
-                                <a href="single-room.html">
+                                <a th:href="@{/khachhang/room-detail}">
                                     <div class="ak-btn style-5">
                                         Booking
                                     </div>
