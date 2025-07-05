@@ -45,7 +45,7 @@ public class KhachHangService {
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
-            Room room = roomRepository.findById(Long.valueOf(dto.getRoomId())).orElse(null);
+            Room room = roomRepository.findById(Integer.valueOf(dto.getRoomId())).orElse(null);
             Hotel hotel = hotelRepository.findById(dto.getHotelId()).orElse(null);
             if (room == null || hotel == null) return false;
 

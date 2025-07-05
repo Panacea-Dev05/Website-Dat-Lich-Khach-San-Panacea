@@ -26,9 +26,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class QuanLyDatPhongService {
+    private static final Logger logger = LoggerFactory.getLogger(QuanLyDatPhongService.class);
     @Autowired
     private BookingRepository bookingRepository;
     
@@ -214,7 +218,7 @@ public class QuanLyDatPhongService {
             Hotel hotel = hotelRepository.findById(hotelId)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
             
-            Room room = roomRepository.findById(roomId)
+            Room room = roomRepository.findById(roomId.intValue())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng"));
             
             // Create booking
@@ -252,7 +256,7 @@ public class QuanLyDatPhongService {
     public boolean confirmBookingAndAssignRoom(Long bookingId, Long roomId) {
         try {
             Booking booking = bookingRepository.findById(bookingId).orElse(null);
-            Room room = roomRepository.findById(roomId).orElse(null);
+            Room room = roomRepository.findById(roomId.intValue()).orElse(null);
             if (booking == null || room == null) return false;
             // Tạo BookingDetail
             BookingDetail detail = new BookingDetail();
@@ -311,5 +315,59 @@ public class QuanLyDatPhongService {
 
     public List<Room> getAvailableRoomsByHotel(Long hotelId) {
         return roomRepository.findByHotelIdAndTrangThai(hotelId.intValue(), Room.TrangThaiPhong.SAN_SANG);
+    }
+
+    // Tự động hủy booking chưa thanh toán sau 1 ngày
+    @Scheduled(cron = "0 0 * * * *") // mỗi giờ (hoặc chỉnh lại cho test)
+    public void autoCancelUnpaidBookings() {
+        logger.info("[AutoCancel] Bắt đầu kiểm tra booking chưa thanh toán...");
+        java.time.Instant now = java.time.Instant.now();
+        java.util.List<Booking> unpaidBookings = bookingRepository.findByTrangThaiDatPhong(Booking.TrangThaiDatPhong.CHO_XAC_NHAN);
+        for (Booking booking : unpaidBookings) {
+            java.time.Instant created = null;
+            if (booking.getCreatedDate() != null) {
+                created = java.time.Instant.ofEpochMilli(booking.getCreatedDate());
+            } else if (booking.getNgayDat() != null) {
+                created = booking.getNgayDat().atZone(java.time.ZoneId.systemDefault()).toInstant();
+            }
+            logger.info("[AutoCancel] Kiểm tra booking {} - created: {} - trạng thái: {}", booking.getMaDatPhong(), created, booking.getTrangThaiDatPhong());
+            if (created == null) {
+                logger.warn("[AutoCancel] Booking {} không có thời gian tạo, bỏ qua!", booking.getMaDatPhong());
+                continue;
+            }
+            if (created.plus(java.time.Duration.ofMinutes(1)).isBefore(now)) {
+                booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HUY);
+                booking.setLyDoHuy("Tự động hủy do quá hạn thanh toán (1 phút test)");
+                booking.setNgayHuy(java.time.LocalDateTime.now());
+                bookingRepository.save(booking);
+                logger.info("[AutoCancel] Đã hủy booking {} do quá hạn thanh toán!", booking.getMaDatPhong());
+                // Gửi email thông báo hủy nếu có
+                try {
+                    Customer customer = booking.getKhachHang();
+                    if (customer != null && customer.getEmail() != null) {
+                        String emailBody = String.format(
+                            "Xin chào %s!\n\n" +
+                            "Đặt phòng của bạn (mã: %s) đã bị hủy do không thanh toán trong vòng 1 phút (test).\n" +
+                            "Nếu có thắc mắc, vui lòng liên hệ khách sạn.\n\nTrân trọng,\nPanacea Hotel",
+                            customer.getHo() + " " + customer.getTen(),
+                            booking.getMaDatPhong()
+                        );
+                        org.springframework.mail.SimpleMailMessage message = new org.springframework.mail.SimpleMailMessage();
+                        message.setTo(customer.getEmail());
+                        message.setSubject("Đặt phòng bị hủy do quá hạn thanh toán (test)");
+                        message.setText(emailBody);
+                        mailSender.send(message);
+                        logger.info("[AutoCancel] Đã gửi email hủy booking {} tới {}", booking.getMaDatPhong(), customer.getEmail());
+                    } else {
+                        logger.warn("[AutoCancel] Booking {} không có email khách hàng!", booking.getMaDatPhong());
+                    }
+                } catch (Exception ex) {
+                    logger.error("[AutoCancel] Lỗi gửi email cho booking {}: {}", booking.getMaDatPhong(), ex.getMessage(), ex);
+                }
+            } else {
+                logger.info("[AutoCancel] Booking {} chưa quá hạn, chưa hủy.", booking.getMaDatPhong());
+            }
+        }
+        logger.info("[AutoCancel] Kết thúc kiểm tra booking chưa thanh toán.");
     }
 } 

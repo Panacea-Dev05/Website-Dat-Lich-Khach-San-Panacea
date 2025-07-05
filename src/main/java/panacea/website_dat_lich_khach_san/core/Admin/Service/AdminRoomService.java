@@ -28,7 +28,7 @@ public class AdminRoomService {
                 .collect(Collectors.toList());
     }
     
-    public RoomDTO getRoomById(Long id) {
+    public RoomDTO getRoomById(Integer id) {
         Optional<Room> room = roomRepository.findById(id);
         return room.map(this::convertToDTO).orElse(null);
     }
@@ -39,7 +39,7 @@ public class AdminRoomService {
         return convertToDTO(savedRoom);
     }
     
-    public RoomDTO updateRoom(Long id, RoomDTO roomDTO) {
+    public RoomDTO updateRoom(Integer id, RoomDTO roomDTO) {
         Optional<Room> existingRoom = roomRepository.findById(id);
         if (existingRoom.isPresent()) {
             Room room = existingRoom.get();
@@ -55,7 +55,7 @@ public class AdminRoomService {
         return null;
     }
     
-    public boolean deleteRoom(Long id) {
+    public boolean deleteRoom(Integer id) {
         if (roomRepository.existsById(id)) {
             roomRepository.deleteById(id);
             return true;
