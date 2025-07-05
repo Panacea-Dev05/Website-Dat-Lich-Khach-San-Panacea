@@ -1,3 +1,4 @@
+
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
 import org.springframework.stereotype.Controller;
@@ -19,4 +20,4 @@ public class ThanhToanController {
         model.addAttribute("payments", thanhToanService.getAllPayments());
         return "NhanVien/ThanhToan";
     }
-} 
+}

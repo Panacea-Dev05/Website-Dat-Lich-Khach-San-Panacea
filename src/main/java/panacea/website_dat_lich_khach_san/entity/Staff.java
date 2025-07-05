@@ -11,8 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "STAFF")
 @Data
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class Staff {

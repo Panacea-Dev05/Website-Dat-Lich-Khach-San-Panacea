@@ -32,4 +32,4 @@ public class ThongTinKhachHangController {
         model.addAttribute("hutThuocList", java.util.List.of("Không hút thuốc", "Hút thuốc"));
         return "NhanVien/ThongTinKhachHang";
     }
-} 
+}

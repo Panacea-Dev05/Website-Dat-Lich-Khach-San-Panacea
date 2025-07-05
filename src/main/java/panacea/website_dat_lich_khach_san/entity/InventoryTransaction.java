@@ -11,8 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "INVENTORY_TRANSACTION")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryTransaction {

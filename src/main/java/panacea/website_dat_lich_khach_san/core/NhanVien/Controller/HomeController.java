@@ -1,3 +1,4 @@
+
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
 import org.springframework.stereotype.Controller;
@@ -21,4 +22,4 @@ public class HomeController {
         model.addAttribute("overviewList", homeService != null ? homeService.getOverviewList() : new java.util.ArrayList<>());
         return "NhanVien/Home";
     }
-} 
+}

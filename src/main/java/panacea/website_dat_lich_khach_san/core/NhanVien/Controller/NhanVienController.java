@@ -1,3 +1,4 @@
+
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
 import org.springframework.stereotype.Controller;
@@ -11,4 +12,4 @@ public class NhanVienController {
     public String dashboard() {
         return "NhanVien/Home";
     }
-} 
+}

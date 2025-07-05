@@ -11,8 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "HOTEL_AMENITIES")
 @Data
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class HotelAmenities {

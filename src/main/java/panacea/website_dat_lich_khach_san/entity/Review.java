@@ -11,8 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "REVIEW")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {

@@ -11,8 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "MAINTENANCE_SCHEDULE")
 @Data
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class MaintenanceSchedule {

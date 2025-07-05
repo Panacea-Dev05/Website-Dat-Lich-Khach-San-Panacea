@@ -1,3 +1,4 @@
+
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
 import org.springframework.stereotype.Controller;
@@ -19,4 +20,4 @@ public class DichVuController {
         model.addAttribute("serviceDetails", dichVuService.getAllServiceDetails());
         return "NhanVien/DichVu";
     }
-} 
+}

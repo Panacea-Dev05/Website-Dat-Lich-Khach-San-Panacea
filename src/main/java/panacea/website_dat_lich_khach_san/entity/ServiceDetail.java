@@ -11,8 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "SERVICE_DETAIL")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceDetail {

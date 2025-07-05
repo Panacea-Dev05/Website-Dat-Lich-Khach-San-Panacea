@@ -186,6 +186,35 @@
                 min-width: 70px;
             }
         }
+
+        .btn-green {
+            background-color: #16a34a;
+            transition: background-color 0.3s ease;
+        }
+        .btn-green:hover {
+            background-color: #15803d;
+        }
+        .btn-green-light {
+            background-color: #22c55e;
+            transition: background-color 0.3s ease;
+        }
+        .btn-green-light:hover {
+            background-color: #16a34a;
+        }
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+        }
+        .input-border-green {
+            border: 1.5px solid #34d399;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+        }
+        th {
+            user-select: none;
+        }
     </style>
 </head>
 
@@ -193,109 +222,300 @@
 <div class="app-layout">
     <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
     <main class="main-content">
-        <!--    &lt;!&ndash; Tạo dịch vụ mới &ndash;&gt;-->
-        <!--    <div class="section">-->
-        <!--        <h2><span class="material-icons">add</span> Tạo danh mục dịch vụ</h2>-->
-        <!--        <form>-->
-        <!--            <div><label>Tên dịch vụ</label><input type="text" /></div>-->
-        <!--            <div><label>Loại dịch vụ</label><input type="text" placeholder="Spa, Food, Laundry..." /></div>-->
-        <!--            <div><label>Đơn giá (VND)</label><input type="number" /></div>-->
-        <!--            <div><label>Đơn vị tính</label><input type="text" placeholder="lần, kg, người..." /></div>-->
-        <!--            <div style="grid-column: span 2;"><label>Mô tả</label><textarea></textarea></div>-->
-        <!--            <div><label>Trạng thái</label><select><option>Hoạt động</option><option>Tạm ngưng</option></select></div>-->
-        <!--            <div style="align-self: end;">-->
-        <!--                <button class="btn"><span class="material-icons">save</span>Lưu dịch vụ</button>-->
-        <!--            </div>-->
-        <!--        </form>-->
-        <!--    </div>-->
-
-        <!-- Danh sách dịch vụ -->
-        <div class="section">
+<!--         Danh sách dịch vụ-->
+        <section class="bg-white rounded-lg shadow-custom p-6">
             <h2><span class="material-icons">list</span> Danh sách dịch vụ</h2>
-            <table>
-                <thead>
+
+            <table class="w-full border-separate border-spacing-y-2 text-green-900">
+                <thead class="bg-green-200 rounded-lg">
                 <tr>
-                    <th>Mã</th>
-                    <th>Tên</th>
-                    <th>Loại</th>
-                    <th>Đơn giá</th>
-                    <th>Đơn vị</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th class="px-4 py-2 text-left">Mã</th>
+                    <th class="px-4 py-2 text-left">Tên</th>
+                    <th class="px-4 py-2 text-left">Loại</th>
+                    <th class="px-4 py-2 text-left">Đơn giá</th>
+                    <th class="px-4 py-2 text-left">Đơn vị</th>
+                    <th class="px-4 py-2 text-left">Trạng thái</th>
+                    <th class="px-4 py-2 text-left">Thao tác</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="service : ${serviceDetails}">
-                    <td th:text="${service.id}"></td>
-                    <td th:text="${service.service.tenDichVu}"></td>
-                    <td th:text="${service.service.loaiDichVu}"></td>
-                    <td th:text="${#numbers.formatDecimal(service.donGiaThucTe, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${service.service.donViTinh}"></td>
-                    <td th:text="${service.service.trangThai}"></td>
-                    <td>
-                        <button class="btn"><span class="material-icons">edit</span>Sửa</button>
-                        <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
-                    </td>
-                </tr>
+                <tbody id="serviceList" class="text-green-900">
+                <!-- Dữ liệu dịch vụ sẽ được chèn động -->
                 </tbody>
             </table>
-        </div>
+        </section>
 
-        <!-- Đặt dịch vụ cho booking -->
-        <div class="section">
+        <!-- Đặt dịch vụ trong booking -->
+        <section class="bg-white rounded-lg shadow-custom p-6">
             <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>
-            <form>
-                <div><label>Booking</label><select name="bookingId">
-                    <option disabled selected>Chọn mã booking...</option>
-                    <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
-                </select></div>
-                <div><label>Dịch vụ</label><select name="dichVuId">
-                    <option disabled selected>Chọn dịch vụ...</option>
-                    <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:text="${dv.tenDichVu}"></option>
-                </select></div>
-                <div><label>Số lượng</label><input type="number" min="1" /></div>
-                <div><label>Thời gian sử dụng</label><input type="datetime-local" /></div>
-                <div style="grid-column: span 2; align-self: end;">
-                    <button class="btn" style="padding: 8px 16px; width: 30ch">
+            <form id="bookingServiceForm" class="grid grid-cols-1 sm:grid-cols-4 gap-6 items-end">
+                <div>
+                    <label for="bookingSelect" class="block text-green-900 font-semibold mb-1">Booking</label>
+                    <select id="bookingSelect" class="input-border-green w-full rounded-md" required>
+                        <option value="" disabled selected>Chọn mã booking...</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="serviceSelect" class="block text-green-900 font-semibold mb-1">Dịch vụ</label>
+                    <select id="serviceSelect" class="input-border-green w-full rounded-md" required>
+                        <option value="" disabled selected>Chọn dịch vụ...</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="quantityInput" class="block text-green-900 font-semibold mb-1">Số lượng</label>
+                    <input id="quantityInput" type="number" min="1" class="input-border-green w-full rounded-md" placeholder="Nhập số lượng" required />
+                </div>
+                <div>
+                    <label for="datetimeInput" class="block text-green-900 font-semibold mb-1">Thời gian sử dụng</label>
+                    <input id="datetimeInput" type="datetime-local" class="input-border-green w-full rounded-md" required />
+                </div>
+                <div class="sm:col-span-4">
+                    <button class="btn" style="padding: 8px 16px; width: 13ch">
                         <span class="material-icons" style="font-size: 34px;">add_circle</span>Thêm
                     </button>
                 </div>
             </form>
-        </div>
+        </section>
 
-        <!-- Danh sách dịch vụ đã đặt -->
-        <div class="section">
+        <!-- Dịch vụ đã đặt -->
+        <section class="bg-white rounded-lg shadow-custom p-6">
             <h2><span class="material-icons">receipt_long</span> Dịch vụ đã đặt</h2>
-            <table>
-                <thead>
+            <table class="w-full border-separate border-spacing-y-2 text-green-900">
+                <thead class="bg-green-200 rounded-lg">
                 <tr>
-                    <th>Booking</th>
-                    <th>Dịch vụ</th>
-                    <th>Số lượng</th>
-                    <th>Giá thực tế</th>
-                    <th>Thành tiền</th>
-                    <th>Thời gian</th>
-                    <th>Thao tác</th>
+                    <th class="px-4 py-2 text-left">Booking</th>
+                    <th class="px-4 py-2 text-left">Dịch vụ</th>
+                    <th class="px-4 py-2 text-left">Số lượng</th>
+                    <th class="px-4 py-2 text-left">Giá thực tế</th>
+                    <th class="px-4 py-2 text-left">Thành tiền</th>
+                    <th class="px-4 py-2 text-left">Thời gian</th>
+                    <th class="px-4 py-2 text-left">Thao tác</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <td>BK202501</td>
-                    <td>Spa Massage</td>
-                    <td>2</td>
-                    <td>500.000</td>
-                    <td>1.000.000</td>
-                    <td>2025-06-21 15:00</td>
-                    <td>
-                        <button class="btn"><span class="material-icons">edit</span>Sửa</button>
-                        <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
-                    </td>
-                </tr>
+                <tbody id="bookedServiceList" class="text-green-900">
+                <!-- Dữ liệu dịch vụ đã đặt sẽ hiển thị -->
                 </tbody>
             </table>
-        </div>
+        </section>
     </main>
 </div>
-</body>
+<script>
+    // Dữ liệu mẫu
+    const services = [
+        { id: 'SV001', name: 'Spa Massage', type: 'Spa', price: 500000, unit: 'Lượt', status: 'Hoạt động' },
+        { id: 'SV002', name: 'Giặt ủi quần áo', type: 'Laundry', price: 200000, unit: 'Kg', status: 'Hoạt động' },
+        { id: 'SV003', name: 'Ăn sáng buffet', type: 'Food', price: 150000, unit: 'Suất', status: 'Tạm dừng' },
+    ];
 
+    const bookings = [
+        { id: 'BK202501' },
+        { id: 'BK202502' },
+        { id: 'BK202503' },
+    ];
+
+    // Dịch vụ đã đặt
+    let bookedServices = [
+        {
+            bookingId: 'BK202501',
+            serviceId: 'SV001',
+            quantity: 2,
+            priceApplied: 500000,
+            createdAt: new Date('2025-06-21T15:00'),
+        }
+    ];
+
+    // DOM elements
+    const serviceListEl = document.getElementById('serviceList');
+    const bookingSelectEl = document.getElementById('bookingSelect');
+    const serviceSelectEl = document.getElementById('serviceSelect');
+    const quantityInputEl = document.getElementById('quantityInput');
+    const datetimeInputEl = document.getElementById('datetimeInput');
+    const bookedServiceListEl = document.getElementById('bookedServiceList');
+    const bookingServiceForm = document.getElementById('bookingServiceForm');
+
+    // Hiển thị danh sách dịch vụ
+    function renderServiceList() {
+        serviceListEl.innerHTML = '';
+        services.forEach(service => {
+            const tr = document.createElement('tr');
+            tr.className = 'bg-green-50 rounded-lg';
+            tr.innerHTML = `
+          <td class="px-4 py-2">${service.id}</td>
+          <td class="px-4 py-2">${service.name}</td>
+          <td class="px-4 py-2">${service.type}</td>
+          <td class="px-4 py-2">${service.price.toLocaleString('vi-VN')}</td>
+          <td class="px-4 py-2">${service.unit}</td>
+          <td class="px-4 py-2">${service.status}</td>
+          <td class="px-4 py-2">${service.status === 'Hoạt động' ? '' : 'Không thể thao tác'}</td>
+        `;
+            serviceListEl.appendChild(tr);
+        });
+    }
+
+    // Hiển thị options cho booking và dịch vụ trong form đặt dịch vụ
+    function renderSelectOptions() {
+        bookingSelectEl.innerHTML = '<option value="" disabled selected>Chọn mã booking...</option>';
+        bookings.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.id;
+            opt.textContent = b.id;
+            bookingSelectEl.appendChild(opt);
+        });
+
+        serviceSelectEl.innerHTML = '<option value="" disabled selected>Chọn dịch vụ...</option>';
+        services.filter(s => s.status === 'Hoạt động').forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name;
+            serviceSelectEl.appendChild(opt);
+        });
+    }
+
+    // Hiển thị danh sách dịch vụ đã đặt
+    function renderBookedServiceList() {
+        bookedServiceListEl.innerHTML = '';
+        if (bookedServices.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="7" class="text-center py-4 text-green-600 font-semibold">Chưa có dịch vụ nào được đặt</td>';
+            bookedServiceListEl.appendChild(tr);
+            return;
+        }
+
+        bookedServices.forEach(({ bookingId, serviceId, quantity, priceApplied, createdAt }, index) => {
+            const serviceData = services.find(s => s.id === serviceId);
+            const total = quantity * priceApplied;
+
+            const tr = document.createElement('tr');
+            tr.className = 'bg-green-50 rounded-lg align-middle';
+
+            tr.innerHTML = `
+          <td class="px-4 py-2">${bookingId}</td>
+          <td class="px-4 py-2">${serviceData ? serviceData.name : ''}</td>
+          <td class="px-4 py-2">${quantity}</td>
+          <td class="px-4 py-2">${priceApplied.toLocaleString('vi-VN')}</td>
+          <td class="px-4 py-2 font-semibold">${total.toLocaleString('vi-VN')}</td>
+          <td class="px-4 py-2">${new Date(createdAt).toLocaleString('vi-VN', {dateStyle:'short', timeStyle:'short'})}</td>
+          <td class="px-4 py-2 flex gap-2">
+            <button class="btn-green-light btn-small flex items-center gap-1" data-action="edit" data-index="${index}" aria-label="Sửa dịch vụ đã đặt">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 4h1m6 6v1m-9.5 4.5L14 7l3 3-9 9H7v-2l3.5-3.5z" />
+              </svg> Sửa
+            </button>
+            <button class="btn-green-light btn-small flex items-center gap-1" data-action="delete" data-index="${index}" aria-label="Hủy dịch vụ đã đặt">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg> Hủy
+            </button>
+          </td>
+        `;
+
+            bookedServiceListEl.appendChild(tr);
+        });
+    }
+
+    // Thêm hoặc cập nhật dịch vụ đã đặt
+    function addOrUpdateBookedService(event) {
+        event.preventDefault();
+
+        const bookingId = bookingSelectEl.value;
+        const serviceId = serviceSelectEl.value;
+        let quantity = parseInt(quantityInputEl.value);
+        let datetime = datetimeInputEl.value;
+
+        if (!bookingId || !serviceId || !quantity || !datetime || quantity <= 0) {
+            alert("Vui lòng nhập đầy đủ, hợp lệ thông tin đặt dịch vụ.");
+            return;
+        }
+
+        // Kiểm tra trạng thái dịch vụ
+        const service = services.find(s => s.id === serviceId);
+        if (!service || service.status !== 'Hoạt động') {
+            alert("Dịch vụ này không thể đặt vì không hoạt động.");
+            return;
+        }
+
+        // Nếu đang sửa thì cập nhật, nếu thêm mới thì thêm
+        if (bookingServiceForm.dataset.editIndex !== undefined) {
+            const idx = parseInt(bookingServiceForm.dataset.editIndex);
+            bookedServices[idx] = {
+                bookingId,
+                serviceId,
+                quantity,
+                priceApplied: service.price,
+                createdAt: new Date(datetime)
+            };
+            delete bookingServiceForm.dataset.editIndex;
+            bookingServiceForm.querySelector("button[type=submit]").textContent = "Thêm"; // reset text nút
+        } else {
+            // Thêm mới
+            bookedServices.push({
+                bookingId,
+                serviceId,
+                quantity,
+                priceApplied: service.price,
+                createdAt: new Date(datetime)
+            });
+        }
+
+        bookingServiceForm.reset();
+        renderBookedServiceList();
+    }
+
+    // Xử lý khi click sửa hoặc hủy dịch vụ trong danh sách đã đặt
+    function handleBookedServiceAction(e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const idx = parseInt(btn.dataset.index);
+        if (isNaN(idx)) return;
+
+        if (action === 'edit') {
+            // Điền dữ liệu vào form để sửa
+            const item = bookedServices[idx];
+            bookingSelectEl.value = item.bookingId;
+            serviceSelectEl.value = item.serviceId;
+            quantityInputEl.value = item.quantity;
+            datetimeInputEl.value = item.createdAt.toISOString().slice(0,16); // chuẩn ISO cho input datetime-local
+
+            bookingServiceForm.dataset.editIndex = idx;
+            bookingServiceForm.querySelector("button[type=submit]").innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Cập nhật
+        `;
+            // Chỉ cho phép sửa dịch vụ còn hoạt động
+            const selectedService = services.find(s => s.id === item.serviceId);
+            if (!selectedService || selectedService.status !== 'Hoạt động') {
+                alert("Dịch vụ này hiện không hoạt động, bạn không thể sửa.");
+                bookingServiceForm.reset();
+                delete bookingServiceForm.dataset.editIndex;
+                bookingServiceForm.querySelector("button[type=submit]").textContent = "Thêm";
+                return;
+            }
+        } else if (action === 'delete') {
+            if (confirm("Bạn có chắc chắn muốn hủy dịch vụ này?")) {
+                bookedServices.splice(idx, 1);
+                if(bookingServiceForm.dataset.editIndex == idx) { // Nếu đang sửa thì hủy form sửa
+                    bookingServiceForm.reset();
+                    delete bookingServiceForm.dataset.editIndex;
+                    bookingServiceForm.querySelector("button[type=submit]").textContent = "Thêm";
+                }
+                renderBookedServiceList();
+            }
+        }
+    }
+
+    // Initialize
+    function init() {
+        renderServiceList();
+        renderSelectOptions();
+        renderBookedServiceList();
+        bookingServiceForm.addEventListener('submit', addOrUpdateBookedService);
+        bookedServiceListEl.addEventListener('click', handleBookedServiceAction);
+    }
+
+    init();
+</script>
+
+</body>
 </html>

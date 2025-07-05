@@ -12,8 +12,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "HOUSEKEEPING_LOG")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class HousekeepingLog {

@@ -1,3 +1,4 @@
+
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
 import org.springframework.stereotype.Controller;
@@ -20,4 +21,4 @@ public class QuanLyKhoController {
         model.addAttribute("transactions", quanLyKhoService.getAllTransactions());
         return "NhanVien/QuanLyKho";
     }
-} 
+}

@@ -11,8 +11,6 @@ import java.util.UUID;
         @UniqueConstraint(columnNames = {"vai_tro", "quyen_id"})
 })
 
-@Getter
-@Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

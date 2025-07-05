@@ -12,8 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "SPECIAL_REQUEST")
 @Data
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecialRequest {

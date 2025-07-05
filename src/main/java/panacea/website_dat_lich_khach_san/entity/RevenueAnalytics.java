@@ -12,8 +12,6 @@ import java.util.UUID;
 @Table(name = "REVENUE_ANALYTICS", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"khach_san_id", "ngay"})
 })
-@Getter
-@Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

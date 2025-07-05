@@ -13,8 +13,6 @@ import java.util.UUID;
         @UniqueConstraint(columnNames = {"dat_phong_id", "phong_id"})
 })
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDetail {
