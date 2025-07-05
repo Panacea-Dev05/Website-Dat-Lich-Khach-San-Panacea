@@ -98,4 +98,60 @@ public class AdminPromotionService {
         promotion.setTrangThai(Promotion.TrangThaiPromotion.valueOf(dto.getTrangThai()));
         return promotion;
     }
+    
+    // Kiểm tra promotion hợp lệ
+    public boolean validatePromotion(String promoCode) {
+        List<Promotion> promos = promotionRepository.findAll().stream()
+            .filter(p -> p.getMaKhuyenMai().equalsIgnoreCase(promoCode))
+            .toList();
+        if (promos.isEmpty()) return false;
+        Promotion promo = promos.get(0);
+        return promo.getTrangThai() == Promotion.TrangThaiPromotion.HOAT_DONG
+            && promo.getNgayBatDau().isBefore(java.time.LocalDate.now().plusDays(1))
+            && promo.getNgayKetThuc().isAfter(java.time.LocalDate.now().minusDays(1))
+            && (promo.getSoLuongToiDa() == null || promo.getDaSuDung() < promo.getSoLuongToiDa());
+    }
+    
+    // Filter danh sách promotion
+    public List<PromotionDTO> filterPromotions(String status, String keyword) {
+        return promotionRepository.findAll().stream()
+            .filter(p -> status == null || p.getTrangThai().name().equalsIgnoreCase(status))
+            .filter(p -> keyword == null || p.getTenKhuyenMai().toLowerCase().contains(keyword.toLowerCase()) || p.getMaKhuyenMai().toLowerCase().contains(keyword.toLowerCase()))
+            .map(this::convertToDTO)
+            .toList();
+    }
+    
+    // Thống kê hiệu quả promotion (số lần sử dụng, doanh thu tạo ra)
+    public PromotionStats getPromotionStats(Integer promoId) {
+        Optional<Promotion> promoOpt = promotionRepository.findById(promoId);
+        if (promoOpt.isEmpty()) return null;
+        Promotion promo = promoOpt.get();
+        int soLanSuDung = promo.getDaSuDung() != null ? promo.getDaSuDung() : 0;
+        java.math.BigDecimal doanhThu = java.math.BigDecimal.ZERO;
+        if (promo.getBookings() != null) {
+            for (var b : promo.getBookings()) {
+                if (b.getTongThanhToan() != null) doanhThu = doanhThu.add(b.getTongThanhToan());
+            }
+        }
+        return new PromotionStats(soLanSuDung, doanhThu);
+    }
+    
+    public static class PromotionStats {
+        public int soLanSuDung;
+        public java.math.BigDecimal doanhThu;
+        public PromotionStats(int soLanSuDung, java.math.BigDecimal doanhThu) {
+            this.soLanSuDung = soLanSuDung;
+            this.doanhThu = doanhThu;
+        }
+    }
+    
+    // Vô hiệu hóa promotion
+    public PromotionDTO disablePromotion(Integer promoId) {
+        Optional<Promotion> promoOpt = promotionRepository.findById(promoId);
+        if (promoOpt.isEmpty()) return null;
+        Promotion promo = promoOpt.get();
+        promo.setTrangThai(Promotion.TrangThaiPromotion.TAM_NGUNG);
+        Promotion saved = promotionRepository.save(promo);
+        return convertToDTO(saved);
+    }
 } 
