@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.StaffDTO;
+import panacea.website_dat_lich_khach_san.repository.RolePermissionRepository;
+import panacea.website_dat_lich_khach_san.entity.RolePermission;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,9 @@ public class AdminStaffService {
     
     @Autowired
     private StaffRepository staffRepository;
+    
+    @Autowired
+    private RolePermissionRepository rolePermissionRepository;
     
     public List<StaffDTO> getAllStaff() {
         return staffRepository.findAll().stream()
@@ -55,6 +60,30 @@ public class AdminStaffService {
             return true;
         }
         return false;
+    }
+    
+    public List<StaffDTO> getStaffByHotel(Integer hotelId) {
+        return staffRepository.findAll().stream()
+            .filter(s -> s.getKhachSanId() != null && s.getKhachSanId().equals(hotelId))
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    public RolePermission assignPermission(Integer staffId, String vaiTro, Integer quyenId) {
+        RolePermission rp = new RolePermission();
+        rp.setVaiTro(vaiTro);
+        rp.setQuyenId(quyenId);
+        rp.setTrangThai("Hoạt động");
+        return rolePermissionRepository.save(rp);
+    }
+    
+    public StaffDTO deactivateStaff(Integer id) {
+        Optional<Staff> opt = staffRepository.findById(id);
+        if (opt.isEmpty()) return null;
+        Staff staff = opt.get();
+        staff.setTrangThai(Staff.TrangThaiStaff.NGHI_VIEC);
+        Staff saved = staffRepository.save(staff);
+        return convertToDTO(saved);
     }
     
     private StaffDTO convertToDTO(Staff staff) {

@@ -1,20 +1,33 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import panacea.website_dat_lich_khach_san.entity.Customer;
-import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
-
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import panacea.website_dat_lich_khach_san.entity.Customer;
+import panacea.website_dat_lich_khach_san.entity.CustomerPreferences;
+import panacea.website_dat_lich_khach_san.entity.UserSession;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
+import panacea.website_dat_lich_khach_san.repository.CustomerPreferencesRepository;
+import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
+import panacea.website_dat_lich_khach_san.repository.UserSessionRepository;
 
 @Service
 public class AdminCustomerService {
     
     @Autowired
     private CustomerRepository customerRepository;
+    
+    @Autowired
+    private CustomerPreferencesRepository customerPreferencesRepository;
+    
+    @Autowired
+    private UserSessionRepository userSessionRepository;
     
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
@@ -105,5 +118,67 @@ public class AdminCustomerService {
         customer.setCreatedDate(dto.getCreatedDate());
         customer.setLastModifiedDate(dto.getLastModifiedDate());
         return customer;
+    }
+    
+    // Đăng ký tài khoản khách hàng
+    public CustomerDTO registerCustomer(CustomerDTO customerDTO, String rawPassword) {
+        // Hash password (giả lập, nên dùng BCrypt thực tế)
+        String hash = Integer.toHexString(rawPassword.hashCode());
+        customerDTO.setMatKhauHash(hash);
+        customerDTO.setTrangThai("HOAT_DONG");
+        customerDTO.setMaKhachHang("CUST" + UUID.randomUUID().toString().substring(0, 8));
+        return createCustomer(customerDTO);
+    }
+    
+    // Đăng nhập khách hàng (trả về session token)
+    public String loginCustomer(String email, String rawPassword, String ip, String userAgent) {
+        List<Customer> customers = customerRepository.findAll().stream()
+            .filter(c -> c.getEmail().equalsIgnoreCase(email))
+            .toList();
+        if (customers.isEmpty()) return null;
+        Customer customer = customers.get(0);
+        String hash = Integer.toHexString(rawPassword.hashCode());
+        if (!customer.getMatKhauHash().equals(hash)) return null;
+        // Tạo session (giả lập JWT bằng UUID)
+        String token = UUID.randomUUID().toString();
+        UserSession session = new UserSession();
+        session.setUserId(customer.getId());
+        session.setUserType(UserSession.UserType.CUSTOMER);
+        session.setSessionToken(token);
+        session.setIpAddress(ip);
+        session.setUserAgent(userAgent);
+        session.setThoiGianDangNhap(LocalDateTime.now());
+        session.setThoiGianHetHan(LocalDateTime.now().plusHours(12));
+        session.setTrangThai("Active");
+        userSessionRepository.save(session);
+        return token;
+    }
+    
+    // Quản lý sở thích khách hàng
+    public CustomerPreferences saveOrUpdatePreferences(Integer customerId, CustomerPreferences pref) {
+        List<CustomerPreferences> existing = customerPreferencesRepository.findAll().stream()
+            .filter(p -> p.getKhachHang() != null && p.getKhachHang().getId().equals(customerId))
+            .toList();
+        if (!existing.isEmpty()) {
+            CustomerPreferences old = existing.get(0);
+            old.setLoaiPhongUuThien(pref.getLoaiPhongUuThien());
+            old.setTangUuThien(pref.getTangUuThien());
+            old.setHuongNhinUuThien(pref.getHuongNhinUuThien());
+            old.setYeuCauDacBiet(pref.getYeuCauDacBiet());
+            old.setThoiGianNhanPhongMongMuon(pref.getThoiGianNhanPhongMongMuon());
+            old.setDichVuUuThien(pref.getDichVuUuThien());
+            old.setTinhTrangHutThuoc(pref.getTinhTrangHutThuoc());
+            old.setCheDoAnUong(pref.getCheDoAnUong());
+            return customerPreferencesRepository.save(old);
+        } else {
+            pref.setKhachHang(customerRepository.findById(customerId).orElse(null));
+            return customerPreferencesRepository.save(pref);
+        }
+    }
+    
+    public CustomerPreferences getPreferences(Integer customerId) {
+        return customerPreferencesRepository.findAll().stream()
+            .filter(p -> p.getKhachHang() != null && p.getKhachHang().getId().equals(customerId))
+            .findFirst().orElse(null);
     }
 } 

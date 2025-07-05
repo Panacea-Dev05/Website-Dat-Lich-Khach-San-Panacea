@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.HotelDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,17 @@ public class AdminHotelController {
         return hotelRepository.findById(id)
                 .map(this::convertToDTO)
                 .orElse(null);
+    }
+    
+    @GetMapping("/api/hotels/{id}")
+    @ResponseBody
+    public ResponseEntity<HotelDTO> getHotelById(@PathVariable Integer id) {
+        Hotel hotel = hotelRepository.findById(id).orElse(null);
+        if (hotel == null) {
+            return ResponseEntity.notFound().build();
+        }
+        HotelDTO dto = convertToDTO(hotel);
+        return ResponseEntity.ok(dto);
     }
     
     private HotelDTO convertToDTO(Hotel hotel) {
