@@ -528,25 +528,25 @@
                                     <div class="row row-cols-1">
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="service" value="checkbox" />&nbsp;Bar
+                                                <input type="checkbox" name="dichVu" value="Bar Service" />&nbsp;Bar
                                                 Service
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="business" value="checkbox" />&nbsp;Business
+                                                <input type="checkbox" name="dichVu" value="Business Center" />&nbsp;Business
                                                 Center
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="Safety" value="checkbox" />&nbsp;Safety
+                                                <input type="checkbox" name="dichVu" value="Safety and Security" />&nbsp;Safety
                                                 and Security
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="fine" value="checkbox" />&nbsp;Fine
+                                                <input type="checkbox" name="dichVu" value="Fine Dining Restaurants" />&nbsp;Fine
                                                 Dining Restaurants
                                             </label>
                                         </div>
@@ -886,9 +886,20 @@ if (bookingForm) {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
       return;
     }
+    // Lấy danh sách dịch vụ đã chọn
+    const dichVuChecked = Array.from(bookingForm.querySelectorAll('input[name="dichVu"]:checked')).map(cb => cb.value);
     const formData = new FormData(bookingForm);
     const data = {};
-    formData.forEach((v, k) => data[k] = v);
+    formData.forEach((v, k) => {
+      if (k === 'dichVu') {
+        if (!data[k]) data[k] = [];
+        data[k].push(v);
+      } else {
+        data[k] = v;
+      }
+    });
+    // Đảm bảo gửi đúng danh sách dịch vụ
+    data.dichVu = dichVuChecked;
     try {
       const res = await fetch(bookingForm.action, {
         method: 'POST',
