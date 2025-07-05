@@ -507,7 +507,7 @@
                                     <p>Adult</p>
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" value="Decrease Value">-</div>
-                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="0" />
+                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="1" />
                                         <div class="value-button" id="increase" value="Increase Value">+</div>
                                     </div>
                                 </div>
@@ -859,10 +859,15 @@ if (bookingForm) {
     // Validate ngày nhận/trả phòng
     const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
     const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
+    const soNguoiLon = parseInt(bookingForm.querySelector('input[name="soNguoiLon"]').value, 10) || 0;
     const today = new Date();
     today.setHours(0,0,0,0);
     const nhanDate = new Date(ngayNhan);
     const traDate = new Date(ngayTra);
+    if (soNguoiLon < 1) {
+      alert('Phải có ít nhất 1 người lớn!');
+      return;
+    }
     if (nhanDate < today) {
       alert('Ngày nhận phòng phải từ hôm nay trở đi!');
       return;
@@ -892,6 +897,15 @@ function showBookingResult(success, message) {
   const content = document.getElementById('bookingResultContent');
   if (success) {
     content.innerHTML = `<h2>Đặt phòng thành công!</h2><p>${message || 'Yêu cầu đặt phòng của bạn đã được gửi. Vui lòng kiểm tra email và chờ xác nhận từ nhân viên.'}</p>`;
+    // Reset form về mặc định
+    if (bookingForm) {
+      bookingForm.reset();
+      // Đặt lại số người lớn = 1, số trẻ em = 0
+      var soNguoiLon = bookingForm.querySelector('input[name="soNguoiLon"]');
+      if (soNguoiLon) soNguoiLon.value = 1;
+      var soTreEm = bookingForm.querySelector('input[name="soTreEm"]');
+      if (soTreEm) soTreEm.value = 0;
+    }
   } else {
     content.innerHTML = `<h2>Đặt phòng thất bại!</h2><p>${message || 'Đã có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ hỗ trợ.'}</p>`;
   }
