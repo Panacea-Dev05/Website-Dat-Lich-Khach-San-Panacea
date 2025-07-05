@@ -834,11 +834,44 @@
 </div>
 
 <script>
+// Set default date for check-in/check-out to today and tomorrow
+window.addEventListener('DOMContentLoaded', function() {
+  var today = new Date();
+  var tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, '0');
+  var todayStr = yyyy + '-' + mm + '-' + dd;
+  var yyyy2 = tomorrow.getFullYear();
+  var mm2 = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  var dd2 = String(tomorrow.getDate()).padStart(2, '0');
+  var tomorrowStr = yyyy2 + '-' + mm2 + '-' + dd2;
+  var checkin = document.querySelector('input[name="ngayNhanPhong"]');
+  var checkout = document.querySelector('input[name="ngayTraPhong"]');
+  if (checkin) checkin.value = todayStr;
+  if (checkout) checkout.value = tomorrowStr;
+});
 // Gửi form booking bằng AJAX, show popup kết quả
 const bookingForm = document.getElementById('bookingNowForm');
 if (bookingForm) {
   bookingForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    // Validate ngày nhận/trả phòng
+    const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
+    const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const nhanDate = new Date(ngayNhan);
+    const traDate = new Date(ngayTra);
+    if (nhanDate < today) {
+      alert('Ngày nhận phòng phải từ hôm nay trở đi!');
+      return;
+    }
+    if (traDate <= nhanDate) {
+      alert('Ngày trả phòng phải sau ngày nhận phòng!');
+      return;
+    }
     const formData = new FormData(bookingForm);
     const data = {};
     formData.forEach((v, k) => data[k] = v);
@@ -864,6 +897,16 @@ function showBookingResult(success, message) {
     content.innerHTML = `<h2>Đặt phòng thất bại!</h2><p>${message || 'Đã có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ hỗ trợ.'}</p>`;
   }
   modal.style.display = 'flex';
+}
+function increaseValue() {
+  var input = document.getElementById('number');
+  var value = parseInt(input.value, 10) || 0;
+  input.value = value + 1;
+}
+function decreaseValue() {
+  var input = document.getElementById('number');
+  var value = parseInt(input.value, 10) || 0;
+  if (value > 0) input.value = value - 1;
 }
 </script>
 
