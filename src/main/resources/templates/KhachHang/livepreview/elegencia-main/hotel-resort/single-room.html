@@ -856,6 +856,13 @@ const bookingForm = document.getElementById('bookingNowForm');
 if (bookingForm) {
   bookingForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    // Lấy nút Book Now
+    const submitBtn = bookingForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      var oldText = submitBtn.innerHTML;
+      submitBtn.innerHTML = 'Đang gửi...';
+    }
     // Validate ngày nhận/trả phòng
     const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
     const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
@@ -866,14 +873,17 @@ if (bookingForm) {
     const traDate = new Date(ngayTra);
     if (soNguoiLon < 1) {
       alert('Phải có ít nhất 1 người lớn!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
       return;
     }
     if (nhanDate < today) {
       alert('Ngày nhận phòng phải từ hôm nay trở đi!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
       return;
     }
     if (traDate <= nhanDate) {
       alert('Ngày trả phòng phải sau ngày nhận phòng!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
       return;
     }
     const formData = new FormData(bookingForm);
@@ -889,6 +899,8 @@ if (bookingForm) {
       showBookingResult(result.success, result.message);
     } catch (err) {
       showBookingResult(false, 'Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ hỗ trợ.');
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
     }
   });
 }
