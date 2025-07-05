@@ -259,9 +259,8 @@
                 </button>
                 
                 <!-- Filter form -->
-                <form style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                    <input type="text" placeholder="Tìm theo khách hàng..." style="flex: 1; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
-                    <input type="date" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
+                <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                    <input type="date" name="ngayNhan" value="[[${ngayNhan}]]" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
                     <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
                 </form>
             </div>
@@ -362,6 +361,9 @@
             </button>
             <button class="btn" style="background: #ef4444;" id="modal-cancel-btn">
                 <span class="material-icons">cancel</span>Hủy
+            </button>
+            <button class="btn" style="background: #f59e42;" id="modal-checkout-btn" onclick="checkoutBooking(currentBookingId)">
+                <span class="material-icons">logout</span>Xác nhận trả phòng & thanh toán
             </button>
         </div>
     </div>
@@ -528,10 +530,19 @@ function viewBookingDetail(bookingId) {
                 `;
                 document.getElementById('bookingDetailContent').innerHTML = content;
                 document.getElementById('bookingModal').style.display = 'block';
-                // Hiển thị action nếu trạng thái là CHO_XAC_NHAN
                 const actionArea = document.getElementById('bookingActionArea');
+                // Ẩn tất cả controls trước
+                actionArea.style.display = 'none';
+                // Hiện controls phù hợp với trạng thái
                 if (booking.trangThai === 'Chờ xác nhận') {
+                    // Hiện các controls xác nhận/hủy/checkbox/chọn phòng
                     actionArea.style.display = 'flex';
+                    // Hiện tất cả controls
+                    document.getElementById('modal-payment-confirmed').parentElement.style.display = '';
+                    document.getElementById('modal-room-select').parentElement.style.display = '';
+                    document.getElementById('modal-confirm-btn').style.display = '';
+                    document.getElementById('modal-cancel-btn').style.display = '';
+                    document.getElementById('modal-checkout-btn').style.display = 'none';
                     // Load phòng sẵn sàng
                     fetch(`/nhanvien/quanlydatphong/rooms/${booking.hotelId}`)
                         .then(res => res.json())
@@ -545,7 +556,6 @@ function viewBookingDetail(bookingId) {
                                 select.appendChild(option);
                             });
                         });
-                    // Gán lại sự kiện cho các nút
                     document.getElementById('modal-confirm-btn').onclick = function() {
                         const paymentConfirmed = document.getElementById('modal-payment-confirmed').checked;
                         const roomId = document.getElementById('modal-room-select').value;
@@ -605,6 +615,18 @@ function viewBookingDetail(bookingId) {
                                 alert('Có lỗi xảy ra khi hủy đặt phòng!');
                             });
                         }
+                    };
+                } else if (booking.trangThai === 'Đã xác nhận' || booking.trangThai === 'Đã nhận phòng') {
+                    // Chỉ hiện nút xác nhận trả phòng & thanh toán
+                    actionArea.style.display = 'flex';
+                    document.getElementById('modal-payment-confirmed').parentElement.style.display = 'none';
+                    document.getElementById('modal-room-select').parentElement.style.display = 'none';
+                    document.getElementById('modal-confirm-btn').style.display = 'none';
+                    document.getElementById('modal-cancel-btn').style.display = 'none';
+                    document.getElementById('modal-checkout-btn').style.display = '';
+                    // Gán lại sự kiện cho nút checkout
+                    document.getElementById('modal-checkout-btn').onclick = function() {
+                        checkoutBooking(bookingId);
                     };
                 } else {
                     actionArea.style.display = 'none';
@@ -818,6 +840,24 @@ function addCustomerBooking() {
         console.error('Error:', error);
         alert('Có lỗi xảy ra khi thêm đặt phòng!');
     });
+}
+
+function checkoutBooking(bookingId) {
+    if (!confirm('Xác nhận khách đã trả phòng và thanh toán?')) return;
+    fetch(`/nhanvien/quanlydatphong/checkout/` + bookingId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Đã xác nhận trả phòng & thanh toán!');
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra, vui lòng thử lại!');
+        }
+    })
+    .catch(() => alert('Có lỗi xảy ra, vui lòng thử lại!'));
 }
 
 // Thêm event listener cho tất cả checkbox thanh toán
