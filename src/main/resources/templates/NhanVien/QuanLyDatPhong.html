@@ -556,9 +556,10 @@ function viewBookingDetail(bookingId) {
                                 select.appendChild(option);
                             });
                         });
-                    document.getElementById('modal-confirm-btn').onclick = function() {
+                    document.getElementById('modal-confirm-btn').onclick = async function() {
                         const paymentConfirmed = document.getElementById('modal-payment-confirmed').checked;
                         const roomId = document.getElementById('modal-room-select').value;
+                        const confirmBtn = document.getElementById('modal-confirm-btn');
                         if (!roomId) {
                             alert('Vui lòng chọn phòng!');
                             return;
@@ -582,26 +583,33 @@ function viewBookingDetail(bookingId) {
                             alert('Ngày trả phòng phải sau ngày nhận phòng!');
                             return;
                         }
-                        fetch(`/nhanvien/quanlydatphong/confirm`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ bookingId, roomId })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
+                        // Disable nút khi gửi
+                        if (confirmBtn) { confirmBtn.disabled = true; var oldText = confirmBtn.innerHTML; confirmBtn.innerHTML = 'Đang gửi...'; }
+                        try {
+                            const res = await fetch(`/nhanvien/quanlydatphong/confirm`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ bookingId, roomId })
+                            });
+                            const data = await res.json();
                             alert(data.message || 'Xác nhận thành công!');
                             location.reload();
-                        })
-                        .catch(() => alert('Có lỗi xảy ra!'));
+                        } catch (e) {
+                            alert('Có lỗi xảy ra!');
+                        } finally {
+                            if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerHTML = oldText; }
+                        }
                     };
-                    document.getElementById('modal-cancel-btn').onclick = function() {
+                    document.getElementById('modal-cancel-btn').onclick = async function() {
+                        const cancelBtn = document.getElementById('modal-cancel-btn');
                         if (confirm('Bạn có chắc chắn muốn hủy đặt phòng này?')) {
-                            fetch(`/nhanvien/quanlydatphong/cancel/${bookingId}`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' }
-                            })
-                            .then(response => response.text())
-                            .then(result => {
+                            if (cancelBtn) { cancelBtn.disabled = true; var oldText = cancelBtn.innerHTML; cancelBtn.innerHTML = 'Đang gửi...'; }
+                            try {
+                                const response = await fetch(`/nhanvien/quanlydatphong/cancel/${bookingId}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' }
+                                });
+                                const result = await response.text();
                                 if (result === 'success') {
                                     alert('Đã hủy đặt phòng thành công! Email thông báo đã được gửi cho khách hàng.');
                                     closeModal();
@@ -609,11 +617,11 @@ function viewBookingDetail(bookingId) {
                                 } else {
                                     alert('Có lỗi xảy ra khi hủy đặt phòng!');
                                 }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
+                            } catch (error) {
                                 alert('Có lỗi xảy ra khi hủy đặt phòng!');
-                            });
+                            } finally {
+                                if (cancelBtn) { cancelBtn.disabled = false; cancelBtn.innerHTML = oldText; }
+                            }
                         }
                     };
                 } else if (booking.trangThai === 'Đã xác nhận' || booking.trangThai === 'Đã nhận phòng') {

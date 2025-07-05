@@ -2,6 +2,7 @@ package panacea.website_dat_lich_khach_san.infrastructure.DTO;
 
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class BookingRequestDTO {
@@ -16,4 +17,5 @@ public class BookingRequestDTO {
     private String soDienThoai;
     private String ghiChuKhachHang;
     private String hoKhach;
+    private List<String> dichVu;
 } 
