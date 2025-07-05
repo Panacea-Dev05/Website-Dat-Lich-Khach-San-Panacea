@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
+import java.util.stream.Collectors;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
@@ -309,8 +311,94 @@ public class QuanLyDatPhongService {
         }
     }
 
+    public boolean checkoutBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking == null) return false;
+        if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_NHAN_PHONG
+            && booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_XAC_NHAN) return false;
+        // Cập nhật trạng thái booking
+        booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HOAN_THANH);
+        booking.setTrangThaiThanhToan(Booking.TrangThaiThanhToan.DA_THANH_TOAN);
+        bookingRepository.save(booking);
+        // Cập nhật trạng thái phòng
+        java.util.List<panacea.website_dat_lich_khach_san.entity.BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+        for (panacea.website_dat_lich_khach_san.entity.BookingDetail detail : details) {
+            if (detail.getPhongId() != null) {
+                Room room = roomRepository.findById(detail.getPhongId()).orElse(null);
+                if (room != null) {
+                    room.setTrangThai(Room.TrangThaiPhong.SAN_SANG);
+                    roomRepository.save(room);
+                }
+            }
+        }
+        // Gửi email cảm ơn
+        try {
+            LocalDate expiry = LocalDate.now().plusDays(30);
+            sendThankYouEmail(booking, expiry);
+        } catch (Exception e) {
+            logger.error("Lỗi gửi email cảm ơn sau checkout: {}", e.getMessage(), e);
+        }
+        return true;
+    }
+
+    private void sendThankYouEmail(Booking booking, LocalDate expiryDate) {
+        if (mailSender == null) return;
+        Customer customer = booking.getKhachHang();
+        if (customer == null || customer.getEmail() == null) return;
+        String subject = "Khách sạn Panacea xin gửi lời cảm ơn chân thành đến Quý khách!";
+        String content = String.format("""
+            <html><body>
+            <p>Kính gửi Quý khách <b>%s</b>,</p>
+            <p>Thay mặt toàn thể đội ngũ nhân viên Khách sạn Panacea, chúng tôi xin gửi lời cảm ơn chân thành nhất đến Quý khách đã tin tưởng lựa chọn khách sạn chúng tôi làm điểm dừng chân trong chuyến đi vừa qua.</p>
+            <p>Chúng tôi hy vọng Quý khách đã có những trải nghiệm thật sự thoải mái, thư giãn và đáng nhớ tại Panacea. Sự hài lòng của Quý khách là niềm vinh hạnh và là nguồn động lực lớn nhất để chúng tôi không ngừng nỗ lực nâng cao chất lượng dịch vụ mỗi ngày.</p>
+            <p>Để bày tỏ lòng tri ân và mong được chào đón Quý khách trở lại trong những lần tiếp theo, Khách sạn Panacea xin gửi tặng Quý khách mã ưu đãi <b>PANACEA15</b> giảm giá 15%% cho lần đặt phòng kế tiếp.<br/>(Lưu ý: Mã ưu đãi có hiệu lực đến ngày <b>%s</b>)</p>
+            <p>Chúng tôi sẽ vô cùng biết ơn nếu Quý khách có thể dành một vài phút để lại đánh giá về trải nghiệm của mình trên trang <a href=\"https://www.tripadvisor.com/Hotel_Review-g293925-d25279460-Reviews-Panacea_Hotel-Ho_Chi_Minh_City.html\" target=\"_blank\">TripAdvisor</a> hoặc <a href=\"https://goo.gl/maps/your-google-maps-link\" target=\"_blank\">Google</a>. Những góp ý của Quý khách là vô giá để chúng tôi hoàn thiện hơn.</p>
+            <p>Một lần nữa, xin chân thành cảm ơn Quý khách. Chúc Quý khách một ngày tốt lành và mong sớm được phục vụ Quý khách trong tương lai không xa.</p>
+            <br/>
+            <p>Trân trọng,</p>
+            <b>Nguyễn Văn A</b><br/>
+            Giám đốc Quan hệ Khách hàng<br/>
+            Khách sạn Panacea<br/>
+            Địa chỉ: 123 Đường ABC, Quận 1, TP. Hồ Chí Minh<br/>
+            Điện thoại: 0123 456 789<br/>
+            Website: <a href=\"https://panacea-hotel.com\" target=\"_blank\">https://panacea-hotel.com</a>
+            </body></html>
+            """,
+            customer.getHo() + " " + customer.getTen(),
+            expiryDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        );
+        try {
+            sendEmail(customer.getEmail(), subject, content);
+        } catch (Exception e) {
+            logger.error("Lỗi gửi email cảm ơn: {}", e.getMessage(), e);
+        }
+    }
+
     public Page<Booking> getPagedBookings(Pageable pageable) {
         return bookingRepository.findAll(pageable);
+    }
+
+    public Page<Booking> filterBookings(String keyword, java.time.LocalDate ngayNhan, Pageable pageable) {
+        java.util.List<Booking> all = bookingRepository.findAll();
+        java.util.List<Booking> filtered = all.stream()
+            .filter(b -> {
+                boolean match = true;
+                if (keyword != null && !keyword.isBlank()) {
+                    String lower = keyword.toLowerCase();
+                    match &= (b.getKhachHang().getHo() + " " + b.getKhachHang().getTen()).toLowerCase().contains(lower)
+                        || (b.getKhachHang().getEmail() != null && b.getKhachHang().getEmail().toLowerCase().contains(lower))
+                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower));
+                }
+                if (ngayNhan != null) {
+                    match &= b.getNgayNhanPhong() != null && b.getNgayNhanPhong().isEqual(ngayNhan);
+                }
+                return match;
+            })
+            .collect(Collectors.toList());
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
+        java.util.List<Booking> pageContent = start > end ? java.util.Collections.emptyList() : filtered.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, filtered.size());
     }
 
     public List<Room> getAvailableRoomsByHotel(Long hotelId) {

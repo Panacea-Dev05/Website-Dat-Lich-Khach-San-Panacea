@@ -38,14 +38,18 @@ public class QuanLyDatPhongController {
     @GetMapping("")
     public String view(@RequestParam(value = "page", defaultValue = "0") int page,
                       @RequestParam(value = "size", defaultValue = "10") int size,
+                      @RequestParam(value = "keyword", required = false) String keyword,
+                      @RequestParam(value = "ngayNhan", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate ngayNhan,
                       Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Booking> bookingPage = quanLyDatPhongService.getPagedBookings(pageable);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<panacea.website_dat_lich_khach_san.entity.Booking> bookingPage = quanLyDatPhongService.filterBookings(keyword, ngayNhan, pageable);
         model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
         model.addAttribute("bookings", bookingPage.getContent());
         model.addAttribute("currentPage", bookingPage.getNumber());
         model.addAttribute("totalPages", bookingPage.getTotalPages());
         model.addAttribute("pageSize", bookingPage.getSize());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("ngayNhan", ngayNhan);
         return "NhanVien/QuanLyDatPhong";
     }
     
@@ -124,5 +128,12 @@ public class QuanLyDatPhongController {
             e.printStackTrace();
             return "error: " + e.getMessage();
         }
+    }
+
+    @PostMapping("/checkout/{bookingId}")
+    @ResponseBody
+    public Map<String, Object> checkoutBooking(@PathVariable Long bookingId) {
+        boolean result = quanLyDatPhongService.checkoutBooking(bookingId);
+        return java.util.Map.of("success", result);
     }
 } 
