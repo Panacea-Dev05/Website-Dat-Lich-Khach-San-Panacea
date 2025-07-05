@@ -33,7 +33,7 @@ public class AdminRoomController {
     
     @GetMapping("/{id}")
     @ResponseBody
-    public RoomDTO getRoom(@PathVariable Long id) {
+    public RoomDTO getRoom(@PathVariable Integer id) {
         return adminRoomService.getRoomById(id);
     }
     
@@ -45,13 +45,13 @@ public class AdminRoomController {
     
     @PutMapping("/{id}")
     @ResponseBody
-    public RoomDTO updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
+    public RoomDTO updateRoom(@PathVariable Integer id, @RequestBody RoomDTO roomDTO) {
         return adminRoomService.updateRoom(id, roomDTO);
     }
     
     @DeleteMapping("/{id}")
     @ResponseBody
-    public boolean deleteRoom(@PathVariable Long id) {
+    public boolean deleteRoom(@PathVariable Integer id) {
         return adminRoomService.deleteRoom(id);
     }
 } 

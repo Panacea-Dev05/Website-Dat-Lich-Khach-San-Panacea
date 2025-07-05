@@ -240,6 +240,28 @@
                 min-width: 70px;
             }
         }
+
+        .custom-success {
+            background: linear-gradient(90deg, #a7f3d0 0%, #6ee7b7 100%);
+            color: #065f46;
+            padding: 1.1rem 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+            border-radius: 10px;
+            border: 1.5px solid #34d399;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-success::before {
+            content: "✔";
+            font-size: 1.3rem;
+            color: #059669;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -247,61 +269,86 @@
 <div class="app-layout">
     <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
     <main class="main-content">
+        <!-- Success/Error Messages -->
+        <div th:if="${param.success}" class="alert alert-success custom-success">
+            <span th:if="${param.success == 'created'}">✔ Thêm phòng thành công!</span>
+            <span th:if="${param.success == 'roomtype_created'}">✔ Thêm loại phòng thành công!</span>
+            <span th:if="${param.success == 'updated'}">✔ Cập nhật phòng thành công!</span>
+            <span th:if="${param.success == 'deleted'}">✔ Xóa phòng thành công!</span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-error" style="background: #fee2e2; color: #991b1b; padding: 1rem; margin: 1rem; border-radius: 8px; border: 1px solid #fca5a5;">
+            <span th:text="${param.error}">Lỗi</span>
+        </div>
+        <div th:if="${error}" class="alert alert-error" style="background: #fee2e2; color: #991b1b; padding: 1rem; margin: 1rem; border-radius: 8px; border: 1px solid #fca5a5;">
+            <span th:text="${error}">Lỗi</span>
+        </div>
+        
         <div class="section">
             <h2><span class="material-icons">category</span> Tạo loại phòng</h2>
-            <form>
+            <form th:action="@{/nhanvien/quanlyphong/create-roomtype}" method="post">
+                <div>
+                    <label>Mã loại phòng</label>
+                    <input type="text" name="maLoaiPhong" placeholder="STD, DLX, SUI..." required />
+                </div>
                 <div>
                     <label>Tên loại phòng</label>
-                    <input type="text" placeholder="Standard, Deluxe, Suite..." />
+                    <input type="text" name="tenLoaiPhong" placeholder="Standard, Deluxe, Suite..." required />
                 </div>
                 <div>
                     <label>Diện tích (m²)</label>
-                    <input type="number" step="5" />
+                    <input type="number" name="dienTich" step="5" />
                 </div>
                 <div>
                     <label>Số giường</label>
-                    <input type="number" min="1" />
+                    <input type="number" name="soGiuong" min="1" />
                 </div>
                 <div>
                     <label>Loại giường</label>
-                    <input type="text" placeholder="King, Queen, Twin..." />
+                    <input type="text" name="loaiGiuong" placeholder="King, Queen, Twin..." />
                 </div>
                 <div>
                     <label>Sức chứa tối đa</label>
-                    <input type="number" min="1" />
+                    <input type="number" name="sucChuaToiDa" min="1" />
                 </div>
                 <div>
                     <label>Tiện nghi</label>
-                    <textarea placeholder="WiFi, TV, Điều hòa..."></textarea>
+                    <textarea name="tienNghi" placeholder="WiFi, TV, Điều hòa..."></textarea>
                 </div>
                 <div>
                     <label>Mô tả</label>
-                    <textarea placeholder="Mô tả chi tiết..."></textarea>
+                    <textarea name="moTa" placeholder="Mô tả chi tiết..."></textarea>
                 </div>
                 <div style="align-self:end">
-                    <button class="btn"><span class="material-icons">add</span>Thêm loại phòng</button>
+                    <button type="submit" class="btn"><span class="material-icons">add</span>Thêm loại phòng</button>
                 </div>
             </form>
         </div>
 
         <div class="section">
             <h2><span class="material-icons">hotel</span> Thêm/Sửa phòng</h2>
-            <form>
+            <form th:action="@{/nhanvien/quanlyphong/create-room}" method="post">
                 <div>
                     <label>Số phòng</label>
-                    <input type="text" />
+                    <input type="text" name="soPhong" required />
                 </div>
                 <div>
                     <label>Tầng</label>
-                    <input type="number" />
+                    <input type="number" name="tang" />
                 </div>
                 <div>
                     <label>View</label>
-                    <input type="text" placeholder="Biển, Vườn, Thành phố..." />
+                    <input type="text" name="viewPhong" placeholder="Biển, Vườn, Thành phố..." />
+                </div>
+                <div>
+                    <label>Khách sạn</label>
+                    <select name="hotelId" required>
+                        <option disabled selected>Chọn khách sạn...</option>
+                        <option value="1">Khách sạn Panacea</option>
+                    </select>
                 </div>
                 <div>
                     <label>Loại phòng</label>
-                    <select name="roomTypeId">
+                    <select name="roomTypeId" required>
                         <option disabled selected>Chọn loại phòng...</option>
                         <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}">
                         </option>
@@ -315,30 +362,28 @@
                 </div>
                 <div>
                     <label>Giá cơ bản (VND)</label>
-                    <input type="number" />
+                    <input type="number" name="giaCoBan" step="1000" />
                 </div>
                 <div>
                     <label>Ghi chú</label>
-                    <textarea></textarea>
+                    <textarea name="ghiChu"></textarea>
                 </div>
                 <div style="align-self:end">
-                    <button class="btn"><span class="material-icons">save</span>Lưu phòng</button>
+                    <button type="submit" class="btn"><span class="material-icons">save</span>Lưu phòng</button>
                 </div>
             </form>
         </div>
 
         <div class="section">
             <h2><span class="material-icons">list</span> Danh sách phòng</h2>
-            <div class="filter">
-                <input type="text" placeholder="Tìm kiếm số phòng..." />
-                <select name="filterTrangThai">
+            <form th:action="@{/nhanvien/quanlyphong/search}" method="get" class="filter">
+                <input type="text" name="soPhong" placeholder="Tìm kiếm số phòng..." />
+                <select name="trangThai">
                     <option value="">Tất cả trạng thái</option>
                     <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
                 </select>
-                <input type="date" />
-                <input type="number" placeholder="Số người..." />
-                <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
-            </div>
+                <button type="submit" class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
+            </form>
             <table>
                 <thead>
                 <tr>
@@ -356,12 +401,18 @@
                 <tr th:each="room : ${rooms}">
                     <td th:text="${room.soPhong}"></td>
                     <td th:text="${room.tang}"></td>
-                    <td th:text="${room.roomType.tenLoaiPhong}"></td>
+                    <td th:text="${room.roomTypeName != null ? room.roomTypeName : 'N/A'}"></td>
                     <td th:text="${room.viewPhong}"></td>
-                    <td th:text="${room.trangThai.value}"></td>
-                    <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${room.trangThai != null ? room.trangThai : 'N/A'}"></td>
+                    <td th:text="${room.giaCoBan != null ? #numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT') : 'N/A'}"></td>
                     <td th:text="${room.ghiChu}"></td>
-                    <td><button class="btn"><span class="material-icons">edit</span>Sửa</button></td>
+                    <td>
+                        <form th:action="@{/nhanvien/quanlyphong/delete-room/{id}(id=${room.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn" onclick="return confirm('Bạn có chắc muốn xóa phòng này?')">
+                                <span class="material-icons">delete</span>Xóa
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>
