@@ -86,4 +86,10 @@ public class AdminRoomController {
         model.addAttribute("keyword", keyword);
         return "Admin/view/QuanLyHangPhong";
     }
+
+    @PostMapping("/room-types")
+    @ResponseBody
+    public RoomTypeDTO createRoomType(@RequestBody RoomTypeDTO roomTypeDTO) {
+        return adminRoomService.createRoomType(roomTypeDTO);
+    }
 } 

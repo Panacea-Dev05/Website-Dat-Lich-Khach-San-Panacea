@@ -8,6 +8,462 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlyphong.css}">
+    <link rel="stylesheet" th:href="@{/css/Admin/admin-modal.css}">
+    <style>
+        /* General Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content-wrapper {
+            background: #fff;
+            border-radius: 18px;
+            padding: 0;
+            min-width: 540px;
+            max-width: 740px;
+            width: 98vw;
+            max-height: 92vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #eee;
+            padding: 20px 32px 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.4em;
+            font-weight: 700;
+            text-align: center;
+            flex: 1;
+            letter-spacing: 0.5px;
+            color: #222;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .modal-form {
+            padding: 0;
+        }
+
+        /* Room Modal Flex Layout (Form and Price Info) */
+        .room-modal-flex {
+            display: flex;
+            gap: 32px;
+            padding: 28px 32px 0 32px;
+            align-items: flex-start;
+        }
+
+        .form-column {
+            flex: 1;
+            min-width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-label {
+            width: 110px;
+            font-weight: 600;
+        }
+
+        .form-label.required {
+            color: #e53935;
+            /* Specific color for required fields */
+        }
+
+        .form-input,
+        .form-select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1.2px solid #e0e0e0;
+            font-size: 1em;
+            background: #fff;
+            transition: border 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: #4fc3f7;
+        }
+
+        .btn-add-small {
+            background: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-left: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .icon-calendar,
+        .icon-edit {
+            color: #888;
+            font-size: 1.2em;
+            margin-left: 4px;
+        }
+
+        .price-info-column {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .price-info-box {
+            background: #f5f6fa;
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 1em;
+            color: #444;
+            width: 100%;
+        }
+
+        .price-info-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .price-info-list {
+            margin: 0 0 0 18px;
+            padding: 0;
+            font-size: 0.98em;
+            color: #444;
+        }
+
+        /* Image Upload Section */
+        .image-upload-section {
+            padding: 24px 32px 0 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-scroll-image {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.6em;
+            cursor: pointer;
+        }
+
+        .room-image-upload-list-responsive {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .room-image-upload-box {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed #d0d0d0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 1.3em;
+            background: #fafbfc;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .room-image-upload-box .material-icons {
+            font-size: 2em;
+        }
+
+        .room-image-upload-box img {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .room-image-upload-box:hover {
+            border-color: #4fc3f7 !important;
+            /* Keep important for hover interaction */
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        /* Modal Actions */
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            margin-top: 24px;
+            padding: 14px 32px 14px 32px;
+            background: #fff;
+        }
+
+        .btn-save,
+        .btn-save-add-new,
+        .btn-cancel {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 1em;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            /* Common color for these buttons */
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #009966;
+        }
+
+        .btn-save:hover {
+            background: #007d4e !important;
+        }
+
+        .btn-save-add-new {
+            background: #00b86b;
+        }
+
+        .btn-cancel {
+            background: #888;
+            font-weight: 600;
+            /* Slightly different font-weight */
+        }
+
+        .btn-save-add-new:hover,
+        .btn-cancel:hover {
+            filter: brightness(0.95);
+        }
+
+        .btn-save .material-icons,
+        .btn-save-add-new .material-icons,
+        .btn-cancel .material-icons {
+            font-size: 1.1em;
+        }
+
+        /* General Filter Form Styles */
+        .filter-form {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-filter {
+            padding: 8px 20px;
+            border-radius: 6px;
+            background: #009966;
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Header above table */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .main-header h1 {
+            margin: 0;
+        }
+
+        .btn-add-room {
+            padding: 8px 20px;
+            border-radius: 6px;
+            background: #009966;
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Tab container styles */
+        .tab-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            background: #f4f7fc;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .tab.active {
+            background: #009966;
+            color: #fff;
+        }
+
+        /* Table action buttons */
+        .btn-action {
+            display: inline-flex;
+            /* To align icon and potential text */
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding: 4px;
+            /* Adjust as needed for spacing */
+            border-radius: 4px;
+            margin-right: 5px;
+            /* Spacing between buttons */
+        }
+
+        .btn-action .material-icons {
+            font-size: 1.2em;
+            /* Adjust icon size */
+        }
+
+        .btn-edit {
+            color: #2196F3;
+            /* Blue for edit */
+            /* Add hover/focus styles if desired */
+        }
+
+        .btn-delete {
+            color: #F44336;
+            /* Red for delete */
+            /* Add hover/focus styles if desired */
+        }
+
+        /* Media Queries (from previous response, now integrated) */
+        @media (max-width: 900px) {
+            .room-modal-flex {
+                flex-direction: column !important;
+                gap: 20px !important;
+                padding: 20px !important;
+            }
+
+            .modal-content-wrapper {
+                min-width: unset !important;
+                max-width: 95vw !important;
+                width: auto !important;
+                margin: 20px auto !important;
+            }
+
+            .modal-form {
+                padding: 0 !important;
+            }
+
+            .modal-header {
+                padding: 15px 20px 0 20px !important;
+            }
+
+            .room-image-upload-list-responsive {
+                flex-wrap: wrap;
+                justify-content: center !important;
+            }
+
+            .image-upload-section {
+                padding: 20px !important;
+            }
+
+            .modal-actions {
+                padding: 14px 20px !important;
+            }
+        }
+
+        /* Original styles from quanlyphong.css that might be needed or overridden */
+        .status-available {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-maintenance {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .status-cleaning {
+            color: blue;
+            font-weight: bold;
+        }
+
+        /* Ensure the table itself is styled in quanlyphong.css if not already */
+        #roomTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #roomTable th,
+        #roomTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #roomTable th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        #roomTable tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #roomTable tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,34 +477,109 @@
             <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
                 <span class="material-icons">menu</span>
             </button>
-
         </header>
 
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
-            <!-- Nút chuyển trang ở đầu trang quản lý phòng -->
-            <div class="tab-container" style="display: flex; gap: 8px; margin-bottom: 16px;">
-                <a href="/admin/rooms/room-types" class="tab"
-                    style="padding: 8px 24px; border: none; border-radius: 8px 8px 0 0; background: #f4f7fc; font-weight: 600; cursor: pointer; text-decoration: none; color: #333;">Hạng
-                    phòng</a>
-                <a href="/admin/rooms" class="tab active"
-                    style="padding: 8px 24px; border: none; border-radius: 8px 8px 0 0; background: #009966; color: #fff; font-weight: 600; cursor: pointer; text-decoration: none;">Danh
-                    sách phòng</a>
+            <div class="tab-container">
+                <a th:href="@{/admin/rooms/room-types}" class="tab">Hạng phòng</a>
+                <a th:href="@{/admin/rooms}" class="tab active">Danh sách phòng</a>
             </div>
-            <h1>Quản lý phòng</h1>
-            <!-- Form filter phía trên bảng -->
-            <form method="get"
-                style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap;">
+            <div class="main-header">
+                <h1>Quản lý phòng</h1>
+                <button id="btnOpenAddRoomModal" class="btn-add-room">+ Thêm phòng</button>
+            </div>
+
+            <!-- Modal thêm phòng mới -->
+            <div id="addRoomModal" class="admin-modal-overlay">
+                <div class="admin-modal-content">
+                    <div class="admin-modal-header">
+                        <h2 class="admin-modal-title">Thêm phòng mới</h2>
+                        <button id="btnCloseAddRoomModal" class="admin-modal-close">&times;</button>
+                    </div>
+                    <form id="addRoomForm" autocomplete="off" class="admin-modal-form">
+                        <div class="admin-modal-flex">
+                            <!-- Cột trái: Form nhập liệu (60%) -->
+                            <div class="admin-modal-form-col" style="flex: 6;">
+                                <div class="admin-modal-form-group">
+                                    <label class="admin-modal-label">Tên phòng <span
+                                            style="color:#e53935">*</span></label>
+                                    <input name="tenPhong" required class="admin-modal-input" />
+                                </div>
+                                <div class="admin-modal-form-group">
+                                    <label class="admin-modal-label">Khu vực <span
+                                            style="color:#e53935">*</span></label>
+                                    <select name="khuVuc" required class="admin-modal-select">
+                                        <option value="">--Lựa chọn--</option>
+                                    </select>
+                                    <button type="button" class="admin-modal-btn-add">+</button>
+                                </div>
+                                <div class="admin-modal-form-group">
+                                    <label class="admin-modal-label">Hạng phòng <span
+                                            style="color:#e53935">*</span></label>
+                                    <select name="roomTypeId" required class="admin-modal-select">
+                                        <option value="">--Lựa chọn--</option>
+                                        <option th:each="type : ${roomTypes}" th:value="${type.id}"
+                                            th:text="${type.tenLoaiPhong}"></option>
+                                    </select>
+                                    <button type="button" class="admin-modal-btn-add">+</button>
+                                </div>
+                                <div class="admin-modal-form-group">
+                                    <label class="admin-modal-label">Bắt đầu sử dụng</label>
+                                    <input name="batDauSuDung" type="date" class="admin-modal-input" />
+                                    <span class="material-icons admin-modal-icon">calendar_today</span>
+                                </div>
+                                <div class="admin-modal-form-group">
+                                    <label class="admin-modal-label">Ghi chú</label>
+                                    <input name="ghiChu" class="admin-modal-input" />
+                                    <span class="material-icons admin-modal-icon">edit</span>
+                                </div>
+                            </div>
+                            <!-- Cột phải: Box thông tin giá (40%) -->
+                            <div class="admin-modal-price-col" style="flex: 4;">
+                                <div class="admin-modal-price-box">
+                                    <div class="admin-modal-price-title">Phòng sẽ được áp dụng theo giá của hạng phòng:
+                                    </div>
+                                    <ul class="admin-modal-price-list">
+                                        <li>Giá giờ:</li>
+                                        <li>Giá cả ngày:</li>
+                                        <li>Giá qua đêm:</li>
+                                        <li>Phụ thu quá giờ:</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dưới: Nút thêm ảnh -->
+                        <div class="admin-modal-image-section" style="justify-content: flex-start; padding-bottom: 0;">
+                            <button type="button" id="btnAddRoomImage" class="admin-modal-btn-save-add">
+                                <span class="material-icons">add_photo_alternate</span> Thêm ảnh
+                            </button>
+                            <input id="room-image-upload-input" type="file" accept="image/*" multiple
+                                class="hidden-input" />
+                        </div>
+                        <!-- Dưới cùng: Nút hành động -->
+                        <div class="admin-modal-actions">
+                            <button type="submit" class="admin-modal-btn-save"><span class="material-icons">save</span>
+                                Lưu</button>
+                            <button type="button" class="admin-modal-btn-save-add"><span
+                                    class="material-icons">add_circle</span> Lưu & Thêm mới</button>
+                            <button type="button" id="btnCloseAddRoomModal2" class="admin-modal-btn-cancel"><span
+                                    class="material-icons">close</span> Bỏ qua</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <form method="get" class="filter-form">
                 <div>
                     <label for="keyword">Tìm kiếm</label><br>
                     <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Nhập số phòng..."
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                        class="filter-input">
                 </div>
                 <div>
                     <label for="roomTypeId">Hạng phòng</label><br>
-                    <select id="roomTypeId" name="roomTypeId"
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                    <select id="roomTypeId" name="roomTypeId" class="filter-select">
                         <option value="">Tất cả</option>
                         <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}"
                             th:selected="${type.id} == ${roomTypeId}"></option>
@@ -56,8 +587,7 @@
                 </div>
                 <div>
                     <label for="status">Trạng thái</label><br>
-                    <select id="status" name="status"
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                    <select id="status" name="status" class="filter-select">
                         <option value="">Tất cả</option>
                         <option th:each="st : ${roomStatuses}" th:value="${st}" th:text="${st}"
                             th:selected="${st} == ${status}"></option>
@@ -66,19 +596,18 @@
                 <div>
                     <label for="area">Khu vực (Tầng)</label><br>
                     <input type="text" id="area" name="area" th:value="${area}" placeholder="Nhập tầng..."
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                        class="filter-input">
                 </div>
                 <div>
                     <label for="branch">Chi nhánh</label><br>
                     <input type="text" id="branch" name="branch" th:value="${branch}"
-                        placeholder="Nhập tên chi nhánh..."
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                        placeholder="Nhập tên chi nhánh..." class="filter-input">
                 </div>
                 <div>
-                    <button type="submit"
-                        style="padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer;">Lọc</button>
+                    <button type="submit" class="btn-filter">Lọc</button>
                 </div>
             </form>
+
             <section class="content-section" id="contentSection">
                 <table aria-label="Danh sách phòng khách sạn" id="roomTable">
                     <thead>
@@ -94,7 +623,6 @@
                         </tr>
                     </thead>
                     <tbody id="roomTableBody">
-                        <!-- Dữ liệu phòng từ controller -->
                         <tr th:each="room, stat : ${rooms}">
                             <td th:text="${stat.count}">1</td>
                             <td th:text="${room.soPhong}">101</td>
@@ -105,19 +633,20 @@
                                 1,200,000 VNĐ</td>
                             <td>
                                 <span
-                                    th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' : 
+                                    th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
                                                   room.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-cleaning'}"
-                                    th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' : 
+                                    th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
                                                 room.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp'}">
                                     Sẵn sàng
                                 </span>
                             </td>
                             <td>
-                                <a th:href="@{/admin/rooms/edit/{id}(id=${room.id})}" class="btn-edit" title="Sửa">
+                                <a th:href="@{/admin/rooms/edit/{id}(id=${room.id})}" class="btn-action btn-edit"
+                                    title="Sửa">
                                     <span class="material-icons">edit</span>
                                 </a>
-                                <a th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" class="btn-delete" title="Xóa"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
+                                <a th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" class="btn-action btn-delete"
+                                    title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
                                     <span class="material-icons">delete</span>
                                 </a>
                             </td>
@@ -132,6 +661,358 @@
         </footer>
     </div>
 
+    <script>
+        // Modal logic cho Thêm phòng
+        const btnOpenRoom = document.getElementById('btnOpenAddRoomModal');
+        const btnCloseRoom = document.getElementById('btnCloseAddRoomModal');
+        const btnCloseRoom2 = document.getElementById('btnCloseAddRoomModal2');
+        const roomModal = document.getElementById('addRoomModal');
+        btnOpenRoom.onclick = () => {
+            roomModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            const modalBox = roomModal.querySelector('.modal-content-wrapper');
+            modalBox.style.position = 'static';
+            modalBox.style.left = '';
+            modalBox.style.top = '';
+            modalBox.style.margin = 'auto';
+        };
+        btnCloseRoom.onclick = btnCloseRoom2.onclick = () => {
+            roomModal.style.display = 'none';
+            document.getElementById('addRoomForm').reset();
+            document.body.style.overflow = 'auto';
+        };
+        window.onclick = function (event) {
+            if (event.target === roomModal) {
+                roomModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        };
+        // Kéo modal di chuyển
+        (function () {
+            const modal = document.getElementById('addRoomModal');
+            const modalBox = modal.querySelector('.modal-content-wrapper');
+            const header = modalBox.querySelector('.modal-title'); // Changed to class
+            let isDragging = false, startX, startY, startLeft, startTop;
+            header.style.cursor = 'move';
+            header.onmousedown = function (e) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = modalBox.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+                modalBox.style.position = 'fixed';
+                modalBox.style.margin = '0';
+                document.body.style.userSelect = 'none';
+            };
+            document.onmousemove = function (e) {
+                if (!isDragging) return;
+                let dx = e.clientX - startX;
+                let dy = e.clientY - startY;
+                modalBox.style.left = (startLeft + dx) + 'px';
+                modalBox.style.top = (startTop + dy) + 'px';
+            };
+            document.onmouseup = function () {
+                isDragging = false;
+                document.body.style.userSelect = '';
+            };
+        })();
+        // Upload & preview ảnh phòng
+        (function () {
+            const boxes = document.querySelectorAll('.room-image-upload-box');
+            const input = document.getElementById('room-image-upload-input');
+            let currentIdx = 0;
+            boxes.forEach((box, idx) => {
+                box.onclick = () => {
+                    currentIdx = idx;
+                    input.click();
+                };
+            });
+            input.onchange = function (e) {
+                const files = Array.from(e.target.files);
+                files.slice(0, 6).forEach((file, i) => {
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const box = boxes[currentIdx + i];
+                        if (box) {
+                            box.querySelector('img').src = ev.target.result;
+                            box.querySelector('img').style.display = 'block';
+                            box.querySelector('.material-icons').style.display = 'none';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+                input.value = '';
+            };
+        })();
+    </script>
+    <style>
+        #addRoomModal.admin-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-modal-content {
+            background: #fff;
+            border-radius: 18px;
+            min-width: 340px;
+            max-width: 680px;
+            width: 96vw;
+            max-height: 92vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .admin-modal-form {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        .admin-modal-header {
+            border-bottom: 1px solid #eee;
+            padding: 20px 28px 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-modal-title {
+            margin: 0;
+            font-size: 1.4em;
+            font-weight: 700;
+            text-align: center;
+            flex: 1;
+            letter-spacing: 0.5px;
+            color: #222;
+        }
+
+        .admin-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .admin-modal-form {
+            padding: 0;
+        }
+
+        .admin-modal-flex {
+            display: flex;
+            gap: 24px;
+            padding: 24px 28px 0 28px;
+            align-items: flex-start;
+        }
+
+        .admin-modal-form-col {
+            flex: 6;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .admin-modal-form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-modal-label {
+            width: 110px;
+            font-weight: 600;
+        }
+
+        .admin-modal-label.required {
+            color: #e53935;
+        }
+
+        .admin-modal-input,
+        .admin-modal-select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1.2px solid #e0e0e0;
+            font-size: 1em;
+            background: #fff;
+            transition: border 0.2s;
+            outline: none;
+        }
+
+        .admin-modal-input:focus,
+        .admin-modal-select:focus {
+            border-color: #4fc3f7;
+        }
+
+        .admin-modal-btn-add {
+            background: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-left: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .admin-modal-icon {
+            color: #888;
+            font-size: 1.2em;
+            margin-left: 4px;
+        }
+
+        .admin-modal-price-col {
+            flex: 4;
+            min-width: 180px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .admin-modal-price-box {
+            background: #f5f6fa;
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 1em;
+            color: #444;
+            width: 100%;
+        }
+
+        .admin-modal-price-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .admin-modal-price-list {
+            margin: 0 0 0 18px;
+            padding: 0;
+            font-size: 0.98em;
+            color: #444;
+        }
+
+        .admin-modal-image-section {
+            padding: 24px 28px 0 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-modal-btn-save-add {
+            background: #00b86b;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 1em;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .admin-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+            padding: 16px 28px 16px 28px;
+            background: #fff;
+        }
+
+        .admin-modal-btn-save,
+        .admin-modal-btn-save-add,
+        .admin-modal-btn-cancel {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 1em;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .admin-modal-btn-save {
+            background: #009966;
+        }
+
+        .admin-modal-btn-save:hover {
+            background: #007d4e;
+        }
+
+        .admin-modal-btn-save-add {
+            background: #00b86b;
+        }
+
+        .admin-modal-btn-cancel {
+            background: #888;
+            font-weight: 600;
+        }
+
+        .admin-modal-btn-save-add:hover,
+        .admin-modal-btn-cancel:hover {
+            filter: brightness(0.95);
+        }
+
+        .admin-modal-btn-save .material-icons,
+        .admin-modal-btn-save-add .material-icons,
+        .admin-modal-btn-cancel .material-icons {
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 600px) {
+            .admin-modal-content {
+                max-width: 99vw;
+                min-width: 0;
+                width: 99vw;
+            }
+
+            .admin-modal-flex {
+                flex-direction: column;
+                gap: 18px;
+                padding: 14px 8px 0 8px;
+            }
+
+            .admin-modal-form-col,
+            .admin-modal-price-col {
+                min-width: 0;
+            }
+
+            .admin-modal-header {
+                padding: 14px 8px 0 8px;
+            }
+
+            .admin-modal-image-section {
+                padding: 14px 8px 0 8px;
+            }
+
+            .admin-modal-actions {
+                padding: 12px 8px 12px 8px;
+                gap: 8px;
+            }
+        }
+    </style>
 </body>
 
 </html>
