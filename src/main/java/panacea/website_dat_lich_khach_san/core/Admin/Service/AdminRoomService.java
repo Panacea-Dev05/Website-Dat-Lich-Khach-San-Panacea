@@ -95,6 +95,7 @@ public class AdminRoomService {
         dto.setUuidId(roomType.getUuidId());
         dto.setCreatedDate(roomType.getCreatedDate());
         dto.setLastModifiedDate(roomType.getLastModifiedDate());
+        dto.setSoLuongPhong((int) roomRepository.countByRoomTypeId(roomType.getId()));
         return dto;
     }
     
@@ -143,7 +144,7 @@ public class AdminRoomService {
         return convertRoomTypeToDTO(saved);
     }
     
-    public RoomTypeDTO updateRoomType(Long id, RoomTypeDTO dto) {
+    public RoomTypeDTO updateRoomType(Integer id, RoomTypeDTO dto) {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         if (opt.isEmpty()) return null;
         RoomType roomType = opt.get();
@@ -166,7 +167,7 @@ public class AdminRoomService {
             .collect(Collectors.toList());
     }
     
-    public RoomDTO changeRoomStatus(Long roomId, Room.TrangThaiPhong newStatus) {
+    public RoomDTO changeRoomStatus(Integer roomId, Room.TrangThaiPhong newStatus) {
         Optional<Room> opt = roomRepository.findById(roomId);
         if (opt.isEmpty()) return null;
         Room room = opt.get();
@@ -214,6 +215,43 @@ public class AdminRoomService {
     public List<RoomPricing> listRoomPricingByRoomType(Integer roomTypeId) {
         return roomPricingRepositoty.findAll().stream()
             .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomTypeId))
+            .collect(Collectors.toList());
+    }
+    
+    public List<RoomDTO> filterRooms(String keyword, Integer roomTypeId, String status, String area, String branch) {
+        return roomRepository.findAll().stream()
+            .filter(room -> {
+                boolean match = true;
+                if (keyword != null && !keyword.isEmpty()) {
+                    match &= room.getSoPhong() != null && room.getSoPhong().toLowerCase().contains(keyword.toLowerCase());
+                }
+                if (roomTypeId != null) {
+                    match &= room.getRoomType() != null && room.getRoomType().getId().equals(roomTypeId);
+                }
+                if (status != null && !status.isEmpty()) {
+                    match &= room.getTrangThai() != null && room.getTrangThai().name().equalsIgnoreCase(status);
+                }
+                if (area != null && !area.isEmpty()) {
+                    match &= room.getTang() != null && room.getTang().toString().equals(area);
+                }
+                if (branch != null && !branch.isEmpty()) {
+                    match &= room.getHotel() != null && room.getHotel().getTenKhachSan().toLowerCase().contains(branch.toLowerCase());
+                }
+                return match;
+            })
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    public List<RoomTypeDTO> filterRoomTypes(String keyword, String branch, String status) {
+        return roomTypeRepository.findAll().stream()
+            .filter(type -> {
+                if (keyword != null && !keyword.isEmpty()) {
+                    return type.getTenLoaiPhong() != null && type.getTenLoaiPhong().toLowerCase().contains(keyword.toLowerCase());
+                }
+                return true;
+            })
+            .map(this::convertRoomTypeToDTO)
             .collect(Collectors.toList());
     }
 } 

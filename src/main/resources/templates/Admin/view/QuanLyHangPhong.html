@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản Lý Hạng Phòng - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlyhangphong.css}">
+    <style>
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #ccc;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            position: relative;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+
+        .sidebar .has-submenu>a {
+            cursor: pointer;
+        }
+
+        /* Submenu mặc định ẩn */
+        .submenu {
+            display: none;
+            background-color: #f9f9f9;
+            padding-left: 20px;
+        }
+
+        /* Hover hiển thị submenu */
+        /* .has-submenu:hover>.submenu {
+            display: block;
+    } */
+
+        .submenu li a {
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .submenu li a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        /* Ưu tiên cao nhất cho submenu */
+        aside.sidebar li.has-submenu>ul.submenu {
+            display: none !important;
+        }
+
+        aside.sidebar li.has-submenu:hover>ul.submenu {
+            display: block !important;
+        }
+
+        /* Hiển thị submenu khi có class active */
+        aside.sidebar li.has-submenu>ul.submenu.active {
+            display: block !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+        </header>
+        <div style="display: flex; min-height: 100vh; background: #f4f7fc;">
+            <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+            <main role="main" tabindex="0"
+                style="flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 0;">
+                <div
+                    style="width: 100%; max-width: 1100px; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); padding: 32px 32px 24px 32px;">
+                    <!-- Tiêu đề Hạng phòng -->
+                    <h1 style="margin: 0 0 16px 0; font-size: 2rem; font-weight: 700; color: #009966;">Hạng phòng</h1>
+                    <!-- Tab chuyển đổi giữa Hạng phòng và Danh sách phòng -->
+                    <div class="tab-container"
+                        style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 24px;">
+                        <a href="/admin/rooms/room-types" class="tab active">Hạng phòng</a>
+                        <a href="/admin/rooms" class="tab">Danh sách phòng</a>
+                    </div>
+                    <!-- Filter bar trên cùng -->
+                    <form method="get" class="filter-bar"
+                        style="display: flex; gap: 24px; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap;">
+                        <div>
+                            <label for="keyword">Tìm kiếm</label>
+                            <input type="text" id="keyword" name="keyword" th:value="${keyword}"
+                                placeholder="Tìm kiếm hạng phòng"
+                                style="width: 180px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                        </div>
+                        <div>
+                            <label for="branch">Chi nhánh</label>
+                            <select id="branch" name="branch"
+                                style="width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                                <option value="">Tất cả</option>
+                                <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"
+                                    th:selected="${b} == ${branch}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Trạng thái</label>
+                            <div style="display: flex; gap: 8px;">
+                                <label><input type="radio" name="status" value=""
+                                        th:checked="${status} == null or status == ''"> Tất cả</label>
+                                <label><input type="radio" name="status" value="ACTIVE"
+                                        th:checked="${status} == 'ACTIVE'">
+                                    Đang kinh doanh</label>
+                                <label><input type="radio" name="status" value="INACTIVE"
+                                        th:checked="${status} == 'INACTIVE'"> Ngừng kinh doanh</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="pageSize">Số bản ghi:</label>
+                            <select id="pageSize" name="pageSize"
+                                style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                                <option>15</option>
+                                <option>30</option>
+                                <option>50</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit"
+                                style="padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer;">Lọc</button>
+                        </div>
+                    </form>
+                    <table
+                        style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden;">
+                        <thead style="background: #f4f7fc;">
+                            <tr>
+                                <th>Mã hạng phòng</th>
+                                <th>Tên hạng phòng</th>
+                                <th>SL phòng</th>
+                                <th>Giá giờ</th>
+                                <th>Giá cả ngày</th>
+                                <th>Giá qua đêm</th>
+                                <th>Trạng thái</th>
+                                <th>Chi nhánh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="type : ${roomTypes}">
+                                <td th:text="${type.maLoaiPhong}">Double Bedroom</td>
+                                <td th:text="${type.tenLoaiPhong}">Phòng 01 giường đôi cho 2 người</td>
+                                <td th:text="${type.soLuongPhong}">3</td>
+                                <!-- <td th:text="${type.giaGio}">180,000</td> -->
+                                <!-- <td th:text="${type.giaNgay}">720,000</td> -->
+                                <!-- <td th:text="${type.giaQuaDem}">720,000</td> -->
+                                <!-- <td th:text="${type.trangThai == 'ACTIVE' ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}">Đang kinh doanh</td> -->
+                                <!-- <td th:text="${type.chiNhanh}">Chi nhánh trung tâm</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+</body>
+
+</html>

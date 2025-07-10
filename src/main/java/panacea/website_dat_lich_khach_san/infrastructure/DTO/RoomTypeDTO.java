@@ -1,10 +1,10 @@
 package panacea.website_dat_lich_khach_san.infrastructure.DTO;
 
-import lombok.Data;
-import panacea.website_dat_lich_khach_san.entity.RoomType;
-
 import java.math.BigDecimal;
 import java.util.UUID;
+
+import lombok.Data;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
 
 @Data
 public class RoomTypeDTO {
@@ -20,6 +20,7 @@ public class RoomTypeDTO {
     private UUID uuidId;
     private Long createdDate;
     private Long lastModifiedDate;
+    private Integer soLuongPhong;
 
     public static RoomTypeDTO fromEntity(RoomType roomType) {
         RoomTypeDTO dto = new RoomTypeDTO();

@@ -27,7 +27,58 @@
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
+            <!-- Nút chuyển trang ở đầu trang quản lý phòng -->
+            <div class="tab-container" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <a href="/admin/rooms/room-types" class="tab"
+                    style="padding: 8px 24px; border: none; border-radius: 8px 8px 0 0; background: #f4f7fc; font-weight: 600; cursor: pointer; text-decoration: none; color: #333;">Hạng
+                    phòng</a>
+                <a href="/admin/rooms" class="tab active"
+                    style="padding: 8px 24px; border: none; border-radius: 8px 8px 0 0; background: #009966; color: #fff; font-weight: 600; cursor: pointer; text-decoration: none;">Danh
+                    sách phòng</a>
+            </div>
             <h1>Quản lý phòng</h1>
+            <!-- Form filter phía trên bảng -->
+            <form method="get"
+                style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap;">
+                <div>
+                    <label for="keyword">Tìm kiếm</label><br>
+                    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Nhập số phòng..."
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <label for="roomTypeId">Hạng phòng</label><br>
+                    <select id="roomTypeId" name="roomTypeId"
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="">Tất cả</option>
+                        <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}"
+                            th:selected="${type.id} == ${roomTypeId}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="status">Trạng thái</label><br>
+                    <select id="status" name="status"
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="">Tất cả</option>
+                        <option th:each="st : ${roomStatuses}" th:value="${st}" th:text="${st}"
+                            th:selected="${st} == ${status}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="area">Khu vực (Tầng)</label><br>
+                    <input type="text" id="area" name="area" th:value="${area}" placeholder="Nhập tầng..."
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <label for="branch">Chi nhánh</label><br>
+                    <input type="text" id="branch" name="branch" th:value="${branch}"
+                        placeholder="Nhập tên chi nhánh..."
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <button type="submit"
+                        style="padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer;">Lọc</button>
+                </div>
+            </form>
             <section class="content-section" id="contentSection">
                 <table aria-label="Danh sách phòng khách sạn" id="roomTable">
                     <thead>
@@ -66,7 +117,7 @@
                                     <span class="material-icons">edit</span>
                                 </a>
                                 <a th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" class="btn-delete" title="Xóa"
-                                   onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
                                     <span class="material-icons">delete</span>
                                 </a>
                             </td>
