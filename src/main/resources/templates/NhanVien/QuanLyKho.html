@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
@@ -195,8 +196,7 @@
                     <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
                 </select></div>
                 <div style="grid-column: span 2; text-align: right;">
-                    <button type="submit" class="btn"><span class="material-icons">save</span>Lưu</button>
-                    <button type="button" class="btn" id="clearFormBtn"><span class="material-icons">clear</span>Làm mới</button>
+                    <button class="btn"><span class="material-icons">save</span>Lưu</button>
                 </div>
             </form>
         </div>
@@ -204,25 +204,22 @@
         <!-- Giao dịch kho -->
         <div class="section">
             <h2><span class="material-icons">compare_arrows</span> Giao dịch kho</h2>
-            <form id="transactionForm">
-                <div><label>Vật phẩm</label><select id="vatPhamId" name="vatPhamId" required>
-                    <option disabled selected value="">Chọn vật phẩm...</option>
-                    <!-- Options will be loaded by JavaScript -->
+            <form>
+                <div><label>Vật phẩm</label><select name="vatPhamId">
+                    <option disabled selected>Chọn vật phẩm...</option>
+                    <option th:each="vp : ${vatPhams}" th:value="${vp.id}" th:text="${vp.tenVatPham}"></option>
                 </select></div>
-                <div><label>Loại giao dịch</label><select id="loaiGiaoDich" name="loaiGiaoDich" required>
-                    <option disabled selected value="">Chọn loại giao dịch...</option>
-                    <option value="NHAP">Nhập</option>
-                    <option value="XUAT">Xuất</option>
-                    <option value="KIEM_KE">Kiểm kê</option>
-                    <option value="HONG">Hỏng</option>
+                <div><label>Loại giao dịch</label><select name="loaiGiaoDich">
+                    <option disabled selected>Chọn loại giao dịch...</option>
+                    <option th:each="lgd : ${loaiGiaoDichList}" th:value="${lgd}" th:text="${lgd}"></option>
                 </select></div>
-                <div><label>Số lượng</label><input type="number" id="soLuong" min="1" required /></div>
-                <div><label>Giá trị</label><input type="number" id="giaTri" step="0.01" /></div>
-                <div><label>Ngày giao dịch</label><input type="date" id="ngayGiaoDich" required /></div>
-                <div><label>Số chứng từ</label><input type="text" id="soChungTu" /></div>
-                <div style="grid-column: span 2;"><label>Lý do</label><textarea id="lyDo"></textarea></div>
+                <div><label>Số lượng</label><input type="number" min="1" /></div>
+                <div><label>Giá trị</label><input type="number" /></div>
+                <div><label>Ngày giao dịch</label><input type="date" /></div>
+                <div><label>Số chứng từ</label><input type="text" /></div>
+                <div style="grid-column: span 2;"><label>Lý do</label><textarea></textarea></div>
                 <div style="grid-column: span 2; text-align: right;">
-                    <button type="submit" class="btn"><span class="material-icons">add_circle</span>Thêm giao dịch</button>
+                    <button class="btn"><span class="material-icons">add_circle</span>Thêm giao dịch</button>
                 </div>
             </form>
         </div>
@@ -230,10 +227,9 @@
         <!-- Danh sách vật phẩm -->
         <div class="section">
             <h2><span class="material-icons">list</span> Danh sách vật phẩm</h2>
-            <table id="inventoryTable">
+            <table>
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Mã</th>
                     <th>Tên</th>
                     <th>Loại</th>
@@ -241,12 +237,19 @@
                     <th>Giá nhập</th>
                     <th>Nhà cung cấp</th>
                     <th>Hạn dùng</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Inventory items will be loaded here by JavaScript -->
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.maVatPham}"></td>
+                    <td th:text="${item.tenVatPham}"></td>
+                    <td th:text="${item.loaiVatPham}"></td>
+                    <td th:text="${item.soLuongTon}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}">
+                    </td>
+                    <td th:text="${item.nhaCungCap}"></td>
+                    <td th:text="${#dates.format(item.hanSuDung, 'yyyy-MM-dd')}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -254,10 +257,9 @@
         <!-- Lịch sử giao dịch -->
         <div class="section">
             <h2><span class="material-icons">history</span> Lịch sử giao dịch kho</h2>
-            <table id="transactionTable">
+            <table>
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Ngày</th>
                     <th>Vật phẩm</th>
                     <th>Loại</th>
@@ -267,290 +269,20 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Transaction history will be loaded here by JavaScript -->
+                <tr th:each="tran : ${transactions}">
+                    <td th:text="${#dates.format(tran.ngayGiaoDich, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${tran.vatPham.tenVatPham}"></td>
+                    <td th:text="${tran.loaiGiaoDich}"></td>
+                    <td th:text="${tran.soLuong}"></td>
+                    <td th:text="${#numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT')}">
+                    </td>
+                    <td th:text="${tran.lyDo}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </main>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const inventoryForm = document.getElementById('inventoryForm');
-        const inventoryIdInput = document.getElementById('inventoryId');
-        const tenVatPhamInput = document.getElementById('tenVatPham');
-        const maVatPhamInput = document.getElementById('maVatPham');
-        const loaiVatPhamInput = document.getElementById('loaiVatPham');
-        const soLuongTonInput = document.getElementById('soLuongTon');
-        const soLuongToiThieuInput = document.getElementById('soLuongToiThieu');
-        const giaNhapInput = document.getElementById('giaNhap');
-        const donViTinhInput = document.getElementById('donViTinh');
-        const viTriKhoInput = document.getElementById('viTriKho');
-        const nhaCungCapInput = document.getElementById('nhaCungCap');
-        const hanSuDungInput = document.getElementById('hanSuDung');
-        const trangThaiSelect = document.getElementById('trangThai');
-        const clearFormBtn = document.getElementById('clearFormBtn');
-
-        const transactionForm = document.getElementById('transactionForm');
-        const vatPhamIdSelect = document.getElementById('vatPhamId');
-        const loaiGiaoDichSelect = document.getElementById('loaiGiaoDich');
-        const soLuongInput = document.getElementById('soLuong');
-        const giaTriInput = document.getElementById('giaTri');
-        const ngayGiaoDichInput = document.getElementById('ngayGiaoDich');
-        const soChungTuInput = document.getElementById('soChungTu');
-        const lyDoInput = document.getElementById('lyDo');
-
-        const inventoryTableBody = document.querySelector('#inventoryTable tbody');
-        const transactionTableBody = document.querySelector('#transactionTable tbody');
-
-        const API_BASE_URL = '/api/staff';
-
-        // Helper function to format date for input type="date"
-        function formatDateForInput(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // Helper function to format date for display
-        function formatDisplayDate(dateArray) {
-            if (!dateArray || dateArray.length < 3) return '';
-            const year = dateArray[0];
-            const month = dateArray[1].toString().padStart(2, '0');
-            const day = dateArray[2].toString().padStart(2, '0');
-            return `${day}/${month}/${year}`;
-        }
-
-        // Helper function to format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-        }
-
-        // Load Inventory Items
-        async function loadInventoryItems() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/inventory-management`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const items = await response.json();
-                inventoryTableBody.innerHTML = ''; // Clear existing rows
-                vatPhamIdSelect.innerHTML = '<option disabled selected value="">Chọn vật phẩm...</option>'; // Clear and reset dropdown
-
-                items.forEach(item => {
-                    const row = inventoryTableBody.insertRow();
-                    row.dataset.id = item.id;
-                    row.insertCell().textContent = item.id;
-                    row.insertCell().textContent = item.maVatPham || 'N/A';
-                    row.insertCell().textContent = item.tenVatPham;
-                    row.insertCell().textContent = item.loaiVatPham || 'N/A';
-                    row.insertCell().textContent = item.soLuongTon;
-                    row.insertCell().textContent = formatCurrency(item.giaNhap || 0);
-                    row.insertCell().textContent = item.nhaCungCap || 'N/A';
-                    row.insertCell().textContent = formatDateForInput(item.hanSuDung);
-                    row.insertCell().textContent = item.trangThai;
-
-                    const actionsCell = row.insertCell();
-                    const editButton = document.createElement('button');
-                    editButton.textContent = 'Sửa';
-                    editButton.classList.add('btn');
-                    editButton.style.marginRight = '5px';
-                    editButton.onclick = () => editInventoryItem(item);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Xóa';
-                    deleteButton.classList.add('btn');
-                    deleteButton.style.background = '#dc3545';
-                    deleteButton.style.backgroundColor = '#dc3545';
-                    deleteButton.style.border = 'none';
-                    deleteButton.onclick = () => deleteInventoryItem(item.id);
-
-                    actionsCell.appendChild(editButton);
-                    actionsCell.appendChild(deleteButton);
-
-                    // Add to vật phẩm select for transactions
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.tenVatPham + ' (' + (item.maVatPham || 'N/A') + ')';
-                    vatPhamIdSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading inventory items:', error);
-                alert('Không thể tải danh sách vật phẩm. Vui lòng thử lại.');
-            }
-        }
-
-        // Load Inventory Transactions
-        async function loadInventoryTransactions() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/inventory-transactions`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const transactions = await response.json();
-                transactionTableBody.innerHTML = ''; // Clear existing rows
-                transactions.forEach(tran => {
-                    const row = transactionTableBody.insertRow();
-                    row.insertCell().textContent = tran.id;
-                    row.insertCell().textContent = formatDisplayDate(tran.ngayGiaoDich);
-                    // This assumes tran.vatPham.tenVatPham is available in the DTO
-                    // If not, you'll need to fetch vatPham details or adjust the DTO
-                    row.insertCell().textContent = tran.vatPhamId; // Temporarily show ID, consider fetching name
-                    row.insertCell().textContent = tran.loaiGiaoDich;
-                    row.insertCell().textContent = tran.soLuong;
-                    row.insertCell().textContent = formatCurrency(tran.giaTri || 0);
-                    row.insertCell().textContent = tran.lyDo || 'N/A';
-                });
-            } catch (error) {
-                console.error('Error loading inventory transactions:', error);
-                alert('Không thể tải lịch sử giao dịch. Vui lòng thử lại.');
-            }
-        }
-
-        // Handle Inventory Form Submission
-        inventoryForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const isUpdate = inventoryIdInput.value !== '';
-            const url = isUpdate ? `${API_BASE_URL}/inventory-management/${inventoryIdInput.value}` : `${API_BASE_URL}/inventory-management`;
-            const method = isUpdate ? 'PUT' : 'POST';
-
-            const inventoryData = {
-                id: isUpdate ? parseInt(inventoryIdInput.value) : null,
-                khachSanId: 1, // Default or dynamically set this if needed
-                tenVatPham: tenVatPhamInput.value,
-                maVatPham: maVatPhamInput.value,
-                loaiVatPham: loaiVatPhamInput.value,
-                donViTinh: donViTinhInput.value,
-                soLuongTon: parseInt(soLuongTonInput.value),
-                soLuongToiThieu: parseInt(soLuongToiThieuInput.value),
-                giaNhap: parseFloat(giaNhapInput.value),
-                nhaCungCap: nhaCungCapInput.value,
-                ngayNhapCuoi: hanSuDungInput.value ? hanSuDungInput.value : null, // Use value directly for date
-                hanSuDung: hanSuDungInput.value ? hanSuDungInput.value : null,
-                viTriKho: viTriKhoInput.value,
-                trangThai: trangThaiSelect.value,
-                // uuidId, createdDate, lastModifiedDate will be handled by backend @PrePersist/@PreUpdate
-            };
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(inventoryData),
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
-
-                alert(`Vật phẩm đã được ${isUpdate ? 'cập nhật' : 'thêm mới'} thành công!`);
-                inventoryForm.reset();
-                inventoryIdInput.value = ''; // Clear hidden ID after submission
-                loadInventoryItems(); // Reload list to show changes
-            } catch (error) {
-                console.error('Error saving inventory item:', error);
-                alert('Có lỗi xảy ra khi lưu vật phẩm: ' + error.message);
-            }
-        });
-
-        // Edit Inventory Item
-        function editInventoryItem(item) {
-            inventoryIdInput.value = item.id;
-            tenVatPhamInput.value = item.tenVatPham;
-            maVatPhamInput.value = item.maVatPham;
-            loaiVatPhamInput.value = item.loaiVatPham;
-            soLuongTonInput.value = item.soLuongTon;
-            soLuongToiThieuInput.value = item.soLuongToiThieu;
-            giaNhapInput.value = item.giaNhap;
-            donViTinhInput.value = item.donViTinh;
-            viTriKhoInput.value = item.viTriKho;
-            nhaCungCapInput.value = item.nhaCungCap;
-            hanSuDungInput.value = formatDateForInput(item.hanSuDung);
-            trangThaiSelect.value = item.trangThai;
-        }
-
-        // Delete Inventory Item
-        async function deleteInventoryItem(id) {
-            if (confirm('Bạn có chắc chắn muốn xóa vật phẩm này?')) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/inventory-management/${id}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                    }
-
-                    alert('Vật phẩm đã được xóa thành công!');
-                    loadInventoryItems(); // Reload list to show changes
-                } catch (error) {
-                    console.error('Error deleting inventory item:', error);
-                    alert('Có lỗi xảy ra khi xóa vật phẩm: ' + error.message);
-                }
-            }
-        }
-
-        // Clear Inventory Form
-        clearFormBtn.addEventListener('click', function() {
-            inventoryForm.reset();
-            inventoryIdInput.value = '';
-            trangThaiSelect.value = 'Hoạt động'; // Reset to default if desired
-        });
-
-        // Handle Transaction Form Submission
-        transactionForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const transactionData = {
-                vatPhamId: parseInt(vatPhamIdSelect.value),
-                loaiGiaoDich: loaiGiaoDichSelect.value,
-                soLuong: parseInt(soLuongInput.value),
-                giaTri: parseFloat(giaTriInput.value),
-                lyDo: lyDoInput.value,
-                nhanVienId: 1, // Default or dynamically set this if needed
-                phongId: null, // Set if transaction relates to a specific room
-                ngayGiaoDich: ngayGiaoDichInput.value, // Use value directly for date
-                soChungTu: soChungTuInput.value
-                // uuidId, createdDate will be handled by backend @PrePersist
-            };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/inventory-transactions`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(transactionData),
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
-
-                alert('Giao dịch kho đã được thêm thành công!');
-                transactionForm.reset();
-                loadInventoryTransactions(); // Reload list to show changes
-                loadInventoryItems(); // Inventory count might change
-            } catch (error) {
-                console.error('Error saving transaction:', error);
-                alert('Có lỗi xảy ra khi thêm giao dịch: ' + error.message);
-            }
-        });
-
-        // Initial load
-        loadInventoryItems();
-        loadInventoryTransactions();
-    });
-</script>
 </body>
 
 </html>
