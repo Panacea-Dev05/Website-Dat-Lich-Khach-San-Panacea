@@ -12,7 +12,7 @@
     <!-- Favicon Icon -->
     <link rel="icon" th:href="@{/css/KhachHang/assets/img/favicon.svg}" />
     <!-- Site Title -->
-    <title>Elegencia - Royale Restaurant HTML Template</title>
+    <title>Panacea - Royale Restaurant HTML Template</title>
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
@@ -441,18 +441,17 @@
                             <form id="bookingNowForm" action="/khachhang/single-room/booking" method="post">
                                 <input type="hidden" name="roomId" value="1" />
                                 <input type="hidden" name="hotelId" value="1" />
-                                <!-- Thêm các trường thông tin khách hàng -->
                                 <div class="form-group">
-                                    <input type="text" name="hoKhach" class="form-control booking-now-input" placeholder="Họ" required />
+                                    <input type="text" name="hoKhach" class="form-control booking-now-input custom-input-separated" placeholder="First Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="tenKhach" class="form-control booking-now-input" placeholder="Tên" required />
+                                    <input type="text" name="tenKhach" class="form-control booking-now-input custom-input-separated" placeholder="Last Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" name="emailKhach" class="form-control booking-now-input" placeholder="Email" required />
+                                    <input type="email" name="emailKhach" class="form-control booking-now-input custom-input-separated" placeholder="Email" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="soDienThoai" class="form-control booking-now-input" placeholder="Số điện thoại" required />
+                                    <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                                 </div>
                                 <!-- ... giữ nguyên các div, class, style ... -->
                                 <div class="check">
@@ -508,7 +507,7 @@
                                     <p>Adult</p>
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" value="Decrease Value">-</div>
-                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="0" />
+                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="1" />
                                         <div class="value-button" id="increase" value="Increase Value">+</div>
                                     </div>
                                 </div>
@@ -529,25 +528,25 @@
                                     <div class="row row-cols-1">
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="service" value="checkbox" />&nbsp;Bar
+                                                <input type="checkbox" name="dichVu" value="Bar Service" />&nbsp;Bar
                                                 Service
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="business" value="checkbox" />&nbsp;Business
+                                                <input type="checkbox" name="dichVu" value="Business Center" />&nbsp;Business
                                                 Center
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="Safety" value="checkbox" />&nbsp;Safety
+                                                <input type="checkbox" name="dichVu" value="Safety and Security" />&nbsp;Safety
                                                 and Security
                                             </label>
                                         </div>
                                         <div class="col">
                                             <label class="cbox-cursor">
-                                                <input type="checkbox" name="fine" value="checkbox" />&nbsp;Fine
+                                                <input type="checkbox" name="dichVu" value="Fine Dining Restaurants" />&nbsp;Fine
                                                 Dining Restaurants
                                             </label>
                                         </div>
@@ -834,14 +833,73 @@
 </div>
 
 <script>
+// Set default date for check-in/check-out to today and tomorrow
+window.addEventListener('DOMContentLoaded', function() {
+  var today = new Date();
+  var tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, '0');
+  var todayStr = yyyy + '-' + mm + '-' + dd;
+  var yyyy2 = tomorrow.getFullYear();
+  var mm2 = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  var dd2 = String(tomorrow.getDate()).padStart(2, '0');
+  var tomorrowStr = yyyy2 + '-' + mm2 + '-' + dd2;
+  var checkin = document.querySelector('input[name="ngayNhanPhong"]');
+  var checkout = document.querySelector('input[name="ngayTraPhong"]');
+  if (checkin) checkin.value = todayStr;
+  if (checkout) checkout.value = tomorrowStr;
+});
 // Gửi form booking bằng AJAX, show popup kết quả
 const bookingForm = document.getElementById('bookingNowForm');
 if (bookingForm) {
   bookingForm.addEventListener('submit', async function(e) {
     e.preventDefault();
+    // Lấy nút Book Now
+    const submitBtn = bookingForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      var oldText = submitBtn.innerHTML;
+      submitBtn.innerHTML = 'Đang gửi...';
+    }
+    // Validate ngày nhận/trả phòng
+    const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
+    const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
+    const soNguoiLon = parseInt(bookingForm.querySelector('input[name="soNguoiLon"]').value, 10) || 0;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const nhanDate = new Date(ngayNhan);
+    const traDate = new Date(ngayTra);
+    if (soNguoiLon < 1) {
+      alert('Phải có ít nhất 1 người lớn!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+      return;
+    }
+    if (nhanDate < today) {
+      alert('Ngày nhận phòng phải từ hôm nay trở đi!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+      return;
+    }
+    if (traDate <= nhanDate) {
+      alert('Ngày trả phòng phải sau ngày nhận phòng!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+      return;
+    }
+    // Lấy danh sách dịch vụ đã chọn
+    const dichVuChecked = Array.from(bookingForm.querySelectorAll('input[name="dichVu"]:checked')).map(cb => cb.value);
     const formData = new FormData(bookingForm);
     const data = {};
-    formData.forEach((v, k) => data[k] = v);
+    formData.forEach((v, k) => {
+      if (k === 'dichVu') {
+        if (!data[k]) data[k] = [];
+        data[k].push(v);
+      } else {
+        data[k] = v;
+      }
+    });
+    // Đảm bảo gửi đúng danh sách dịch vụ
+    data.dichVu = dichVuChecked;
     try {
       const res = await fetch(bookingForm.action, {
         method: 'POST',
@@ -852,6 +910,8 @@ if (bookingForm) {
       showBookingResult(result.success, result.message);
     } catch (err) {
       showBookingResult(false, 'Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ hỗ trợ.');
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
     }
   });
 }
@@ -860,10 +920,29 @@ function showBookingResult(success, message) {
   const content = document.getElementById('bookingResultContent');
   if (success) {
     content.innerHTML = `<h2>Đặt phòng thành công!</h2><p>${message || 'Yêu cầu đặt phòng của bạn đã được gửi. Vui lòng kiểm tra email và chờ xác nhận từ nhân viên.'}</p>`;
+    // Reset form về mặc định
+    if (bookingForm) {
+      bookingForm.reset();
+      // Đặt lại số người lớn = 1, số trẻ em = 0
+      var soNguoiLon = bookingForm.querySelector('input[name="soNguoiLon"]');
+      if (soNguoiLon) soNguoiLon.value = 1;
+      var soTreEm = bookingForm.querySelector('input[name="soTreEm"]');
+      if (soTreEm) soTreEm.value = 0;
+    }
   } else {
     content.innerHTML = `<h2>Đặt phòng thất bại!</h2><p>${message || 'Đã có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ hỗ trợ.'}</p>`;
   }
   modal.style.display = 'flex';
+}
+function increaseValue() {
+  var input = document.getElementById('number');
+  var value = parseInt(input.value, 10) || 0;
+  input.value = value + 1;
+}
+function decreaseValue() {
+  var input = document.getElementById('number');
+  var value = parseInt(input.value, 10) || 0;
+  if (value > 0) input.value = value - 1;
 }
 </script>
 
@@ -900,6 +979,22 @@ function showBookingResult(success, message) {
   background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
 }
 .modal-dialog { max-width: 400px; width: 100%; }
+.custom-input-separated {
+  background: #ececec !important;
+  border-radius: 10px !important;
+  border: 1px solid #d1d5db !important;
+  padding: 14px 18px !important;
+  font-size: 1.08rem !important;
+  color: #222 !important;
+  margin-bottom: 16px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border 0.2s, background 0.2s;
+}
+.custom-input-separated:focus {
+  border: 1.5px solid #FFD28D !important;
+  background: #f5f5f5 !important;
+}
 </style>
 
 <script>

@@ -193,12 +193,12 @@ public class KhachHangController {
     }
 
     // Xử lý đặt phòng từ form single-room
-    @PostMapping("/single-room/booking")
-    public String datPhong(@ModelAttribute BookingRequestDTO bookingRequestDTO, Model model) {
-        boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
-        model.addAttribute("result", result);
-        model.addAttribute("email", bookingRequestDTO.getEmailKhach());
-        // Trả về template thông báo chờ xác nhận
-        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
-    }
+//    @PostMapping("/single-room/booking")
+//    public String datPhong(@ModelAttribute BookingRequestDTO bookingRequestDTO, Model model) {
+//        boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
+//        model.addAttribute("result", result);
+//        model.addAttribute("email", bookingRequestDTO.getEmailKhach());
+//        // Trả về template thông báo chờ xác nhận
+//        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
+//    }
 }

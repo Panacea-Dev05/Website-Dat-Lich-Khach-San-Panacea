@@ -131,4 +131,50 @@ public class AdminReviewService {
         }
         return review;
     }
+    
+    // Xem đánh giá khách sạn với pagination
+    public List<ReviewDTO> getReviewsByHotel(Integer hotelId, int page, int size) {
+        return reviewRepository.findAll().stream()
+            .filter(r -> r.getKhachSanId() != null && r.getKhachSanId().equals(hotelId))
+            .skip((long) page * size)
+            .limit(size)
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    // Thống kê điểm trung bình từng tiêu chí cho khách sạn
+    public ReviewStats getHotelReviewStats(Integer hotelId) {
+        List<Review> reviews = reviewRepository.findAll().stream()
+            .filter(r -> r.getKhachSanId() != null && r.getKhachSanId().equals(hotelId) && r.getTrangThai() == Review.TrangThaiReview.DA_DUYET)
+            .toList();
+        double avgTongQuan = reviews.stream().mapToInt(r -> r.getDiemTongQuan() != null ? r.getDiemTongQuan() : 0).average().orElse(0);
+        double avgSachSe = reviews.stream().mapToInt(r -> r.getDiemSachSe() != null ? r.getDiemSachSe() : 0).average().orElse(0);
+        double avgDichVu = reviews.stream().mapToInt(r -> r.getDiemDichVu() != null ? r.getDiemDichVu() : 0).average().orElse(0);
+        double avgViTri = reviews.stream().mapToInt(r -> r.getDiemViTri() != null ? r.getDiemViTri() : 0).average().orElse(0);
+        double avgGiaCa = reviews.stream().mapToInt(r -> r.getDiemGiaCa() != null ? r.getDiemGiaCa() : 0).average().orElse(0);
+        return new ReviewStats(avgTongQuan, avgSachSe, avgDichVu, avgViTri, avgGiaCa, reviews.size());
+    }
+    
+    public static class ReviewStats {
+        public double avgTongQuan, avgSachSe, avgDichVu, avgViTri, avgGiaCa;
+        public int soDanhGia;
+        public ReviewStats(double avgTongQuan, double avgSachSe, double avgDichVu, double avgViTri, double avgGiaCa, int soDanhGia) {
+            this.avgTongQuan = avgTongQuan;
+            this.avgSachSe = avgSachSe;
+            this.avgDichVu = avgDichVu;
+            this.avgViTri = avgViTri;
+            this.avgGiaCa = avgGiaCa;
+            this.soDanhGia = soDanhGia;
+        }
+    }
+    
+    // Trả lời đánh giá (phản hồi của khách sạn)
+    public ReviewDTO replyToReview(Long reviewId, String reply) {
+        Optional<Review> opt = reviewRepository.findById(reviewId);
+        if (opt.isEmpty()) return null;
+        Review review = opt.get();
+        review.setBinhLuan((review.getBinhLuan() != null ? review.getBinhLuan() : "") + "\n[Phản hồi KS]: " + reply);
+        Review saved = reviewRepository.save(review);
+        return convertToDTO(saved);
+    }
 } 

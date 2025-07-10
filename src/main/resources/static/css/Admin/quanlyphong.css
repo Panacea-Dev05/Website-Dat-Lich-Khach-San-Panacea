@@ -194,6 +194,75 @@ tbody tr:hover {
     transform: translateY(0);
     box-shadow: 0 4px 9px rgb(5 150 105 / 0.35);
 }
+
+/* Action buttons */
+.btn-edit, .btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    margin: 0 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-edit {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-edit .material-icons,
+.btn-delete .material-icons {
+    font-size: 18px;
+}
+
+/* Status indicators */
+.status-available {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-maintenance {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-cleaning {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 /* Form */
 form {
     display: grid;

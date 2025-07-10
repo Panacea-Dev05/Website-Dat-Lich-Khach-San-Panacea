@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @org.springframework.stereotype.Service
-public class DichVuService {
+public class    DichVuService {
     @Autowired
     private ServiceDetailRepository serviceDetailRepository;
     @Autowired

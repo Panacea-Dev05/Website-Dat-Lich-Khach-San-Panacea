@@ -45,7 +45,7 @@ public class KhachHangService {
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
-            Room room = roomRepository.findById(Long.valueOf(dto.getRoomId())).orElse(null);
+            Room room = roomRepository.findById(Integer.valueOf(dto.getRoomId())).orElse(null);
             Hotel hotel = hotelRepository.findById(dto.getHotelId()).orElse(null);
             if (room == null || hotel == null) return false;
 
@@ -100,6 +100,14 @@ public class KhachHangService {
             // Gửi mail cho khách hàng
             if (mailSender != null) {
                 String subject = "[Panacea Hotel] Yêu cầu đặt phòng đã được gửi";
+                StringBuilder dichVuHtml = new StringBuilder();
+                if (dto.getDichVu() != null && !dto.getDichVu().isEmpty()) {
+                    dichVuHtml.append("<li><b>Dịch vụ đăng ký:</b> <ul>");
+                    for (String dv : dto.getDichVu()) {
+                        dichVuHtml.append("<li>").append(dv).append("</li>");
+                    }
+                    dichVuHtml.append("</ul></li>");
+                }
                 String text = String.format(
                     "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
                     "<p>Thông tin đặt phòng của bạn:</p>" +
@@ -110,6 +118,7 @@ public class KhachHangService {
                     "<li>Số người lớn: %d</li>" +
                     "<li>Số trẻ em: %d</li>" +
                     "<li>Ghi chú: %s</li>" +
+                    "%s" +
                     "</ul>" +
                     "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
                     "<img src='cid:qr_momo' width='250' height='250'/>" +
@@ -123,7 +132,8 @@ public class KhachHangService {
                     dto.getNgayTraPhong(),
                     dto.getSoNguoiLon(),
                     dto.getSoTreEm(),
-                    dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có"
+                    dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
+                    dichVuHtml.toString()
                 );
                 sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
             }
