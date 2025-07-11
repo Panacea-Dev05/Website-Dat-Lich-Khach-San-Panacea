@@ -26,36 +26,30 @@
             <div class="animation-preloader">
                 <div class="spinner"></div>
                 <div class="txt-loading">
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
+                    <span data-text-preloader="P" class="letters-loading">
+                        P
                     </span>
 
-                    <span data-text-preloader="L" class="letters-loading">
-                        L
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
-                    </span>
-
-                    <span data-text-preloader="G" class="letters-loading">
-                        G
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
                     </span>
 
                     <span data-text-preloader="N" class="letters-loading">
                         N
                     </span>
 
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+
                     <span data-text-preloader="C" class="letters-loading">
                         C
                     </span>
-                    <span data-text-preloader="I" class="letters-loading">
-                        I
+
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
                     </span>
+
                     <span data-text-preloader="A" class="letters-loading">
                         A
                     </span>
@@ -166,22 +160,27 @@
                                     </ul>
                                 </li>
                                 <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/restaurant}">Restaurant</a>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/coming}">Coming Soon</a>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/faq}">FAQ</a>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a th:href="@{/khachhang/404}">404 Page</a>
+                                    <a th:href="@{#}">Pages</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/restaurant}">Restaurant</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/coming}">Comming Soon</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/faq}">faq</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/404}">404 Page</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>
@@ -453,6 +452,14 @@
                                 <div class="form-group">
                                     <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                                 </div>
+
+                                <div class="form-group">
+                                    <select name="soGiuong" id="soGiuong" class="form-control booking-now-input custom-input-separated" required>
+                                        <option value="1">1 bed</option>
+                                        <option value="2">2 beds</option>
+                                    </select>
+                                </div>
+
                                 <!-- ... giữ nguyên các div, class, style ... -->
                                 <div class="check">
                                     <div class="check-data">
@@ -714,8 +721,8 @@
                     <div class="footer-main">
                         <div class="footer-eamil-menu">
                             <div class="footer-email">
-                                <a href="mailto:info@example.com">
-                                    info@example.com
+                                <a th:href="@{mailto:Panecea@gmail.com}">
+                                    Panecea@gmail.com
                                 </a>
                             </div>
                             <div class="footer-menu">

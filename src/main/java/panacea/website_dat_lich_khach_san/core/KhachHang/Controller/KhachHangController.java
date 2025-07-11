@@ -181,13 +181,13 @@ public class KhachHangController {
         boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
         if (result) {
             return java.util.Map.of(
-                "success", true,
-                "message", "Đặt phòng thành công! Vui lòng kiểm tra email để xác nhận."
+                    "success", true,
+                    "message", "Đặt phòng thành công! Vui lòng kiểm tra email để xác nhận."
             );
         } else {
             return java.util.Map.of(
-                "success", false,
-                "message", "Đặt phòng thất bại. Vui lòng thử lại sau."
+                    "success", false,
+                    "message", "Đặt phòng thất bại. Vui lòng thử lại sau."
             );
         }
     }

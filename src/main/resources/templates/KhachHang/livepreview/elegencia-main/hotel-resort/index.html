@@ -397,33 +397,34 @@
                     <div class="ak-height-65 ak-height-lg-30"></div>
 
                     <div class="room-section">
-                        <div class="col">
+                        <!-- Hiển thị danh sách phòng từ database (tối đa 2 phòng đầu tiên) -->
+                        <div class="col" th:each="room, stat : ${rooms}" th:if="${stat.index < 2}">
                             <div class="room-card">
                                 <div class="room-card-img">
                                     <img src="/css/KhachHang/assets/img/room_1.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
                                             <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
-                                                Starts At $259
+                                                <span th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,200,000 VNĐ</span>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="room-card-body">
-                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title">
+                                    <a th:href="@{/khachhang/room-detail}" class="room-card-title" th:text="${room.roomTypeName}">
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
-                                        <p>120 m2</p>
+                                        <p th:text="${room.dienTich != null ? room.dienTich + ' m²' : 'N/A'}">120 m²</p>
                                         <p class="hr-colum"></p>
-                                        <p>3 beds</p>
+                                        <p th:text="${room.soGiuong != null ? room.soGiuong + ' beds' : 'N/A'}">3 beds</p>
                                         <p class="hr-colum"></p>
-                                        <p>1 Bathroom</p>
+                                        <p th:text="${room.sucChuaToiDa != null ? room.sucChuaToiDa + ' people' : 'N/A'}">4 people</p>
                                     </div>
-                                    <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply
+                                    <p class="room-card-text" th:text="${room.moTa != null ? room.moTa : 'Phòng tiêu chuẩn với đầy đủ tiện nghi hiện đại.'}">
+                                        Contrary to popular belief, Lorem Ipsum is not simply
                                         random text. It has roots in a piece of classical Latin literature.
                                     </p>
-
                                 </div>
                                 <div class="room-footer">
                                     <a class="room-card-bottom-text" th:href="@{/khachhang/room-detail}">room details
@@ -447,10 +448,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
+                        
+                        <!-- Fallback nếu không có dữ liệu phòng -->
+                        <div class="col" th:if="${#lists.isEmpty(rooms)}">
                             <div class="room-card">
                                 <div class="room-card-img">
-                                    <img src="/css/KhachHang/assets/img/room_2.jpg" class="room-card-img-top" alt="...">
+                                    <img src="/css/KhachHang/assets/img/room_1.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
                                         <div class="text-btn">
                                             <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
@@ -464,7 +467,7 @@
                                         The Royal Serenity Suite
                                     </a>
                                     <div class="room-card-info">
-                                        <p>120 m2</p>
+                                        <p>120 m²</p>
                                         <p class="hr-colum"></p>
                                         <p>3 beds</p>
                                         <p class="hr-colum"></p>
@@ -485,7 +488,7 @@
                                                         fill="#FFD28D" />
                                                 </g>
                                                 <defs>
-                                                    <clipPath id="clip0_1355_1284">
+                                                    <clipPath id="clip0_1355_1285">
                                                         <rect width="30" height="30" fill="white"
                                                             transform="translate(0.5 0.351562)" />
                                                     </clipPath>
@@ -496,7 +499,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="ak-height-80 ak-height-lg-30"></div>
                     <div class="text-btn text-md-center">

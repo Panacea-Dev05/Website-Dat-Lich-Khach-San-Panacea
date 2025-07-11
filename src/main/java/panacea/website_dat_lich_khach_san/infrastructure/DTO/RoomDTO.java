@@ -23,6 +23,14 @@ public class RoomDTO {
     private Integer roomTypeId;
     private String roomTypeName;
     private String maLoaiPhong;
+    
+    // Thêm thông tin từ RoomType
+    private BigDecimal dienTich;
+    private Byte soGiuong;
+    private String loaiGiuong;
+    private Byte sucChuaToiDa;
+    private String moTa;
+    private String tienNghi;
 
     public static RoomDTO fromEntity(Room room) {
         RoomDTO dto = new RoomDTO();
@@ -46,6 +54,12 @@ public class RoomDTO {
             dto.setRoomTypeId(room.getRoomType().getId());
             dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
             dto.setMaLoaiPhong(room.getRoomType().getMaLoaiPhong());
+            dto.setDienTich(room.getRoomType().getDienTich());
+            dto.setSoGiuong(room.getRoomType().getSoGiuong());
+            dto.setLoaiGiuong(room.getRoomType().getLoaiGiuong());
+            dto.setSucChuaToiDa(room.getRoomType().getSucChuaToiDa());
+            dto.setMoTa(room.getRoomType().getMoTa());
+            dto.setTienNghi(room.getRoomType().getTienNghi());
         }
         
         return dto;

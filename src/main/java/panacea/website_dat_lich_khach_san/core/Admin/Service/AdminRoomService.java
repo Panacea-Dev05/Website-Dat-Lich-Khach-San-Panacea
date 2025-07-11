@@ -40,6 +40,12 @@ public class AdminRoomService {
                 .collect(Collectors.toList());
     }
     
+    public List<RoomDTO> getAllRoomsDTO() {
+        return roomRepository.findAll().stream()
+                .map(RoomDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+    
     public RoomDTO getRoomById(Integer id) {
         Optional<Room> room = roomRepository.findById(id);
         return room.map(this::convertToDTO).orElse(null);
@@ -107,11 +113,29 @@ public class AdminRoomService {
         dto.setTrangThai(room.getTrangThai() != null ? room.getTrangThai().name() : null);
         dto.setGiaCoBan(room.getGiaCoBan());
         dto.setGhiChu(room.getGhiChu());
-        dto.setHotelId(room.getHotel() != null ? room.getHotel().getId() : null);
-        dto.setRoomTypeId(room.getRoomType() != null ? room.getRoomType().getId() : null);
         dto.setUuidId(room.getUuidId());
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
+        
+        if (room.getHotel() != null) {
+            dto.setHotelId(room.getHotel().getId());
+            dto.setHotelName(room.getHotel().getTenKhachSan());
+        }
+        
+        if (room.getRoomType() != null) {
+            dto.setRoomTypeId(room.getRoomType().getId());
+            dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
+            dto.setMaLoaiPhong(room.getRoomType().getMaLoaiPhong());
+            
+            // Thêm thông tin từ RoomType
+            dto.setDienTich(room.getRoomType().getDienTich());
+            dto.setSoGiuong(room.getRoomType().getSoGiuong());
+            dto.setLoaiGiuong(room.getRoomType().getLoaiGiuong());
+            dto.setSucChuaToiDa(room.getRoomType().getSucChuaToiDa());
+            dto.setMoTa(room.getRoomType().getMoTa());
+            dto.setTienNghi(room.getRoomType().getTienNghi());
+        }
+        
         return dto;
     }
     
@@ -144,7 +168,7 @@ public class AdminRoomService {
     }
     
     public RoomTypeDTO updateRoomType(Long id, RoomTypeDTO dto) {
-        Optional<RoomType> opt = roomTypeRepository.findById(id);
+        Optional<RoomType> opt = roomTypeRepository.findById(Math.toIntExact(id));
         if (opt.isEmpty()) return null;
         RoomType roomType = opt.get();
         roomType.setTenLoaiPhong(dto.getTenLoaiPhong());
@@ -167,7 +191,7 @@ public class AdminRoomService {
     }
     
     public RoomDTO changeRoomStatus(Long roomId, Room.TrangThaiPhong newStatus) {
-        Optional<Room> opt = roomRepository.findById(roomId);
+        Optional<Room> opt = roomRepository.findById(Math.toIntExact(roomId));
         if (opt.isEmpty()) return null;
         Room room = opt.get();
         room.setTrangThai(newStatus);
