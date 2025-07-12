@@ -630,7 +630,7 @@
                                 Không có dữ liệu phòng nào
                             </td>
                         </tr>
-                        <tr th:each="room, stat : ${rooms}">
+                        <tr th:each="room, stat : ${rooms}" th:attr="data-id=${room.id}">
                             <td th:text="${stat.count}">1</td>
                             <td th:text="${room.soPhong}">101</td>
                             <td th:text="${room.roomTypeName}">Standard</td>
@@ -667,6 +667,12 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Khu vực hiển thị chi tiết phòng -->
+                <div id="room-detail-panel"
+                    style="display:none; margin: 32px 0; padding: 24px; background: #f8f9fa; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <!-- Nội dung chi tiết phòng sẽ được render ở đây bằng JS -->
+                </div>
 
                 <!-- Phân trang - Luôn hiển thị -->
                 <div class="pagination-container"
@@ -758,8 +764,20 @@
         // Kéo modal di chuyển
         (function () {
             const modal = document.getElementById('addRoomModal');
-            const modalBox = modal.querySelector('.modal-content-wrapper');
-            const header = modalBox.querySelector('.modal-title'); // Changed to class
+            if (!modal) {
+                console.warn("Không tìm thấy #addRoomModal trong DOM.");
+                return;
+            }
+            const modalBox = modal.querySelector('.admin-modal-content');
+            if (!modalBox) {
+                console.warn("Không tìm thấy .admin-modal-content trong #addRoomModal.");
+                return;
+            }
+            const header = modalBox.querySelector('.admin-modal-title');
+            if (!header) {
+                console.warn("Không tìm thấy .admin-modal-title trong .admin-modal-content.");
+                return;
+            }
             let isDragging = false, startX, startY, startLeft, startTop;
             header.style.cursor = 'move';
             header.onmousedown = function (e) {
@@ -812,6 +830,63 @@
                 });
                 input.value = '';
             };
+        })();
+
+        // Sự kiện click vào dòng phòng để hiển thị chi tiết ngay dưới dòng đó (toggle)
+        (function () {
+            const tableBody = document.getElementById('roomTableBody');
+            if (tableBody) {
+                tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', function () {
+                        // Nếu đã có dòng chi tiết ngay sau thì ẩn đi (toggle)
+                        const nextRow = this.nextElementSibling;
+                        if (nextRow && nextRow.classList.contains('room-detail-row')) {
+                            nextRow.remove();
+                            return;
+                        }
+                        // Xóa mọi dòng chi tiết cũ
+                        tableBody.querySelectorAll('.room-detail-row').forEach(e => e.remove());
+                        const roomId = this.getAttribute('data-id');
+                        if (!roomId) return;
+                        fetch(`/admin/rooms/${roomId}`)
+                            .then(res => res.json())
+                            .then(room => {
+                                let imagesHtml = '';
+                                if (room.imageUrls && room.imageUrls.length > 0) {
+                                    imagesHtml = `<div style='display:flex;gap:8px;margin-bottom:12px;'>` +
+                                        room.imageUrls.map(url => `<img src='${url}' style='width:120px;height:80px;object-fit:cover;border-radius:8px;'>`).join('') +
+                                        `</div>`;
+                                }
+                                const detailTr = document.createElement('tr');
+                                detailTr.className = 'room-detail-row';
+                                detailTr.innerHTML = `<td colspan='10' style='background:#f8f9fa;'>
+                                    <div style='padding:18px 0 8px 0;'>
+                                        <h3 style='margin-bottom:16px;'>Phòng ${room.soPhong} - ${room.roomTypeName}</h3>
+                                        ${imagesHtml}
+                                        <div style='display:flex;gap:32px;flex-wrap:wrap;'>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Khu vực:</b> ${room.tang || ''}</div>
+                                                <div><b>View:</b> ${room.viewPhong || ''}</div>
+                                                <div><b>Giá giờ:</b> ${room.giaGio ? room.giaGio.toLocaleString() : '0'}</div>
+                                                <div><b>Giá cả ngày:</b> ${room.giaNgay ? room.giaNgay.toLocaleString() : '0'}</div>
+                                                <div><b>Giá qua đêm:</b> ${room.giaQuaDem ? room.giaQuaDem.toLocaleString() : '0'}</div>
+                                                <div><b>Trạng thái:</b> ${room.trangThai || ''}</div>
+                                            </div>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Ghi chú:</b> ${room.ghiChu || ''}</div>
+                                                <div><b>Bắt đầu sử dụng:</b> ${room.batDauSuDung || ''}</div>
+                                                <div><b>Chi nhánh:</b> ${room.hotelName || ''}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>`;
+                                // Chèn dòng chi tiết ngay sau dòng vừa click
+                                this.parentNode.insertBefore(detailTr, this.nextSibling);
+                            });
+                    });
+                });
+            }
         })();
     </script>
     <style>

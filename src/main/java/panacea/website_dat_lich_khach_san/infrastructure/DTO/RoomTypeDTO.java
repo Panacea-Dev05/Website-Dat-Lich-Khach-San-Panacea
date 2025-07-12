@@ -2,6 +2,7 @@ package panacea.website_dat_lich_khach_san.infrastructure.DTO;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.List;
 
 import lombok.Data;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
@@ -26,6 +27,9 @@ public class RoomTypeDTO {
     private BigDecimal giaGio;
     private BigDecimal giaNgay;
     private BigDecimal giaQuaDem;
+
+    // Thêm trường lưu đường dẫn ảnh
+    private List<String> imageUrls;
 
     public static RoomTypeDTO fromEntity(RoomType roomType) {
         RoomTypeDTO dto = new RoomTypeDTO();

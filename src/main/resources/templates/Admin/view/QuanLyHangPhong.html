@@ -169,7 +169,8 @@
                                         style="padding:12px 20px; border:none; background:none; font-weight:500; color:#333; cursor:pointer; font-size:0.95em; min-width:100px;">Danh
                                         sách phòng</button>
                                 </div>
-                                <form id="addRoomTypeForm">
+                                <form id="addRoomTypeForm" enctype="multipart/form-data" method="post"
+                                    th:action="@{/admin/rooms/room-types}">
                                     <!-- Tab 1: Thông tin -->
                                     <div class="tab-content" id="tab1" style="display:block; padding:20px;">
                                         <div style="display:flex; gap:18px;">
@@ -330,8 +331,8 @@
                                                 <img
                                                     style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
                                             </div>
-                                            <input id="image-upload-input" type="file" accept="image/*" multiple
-                                                style="display:none;" />
+                                            <input id="image-upload-input" name="images" type="file" accept="image/*"
+                                                multiple style="display:none;" />
                                         </div>
                                         <div style="margin-bottom:10px;">
                                             <label style="font-weight:500; font-size:1em;">Mô tả</label>
@@ -429,7 +430,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="type : ${roomTypes}">
+                            <tr th:each="type : ${roomTypes}" th:attr="data-id=${type.id}">
                                 <td th:text="${type.maLoaiPhong}">Double Bedroom</td>
                                 <td th:text="${type.tenLoaiPhong}">Phòng 01 giường đôi cho 2 người</td>
                                 <td th:text="${type.soLuongPhong}">3</td>
@@ -647,6 +648,64 @@
                 alert(err.message);
             }
         };
+
+        // Sự kiện click vào dòng hạng phòng để hiển thị chi tiết ngay dưới dòng đó (toggle)
+        (function () {
+            const tableBody = document.querySelector('table tbody');
+            if (tableBody) {
+                tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', function () {
+                        // Nếu đã có dòng chi tiết ngay sau thì ẩn đi (toggle)
+                        const nextRow = this.nextElementSibling;
+                        if (nextRow && nextRow.classList.contains('roomtype-detail-row')) {
+                            nextRow.remove();
+                            return;
+                        }
+                        // Xóa mọi dòng chi tiết cũ
+                        tableBody.querySelectorAll('.roomtype-detail-row').forEach(e => e.remove());
+                        const typeId = this.getAttribute('data-id');
+                        if (!typeId) return;
+                        fetch(`/admin/rooms/room-types/${typeId}`)
+                            .then(res => res.json())
+                            .then(type => {
+                                let imagesHtml = '';
+                                if (type.imageUrls && type.imageUrls.length > 0) {
+                                    imagesHtml = `<div style='display:flex;gap:8px;margin-bottom:12px;'>` +
+                                        type.imageUrls.map(url => `<img src='${url}' style='width:120px;height:80px;object-fit:cover;border-radius:8px;'>`).join('') +
+                                        `</div>`;
+                                }
+                                const detailTr = document.createElement('tr');
+                                detailTr.className = 'roomtype-detail-row';
+                                detailTr.innerHTML = `<td colspan='9' style='background:#f8f9fa;'>
+                                    <div style='padding:18px 0 8px 0;'>
+                                        <h3 style='margin-bottom:16px;'>${type.tenLoaiPhong} (${type.maLoaiPhong})</h3>
+                                        ${imagesHtml}
+                                        <div style='display:flex;gap:32px;flex-wrap:wrap;'>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Diện tích:</b> ${type.dienTich || ''} m²</div>
+                                                <div><b>Số giường:</b> ${type.soGiuong || ''}</div>
+                                                <div><b>Loại giường:</b> ${type.loaiGiuong || ''}</div>
+                                                <div><b>Sức chứa tối đa:</b> ${type.sucChuaToiDa || ''}</div>
+                                                <div><b>Giá giờ:</b> ${type.giaGio ? type.giaGio.toLocaleString() : '0'}</div>
+                                                <div><b>Giá cả ngày:</b> ${type.giaNgay ? type.giaNgay.toLocaleString() : '0'}</div>
+                                                <div><b>Giá qua đêm:</b> ${type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0'}</div>
+                                            </div>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Mô tả:</b> ${type.moTa || ''}</div>
+                                                <div><b>Tiện nghi:</b> ${type.tienNghi || ''}</div>
+                                                <div><b>Số lượng phòng:</b> ${type.soLuongPhong || ''}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>`;
+                                // Chèn dòng chi tiết ngay sau dòng vừa click
+                                this.parentNode.insertBefore(detailTr, this.nextSibling);
+                            });
+                    });
+                });
+            }
+        })();
     </script>
 </body>
 
