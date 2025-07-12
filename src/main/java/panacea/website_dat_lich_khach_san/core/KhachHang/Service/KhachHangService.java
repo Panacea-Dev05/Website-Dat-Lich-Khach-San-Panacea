@@ -8,11 +8,13 @@ import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -29,6 +31,9 @@ import org.springframework.core.io.ByteArrayResource;
 import java.math.BigDecimal;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class KhachHangService {
@@ -42,6 +47,8 @@ public class KhachHangService {
     private CustomerRepository customerRepository;
     @Autowired(required = false)
     private JavaMailSender mailSender;
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
@@ -180,5 +187,24 @@ public class KhachHangService {
             helper.addInline("qr_momo", qrImage, "image/png");
         }
         mailSender.send(message);
+    }
+
+    /**
+     * Lấy danh sách 4 loại phòng chính cho khách hàng (Standard, Superior, Deluxe, Suite)
+     */
+    public List<RoomType> getMainRoomTypes() {
+        // Giả sử mã loại phòng là: STANDARD, SUPERIOR, DELUXE, SUITE
+        List<String> mainCodes = Arrays.asList("STANDARD", "SUPERIOR", "DELUXE", "SUITE");
+        return roomTypeRepository.findAll().stream()
+                .filter(rt -> mainCodes.contains(rt.getMaLoaiPhong()))
+                .toList();
+    }
+
+    /**
+     * Lấy chi tiết loại phòng theo id
+     */
+    public RoomType getRoomTypeById(Integer id) {
+        Optional<RoomType> opt = roomTypeRepository.findById(id);
+        return opt.orElse(null);
     }
 } 
