@@ -140,17 +140,17 @@ main > h1 {
     text-shadow: 0 0 6px rgb(6 78 59 / 0.1);
     user-select: none;
 }
-section.content-section {
-    background: white;
-    border-radius: 16px;
-    padding: 1.75rem 2rem;
-    box-shadow: 0 4px 16px rgb(16 185 129 / 0.1);
-    max-width: 100%;
-    overflow-x: auto;
-}
-section.content-section + section.content-section {
-    margin-top: 2rem;
-}
+/*section.content-section {*/
+/*    background: white;*/
+/*    border-radius: 16px;*/
+/*    padding: 1.75rem 2rem;*/
+/*    box-shadow: 0 4px 16px rgb(16 185 129 / 0.1);*/
+/*    max-width: 100%;*/
+/*    overflow-x: auto;*/
+/*}*/
+/*section.content-section + section.content-section {*/
+/*    margin-top: 2rem;*/
+/*}*/
 /* Table */
 table {
     width: 100%;

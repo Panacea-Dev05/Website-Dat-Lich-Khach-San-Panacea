@@ -1,9 +1,14 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,6 +86,11 @@ public class AdminRoomService {
             .collect(Collectors.toList());
     }
     
+    public RoomTypeDTO getRoomTypeById(Integer id) {
+        Optional<RoomType> roomType = roomTypeRepository.findById(id);
+        return roomType.map(this::convertRoomTypeToDTO).orElse(null);
+    }
+    
     private RoomTypeDTO convertRoomTypeToDTO(RoomType roomType) {
         RoomTypeDTO dto = new RoomTypeDTO();
         dto.setId(roomType.getId());
@@ -96,6 +106,20 @@ public class AdminRoomService {
         dto.setCreatedDate(roomType.getCreatedDate());
         dto.setLastModifiedDate(roomType.getLastModifiedDate());
         dto.setSoLuongPhong((int) roomRepository.countByRoomTypeId(roomType.getId()));
+        
+        // Lấy thông tin giá từ RoomPricing
+        List<RoomPricing> pricings = roomPricingRepositoty.findAll().stream()
+            .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomType.getId()))
+            .collect(Collectors.toList());
+        
+        if (!pricings.isEmpty()) {
+            // Lấy giá đầu tiên (có thể cải thiện logic này để lấy giá hiện tại)
+            RoomPricing pricing = pricings.get(0);
+            dto.setGiaGio(pricing.getGiaGio());
+            dto.setGiaNgay(pricing.getGiaNgay());
+            dto.setGiaQuaDem(pricing.getGiaQuaDem());
+        }
+        
         return dto;
     }
     
@@ -113,6 +137,26 @@ public class AdminRoomService {
         dto.setUuidId(room.getUuidId());
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
+        
+        // Bổ sung setRoomTypeName
+        if (room.getRoomType() != null) {
+            dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
+            dto.setMaLoaiPhong(room.getRoomType().getMaLoaiPhong());
+            
+            // Lấy thông tin giá từ RoomPricing
+            List<RoomPricing> pricings = roomPricingRepositoty.findAll().stream()
+                .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(room.getRoomType().getId()))
+                .collect(Collectors.toList());
+            
+            if (!pricings.isEmpty()) {
+                // Lấy giá đầu tiên (có thể cải thiện logic này để lấy giá hiện tại)
+                RoomPricing pricing = pricings.get(0);
+                dto.setGiaGio(pricing.getGiaGio());
+                dto.setGiaNgay(pricing.getGiaNgay());
+                dto.setGiaQuaDem(pricing.getGiaQuaDem());
+            }
+        }
+        
         return dto;
     }
     
@@ -141,6 +185,23 @@ public class AdminRoomService {
         roomType.setMoTa(dto.getMoTa());
         roomType.setTienNghi(dto.getTienNghi());
         RoomType saved = roomTypeRepository.save(roomType);
+        
+        // Tạo RoomPricing cho hạng phòng mới
+        if (dto.getGiaGio() != null || dto.getGiaNgay() != null || dto.getGiaQuaDem() != null) {
+            RoomPricing pricing = new RoomPricing();
+            pricing.setRoomType(saved);
+            pricing.setLoaiGia(RoomPricing.LoaiGia.BASE);
+            pricing.setGiaGio(dto.getGiaGio() != null ? dto.getGiaGio() : BigDecimal.ZERO);
+            pricing.setGiaNgay(dto.getGiaNgay() != null ? dto.getGiaNgay() : BigDecimal.ZERO);
+            pricing.setGiaQuaDem(dto.getGiaQuaDem() != null ? dto.getGiaQuaDem() : BigDecimal.ZERO);
+            pricing.setNgayBatDau(LocalDate.now());
+            pricing.setNgayKetThuc(LocalDate.now().plusYears(10)); // Giá có hiệu lực trong 10 năm
+            pricing.setApDungCho("All");
+            pricing.setHeSoDieuChinh(BigDecimal.ONE);
+            pricing.setTrangThai("Hoạt động");
+            roomPricingRepositoty.save(pricing);
+        }
+        
         return convertRoomTypeToDTO(saved);
     }
     
@@ -156,7 +217,52 @@ public class AdminRoomService {
         roomType.setMoTa(dto.getMoTa());
         roomType.setTienNghi(dto.getTienNghi());
         RoomType saved = roomTypeRepository.save(roomType);
+        
+        // Cập nhật hoặc tạo mới RoomPricing
+        List<RoomPricing> existingPricings = roomPricingRepositoty.findAll().stream()
+            .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(id))
+            .collect(Collectors.toList());
+        
+        if (!existingPricings.isEmpty()) {
+            // Cập nhật giá hiện tại
+            RoomPricing pricing = existingPricings.get(0);
+            pricing.setGiaGio(dto.getGiaGio() != null ? dto.getGiaGio() : BigDecimal.ZERO);
+            pricing.setGiaNgay(dto.getGiaNgay() != null ? dto.getGiaNgay() : BigDecimal.ZERO);
+            pricing.setGiaQuaDem(dto.getGiaQuaDem() != null ? dto.getGiaQuaDem() : BigDecimal.ZERO);
+            roomPricingRepositoty.save(pricing);
+        } else if (dto.getGiaGio() != null || dto.getGiaNgay() != null || dto.getGiaQuaDem() != null) {
+            // Tạo mới RoomPricing nếu chưa có
+            RoomPricing pricing = new RoomPricing();
+            pricing.setRoomType(saved);
+            pricing.setLoaiGia(RoomPricing.LoaiGia.BASE);
+            pricing.setGiaGio(dto.getGiaGio() != null ? dto.getGiaGio() : BigDecimal.ZERO);
+            pricing.setGiaNgay(dto.getGiaNgay() != null ? dto.getGiaNgay() : BigDecimal.ZERO);
+            pricing.setGiaQuaDem(dto.getGiaQuaDem() != null ? dto.getGiaQuaDem() : BigDecimal.ZERO);
+            pricing.setNgayBatDau(LocalDate.now());
+            pricing.setNgayKetThuc(LocalDate.now().plusYears(10));
+            pricing.setApDungCho("All");
+            pricing.setHeSoDieuChinh(BigDecimal.ONE);
+            pricing.setTrangThai("Hoạt động");
+            roomPricingRepositoty.save(pricing);
+        }
+        
         return convertRoomTypeToDTO(saved);
+    }
+    
+    public boolean deleteRoomType(Integer id) {
+        Optional<RoomType> opt = roomTypeRepository.findById(id);
+        if (opt.isPresent()) {
+            // Xóa tất cả RoomPricing liên quan
+            List<RoomPricing> pricings = roomPricingRepositoty.findAll().stream()
+                .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(id))
+                .collect(Collectors.toList());
+            roomPricingRepositoty.deleteAll(pricings);
+            
+            // Xóa RoomType
+            roomTypeRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
     
     public List<RoomDTO> findAvailableRooms(LocalDate ngay, int soNguoi) {
@@ -241,6 +347,20 @@ public class AdminRoomService {
             })
             .map(this::convertToDTO)
             .collect(Collectors.toList());
+    }
+    
+    public Page<RoomDTO> filterRoomsPaged(String keyword, Integer roomTypeId, String status, String area, String branch, Pageable pageable) {
+        List<RoomDTO> allRooms = filterRooms(keyword, roomTypeId, status, area, branch);
+        
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allRooms.size());
+        
+        if (start > allRooms.size()) {
+            return new PageImpl<>(List.of(), pageable, allRooms.size());
+        }
+        
+        List<RoomDTO> pageContent = allRooms.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, allRooms.size());
     }
     
     public List<RoomTypeDTO> filterRoomTypes(String keyword, String branch, String status) {

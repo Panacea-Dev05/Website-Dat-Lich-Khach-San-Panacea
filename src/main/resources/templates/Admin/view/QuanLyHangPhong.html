@@ -425,6 +425,7 @@
                                 <th>Giá qua đêm</th>
                                 <th>Trạng thái</th>
                                 <th>Chi nhánh</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -432,11 +433,27 @@
                                 <td th:text="${type.maLoaiPhong}">Double Bedroom</td>
                                 <td th:text="${type.tenLoaiPhong}">Phòng 01 giường đôi cho 2 người</td>
                                 <td th:text="${type.soLuongPhong}">3</td>
-                                <!-- <td th:text="${type.giaGio}">180,000</td> -->
-                                <!-- <td th:text="${type.giaNgay}">720,000</td> -->
-                                <!-- <td th:text="${type.giaQuaDem}">720,000</td> -->
-                                <!-- <td th:text="${type.trangThai == 'ACTIVE' ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}">Đang kinh doanh</td> -->
-                                <!-- <td th:text="${type.chiNhanh}">Chi nhánh trung tâm</td> -->
+                                <td
+                                    th:text="${type.giaGio != null ? #numbers.formatDecimal(type.giaGio, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    180,000</td>
+                                <td
+                                    th:text="${type.giaNgay != null ? #numbers.formatDecimal(type.giaNgay, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    720,000</td>
+                                <td
+                                    th:text="${type.giaQuaDem != null ? #numbers.formatDecimal(type.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    720,000</td>
+                                <td>Đang kinh doanh</td>
+                                <td>Chi nhánh trung tâm</td>
+                                <td>
+                                    <button class="btn-edit" th:onclick="'editRoomType(' + ${type.id} + ')'"
+                                        style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 4px; cursor: pointer;">
+                                        Sửa
+                                    </button>
+                                    <button class="btn-delete" th:onclick="'deleteRoomType(' + ${type.id} + ')'"
+                                        style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                                        Xóa
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -486,31 +503,7 @@
             }
         };
 
-        // Submit form
-        const form = document.getElementById('addRoomTypeForm');
-        form.onsubmit = async function (e) {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(form).entries());
-            // Chuyển đổi kiểu dữ liệu phù hợp
-            data.dienTich = data.dienTich ? parseFloat(data.dienTich) : null;
-            data.soGiuong = data.soGiuong ? parseInt(data.soGiuong) : null;
-            data.sucChuaToiDa = data.sucChuaToiDa ? parseInt(data.sucChuaToiDa) : null;
-            data.phuThuQuaGio = data.phuThuQuaGio ? parseFloat(data.phuThuQuaGio) : null;
-            try {
-                const res = await fetch('/admin/rooms/room-types', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (!res.ok) throw new Error('Thêm hạng phòng thất bại!');
-                // Đóng modal, reload trang để cập nhật danh sách
-                modal.style.display = 'none';
-                location.reload();
-            } catch (err) {
-                document.getElementById('addRoomTypeError').innerText = err.message;
-                document.getElementById('addRoomTypeError').style.display = 'block';
-            }
-        };
+
 
         // Kéo modal di chuyển
         (function () {
@@ -571,6 +564,89 @@
                 input.value = '';
             };
         })();
+
+        // Khai báo form variable
+        const form = document.getElementById('addRoomTypeForm');
+
+        // Functions để xử lý edit và delete
+        async function editRoomType(id) {
+            try {
+                const response = await fetch(`/admin/rooms/room-types/${id}`);
+                if (!response.ok) throw new Error('Không thể lấy thông tin hạng phòng');
+                const roomType = await response.json();
+
+                // Điền dữ liệu vào form
+                document.querySelector('input[name="maLoaiPhong"]').value = roomType.maLoaiPhong || '';
+                document.querySelector('input[name="tenLoaiPhong"]').value = roomType.tenLoaiPhong || '';
+                document.querySelector('input[name="giaGio"]').value = roomType.giaGio || '';
+                document.querySelector('input[name="giaNgay"]').value = roomType.giaNgay || '';
+                document.querySelector('input[name="giaQuaDem"]').value = roomType.giaQuaDem || '';
+
+                // Mở modal
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Thay đổi form để update thay vì create
+                form.dataset.editId = id;
+                document.querySelector('#addRoomTypeModal h2').textContent = 'Chỉnh sửa hạng phòng';
+
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+
+        async function deleteRoomType(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa hạng phòng này?')) return;
+
+            try {
+                const response = await fetch(`/admin/rooms/room-types/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Xóa hạng phòng thất bại');
+                location.reload();
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+
+        // Cập nhật form submission để xử lý cả create và update
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form).entries());
+
+            // Chuyển đổi kiểu dữ liệu phù hợp
+            data.dienTich = data.dienTich ? parseFloat(data.dienTich) : null;
+            data.soGiuong = data.soGiuong ? parseInt(data.soGiuong) : null;
+            data.sucChuaToiDa = data.sucChuaToiDa ? parseInt(data.sucChuaToiDa) : null;
+            data.phuThuQuaGio = data.phuThuQuaGio ? parseFloat(data.phuThuQuaGio) : null;
+
+            // Xử lý dữ liệu giá
+            data.giaGio = data.giaGio ? parseFloat(data.giaGio) : null;
+            data.giaNgay = data.giaNgay ? parseFloat(data.giaNgay) : null;
+            data.giaQuaDem = data.giaQuaDem ? parseFloat(data.giaQuaDem) : null;
+
+            const editId = form.dataset.editId;
+            const url = editId ? `/admin/rooms/room-types/${editId}` : '/admin/rooms/room-types';
+            const method = editId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error(editId ? 'Cập nhật hạng phòng thất bại!' : 'Thêm hạng phòng thất bại!');
+
+                // Đóng modal, reload trang để cập nhật danh sách
+                modal.style.display = 'none';
+                form.reset();
+                delete form.dataset.editId;
+                document.querySelector('#addRoomTypeModal h2').textContent = 'Thêm hạng phòng mới';
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
     </script>
 </body>
 

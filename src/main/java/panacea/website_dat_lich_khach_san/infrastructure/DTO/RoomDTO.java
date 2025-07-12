@@ -23,6 +23,11 @@ public class RoomDTO {
     private Integer roomTypeId;
     private String roomTypeName;
     private String maLoaiPhong;
+    
+    // Thêm các trường giá theo hạng phòng
+    private BigDecimal giaGio;
+    private BigDecimal giaNgay;
+    private BigDecimal giaQuaDem;
 
     public static RoomDTO fromEntity(Room room) {
         RoomDTO dto = new RoomDTO();
@@ -46,6 +51,10 @@ public class RoomDTO {
             dto.setRoomTypeId(room.getRoomType().getId());
             dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
             dto.setMaLoaiPhong(room.getRoomType().getMaLoaiPhong());
+            
+            // Lấy thông tin giá từ RoomPricing
+            // Note: Method này không thể truy cập trực tiếp RoomPricingRepository
+            // nên sẽ cần được xử lý ở service layer
         }
         
         return dto;

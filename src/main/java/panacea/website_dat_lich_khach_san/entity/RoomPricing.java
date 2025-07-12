@@ -32,6 +32,17 @@ public class RoomPricing {
     @Column(name = "gia_tri", precision = 12, scale = 2)
     private BigDecimal giaTri;
 
+    // --- Bắt đầu phần khai báo giá mới ---
+    @Column(name = "gia_gio", precision = 12, scale = 2)
+    private BigDecimal giaGio; // Giá theo giờ
+
+    @Column(name = "gia_ngay", precision = 12, scale = 2)
+    private BigDecimal giaNgay; // Giá theo ngày
+
+    @Column(name = "gia_qua_dem", precision = 12, scale = 2)
+    private BigDecimal giaQuaDem; // Giá qua đêm
+    // --- Kết thúc phần khai báo giá mới ---
+
     @Column(name = "ngay_bat_dau", nullable = false)
     private LocalDate ngayBatDau;
 
@@ -87,6 +98,16 @@ public class RoomPricing {
         }
         if (this.heSoDieuChinh == null) {
             this.heSoDieuChinh = BigDecimal.ONE;
+        }
+        // Có thể thêm giá trị mặc định cho các cột giá mới nếu muốn, ví dụ:
+        if (this.giaGio == null) {
+            this.giaGio = BigDecimal.ZERO;
+        }
+        if (this.giaNgay == null) {
+            this.giaNgay = BigDecimal.ZERO;
+        }
+        if (this.giaQuaDem == null) {
+            this.giaQuaDem = BigDecimal.ZERO;
         }
     }
 

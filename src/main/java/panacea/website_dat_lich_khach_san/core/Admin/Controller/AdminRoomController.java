@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,13 +37,17 @@ public class AdminRoomController {
         @RequestParam(required = false) String status,
         @RequestParam(required = false) String area,
         @RequestParam(required = false) String branch,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size,
         Model model
     ) {
-        List<RoomDTO> rooms = adminRoomService.filterRooms(keyword, roomTypeId, status, area, branch);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RoomDTO> roomPage = adminRoomService.filterRoomsPaged(keyword, roomTypeId, status, area, branch, pageable);
         List<RoomTypeDTO> roomTypes = adminRoomService.getAllRoomTypes();
         List<String> roomViews = Arrays.asList("City", "Pool", "Sea", "Garden");
         List<String> roomStatuses = Arrays.asList("SAN_SANG", "BAO_TRI", "DON_DEP");
-        model.addAttribute("rooms", rooms);
+        
+        model.addAttribute("rooms", roomPage.getContent());
         model.addAttribute("roomTypes", roomTypes);
         model.addAttribute("roomViews", roomViews);
         model.addAttribute("roomStatuses", roomStatuses);
@@ -49,6 +56,15 @@ public class AdminRoomController {
         model.addAttribute("status", status);
         model.addAttribute("area", area);
         model.addAttribute("branch", branch);
+        
+        // Phân trang
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, roomPage.getTotalPages())); // Đảm bảo ít nhất 1 trang
+        model.addAttribute("totalItems", roomPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("hasNext", roomPage.hasNext());
+        model.addAttribute("hasPrevious", roomPage.hasPrevious());
+        
         return "Admin/view/QuanLyPhong";
     }
     
@@ -87,9 +103,27 @@ public class AdminRoomController {
         return "Admin/view/QuanLyHangPhong";
     }
 
+    @GetMapping("/room-types/{id}")
+    @ResponseBody
+    public RoomTypeDTO getRoomType(@PathVariable Integer id) {
+        return adminRoomService.getRoomTypeById(id);
+    }
+    
     @PostMapping("/room-types")
     @ResponseBody
     public RoomTypeDTO createRoomType(@RequestBody RoomTypeDTO roomTypeDTO) {
         return adminRoomService.createRoomType(roomTypeDTO);
+    }
+    
+    @PutMapping("/room-types/{id}")
+    @ResponseBody
+    public RoomTypeDTO updateRoomType(@PathVariable Integer id, @RequestBody RoomTypeDTO roomTypeDTO) {
+        return adminRoomService.updateRoomType(id, roomTypeDTO);
+    }
+    
+    @DeleteMapping("/room-types/{id}")
+    @ResponseBody
+    public boolean deleteRoomType(@PathVariable Integer id) {
+        return adminRoomService.deleteRoomType(id);
     }
 } 

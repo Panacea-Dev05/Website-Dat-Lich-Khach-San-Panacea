@@ -21,6 +21,11 @@ public class RoomTypeDTO {
     private Long createdDate;
     private Long lastModifiedDate;
     private Integer soLuongPhong;
+    
+    // Thêm các trường giá
+    private BigDecimal giaGio;
+    private BigDecimal giaNgay;
+    private BigDecimal giaQuaDem;
 
     public static RoomTypeDTO fromEntity(RoomType roomType) {
         RoomTypeDTO dto = new RoomTypeDTO();
