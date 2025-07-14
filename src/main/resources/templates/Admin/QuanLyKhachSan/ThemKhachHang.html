@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thêm khách hàng mới - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlykhachhang.css}">
+</head>
+<body>
+<div class="app" id="app">
+    <header>
+        <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+            <span class="material-icons" aria-hidden="true">hotel</span>
+            <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+        </div>
+    </header>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+    <main role="main" tabindex="0">
+        <h1 style="text-align:center; margin-bottom:2rem;">Thêm khách hàng mới</h1>
+        <form th:action="@{/admin/customers/add}" method="post" id="customerForm">
+            <label for="ho">Họ</label>
+            <input type="text" id="ho" name="ho" required placeholder="Nhập họ khách hàng" />
+
+            <label for="ten">Tên</label>
+            <input type="text" id="ten" name="ten" required placeholder="Nhập tên khách hàng" />
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="abc@example.com" />
+
+            <label for="soDienThoai">Số điện thoại</label>
+            <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
+                   pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+
+            <label for="diaChi">Địa chỉ</label>
+            <textarea id="diaChi" name="diaChi" placeholder="Nhập địa chỉ"></textarea>
+
+            <label for="trangThai">Trạng thái</label>
+            <select id="trangThai" name="trangThai" required>
+                <option value="" disabled selected>Chọn trạng thái</option>
+                <option value="HOAT_DONG">Hoạt động</option>
+                <option value="TAM_KHOA">Khóa</option>
+            </select>
+
+            <div style="display: flex; justify-content: center; gap: 16px; margin-top: 1.5rem;">
+                <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
+                <a href="/admin/customers" class="btn" style="background:#ef4444;">Hủy</a>
+            </div>
+        </form>
+    </main>
+    <footer>
+        &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+    </footer>
+</div>
+</body>
+</html> 

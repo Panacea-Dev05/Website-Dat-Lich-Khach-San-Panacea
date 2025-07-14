@@ -26,8 +26,17 @@
 
     <main role="main" tabindex="0">
       <h1>Quản lý khách hàng</h1>
+      
+      <!-- Flash Messages -->
+      <div th:if="${success}" class="alert alert-success" style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        <span th:text="${success}"></span>
+      </div>
+      <div th:if="${error}" class="alert alert-error" style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        <span th:text="${error}"></span>
+      </div>
+
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddCustomer">Thêm khách hàng mới</button>
+        <a href="/admin/customers/add" class="btn" th:if="${isEdit == null and add == null}">Thêm khách hàng mới</a>
         <table aria-label="Danh sách khách hàng" id="customerTable">
           <thead>
             <tr>
@@ -42,7 +51,6 @@
             </tr>
           </thead>
           <tbody id="customerTableBody">
-            <!-- Dữ liệu khách hàng từ controller -->
             <tr th:each="customer, stat : ${customers}">
               <td th:text="${stat.count}">1</td>
               <td th:text="${customer.id}">1</td>
@@ -57,40 +65,61 @@
                 </span>
               </td>
               <td>
-                <button class="btn-edit" th:onclick="'editCustomer(' + ${customer.id} + ')'" title="Sửa">
+                <a th:href="@{/admin/customers/edit/{id}(id=${customer.id})}" class="btn-edit" title="Sửa">
                   <span class="material-icons">edit</span>
-                </button>
-                <button class="btn-delete" th:onclick="'deleteCustomer(' + ${customer.id} + ')'" title="Xóa">
-                  <span class="material-icons">delete</span>
-                </button>
+                </a>
+                <form th:action="@{/admin/customers/delete/{id}(id=${customer.id})}" method="post" style="display: inline;">
+                  <button type="submit" class="btn-delete" title="Xóa" 
+                          onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?')">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </form>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <!-- Form thêm/sửa khách hàng -->
-        <form id="customerForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khách hàng mới</h2>
-          <input type="hidden" id="customerId" name="customerId" />
+        <!-- Form thêm/sửa khách hàng: Đặt lại bên dưới bảng, không nổi bật, không căn giữa -->
+        <form th:if="${isEdit != null or add != null}" 
+              th:action="${isEdit ? '/admin/customers/edit/' + customer.id : '/admin/customers/add'}" 
+              method="post" id="customerForm" style="margin-top: 2rem;">
+          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;" 
+              th:text="${isEdit ? 'Sửa khách hàng' : 'Thêm khách hàng mới'}">Thêm khách hàng mới</h2>
+          <input type="hidden" id="customerId" name="id" th:value="${customer?.id}" />
 
-          <label for="customerName">Tên</label>
-          <input type="text" id="customerName" name="customerName" required placeholder="Nhập tên khách hàng" />
-          <label for="customerEmail">Email</label>
-          <input type="email" id="customerEmail" name="customerEmail" required placeholder="abc@example.com" />
-          <label for="customerPhone">Số điện thoại</label>
-          <input type="text" id="customerPhone" name="customerPhone" required placeholder="0903123456"
-            pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
-          <label for="customerAddress">Địa chỉ</label>
-          <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
-          <label for="customerStatus">Trạng thái</label>
-          <select id="customerStatus" name="customerStatus" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
+          <label for="ho">Họ</label>
+          <input type="text" id="ho" name="ho" required placeholder="Nhập họ khách hàng" 
+                 th:value="${customer?.ho}" />
+
+          <label for="ten">Tên</label>
+          <input type="text" id="ten" name="ten" required placeholder="Nhập tên khách hàng" 
+                 th:value="${customer?.ten}" />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="abc@example.com" 
+                 th:value="${customer?.email}" />
+
+          <label for="soDienThoai">Số điện thoại</label>
+          <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
+            pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" 
+            th:value="${customer?.soDienThoai}" />
+
+          <label for="diaChi">Địa chỉ</label>
+          <textarea id="diaChi" name="diaChi" placeholder="Nhập địa chỉ" 
+                    th:text="${customer?.diaChi}"></textarea>
+
+          <label for="trangThai">Trạng thái</label>
+          <select id="trangThai" name="trangThai" required>
+            <option value="" disabled th:selected="${customer?.trangThai == null}">Chọn trạng thái</option>
             <option th:each="status : ${customerStatuses}" th:value="${status}"
-              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"></option>
+              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"
+              th:selected="${customer?.trangThai == status}"></option>
           </select>
+
           <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-            <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
-            <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+            <button type="submit" class="btn" id="submitBtn" 
+                    th:text="${isEdit ? 'Cập nhật khách hàng' : 'Lưu khách hàng'}">Lưu khách hàng</button>
+            <a href="/admin/customers" class="btn" style="background:#ef4444; margin-left: 12px;">Hủy</a>
           </div>
         </form>
       </section>

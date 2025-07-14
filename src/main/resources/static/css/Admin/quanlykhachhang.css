@@ -183,15 +183,95 @@ tbody tr:hover {
     box-shadow: 0 8px 15px rgb(16 185 129 / 0.25);
     transition: all 0.25s ease;
     user-select: none;
+    text-decoration: none;
+    display: inline-block;
 }
 .btn:hover {
     background: #059669;
     box-shadow: 0 12px 25px rgb(5 150 105 / 0.35);
     transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
 }
 .btn:active {
     transform: translateY(0);
     box-shadow: 0 4px 9px rgb(5 150 105 / 0.35);
+}
+
+/* Edit and Delete buttons */
+.btn-edit, .btn-delete {
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+}
+
+.btn-edit {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.btn-edit .material-icons, .btn-delete .material-icons {
+    font-size: 18px;
+}
+
+/* Status indicators */
+.status-active {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-locked {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Alert messages */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
 }
 /* Form */
 form {
@@ -275,4 +355,59 @@ main::-webkit-scrollbar {
 main::-webkit-scrollbar-thumb {
     background: #10b981aa;
     border-radius: 5px;
+}
+
+/* Xóa hiệu ứng làm mờ bảng và form nổi bật */
+.blurred-table {
+}
+/* Form thêm/sửa khách hàng đẹp hơn */
+#customerForm {
+    background: #fff;
+    box-shadow: 0 8px 32px rgba(16,185,129,0.12);
+    border-radius: 18px;
+    padding: 2.5rem 2.5rem 1.5rem 2.5rem;
+    max-width: 600px;
+    margin: 2rem auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+#customerForm label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #065f46;
+}
+#customerForm input, #customerForm textarea, #customerForm select {
+    border: 1.5px solid #10b981;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 0.25rem;
+    transition: border 0.2s;
+    background: #f9fafb;
+}
+#customerForm input:focus, #customerForm textarea:focus, #customerForm select:focus {
+    border: 2px solid #059669;
+    background: #fff;
+}
+#customerForm textarea {
+    min-height: 48px;
+    resize: vertical;
+}
+#customerForm .btn {
+    min-width: 140px;
+    margin-top: 0.5rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgb(16 185 129 / 0.10);
+}
+#customerForm .btn + .btn {
+    margin-left: 16px;
+}
+@media (max-width: 700px) {
+    #customerForm {
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+        max-width: 98vw;
+    }
 }

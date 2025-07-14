@@ -42,6 +42,29 @@ public class AdminCustomerService {
     
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = convertToEntity(customerDTO);
+        
+        // Tự động tạo mã khách hàng nếu chưa có
+        if (customer.getMaKhachHang() == null || customer.getMaKhachHang().isEmpty()) {
+            customer.setMaKhachHang("CUST" + UUID.randomUUID().toString().substring(0, 8));
+        }
+        
+        // Tạo mật khẩu mặc định nếu chưa có
+        if (customer.getMatKhauHash() == null || customer.getMatKhauHash().isEmpty()) {
+            String defaultPassword = "123456"; // Mật khẩu mặc định
+            String hash = Integer.toHexString(defaultPassword.hashCode());
+            customer.setMatKhauHash(hash);
+        }
+        
+        // Đặt trạng thái mặc định nếu chưa có
+        if (customer.getTrangThai() == null) {
+            customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
+        }
+        
+        // Đặt điểm tích lũy mặc định
+        if (customer.getDiemTichLuy() == null) {
+            customer.setDiemTichLuy(0);
+        }
+        
         Customer savedCustomer = customerRepository.save(customer);
         return convertToDTO(savedCustomer);
     }

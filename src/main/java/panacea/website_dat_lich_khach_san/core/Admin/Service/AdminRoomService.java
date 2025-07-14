@@ -143,7 +143,7 @@ public class AdminRoomService {
         return convertRoomTypeToDTO(saved);
     }
     
-    public RoomTypeDTO updateRoomType(Long id, RoomTypeDTO dto) {
+    public RoomTypeDTO updateRoomType(Integer id, RoomTypeDTO dto) {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         if (opt.isEmpty()) return null;
         RoomType roomType = opt.get();
@@ -166,7 +166,7 @@ public class AdminRoomService {
             .collect(Collectors.toList());
     }
     
-    public RoomDTO changeRoomStatus(Long roomId, Room.TrangThaiPhong newStatus) {
+    public RoomDTO changeRoomStatus(Integer roomId, Room.TrangThaiPhong newStatus) {
         Optional<Room> opt = roomRepository.findById(roomId);
         if (opt.isEmpty()) return null;
         Room room = opt.get();
