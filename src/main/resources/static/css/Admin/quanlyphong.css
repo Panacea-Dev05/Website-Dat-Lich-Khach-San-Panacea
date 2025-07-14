@@ -245,6 +245,15 @@ tbody tr:hover {
     font-weight: 600;
 }
 
+.status-occupied {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 .status-maintenance {
     background: #fef3c7;
     color: #92400e;
@@ -337,4 +346,172 @@ main::-webkit-scrollbar {
 main::-webkit-scrollbar-thumb {
     background: #10b981aa;
     border-radius: 5px;
+}
+
+/* --- FORM EDIT PHONG ĐẸP, HIỆN ĐẠI --- */
+.edit-room-form {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 6px 32px 0 rgba(16,185,129,0.10);
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    margin: 2rem 0 0 0; /* Bỏ auto, chỉ margin-top */
+    width: 100%;
+    max-width: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: stretch;
+}
+.edit-room-form label {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 6px;
+}
+.edit-room-form input[type="text"],
+.edit-room-form input[type="number"],
+.edit-room-form select,
+.edit-room-form textarea {
+    border-radius: 12px;
+    border: 1.5px solid #a7f3d0;
+    padding: 12px 14px;
+    font-size: 1.05rem;
+    background: #f9fafb;
+    transition: border-color 0.3s;
+    margin-bottom: 2px;
+}
+.edit-room-form input:focus,
+.edit-room-form select:focus,
+.edit-room-form textarea:focus {
+    border-color: #10b981;
+    background: #fff;
+}
+.edit-room-form textarea {
+    min-height: 48px;
+    resize: vertical;
+}
+.edit-room-form .form-actions {
+    display: flex;
+    gap: 18px;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+.edit-room-form .btn-save {
+    background: #10b981;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.13);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.edit-room-form .btn-save:hover {
+    background: #059669;
+    box-shadow: 0 8px 24px rgba(5,150,105,0.18);
+}
+.edit-room-form .btn-cancel {
+    background: #ef4444;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 16px rgba(239,68,68,0.13);
+    transition: background 0.2s, box-shadow 0.2s;
+    display: inline-block;
+    text-align: center;
+}
+.edit-room-form .btn-cancel:hover {
+    background: #dc2626;
+    box-shadow: 0 8px 24px rgba(220,38,38,0.18);
+}
+.edit-room-form .error-message {
+    color: #dc2626;
+    font-weight: 600;
+    margin-top: 8px;
+    text-align: left;
+    font-size: 1rem;
+}
+@media (max-width: 700px) {
+    .edit-room-form {
+        padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+        width: 100%;
+        max-width: unset;
+    }
+}
+
+/* --- FORM SỬA PHÒNG 2 CỘT --- */
+.grid-form {
+    display: grid !important;
+    grid-template-columns: 220px 1fr;
+    column-gap: 32px;
+    row-gap: 22px;
+    align-items: center;
+    width: 100%;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+.grid-form label {
+    justify-self: end;
+    text-align: right;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 0;
+    margin-right: 8px;
+}
+.grid-form input[type="text"],
+.grid-form input[type="number"],
+.grid-form select,
+.grid-form textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1.5px solid #a7f3d0;
+    padding: 12px 14px;
+    font-size: 1.05rem;
+    background: #f9fafb;
+    transition: border-color 0.3s;
+    margin-bottom: 0;
+}
+.grid-form input:focus,
+.grid-form select:focus,
+.grid-form textarea:focus {
+    border-color: #10b981;
+    background: #fff;
+}
+.grid-form textarea {
+    min-height: 48px;
+    resize: vertical;
+}
+.grid-form .form-actions {
+    grid-column: 2/3;
+    display: flex;
+    gap: 18px;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+@media (max-width: 900px) {
+    .grid-form {
+        grid-template-columns: 120px 1fr;
+        column-gap: 16px;
+    }
+}
+@media (max-width: 600px) {
+    .grid-form {
+        display: flex !important;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .grid-form label {
+        justify-self: start;
+        text-align: left;
+        margin-right: 0;
+    }
+    .grid-form .form-actions {
+        grid-column: unset;
+        margin-top: 8px;
+    }
 }

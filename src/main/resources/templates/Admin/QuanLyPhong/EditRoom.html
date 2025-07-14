@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sửa Phòng - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlyphong.css}">
+</head>
+<body>
+<div class="app" id="app">
+    <header>
+        <div class="logo">
+            <span class="material-icons">hotel</span>
+            <div class="hotel-name">Panacea Hotel Central</div>
+        </div>
+    </header>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+    <main role="main" tabindex="0">
+        <h1 style="font-size:2.2rem;font-weight:700;color:#065f46;margin-bottom:1.5rem;">Sửa thông tin phòng</h1>
+        <div class="content-section" style="padding:32px 36px 32px 36px;max-width:100%;background:#fff;border-radius:18px;box-shadow:0 6px 32px 0 rgba(16,185,129,0.10);">
+        <form th:action="@{'/admin/rooms/edit/' + ${room.id}}" th:object="${room}" method="post" class="edit-room-form grid-form" style="margin:0;box-shadow:none;padding:0;gap:24px;display:grid;grid-template-columns:220px 1fr;column-gap:32px;row-gap:22px;align-items:center;width:100%;">
+            <label for="soPhong">Số phòng</label>
+            <input type="text" id="soPhong" th:field="*{soPhong}" required />
+
+            <label for="roomTypeId">Loại phòng</label>
+            <select id="roomTypeId" th:field="*{roomTypeId}" required>
+                <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}" th:selected="${type.id} == ${room.roomTypeId}"></option>
+            </select>
+
+            <label for="tang">Tầng</label>
+            <input type="number" id="tang" th:field="*{tang}" min="1" required />
+
+            <label for="viewPhong">View</label>
+            <select id="viewPhong" th:field="*{viewPhong}">
+                <option th:each="v : ${roomViews}" th:value="${v}" th:text="${v}" th:selected="${v} == ${room.viewPhong}"></option>
+            </select>
+
+            <label for="giaCoBan">Giá cơ bản (VNĐ)</label>
+            <input type="number" id="giaCoBan" th:field="*{giaCoBan}" min="0" required />
+
+            <label for="trangThai">Trạng thái</label>
+            <select id="trangThai" th:field="*{trangThai}">
+                <option th:each="s : ${roomStatuses}" th:value="${s}" th:text="${s}" th:selected="${s} == ${room.trangThai}"></option>
+            </select>
+
+            <label for="ghiChu">Ghi chú</label>
+            <textarea id="ghiChu" th:field="*{ghiChu}" rows="2"></textarea>
+
+            <div></div>
+            <div class="form-actions" style="margin-top:18px;gap:18px;">
+                <button type="submit" class="btn-save">Lưu thay đổi</button>
+                <a th:href="@{/admin/rooms}" class="btn-cancel">Hủy</a>
+            </div>
+        </form>
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+    </footer>
+</div>
+</body>
+</html> 
