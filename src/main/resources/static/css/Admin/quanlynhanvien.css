@@ -270,3 +270,88 @@ main::-webkit-scrollbar-thumb {
     background: #10b981aa;
     border-radius: 5px;
 }
+
+/* Overlay cho popup form */
+#staffFormOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#staffForm {
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-width: 700px;
+    min-width: 400px;
+    width: 90vw;
+    z-index: 1001;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#staffForm .form-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+}
+
+#staffForm label {
+    width: 100%;
+    margin-bottom: 0.25rem;
+    grid-column: span 1;
+}
+
+#staffForm input,
+#staffForm select {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    grid-column: span 1;
+}
+
+#staffForm h2 {
+    margin-top: 0;
+    text-align: center;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+#staffForm .form-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 900px) {
+    #staffForm {
+        max-width: 98vw;
+        min-width: unset;
+        gap: 1rem;
+    }
+    #staffForm .form-fields {
+        grid-template-columns: 1fr;
+    }
+    #staffForm .form-actions {
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+    }
+}
+
