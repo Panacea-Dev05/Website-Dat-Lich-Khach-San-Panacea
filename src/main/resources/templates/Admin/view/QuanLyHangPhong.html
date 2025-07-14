@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản Lý Hạng Phòng - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlyhangphong.css}">
+    <style>
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #ccc;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            position: relative;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+
+        .sidebar .has-submenu>a {
+            cursor: pointer;
+        }
+
+        /* Submenu mặc định ẩn */
+        .submenu {
+            display: none;
+            background-color: #f9f9f9;
+            padding-left: 20px;
+        }
+
+        /* Hover hiển thị submenu */
+        /* .has-submenu:hover>.submenu {
+            display: block;
+    } */
+
+        .submenu li a {
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .submenu li a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        /* Ưu tiên cao nhất cho submenu */
+        aside.sidebar li.has-submenu>ul.submenu {
+            display: none !important;
+        }
+
+        aside.sidebar li.has-submenu:hover>ul.submenu {
+            display: block !important;
+        }
+
+        /* Hiển thị submenu khi có class active */
+        aside.sidebar li.has-submenu>ul.submenu.active {
+            display: block !important;
+        }
+
+        /* Cố định sidebar bên trái */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #ccc;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        /* Đẩy phần nội dung chính sang phải, tránh bị sidebar che */
+        main[role="main"] {
+            margin-left: 250px;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+            }
+
+            main[role="main"] {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+        </header>
+        <div style="display: flex; min-height: 100vh; background: #f4f7fc;">
+            <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+            <main role="main" tabindex="0"
+                style="flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 0;">
+                <div
+                    style="width: 100%; max-width: 1100px; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); padding: 32px 32px 24px 32px;">
+                    <!-- Tiêu đề Hạng phòng -->
+                    <h1
+                        style="margin: 0 0 16px 0; font-size: 2rem; font-weight: 700; color: #009966; display: flex; align-items: center; justify-content: space-between;">
+                        Hạng phòng
+                        <button id="btnOpenAddRoomTypeModal"
+                            style="margin-left: 16px; padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer; font-size: 1rem;">+
+                            Thêm hạng phòng</button>
+                    </h1>
+                    <!-- Modal thêm hạng phòng mới (giao diện giống mẫu) -->
+                    <div id="addRoomTypeModal"
+                        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center;">
+                        <div
+                            style="background:#fff; border-radius:10px; padding:0; min-width:480px; max-width:610px; max-height:80vh; overflow-y:auto; position:relative; box-shadow:0 2px 16px rgba(0,0,0,0.15);">
+                            <div
+                                style="border-bottom:1px solid #eee; padding:16px 18px 0 18px; display:flex; align-items:center; justify-content:space-between;">
+                                <h2 style="margin:0; font-size:1.1em; font-weight:600;">Thêm hạng phòng mới</h2>
+                                <button id="btnCloseAddRoomTypeModal"
+                                    style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;">&times;</button>
+                            </div>
+                            <div style="padding:0;">
+                                <!-- Tabs -->
+                                <div style="display:flex; border-bottom:1px solid #eee; margin:0;">
+                                    <button type="button" class="tab-btn active" data-tab="tab1"
+                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#009966; border-bottom:2px solid #009966; cursor:pointer; font-size:0.95em; min-width:100px;">Thông
+                                        tin</button>
+                                    <button type="button" class="tab-btn" data-tab="tab2"
+                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#333; cursor:pointer; font-size:0.95em; min-width:100px;">Hình
+                                        ảnh, Mô tả</button>
+                                    <button type="button" class="tab-btn" data-tab="tab3"
+                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#333; cursor:pointer; font-size:0.95em; min-width:100px;">Danh
+                                        sách phòng</button>
+                                </div>
+                                <form id="addRoomTypeForm" enctype="multipart/form-data" method="post"
+                                    th:action="@{/admin/rooms/room-types}">
+                                    <!-- Tab 1: Thông tin -->
+                                    <div class="tab-content" id="tab1" style="display:block; padding:20px;">
+                                        <div style="display:flex; gap:18px;">
+                                            <div style="flex:1;">
+                                                <div style="margin-bottom:14px;">
+                                                    <label style="font-weight:500; font-size:1em;">Mã hạng phòng</label>
+                                                    <input name="maLoaiPhong" required
+                                                        placeholder="Mã hạng phòng tự động"
+                                                        style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:4px; font-size:1em;" />
+                                                </div>
+                                                <div style="margin-bottom:14px;">
+                                                    <label style="font-weight:500; font-size:1em;">Tên hạng
+                                                        phòng</label>
+                                                    <input name="tenLoaiPhong" required
+                                                        style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:4px; font-size:1em;" />
+                                                </div>
+                                                <div style="margin-bottom:14px;">
+                                                    <div style="display:flex; align-items:flex-end; gap:12px;">
+                                                        <div style="flex:1;">
+                                                            <label
+                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
+                                                                giờ</label>
+                                                            <input name="giaGio" type="number" min="0" value="0"
+                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                        </div>
+                                                        <div style="flex:1;">
+                                                            <label
+                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
+                                                                cả ngày</label>
+                                                            <input name="giaNgay" type="number" min="0" value="0"
+                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                        </div>
+                                                        <div style="flex:1;">
+                                                            <label
+                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
+                                                                qua đêm</label>
+                                                            <input name="giaQuaDem" type="number" min="0" value="0"
+                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                style="flex:1; background:#f7f7f7; border-radius:8px; padding:14px; margin-top:8px;">
+                                                <div style="font-weight:500; margin-bottom:8px; font-size:1em;">Thời
+                                                    gian nhận - trả quy định</div>
+                                                <ul
+                                                    style="margin:0 0 8px 16px; padding:0; font-size:0.98em; color:#444;">
+                                                    <li>Cả ngày tính từ 14:00 đến 12:00</li>
+                                                    <li>Qua đêm tính từ 22:00 đến 11:00</li>
+                                                </ul>
+                                                <span
+                                                    style="font-size:1.2em; color:#bbb; cursor:pointer;">&#9998;</span>
+                                            </div>
+                                        </div>
+                                        <!-- Phụ thu quá giờ -->
+                                        <div
+                                            style="background:#f5f5f5; border-radius:8px; padding:14px; margin-top:18px; border:1px solid #e0e0e0;">
+                                            <div style="font-weight:600; margin-bottom:10px; font-size:1em;">Phụ thu quá
+                                                giờ <span style="font-weight:400; color:#888;">(Khi quá thời gian quy
+                                                    định)</span></div>
+                                            <div
+                                                style="display:flex; gap:12px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+                                                <div>
+                                                    <label style="font-size:1em;">Hình thức</label><br>
+                                                    <select name="hinhThucPhuThu"
+                                                        style="padding:7px 14px; border-radius:6px; border:1px solid #ccc; font-size:1em;">
+                                                        <option value="theo_gio">Tính tiền mỗi giờ</option>
+                                                        <option value="theo_block">Tính theo block</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label style="font-size:1em;">Nhận sớm</label><br>
+                                                    <input name="phuThuNhanSom" type="number" min="0" value="0"
+                                                        style="width:70px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
+                                                    <span style="color:#888; font-size:1em;">/giờ</span>
+                                                </div>
+                                                <div>
+                                                    <label style="font-size:1em;">Trả muộn</label><br>
+                                                    <input name="phuThuTraMuon" type="number" min="0" value="0"
+                                                        style="width:70px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
+                                                    <span style="color:#888; font-size:1em;">/giờ</span>
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                                                <label style="font-size:1em;"><input type="checkbox"
+                                                        name="macDinhPhuThu" style="margin-right:6px;" /> Mặc định tính
+                                                    phụ thu cho hạng phòng</label>
+                                                <label style="font-size:1em;"><input type="checkbox" name="apDungTatCa"
+                                                        style="margin-right:6px;" /> Áp dụng cho tất cả hạng
+                                                    phòng</label>
+                                            </div>
+                                        </div>
+                                        <!-- Sức chứa -->
+                                        <div
+                                            style="background:#f5f5f5; border-radius:8px; padding:14px; margin-top:18px; border:1px solid #e0e0e0;">
+                                            <div style="font-weight:600; margin-bottom:10px; font-size:1em;">Sức chứa
+                                            </div>
+                                            <div style="display:flex; gap:24px; flex-wrap:wrap;">
+                                                <div>
+                                                    <div style="font-size:0.98em; color:#888;">Tiêu chuẩn</div>
+                                                    <input name="tieuChuanNguoiLon" type="number" min="1" value="2"
+                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; margin-right:6px; font-size:1em;" />
+                                                    người lớn và
+                                                    <input name="tieuChuanTreEm" type="number" min="0" value="1"
+                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
+                                                    trẻ em
+                                                </div>
+                                                <div>
+                                                    <div style="font-size:0.98em; color:#888;">Tối đa</div>
+                                                    <input name="toiDaNguoiLon" type="number" min="1" value="2"
+                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; margin-right:6px; font-size:1em;" />
+                                                    người lớn và
+                                                    <input name="toiDaTreEm" type="number" min="0" value="1"
+                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
+                                                    trẻ em
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Tab 2: Hình ảnh, Mô tả -->
+                                    <div class="tab-content" id="tab2" style="display:none; padding:20px;">
+                                        <div id="image-upload-list" style="display:flex; gap:10px; margin-bottom:14px;">
+                                            <!-- 6 khung ảnh, mỗi khung là 1 div, click để chọn ảnh -->
+                                            <div class="image-upload-box" data-idx="0"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <div class="image-upload-box" data-idx="1"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <div class="image-upload-box" data-idx="2"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <div class="image-upload-box" data-idx="3"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <div class="image-upload-box" data-idx="4"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <div class="image-upload-box" data-idx="5"
+                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
+                                                <span class="material-icons">image</span>
+                                                <img
+                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            </div>
+                                            <input id="image-upload-input" name="images" type="file" accept="image/*"
+                                                multiple style="display:none;" />
+                                        </div>
+                                        <div style="margin-bottom:10px;">
+                                            <label style="font-weight:500; font-size:1em;">Mô tả</label>
+                                            <textarea name="moTa" rows="3"
+                                                style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:1em;"></textarea>
+                                        </div>
+                                    </div>
+                                    <!-- Tab 3: Danh sách phòng -->
+                                    <div class="tab-content" id="tab3" style="display:none; padding:20px;">
+                                        <div style="margin-bottom:14px;">
+                                            <label style="font-weight:500; font-size:1em;">Chọn phòng</label>
+                                            <input type="text" placeholder="Nhập mã hoặc tên phòng"
+                                                style="width:220px; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
+                                        </div>
+                                    </div>
+                                    <!-- Nút action -->
+                                    <div
+                                        style="display:flex; justify-content:flex-end; gap:14px; border-top:1px solid #eee; margin-top:20px; padding:20px 0 0 0;">
+                                        <button type="submit"
+                                            style="background:#009966; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:600; font-size:1em;">Lưu</button>
+                                        <button type="button"
+                                            style="background:#00b86b; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:600; font-size:1em;">Lưu
+                                            & Thêm mới</button>
+                                        <button type="button" id="btnCloseAddRoomTypeModal2"
+                                            style="background:#888; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:500; font-size:1em;">Bỏ
+                                            qua</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tab chuyển đổi giữa Hạng phòng và Danh sách phòng -->
+                    <div class="tab-container"
+                        style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 24px;">
+                        <a href="/admin/rooms/room-types" class="tab active">Hạng phòng</a>
+                        <a href="/admin/rooms" class="tab">Danh sách phòng</a>
+                    </div>
+                    <!-- Filter bar trên cùng -->
+                    <form method="get" class="filter-bar"
+                        style="display: flex; gap: 24px; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap;">
+                        <div>
+                            <label for="keyword">Tìm kiếm</label>
+                            <input type="text" id="keyword" name="keyword" th:value="${keyword}"
+                                placeholder="Tìm kiếm hạng phòng"
+                                style="width: 180px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                        </div>
+                        <div>
+                            <label for="branch">Chi nhánh</label>
+                            <select id="branch" name="branch"
+                                style="width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                                <option value="">Tất cả</option>
+                                <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"
+                                    th:selected="${b} == ${branch}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Trạng thái</label>
+                            <div style="display: flex; gap: 8px;">
+                                <label><input type="radio" name="status" value=""
+                                        th:checked="${status} == null or status == ''"> Tất cả</label>
+                                <label><input type="radio" name="status" value="ACTIVE"
+                                        th:checked="${status} == 'ACTIVE'">
+                                    Đang kinh doanh</label>
+                                <label><input type="radio" name="status" value="INACTIVE"
+                                        th:checked="${status} == 'INACTIVE'"> Ngừng kinh doanh</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="pageSize">Số bản ghi:</label>
+                            <select id="pageSize" name="pageSize"
+                                style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                                <option>15</option>
+                                <option>30</option>
+                                <option>50</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit"
+                                style="padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer;">Lọc</button>
+                        </div>
+                    </form>
+                    <table
+                        style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden;">
+                        <thead style="background: #f4f7fc;">
+                            <tr>
+                                <th>Mã hạng phòng</th>
+                                <th>Tên hạng phòng</th>
+                                <th>SL phòng</th>
+                                <th>Giá giờ</th>
+                                <th>Giá cả ngày</th>
+                                <th>Giá qua đêm</th>
+                                <th>Trạng thái</th>
+                                <th>Chi nhánh</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="type : ${roomTypes}" th:attr="data-id=${type.id}">
+                                <td th:text="${type.maLoaiPhong}">Double Bedroom</td>
+                                <td th:text="${type.tenLoaiPhong}">Phòng 01 giường đôi cho 2 người</td>
+                                <td th:text="${type.soLuongPhong}">3</td>
+                                <td
+                                    th:text="${type.giaGio != null ? #numbers.formatDecimal(type.giaGio, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    180,000</td>
+                                <td
+                                    th:text="${type.giaNgay != null ? #numbers.formatDecimal(type.giaNgay, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    720,000</td>
+                                <td
+                                    th:text="${type.giaQuaDem != null ? #numbers.formatDecimal(type.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    720,000</td>
+                                <td>Đang kinh doanh</td>
+                                <td>Chi nhánh trung tâm</td>
+                                <td>
+                                    <button class="btn-edit" th:onclick="'editRoomType(' + ${type.id} + ')'"
+                                        style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 4px; cursor: pointer;">
+                                        Sửa
+                                    </button>
+                                    <button class="btn-delete" th:onclick="'deleteRoomType(' + ${type.id} + ')'"
+                                        style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                                        Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+    <script>
+        // Tab switching logic
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.onclick = function () {
+                tabBtns.forEach(b => { b.classList.remove('active'); b.style.color = '#333'; b.style.borderBottom = 'none'; });
+                btn.classList.add('active'); btn.style.color = '#009966'; btn.style.borderBottom = '2px solid #009966';
+                tabContents.forEach(tc => tc.style.display = 'none');
+                document.getElementById(btn.dataset.tab).style.display = 'block';
+            }
+        });
+        // Modal logic
+        const btnOpen = document.getElementById('btnOpenAddRoomTypeModal');
+        const btnClose = document.getElementById('btnCloseAddRoomTypeModal');
+        const btnClose2 = document.getElementById('btnCloseAddRoomTypeModal2');
+        const modal = document.getElementById('addRoomTypeModal');
+        btnOpen.onclick = () => {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            // Reset modal về giữa màn hình khi mở lại
+            const modalBox = modal.querySelector('div');
+            modalBox.style.position = 'static';
+            modalBox.style.left = '';
+            modalBox.style.top = '';
+            modalBox.style.margin = 'auto';
+        };
+        btnClose.onclick = btnClose2.onclick = () => {
+            modal.style.display = 'none';
+            document.getElementById('addRoomTypeForm').reset();
+            document.body.style.overflow = 'auto';
+        };
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        };
+
+
+
+        // Kéo modal di chuyển
+        (function () {
+            const modal = document.getElementById('addRoomTypeModal');
+            const modalBox = modal.querySelector('div');
+            const header = modalBox.querySelector('h2');
+            let isDragging = false, startX, startY, startLeft, startTop;
+            header.style.cursor = 'move';
+            header.onmousedown = function (e) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = modalBox.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+                modalBox.style.position = 'fixed';
+                modalBox.style.margin = '0';
+                document.body.style.userSelect = 'none';
+            };
+            document.onmousemove = function (e) {
+                if (!isDragging) return;
+                let dx = e.clientX - startX;
+                let dy = e.clientY - startY;
+                modalBox.style.left = (startLeft + dx) + 'px';
+                modalBox.style.top = (startTop + dy) + 'px';
+            };
+            document.onmouseup = function () {
+                isDragging = false;
+                document.body.style.userSelect = '';
+            };
+        })();
+
+        // Upload & preview ảnh phòng
+        (function () {
+            const boxes = document.querySelectorAll('.image-upload-box');
+            const input = document.getElementById('image-upload-input');
+            let currentIdx = 0;
+            boxes.forEach((box, idx) => {
+                box.onclick = () => {
+                    currentIdx = idx;
+                    input.click();
+                };
+            });
+            input.onchange = function (e) {
+                const files = Array.from(e.target.files);
+                files.slice(0, 6).forEach((file, i) => {
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const box = boxes[currentIdx + i];
+                        if (box) {
+                            box.querySelector('img').src = ev.target.result;
+                            box.querySelector('img').style.display = 'block';
+                            box.querySelector('.material-icons').style.display = 'none';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+                input.value = '';
+            };
+        })();
+
+        // Khai báo form variable
+        const form = document.getElementById('addRoomTypeForm');
+
+        // Functions để xử lý edit và delete
+        async function editRoomType(id) {
+            try {
+                const response = await fetch(`/admin/rooms/room-types/${id}`);
+                if (!response.ok) throw new Error('Không thể lấy thông tin hạng phòng');
+                const roomType = await response.json();
+
+                // Điền dữ liệu vào form
+                document.querySelector('input[name="maLoaiPhong"]').value = roomType.maLoaiPhong || '';
+                document.querySelector('input[name="tenLoaiPhong"]').value = roomType.tenLoaiPhong || '';
+                document.querySelector('input[name="giaGio"]').value = roomType.giaGio || '';
+                document.querySelector('input[name="giaNgay"]').value = roomType.giaNgay || '';
+                document.querySelector('input[name="giaQuaDem"]').value = roomType.giaQuaDem || '';
+
+                // Mở modal
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Thay đổi form để update thay vì create
+                form.dataset.editId = id;
+                document.querySelector('#addRoomTypeModal h2').textContent = 'Chỉnh sửa hạng phòng';
+
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+
+        async function deleteRoomType(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa hạng phòng này?')) return;
+
+            try {
+                const response = await fetch(`/admin/rooms/room-types/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Xóa hạng phòng thất bại');
+                location.reload();
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+
+        // Cập nhật form submission để xử lý cả create và update
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form).entries());
+
+            // Chuyển đổi kiểu dữ liệu phù hợp
+            data.dienTich = data.dienTich ? parseFloat(data.dienTich) : null;
+            data.soGiuong = data.soGiuong ? parseInt(data.soGiuong) : null;
+            data.sucChuaToiDa = data.sucChuaToiDa ? parseInt(data.sucChuaToiDa) : null;
+            data.phuThuQuaGio = data.phuThuQuaGio ? parseFloat(data.phuThuQuaGio) : null;
+
+            // Xử lý dữ liệu giá
+            data.giaGio = data.giaGio ? parseFloat(data.giaGio) : null;
+            data.giaNgay = data.giaNgay ? parseFloat(data.giaNgay) : null;
+            data.giaQuaDem = data.giaQuaDem ? parseFloat(data.giaQuaDem) : null;
+
+            const editId = form.dataset.editId;
+            const url = editId ? `/admin/rooms/room-types/${editId}` : '/admin/rooms/room-types';
+            const method = editId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error(editId ? 'Cập nhật hạng phòng thất bại!' : 'Thêm hạng phòng thất bại!');
+
+                // Đóng modal, reload trang để cập nhật danh sách
+                modal.style.display = 'none';
+                form.reset();
+                delete form.dataset.editId;
+                document.querySelector('#addRoomTypeModal h2').textContent = 'Thêm hạng phòng mới';
+                location.reload();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
+        // Sự kiện click vào dòng hạng phòng để hiển thị chi tiết ngay dưới dòng đó (toggle)
+        (function () {
+            const tableBody = document.querySelector('table tbody');
+            if (tableBody) {
+                tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', function () {
+                        // Nếu đã có dòng chi tiết ngay sau thì ẩn đi (toggle)
+                        const nextRow = this.nextElementSibling;
+                        if (nextRow && nextRow.classList.contains('roomtype-detail-row')) {
+                            nextRow.remove();
+                            return;
+                        }
+                        // Xóa mọi dòng chi tiết cũ
+                        tableBody.querySelectorAll('.roomtype-detail-row').forEach(e => e.remove());
+                        const typeId = this.getAttribute('data-id');
+                        if (!typeId) return;
+                        fetch(`/admin/rooms/room-types/${typeId}`)
+                            .then(res => res.json())
+                            .then(type => {
+                                let imagesHtml = '';
+                                if (type.imageUrls && type.imageUrls.length > 0) {
+                                    imagesHtml = `<div style='display:flex;gap:8px;margin-bottom:12px;'>` +
+                                        type.imageUrls.map(url => `<img src='${url}' style='width:120px;height:80px;object-fit:cover;border-radius:8px;'>`).join('') +
+                                        `</div>`;
+                                }
+                                const detailTr = document.createElement('tr');
+                                detailTr.className = 'roomtype-detail-row';
+                                detailTr.innerHTML = `<td colspan='9' style='background:#f8f9fa;'>
+                                    <div style='padding:18px 0 8px 0;'>
+                                        <h3 style='margin-bottom:16px;'>${type.tenLoaiPhong} (${type.maLoaiPhong})</h3>
+                                        ${imagesHtml}
+                                        <div style='display:flex;gap:32px;flex-wrap:wrap;'>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Diện tích:</b> ${type.dienTich || ''} m²</div>
+                                                <div><b>Số giường:</b> ${type.soGiuong || ''}</div>
+                                                <div><b>Loại giường:</b> ${type.loaiGiuong || ''}</div>
+                                                <div><b>Sức chứa tối đa:</b> ${type.sucChuaToiDa || ''}</div>
+                                                <div><b>Giá giờ:</b> ${type.giaGio ? type.giaGio.toLocaleString() : '0'}</div>
+                                                <div><b>Giá cả ngày:</b> ${type.giaNgay ? type.giaNgay.toLocaleString() : '0'}</div>
+                                                <div><b>Giá qua đêm:</b> ${type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0'}</div>
+                                            </div>
+                                            <div style='flex:1;min-width:220px;'>
+                                                <div><b>Mô tả:</b> ${type.moTa || ''}</div>
+                                                <div><b>Tiện nghi:</b> ${type.tienNghi || ''}</div>
+                                                <div><b>Số lượng phòng:</b> ${type.soLuongPhong || ''}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>`;
+                                // Chèn dòng chi tiết ngay sau dòng vừa click
+                                this.parentNode.insertBefore(detailTr, this.nextSibling);
+                            });
+                    });
+                });
+            }
+        })();
+    </script>
+</body>
+
+</html>

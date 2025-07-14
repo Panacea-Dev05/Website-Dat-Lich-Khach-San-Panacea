@@ -2,8 +2,6 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -32,6 +30,20 @@ public class RoomPricing {
     @Column(name = "gia_tri", precision = 12, scale = 2)
     private BigDecimal giaTri;
 
+    @Column(name = "gia_gio", precision = 12, scale = 2)
+    private BigDecimal giaGio;
+
+    @Column(name = "gia_ngay", precision = 12, scale = 2)
+    private BigDecimal giaNgay;
+
+    @Column(name = "gia_qua_dem", precision = 12, scale = 2)
+    private BigDecimal giaQuaDem;
+
+    // --- Thêm cột giá phụ thu quá giờ ---
+    @Column(name = "gia_phu_thu_qua_gio", precision = 12, scale = 2)
+    private BigDecimal giaPhuThuQuaGio;
+    // --- Kết thúc phần thêm mới ---
+
     @Column(name = "ngay_bat_dau", nullable = false)
     private LocalDate ngayBatDau;
 
@@ -56,7 +68,7 @@ public class RoomPricing {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
-    // Enums
+    // Enums và các phương thức @PrePersist, @PreUpdate không thay đổi
     public enum LoaiGia {
         BASE("Giá cơ bản"),
         WEEKEND("Cuối tuần"),
@@ -87,6 +99,19 @@ public class RoomPricing {
         }
         if (this.heSoDieuChinh == null) {
             this.heSoDieuChinh = BigDecimal.ONE;
+        }
+        if (this.giaGio == null) {
+            this.giaGio = BigDecimal.ZERO;
+        }
+        if (this.giaNgay == null) {
+            this.giaNgay = BigDecimal.ZERO;
+        }
+        if (this.giaQuaDem == null) {
+            this.giaQuaDem = BigDecimal.ZERO;
+        }
+        // Thêm giá trị mặc định cho cột mới
+        if (this.giaPhuThuQuaGio == null) {
+            this.giaPhuThuQuaGio = BigDecimal.ZERO;
         }
     }
 
