@@ -18,8 +18,9 @@
     </header>
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
     <main role="main" tabindex="0">
-        <h1 style="text-align:center; margin-bottom:2rem;">Thêm khách hàng mới</h1>
-        <form th:action="@{/admin/customers/add}" method="post" id="customerForm">
+        <h1 style="font-size:2.2rem;font-weight:700;color:#065f46;margin-bottom:1.5rem;text-align:left;">Thêm khách hàng mới</h1>
+        <div class="content-section" style="padding:32px 36px 32px 36px;background:#fff;border-radius:18px;box-shadow:0 6px 32px 0 rgba(16,185,129,0.10);margin:0;width:100%;max-width:unset;">
+        <form th:action="@{/admin/customers/add}" method="post" id="customerForm" class="grid-form" style="margin:0;width:100%;max-width:unset;">
             <label for="ho">Họ</label>
             <input type="text" id="ho" name="ho" required placeholder="Nhập họ khách hàng" />
 
@@ -43,11 +44,13 @@
                 <option value="TAM_KHOA">Khóa</option>
             </select>
 
-            <div style="display: flex; justify-content: center; gap: 16px; margin-top: 1.5rem;">
-                <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
-                <a href="/admin/customers" class="btn" style="background:#ef4444;">Hủy</a>
+            <div></div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="submitBtn">Lưu khách hàng</button>
+                <a href="/admin/customers" class="btn-cancel">Hủy</a>
             </div>
         </form>
+        </div>
     </main>
     <footer>
         &copy; 2024 Panacea Hotel Booking System - All rights reserved.

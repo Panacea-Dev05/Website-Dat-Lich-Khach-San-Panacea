@@ -411,3 +411,111 @@ main::-webkit-scrollbar-thumb {
         max-width: 98vw;
     }
 }
+
+/* --- FORM THÊM KHÁCH HÀNG 2 CỘT ĐỒNG BỘ VỚI QUẢN LÝ PHÒNG --- */
+.grid-form {
+    display: grid !important;
+    grid-template-columns: 220px 1fr;
+    column-gap: 32px;
+    row-gap: 22px;
+    align-items: center;
+    width: 100%;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+.grid-form label {
+    justify-self: end;
+    text-align: right;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 0;
+    margin-right: 8px;
+}
+.grid-form input[type="text"],
+.grid-form input[type="number"],
+.grid-form input[type="email"],
+.grid-form select,
+.grid-form textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1.5px solid #a7f3d0;
+    padding: 12px 14px;
+    font-size: 1.05rem;
+    background: #f9fafb;
+    transition: border-color 0.3s;
+    margin-bottom: 0;
+}
+.grid-form input:focus,
+.grid-form select:focus,
+.grid-form textarea:focus {
+    border-color: #10b981;
+    background: #fff;
+}
+.grid-form textarea {
+    min-height: 48px;
+    resize: vertical;
+}
+.grid-form .form-actions {
+    grid-column: 2/3;
+    display: flex;
+    gap: 18px;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+.btn-save {
+    background: #10b981;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.13);
+    transition: background 0.2s, box-shadow 0.2s;
+    border: none;
+}
+.btn-save:hover {
+    background: #059669;
+    box-shadow: 0 8px 24px rgba(5,150,105,0.18);
+}
+.btn-cancel {
+    background: #ef4444;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 16px rgba(239,68,68,0.13);
+    transition: background 0.2s, box-shadow 0.2s;
+    display: inline-block;
+    text-align: center;
+    border: none;
+}
+.btn-cancel:hover {
+    background: #dc2626;
+    box-shadow: 0 8px 24px rgba(220,38,38,0.18);
+}
+@media (max-width: 900px) {
+    .grid-form {
+        grid-template-columns: 120px 1fr;
+        column-gap: 16px;
+    }
+}
+@media (max-width: 600px) {
+    .grid-form {
+        display: flex !important;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .grid-form label {
+        justify-self: start;
+        text-align: left;
+        margin-right: 0;
+    }
+    .grid-form .form-actions {
+        grid-column: unset;
+        margin-top: 8px;
+    }
+}
