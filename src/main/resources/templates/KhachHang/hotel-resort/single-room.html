@@ -229,7 +229,7 @@
                         </div>
                         <div class="text-btn mt-5 mt-lg-0">
                             <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                Price VND 800.000 Night
+                                Price VND <span th:text="${roomBasePrice != null ? #numbers.formatDecimal(roomBasePrice, 0, 'COMMA', 0, 'POINT') : 'N/A'}">800.000</span> Night
                             </a>
                         </div>
                     </div>

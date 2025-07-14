@@ -206,7 +206,12 @@ public class KhachHangController {
     @GetMapping("/single-room/{roomTypeId}")
     public String roomDetailByType(@PathVariable Integer roomTypeId, Model model) {
         var roomType = khachHangService.getRoomTypeById(roomTypeId);
+        if (roomType == null) {
+            return "KhachHang/hotel-resort/404";
+        }
         model.addAttribute("roomType", roomType);
+        var roomBasePrice = khachHangService.getRoomBasePriceByRoomTypeId(roomTypeId);
+        model.addAttribute("roomBasePrice", roomBasePrice);
         return "KhachHang/hotel-resort/single-room";
     }
 }

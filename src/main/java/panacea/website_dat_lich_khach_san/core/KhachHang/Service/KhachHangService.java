@@ -15,6 +15,8 @@ import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -49,6 +51,8 @@ public class KhachHangService {
     private JavaMailSender mailSender;
     @Autowired
     private RoomTypeRepository roomTypeRepository;
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepositoty;
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
@@ -206,5 +210,14 @@ public class KhachHangService {
     public RoomType getRoomTypeById(Integer id) {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         return opt.orElse(null);
+    }
+
+    /**
+     * Lấy giá cơ bản (BASE) của loại phòng
+     */
+    public java.math.BigDecimal getRoomBasePriceByRoomTypeId(Integer roomTypeId) {
+        return roomPricingRepositoty.findFirstByRoomTypeIdAndLoaiGiaOrderByNgayBatDauDesc(roomTypeId, RoomPricing.LoaiGia.BASE)
+                .map(RoomPricing::getGiaTri)
+                .orElse(null);
     }
 }
