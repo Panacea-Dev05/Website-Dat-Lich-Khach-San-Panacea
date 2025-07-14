@@ -9,6 +9,8 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -199,4 +201,12 @@ public class KhachHangController {
 //        // Trả về template thông báo chờ xác nhận
 //        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
 //    }
+
+    // Trang chi tiết phòng động theo id loại phòng
+    @GetMapping("/single-room/{roomTypeId}")
+    public String roomDetailByType(@PathVariable Integer roomTypeId, Model model) {
+        var roomType = khachHangService.getRoomTypeById(roomTypeId);
+        model.addAttribute("roomType", roomType);
+        return "KhachHang/hotel-resort/single-room";
+    }
 }
