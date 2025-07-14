@@ -144,7 +144,7 @@ public class AdminRoomService {
     }
     
     public RoomTypeDTO updateRoomType(Long id, RoomTypeDTO dto) {
-        Optional<RoomType> opt = roomTypeRepository.findById(id);
+        Optional<RoomType> opt = roomTypeRepository.findById(Math.toIntExact(id));
         if (opt.isEmpty()) return null;
         RoomType roomType = opt.get();
         roomType.setTenLoaiPhong(dto.getTenLoaiPhong());
@@ -167,7 +167,7 @@ public class AdminRoomService {
     }
     
     public RoomDTO changeRoomStatus(Long roomId, Room.TrangThaiPhong newStatus) {
-        Optional<Room> opt = roomRepository.findById(roomId);
+        Optional<Room> opt = roomRepository.findById(Math.toIntExact(roomId));
         if (opt.isEmpty()) return null;
         Room room = opt.get();
         room.setTrangThai(newStatus);
