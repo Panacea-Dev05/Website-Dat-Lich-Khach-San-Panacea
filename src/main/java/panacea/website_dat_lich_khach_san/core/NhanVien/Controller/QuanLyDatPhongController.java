@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
@@ -42,7 +43,7 @@ public class QuanLyDatPhongController {
                       @RequestParam(value = "ngayNhan", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate ngayNhan,
                       Model model) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-        org.springframework.data.domain.Page<panacea.website_dat_lich_khach_san.entity.Booking> bookingPage = quanLyDatPhongService.filterBookings(keyword, ngayNhan, pageable);
+        org.springframework.data.domain.Page<BookingDetailViewDTO> bookingPage = quanLyDatPhongService.getBookingDetailViewDTOs(keyword, ngayNhan, pageable);
         model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
         model.addAttribute("bookings", bookingPage.getContent());
         model.addAttribute("currentPage", bookingPage.getNumber());

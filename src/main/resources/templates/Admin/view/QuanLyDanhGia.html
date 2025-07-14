@@ -106,7 +106,7 @@
                     <select id="roomId" name="roomId" required>
                         <option value="" disabled selected>Chọn phòng</option>
                         <option th:each="room : ${rooms}" th:value="${room.id}"
-                            th:text="${room.soPhong + ' - ' + room.roomTypeId}"></option>
+                            th:text="${room.soPhong + ' - ' + room.roomTypeName}"></option>
                     </select>
 
                     <label for="rating">Điểm đánh giá</label>
