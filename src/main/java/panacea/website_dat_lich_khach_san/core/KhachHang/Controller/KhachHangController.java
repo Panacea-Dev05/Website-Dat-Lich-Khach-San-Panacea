@@ -11,6 +11,13 @@ import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangServic
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import panacea.website_dat_lich_khach_san.entity.Review;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
+import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -18,6 +25,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class KhachHangController {
     @Autowired
     private KhachHangService khachHangService;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     @GetMapping("/dashboard")
     public String dashboard() {
@@ -48,9 +58,22 @@ public class KhachHangController {
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
     }
 
-    // Trang chi tiết phòng
+    // Trang chi tiết phòng (có review)
     @GetMapping("/single-room")
-    public String roomDetail() {
+    public String roomDetail(@RequestParam(value = "roomId", required = false) Integer roomId, Model model) {
+        if (roomId == null) {
+            // Lấy phòng đầu tiên trong DB
+            var firstRoom = roomRepository.findAll().stream().findFirst().orElse(null);
+            if (firstRoom == null) {
+                model.addAttribute("reviews", java.util.Collections.emptyList());
+                model.addAttribute("roomId", null);
+                return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
+            }
+            roomId = firstRoom.getId();
+        }
+        List<Review> reviews = khachHangService.getApprovedReviewsByRoomId(roomId);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("roomId", roomId);
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
     }
 
@@ -201,4 +224,21 @@ public class KhachHangController {
 //        // Trả về template thông báo chờ xác nhận
 //        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
 //    }
+
+    // Xử lý gửi review mới cho phòng
+    @PostMapping("/single-room/review")
+    public String postReview(@RequestParam("roomId") Integer roomId,
+                             @RequestParam("bookingId") Integer bookingId,
+                             @RequestParam("diemTongQuan") Byte diemTongQuan,
+                             @RequestParam("binhLuan") String binhLuan,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
+        // Lấy customerId từ userDetails hoặc session (giả sử username là email)
+        Integer customerId = null;
+        // TODO: Lấy customerId từ userDetails hoặc session
+        // customerId = ...
+        boolean result = khachHangService.addReviewForRoom(roomId, customerId, bookingId, diemTongQuan, binhLuan);
+        redirectAttributes.addAttribute("roomId", roomId);
+        return "redirect:/khachhang/single-room";
+    }
 }

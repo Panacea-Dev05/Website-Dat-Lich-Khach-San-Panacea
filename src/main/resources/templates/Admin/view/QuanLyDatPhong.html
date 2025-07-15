@@ -12,15 +12,7 @@
 
 <body>
   <div class="app" id="app">
-    <header>
-      <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
-        <span class="material-icons" aria-hidden="true">hotel</span>
-        <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
-      </div>
-      <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
-        <span class="material-icons">menu</span>
-      </button>
-    </header>
+    <div th:replace="~{Admin/Layout/AdminHeader}"></div>
 
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 

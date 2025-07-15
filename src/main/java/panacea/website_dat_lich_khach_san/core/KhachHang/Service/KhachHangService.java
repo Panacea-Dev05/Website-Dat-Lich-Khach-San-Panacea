@@ -13,6 +13,11 @@ import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.ReviewRepository;
+import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
+import panacea.website_dat_lich_khach_san.entity.Review;
+import panacea.website_dat_lich_khach_san.entity.BookingDetail;
+import java.util.List;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -42,6 +47,10 @@ public class KhachHangService {
     private CustomerRepository customerRepository;
     @Autowired(required = false)
     private JavaMailSender mailSender;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private BookingDetailRepository bookingDetailRepository;
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
@@ -180,5 +189,28 @@ public class KhachHangService {
             helper.addInline("qr_momo", qrImage, "image/png");
         }
         mailSender.send(message);
+    }
+
+    // Lấy danh sách review đã duyệt cho 1 phòng
+    public List<Review> getApprovedReviewsByRoomId(Integer roomId) {
+        return reviewRepository.findByRoomIdAndTrangThai(roomId, Review.TrangThaiReview.DA_DUYET);
+    }
+
+    // Lưu review mới cho phòng (roomId, customerId, bookingId, số sao, nội dung)
+    public boolean addReviewForRoom(Integer roomId, Integer customerId, Integer bookingId, Byte diemTongQuan, String binhLuan) {
+        // Kiểm tra bookingId có chứa roomId không (bảo vệ dữ liệu)
+        List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(bookingId);
+        boolean found = details.stream().anyMatch(d -> d.getPhongId().equals(roomId));
+        if (!found) return false;
+        Review review = new Review();
+        review.setDatPhongId(bookingId);
+        review.setKhachHangId(customerId);
+        // Nếu cần, lấy khachSanId từ booking hoặc room
+        // review.setKhachSanId(...);
+        review.setDiemTongQuan(diemTongQuan);
+        review.setBinhLuan(binhLuan);
+        review.setTrangThai(Review.TrangThaiReview.CHO_DUYET); // Mặc định chờ duyệt
+        reviewRepository.save(review);
+        return true;
     }
 } 

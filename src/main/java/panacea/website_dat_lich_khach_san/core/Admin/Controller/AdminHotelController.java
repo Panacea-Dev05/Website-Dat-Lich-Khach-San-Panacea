@@ -12,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.entity.Staff;
 
 @Controller
 @RequestMapping("/admin/hotels")
@@ -20,8 +24,17 @@ public class AdminHotelController {
     @Autowired
     private HotelRepository hotelRepository;
     
+    @Autowired
+    private StaffRepository staffRepository;
+    
     @GetMapping
     public String hotelManagement(Model model) {
+        // Lấy email đăng nhập từ security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Staff admin = staffRepository.findByEmail(email).orElse(null);
+        String adminName = admin != null ? admin.getHoTen() : email;
+        model.addAttribute("adminName", adminName);
         List<HotelDTO> hotels = hotelRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
