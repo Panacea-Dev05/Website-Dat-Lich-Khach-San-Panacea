@@ -14,6 +14,8 @@ import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.entity.BookingHistory;
+import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -53,6 +55,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private BookingDetailRepository bookingDetailRepository;
+
+    @Autowired
+    private BookingHistoryRepository bookingHistoryRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -257,20 +262,39 @@ public class QuanLyDatPhongService {
     }
 
     public boolean confirmBookingAndAssignRoom(Long bookingId, Long roomId) {
+        logger.info("[CONFIRM] Bắt đầu xác nhận bookingId={}, roomId={}", bookingId, roomId);
         try {
             Booking booking = bookingRepository.findById(bookingId).orElse(null);
             Room room = roomRepository.findById(roomId.intValue()).orElse(null);
-            if (booking == null || room == null) return false;
-            // Tạo BookingDetail
-            BookingDetail detail = new BookingDetail();
-            detail.setDatPhongId(booking.getId());
-            detail.setPhongId(room.getId());
-            bookingDetailRepository.save(detail);
+            if (booking == null) {
+                logger.warn("[CONFIRM] Không tìm thấy bookingId={}", bookingId);
+                return false;
+            }
+            if (room == null) {
+                logger.warn("[CONFIRM] Không tìm thấy roomId={}", roomId);
+                return false;
+            }
+            // Chỉ tạo BookingDetail nếu chưa có
+            boolean exists = bookingDetailRepository.findByDatPhongId(booking.getId())
+                .stream().anyMatch(d -> d.getPhongId() != null && d.getPhongId().equals(room.getId()));
+            if (!exists) {
+                BookingDetail detail = new BookingDetail();
+                detail.setDatPhongId(booking.getId());
+                detail.setPhongId(room.getId());
+                bookingDetailRepository.save(detail);
+                logger.info("[CONFIRM] Đã tạo BookingDetail cho bookingId={}, roomId={}", bookingId, roomId);
+            } else {
+                logger.info("[CONFIRM] BookingDetail đã tồn tại cho bookingId={}, roomId={}", bookingId, roomId);
+            }
             // Cập nhật trạng thái
             booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_XAC_NHAN);
-            room.setTrangThai(Room.TrangThaiPhong.DANG_SU_DUNG);
+            // Chỉ cập nhật trạng thái phòng được gán cho booking này
+            if (room != null) {
+                room.setTrangThai(Room.TrangThaiPhong.DA_DAT); // Đã đặt
+                roomRepository.save(room);
+            }
             bookingRepository.save(booking);
-            roomRepository.save(room);
+            logger.info("[CONFIRM] Đã cập nhật trạng thái booking và phòng cho bookingId={}, roomId={}", bookingId, roomId);
             // Gửi email xác nhận
             Customer customer = booking.getKhachHang();
             if (customer != null && customer.getEmail() != null) {
@@ -304,10 +328,14 @@ public class QuanLyDatPhongService {
                 message.setSubject("Xác nhận đặt phòng khách sạn");
                 message.setText(emailBody);
                 mailSender.send(message);
+                logger.info("[CONFIRM] Đã gửi email xác nhận cho khách hàng: {}", customer.getEmail());
+            } else {
+                logger.warn("[CONFIRM] Không gửi được email xác nhận vì thiếu thông tin khách hàng hoặc email");
             }
+            logger.info("[CONFIRM] Xác nhận đặt phòng thành công cho bookingId={}, roomId={}", bookingId, roomId);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[CONFIRM] Lỗi khi xác nhận đặt phòng: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -331,6 +359,32 @@ public class QuanLyDatPhongService {
                     roomRepository.save(room);
                 }
             }
+        }
+        // Copy sang bảng lịch sử và xóa booking gốc
+        try {
+            BookingHistory history = new BookingHistory();
+            history.setMaDatPhong(booking.getMaDatPhong());
+            history.setTenKhachHang(booking.getKhachHang() != null ? booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen() : null);
+            history.setEmail(booking.getKhachHang() != null ? booking.getKhachHang().getEmail() : null);
+            history.setSoDienThoai(booking.getKhachHang() != null ? booking.getKhachHang().getSoDienThoai() : null);
+            history.setTenKhachSan(booking.getHotel() != null ? booking.getHotel().getTenKhachSan() : null);
+            // Lấy số phòng đầu tiên (nếu có)
+            if (!details.isEmpty()) {
+                Room room = roomRepository.findById(details.get(0).getPhongId()).orElse(null);
+                if (room != null) history.setSoPhong(room.getSoPhong());
+            }
+            history.setNgayNhanPhong(booking.getNgayNhanPhong());
+            history.setNgayTraPhong(booking.getNgayTraPhong());
+            history.setSoNguoiLon(booking.getSoNguoiLon());
+            history.setSoTreEm(booking.getSoTreEm());
+            history.setTongThanhToan(booking.getTongThanhToan());
+            history.setNgayDat(booking.getNgayDat());
+            history.setNgayHoanThanh(java.time.LocalDateTime.now());
+            history.setGhiChu(booking.getGhiChuKhachHang());
+            bookingHistoryRepository.save(history);
+            bookingRepository.delete(booking);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         // Gửi email cảm ơn
         try {
@@ -435,6 +489,34 @@ public class QuanLyDatPhongService {
 
     public List<Room> getAvailableRoomsByHotel(Long hotelId) {
         return roomRepository.findByHotelIdAndTrangThai(hotelId.intValue(), Room.TrangThaiPhong.SAN_SANG);
+    }
+
+    public boolean checkInBooking(Long bookingId, String soCmndCccd, LocalDate ngayCapCmnd, String noiCapCmnd, Byte soNguoiLonThucTe, Byte soTreEmThucTe, String ghiChuCheckIn) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking == null) return false;
+        if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_XAC_NHAN) return false;
+        // Cập nhật trạng thái booking
+        booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_NHAN_PHONG);
+        booking.setCheckInTime(LocalDateTime.now());
+        booking.setSoCmndCccdCheckIn(soCmndCccd);
+        booking.setNgayCapCmndCheckIn(ngayCapCmnd);
+        booking.setNoiCapCmndCheckIn(noiCapCmnd);
+        booking.setSoNguoiLonThucTe(soNguoiLonThucTe);
+        booking.setSoTreEmThucTe(soTreEmThucTe);
+        booking.setGhiChuCheckIn(ghiChuCheckIn);
+        bookingRepository.save(booking);
+        // Cập nhật trạng thái phòng
+        List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+        for (BookingDetail detail : details) {
+            if (detail.getPhongId() != null) {
+                Room room = roomRepository.findById(detail.getPhongId()).orElse(null);
+                if (room != null) {
+                    room.setTrangThai(Room.TrangThaiPhong.DANG_SU_DUNG);
+                    roomRepository.save(room);
+                }
+            }
+        }
+        return true;
     }
 
     // Tự động hủy booking chưa thanh toán sau 1 ngày

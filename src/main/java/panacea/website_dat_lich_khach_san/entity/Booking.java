@@ -99,6 +99,27 @@ public class Booking {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
+    @Column(name = "check_in_time")
+    private LocalDateTime checkInTime;
+
+    @Column(name = "so_cmnd_cccd_checkin", length = 20)
+    private String soCmndCccdCheckIn;
+
+    @Column(name = "ngay_cap_cmnd_checkin")
+    private LocalDate ngayCapCmndCheckIn;
+
+    @Column(name = "noi_cap_cmnd_checkin", length = 100)
+    private String noiCapCmndCheckIn;
+
+    @Column(name = "so_nguoi_lon_thuc_te")
+    private Byte soNguoiLonThucTe;
+
+    @Column(name = "so_tre_em_thuc_te")
+    private Byte soTreEmThucTe;
+
+    @Column(name = "ghi_chu_checkin", length = 500)
+    private String ghiChuCheckIn;
+
     // Relationships
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;

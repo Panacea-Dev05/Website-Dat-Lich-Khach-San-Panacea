@@ -68,6 +68,7 @@ public class Room {
     // Enums
     public enum TrangThaiPhong {
         SAN_SANG("Sẵn sàng"),
+        DA_DAT("Đã đặt"),
         DANG_SU_DUNG("Đang sử dụng"),
         BAO_TRI("Bảo trì"),
         DON_DEP("Dọn dẹp");
