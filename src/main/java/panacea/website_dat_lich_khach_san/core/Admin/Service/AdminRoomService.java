@@ -66,6 +66,12 @@ public class AdminRoomService {
             room.setGiaCoBan(roomDTO.getGiaCoBan());
             room.setTrangThai(roomDTO.getTrangThai() != null ? panacea.website_dat_lich_khach_san.entity.Room.TrangThaiPhong.valueOf(roomDTO.getTrangThai()) : null);
             room.setGhiChu(roomDTO.getGhiChu());
+            // Thêm cập nhật hạng phòng
+            if (roomDTO.getRoomTypeId() != null) {
+                RoomType roomType = roomTypeRepository.findById(roomDTO.getRoomTypeId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy hạng phòng"));
+                room.setRoomType(roomType);
+            }
             Room savedRoom = roomRepository.save(room);
             return convertToDTO(savedRoom);
         }
