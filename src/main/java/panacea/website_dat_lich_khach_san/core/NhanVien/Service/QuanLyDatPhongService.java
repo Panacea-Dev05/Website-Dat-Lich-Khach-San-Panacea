@@ -144,7 +144,7 @@ public class QuanLyDatPhongService {
                         <li><strong>Tổng thanh toán:</strong> %,.0f VND</li>
                     </ul>
                     
-                    <p>Vui lòng đến khách sạn đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>
+                    <p>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>
                     
                     <p>Trân trọng,<br>Đội ngũ Panacea Hotel</p>
                 </body>
@@ -152,7 +152,6 @@ public class QuanLyDatPhongService {
                 """, 
                 booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen(),
                 booking.getMaDatPhong(),
-                null, // Removed booking.getHotel().getTenKhachSan()
                 booking.getNgayNhanPhong(),
                 booking.getNgayTraPhong(),
                 booking.getSoNguoiLon(),
@@ -175,12 +174,12 @@ public class QuanLyDatPhongService {
                 <html>
                 <body>
                     <h2>Xin chào %s!</h2>
-                    <p>Chúng tôi rất tiếc phải thông báo rằng đặt phòng của bạn đã bị hủy.</p>
+                    <p>Chúng tôi rất tiếc phải thông báo rằng đặt phòng của bạn tại Panacea Hotel đã bị hủy.</p>
                     
                     <h3>Thông tin đặt phòng đã hủy:</h3>
                     <ul>
                         <li><strong>Mã đặt phòng:</strong> %s</li>
-                        <li><strong>Khách sạn:</strong> %s</li>
+                        <li><strong>Khách sạn:</strong> Panacea Hotel</li>
                         <li><strong>Ngày nhận phòng:</strong> %s</li>
                         <li><strong>Ngày trả phòng:</strong> %s</li>
                     </ul>
@@ -193,7 +192,6 @@ public class QuanLyDatPhongService {
                 """, 
                 booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen(),
                 booking.getMaDatPhong(),
-                null, // Removed booking.getHotel().getTenKhachSan()
                 booking.getNgayNhanPhong(),
                 booking.getNgayTraPhong()
             );
@@ -220,39 +218,67 @@ public class QuanLyDatPhongService {
             Map<String, Object> customerData = (Map<String, Object>) requestData.get("customer");
             
             // Create or find customer
-            Customer customer = new Customer();
-            customer.setHo((String) customerData.get("ho"));
-            customer.setTen((String) customerData.get("ten"));
-            customer.setEmail((String) customerData.get("email"));
-            customer.setSoDienThoai((String) customerData.get("soDienThoai"));
-            customer.setSoCmndCccd((String) customerData.get("soCmndCccd"));
-            customer.setDiaChi((String) customerData.get("diaChi"));
-            customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
-            customer.setLoaiKhachHang("CA_NHAN");
-            customer.setDiemTichLuy(0);
-            customer.setMatKhauHash("default_password_hash"); // Temporary password
-            
-            // Generate customer code
-            String maKhachHang = "KH" + System.currentTimeMillis();
-            customer.setMaKhachHang(maKhachHang);
-            
-            customer = customerRepository.save(customer);
+            Customer customer = null;
+            String email = (String) customerData.get("email");
+            if (email != null && !email.isBlank()) {
+                customer = customerRepository.findByEmail(email).orElse(null);
+            }
+            if (customer == null) {
+                customer = new Customer();
+                customer.setHo((String) customerData.get("ho"));
+                customer.setTen((String) customerData.get("ten"));
+                customer.setEmail(email);
+                customer.setSoDienThoai((String) customerData.get("soDienThoai"));
+                customer.setSoCmndCccd((String) customerData.get("soCmndCccd"));
+                customer.setDiaChi((String) customerData.get("diaChi"));
+                customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
+                customer.setLoaiKhachHang("CA_NHAN");
+                customer.setDiemTichLuy(0);
+                customer.setMatKhauHash("default_password_hash"); // Temporary password
+                // Generate customer code
+                String maKhachHang = "KH" + System.currentTimeMillis();
+                customer.setMaKhachHang(maKhachHang);
+                customer = customerRepository.save(customer);
+            }
             
             // Get hotel and room
-            Integer hotelId = Integer.valueOf(requestData.get("hotelId").toString());
-            Long roomId = Long.valueOf(requestData.get("roomId").toString());
-            
+            Object roomIdObj = requestData.get("roomId");
+            if (roomIdObj == null) throw new IllegalArgumentException("Thiếu trường roomId trong requestData");
+            Long roomId = Long.valueOf(roomIdObj.toString());
+
             Room room = roomRepository.findById(roomId.intValue())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng"));
             
             // Create booking
             Booking booking = new Booking();
             booking.setKhachHang(customer);
-            booking.setNgayNhanPhong(LocalDate.parse(requestData.get("ngayNhanPhong").toString()));
-            booking.setNgayTraPhong(LocalDate.parse(requestData.get("ngayTraPhong").toString()));
-            booking.setSoNguoiLon(Byte.valueOf(requestData.get("soNguoiLon").toString()));
-            booking.setSoTreEm(Byte.valueOf(requestData.get("soTreEm").toString()));
-            booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.CHO_XAC_NHAN);
+            Object ngayNhanPhongObj = requestData.get("ngayNhanPhong");
+            if (ngayNhanPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayNhanPhong trong requestData");
+            booking.setNgayNhanPhong(LocalDate.parse(ngayNhanPhongObj.toString()));
+            Object ngayTraPhongObj = requestData.get("ngayTraPhong");
+            if (ngayTraPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayTraPhong trong requestData");
+            booking.setNgayTraPhong(LocalDate.parse(ngayTraPhongObj.toString()));
+            Object soNguoiLonObj = requestData.get("soNguoiLon");
+            if (soNguoiLonObj == null) throw new IllegalArgumentException("Thiếu trường soNguoiLon trong requestData");
+            booking.setSoNguoiLon(Byte.valueOf(soNguoiLonObj.toString()));
+            Object soTreEmObj = requestData.get("soTreEm");
+            if (soTreEmObj == null) throw new IllegalArgumentException("Thiếu trường soTreEm trong requestData");
+            booking.setSoTreEm(Byte.valueOf(soTreEmObj.toString()));
+            
+            // Lấy isWalkIn từ requestData
+            boolean isWalkIn = false;
+            if (requestData.containsKey("isWalkIn")) {
+                Object walkInObj = requestData.get("isWalkIn");
+                if (walkInObj instanceof Boolean) isWalkIn = (Boolean) walkInObj;
+                else if (walkInObj instanceof String) isWalkIn = Boolean.parseBoolean((String) walkInObj);
+            }
+
+            // Khi tạo booking:
+            if (isWalkIn) {
+                booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_NHAN_PHONG);
+            } else {
+                booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.CHO_XAC_NHAN);
+            }
             booking.setNgayDat(LocalDateTime.now());
             
             // Generate booking code
@@ -261,13 +287,27 @@ public class QuanLyDatPhongService {
             
             // Calculate total payment
             long days = java.time.temporal.ChronoUnit.DAYS.between(
-                LocalDate.parse(requestData.get("ngayNhanPhong").toString()),
-                LocalDate.parse(requestData.get("ngayTraPhong").toString())
+                LocalDate.parse(ngayNhanPhongObj.toString()),
+                LocalDate.parse(ngayTraPhongObj.toString())
             );
             BigDecimal tongThanhToan = room.getGiaCoBan().multiply(BigDecimal.valueOf(days));
             booking.setTongThanhToan(tongThanhToan);
             
             bookingRepository.save(booking);
+            
+            // Sau khi bookingRepository.save(booking):
+            if (isWalkIn) {
+                // Gán phòng trạng thái ĐANG_SỬ_DỤNG
+                room.setTrangThai(Room.TrangThaiPhong.DANG_SU_DUNG);
+                roomRepository.save(room);
+                // Tạo BookingDetail cho booking walk-in
+                BookingDetail detail = new BookingDetail();
+                detail.setDatPhongId(booking.getId());
+                detail.setPhongId(room.getId());
+                bookingDetailRepository.save(detail);
+                // Không gửi mail xác nhận, không cần đặt cọc
+                return true;
+            }
             
             return true;
         } catch (Exception e) {
@@ -370,7 +410,7 @@ public class QuanLyDatPhongService {
             if (detail.getPhongId() != null) {
                 Room room = roomRepository.findById(detail.getPhongId()).orElse(null);
                 if (room != null) {
-                    room.setTrangThai(Room.TrangThaiPhong.SAN_SANG);
+                    room.setTrangThai(Room.TrangThaiPhong.DON_DEP); // Dọn dẹp
                     roomRepository.save(room);
                 }
             }
@@ -416,20 +456,20 @@ public class QuanLyDatPhongService {
         if (mailSender == null) return;
         Customer customer = booking.getKhachHang();
         if (customer == null || customer.getEmail() == null) return;
-        String subject = "Khách sạn Panacea xin gửi lời cảm ơn chân thành đến Quý khách!";
+        String subject = "Panacea Hotel xin gửi lời cảm ơn chân thành đến Quý khách!";
         String content = String.format("""
             <html><body>
             <p>Kính gửi Quý khách <b>%s</b>,</p>
-            <p>Thay mặt toàn thể đội ngũ nhân viên Khách sạn Panacea, chúng tôi xin gửi lời cảm ơn chân thành nhất đến Quý khách đã tin tưởng lựa chọn khách sạn chúng tôi làm điểm dừng chân trong chuyến đi vừa qua.</p>
-            <p>Chúng tôi hy vọng Quý khách đã có những trải nghiệm thật sự thoải mái, thư giãn và đáng nhớ tại Panacea. Sự hài lòng của Quý khách là niềm vinh hạnh và là nguồn động lực lớn nhất để chúng tôi không ngừng nỗ lực nâng cao chất lượng dịch vụ mỗi ngày.</p>
-            <p>Để bày tỏ lòng tri ân và mong được chào đón Quý khách trở lại trong những lần tiếp theo, Khách sạn Panacea xin gửi tặng Quý khách mã ưu đãi <b>PANACEA15</b> giảm giá 15%% cho lần đặt phòng kế tiếp.<br/>(Lưu ý: Mã ưu đãi có hiệu lực đến ngày <b>%s</b>)</p>
+            <p>Thay mặt toàn thể đội ngũ nhân viên Panacea Hotel, chúng tôi xin gửi lời cảm ơn chân thành nhất đến Quý khách đã tin tưởng lựa chọn Panacea Hotel làm điểm dừng chân trong chuyến đi vừa qua.</p>
+            <p>Chúng tôi hy vọng Quý khách đã có những trải nghiệm thật sự thoải mái, thư giãn và đáng nhớ tại Panacea Hotel. Sự hài lòng của Quý khách là niềm vinh hạnh và là nguồn động lực lớn nhất để chúng tôi không ngừng nỗ lực nâng cao chất lượng dịch vụ mỗi ngày.</p>
+            <p>Để bày tỏ lòng tri ân và mong được chào đón Quý khách trở lại trong những lần tiếp theo, Panacea Hotel xin gửi tặng Quý khách mã ưu đãi <b>PANACEA15</b> giảm giá 15%% cho lần đặt phòng kế tiếp.<br/>(Lưu ý: Mã ưu đãi có hiệu lực đến ngày <b>%s</b>)</p>
             <p>Chúng tôi sẽ vô cùng biết ơn nếu Quý khách có thể dành một vài phút để lại đánh giá về trải nghiệm của mình trên trang <a href=\"https://www.tripadvisor.com/Hotel_Review-g293925-d25279460-Reviews-Panacea_Hotel-Ho_Chi_Minh_City.html\" target=\"_blank\">TripAdvisor</a> hoặc <a href=\"https://goo.gl/maps/your-google-maps-link\" target=\"_blank\">Google</a>. Những góp ý của Quý khách là vô giá để chúng tôi hoàn thiện hơn.</p>
             <p>Một lần nữa, xin chân thành cảm ơn Quý khách. Chúc Quý khách một ngày tốt lành và mong sớm được phục vụ Quý khách trong tương lai không xa.</p>
             <br/>
             <p>Trân trọng,</p>
             <b>Nguyễn Văn A</b><br/>
             Giám đốc Quan hệ Khách hàng<br/>
-            Khách sạn Panacea<br/>
+            Panacea Hotel<br/>
             Địa chỉ: 123 Đường ABC, Quận 1, TP. Hồ Chí Minh<br/>
             Điện thoại: 0123 456 789<br/>
             Website: <a href=\"https://panacea-hotel.com\" target=\"_blank\">https://panacea-hotel.com</a>
@@ -567,8 +607,8 @@ public class QuanLyDatPhongService {
                     if (customer != null && customer.getEmail() != null) {
                         String emailBody = String.format(
                             "Xin chào %s!\n\n" +
-                            "Đặt phòng của bạn (mã: %s) đã bị hủy do không thanh toán trong vòng 1 phút (test).\n" +
-                            "Nếu có thắc mắc, vui lòng liên hệ khách sạn.\n\nTrân trọng,\nPanacea Hotel",
+                            "Đặt phòng của bạn (mã: %s) tại Panacea Hotel đã bị hủy do không thanh toán trong vòng 1 phút (test).\n" +
+                            "Nếu có thắc mắc, vui lòng liên hệ Panacea Hotel.\n\nTrân trọng,\nPanacea Hotel",
                             customer.getHo() + " " + customer.getTen(),
                             booking.getMaDatPhong()
                         );
