@@ -88,10 +88,13 @@ public class AdminBookingService {
         dto.setTrangThaiDatPhong(booking.getTrangThaiDatPhong() != null ? booking.getTrangThaiDatPhong().name() : null);
         dto.setGhiChuKhachHang(booking.getGhiChuKhachHang());
         dto.setCreatedDate(booking.getCreatedDate());
-        // Set roomNumber from BookingDetail if available
+        // Set roomNumber and roomTypeName from BookingDetail if available
         java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
         if (details != null && !details.isEmpty() && details.get(0).getRoom() != null) {
             dto.setRoomNumber(details.get(0).getRoom().getSoPhong());
+            if (details.get(0).getRoom().getRoomType() != null) {
+                dto.setRoomTypeName(details.get(0).getRoom().getRoomType().getTenLoaiPhong());
+            }
         }
         // Set customerName
         if (booking.getKhachHang() != null) {

@@ -31,6 +31,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
 
 @Service
 public class QuanLyDatPhongService {
@@ -399,6 +400,37 @@ public class QuanLyDatPhongService {
         int end = Math.min(start + pageable.getPageSize(), filtered.size());
         java.util.List<Booking> pageContent = start > end ? java.util.Collections.emptyList() : filtered.subList(start, end);
         return new PageImpl<>(pageContent, pageable, filtered.size());
+    }
+    
+    public Page<BookingDetailViewDTO> getBookingDetailViewDTOs(String keyword, java.time.LocalDate ngayNhan, Pageable pageable) {
+        java.util.List<Booking> all = bookingRepository.findAll();
+        java.util.List<Booking> filtered = all.stream()
+            .filter(b -> {
+                boolean match = true;
+                if (keyword != null && !keyword.isBlank()) {
+                    String lower = keyword.toLowerCase();
+                    match &= (b.getKhachHang().getHo() + " " + b.getKhachHang().getTen()).toLowerCase().contains(lower)
+                        || (b.getKhachHang().getEmail() != null && b.getKhachHang().getEmail().toLowerCase().contains(lower))
+                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower));
+                }
+                if (ngayNhan != null) {
+                    match &= b.getNgayNhanPhong() != null && b.getNgayNhanPhong().isEqual(ngayNhan);
+                }
+                return match;
+            })
+            .collect(Collectors.toList());
+        
+        java.util.List<BookingDetailViewDTO> dtoList = filtered.stream()
+            .map(booking -> {
+                java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+                return BookingDetailViewDTO.fromEntity(booking, details);
+            })
+            .collect(Collectors.toList());
+        
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), dtoList.size());
+        java.util.List<BookingDetailViewDTO> pageContent = start > end ? java.util.Collections.emptyList() : dtoList.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, dtoList.size());
     }
 
     public List<Room> getAvailableRoomsByHotel(Long hotelId) {

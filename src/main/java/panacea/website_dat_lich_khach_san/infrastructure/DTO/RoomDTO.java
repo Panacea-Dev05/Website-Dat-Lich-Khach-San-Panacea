@@ -5,6 +5,7 @@ import panacea.website_dat_lich_khach_san.entity.Room;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.List;
 
 @Data
 public class RoomDTO {
@@ -23,7 +24,7 @@ public class RoomDTO {
     private Integer roomTypeId;
     private String roomTypeName;
     private String maLoaiPhong;
-    
+
     // Thêm thông tin từ RoomType
     private BigDecimal dienTich;
     private Byte soGiuong;
@@ -31,6 +32,13 @@ public class RoomDTO {
     private Byte sucChuaToiDa;
     private String moTa;
     private String tienNghi;
+    // Thêm các trường giá theo hạng phòng
+    private BigDecimal giaGio;
+    private BigDecimal giaNgay;
+    private BigDecimal giaQuaDem;
+
+    // Thêm trường lưu đường dẫn ảnh
+    private List<String> imageUrls;
 
     public static RoomDTO fromEntity(Room room) {
         RoomDTO dto = new RoomDTO();
@@ -44,12 +52,12 @@ public class RoomDTO {
         dto.setUuidId(room.getUuidId());
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
-        
+
         if (room.getHotel() != null) {
             dto.setHotelId(room.getHotel().getId());
             dto.setHotelName(room.getHotel().getTenKhachSan());
         }
-        
+
         if (room.getRoomType() != null) {
             dto.setRoomTypeId(room.getRoomType().getId());
             dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
@@ -60,8 +68,12 @@ public class RoomDTO {
             dto.setSucChuaToiDa(room.getRoomType().getSucChuaToiDa());
             dto.setMoTa(room.getRoomType().getMoTa());
             dto.setTienNghi(room.getRoomType().getTienNghi());
+
+            // Lấy thông tin giá từ RoomPricing
+            // Note: Method này không thể truy cập trực tiếp RoomPricingRepository
+            // nên sẽ cần được xử lý ở service layer
         }
-        
+
         return dto;
     }
 } 

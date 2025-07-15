@@ -37,6 +37,7 @@ public class BookingDTO {
     private Long lastModifiedDate;
     private CustomerDTO khachHang;
     private String roomNumber;
+    private String roomTypeName;
     private String customerName;
 
     public CustomerDTO getKhachHang() {
@@ -51,6 +52,7 @@ public class BookingDTO {
     public void setRoomNumber(String roomNumber) {
         this.roomNumber = roomNumber;
     }
+
     public String getCustomerName() {
         return customerName;
     }
