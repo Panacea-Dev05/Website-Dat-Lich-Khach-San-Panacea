@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomCreateDTO;
@@ -16,12 +15,12 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomUpdateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
 import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
-import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,9 +32,6 @@ public class QuanLyPhongService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
     
-    @Autowired
-    private HotelRepository hotelRepository;
-
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
@@ -67,16 +63,13 @@ public class QuanLyPhongService {
     }
     
     public RoomDTO createRoom(RoomCreateDTO roomCreateDTO) {
-        // Validate hotel exists
-        Hotel hotel = hotelRepository.findById(roomCreateDTO.getHotelId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách sạn với ID: " + roomCreateDTO.getHotelId()));
-        
         // Validate room type exists
         RoomType roomType = roomTypeRepository.findById(roomCreateDTO.getRoomTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomCreateDTO.getRoomTypeId()));
         
         // Check if room number already exists in the hotel
-        if (roomRepository.findByHotelIdAndSoPhong(hotel.getId(), roomCreateDTO.getSoPhong()).isPresent()) {
+        Optional<Room> existingRoom = roomRepository.findAll().stream().filter(r -> r.getSoPhong().equals(roomCreateDTO.getSoPhong())).findFirst();
+        if (existingRoom.isPresent()) {
             throw new BadRequestException("Số phòng " + roomCreateDTO.getSoPhong() + " đã tồn tại trong khách sạn này");
         }
         
@@ -86,7 +79,6 @@ public class QuanLyPhongService {
         room.setViewPhong(roomCreateDTO.getViewPhong());
         room.setGiaCoBan(roomCreateDTO.getGiaCoBan());
         room.setGhiChu(roomCreateDTO.getGhiChu());
-        room.setHotel(hotel);
         room.setRoomType(roomType);
         
         // Set trang thai
@@ -104,7 +96,8 @@ public class QuanLyPhongService {
         
         // Check if new room number conflicts with existing rooms in the same hotel
         if (roomUpdateDTO.getSoPhong() != null && !roomUpdateDTO.getSoPhong().equals(room.getSoPhong())) {
-            if (roomRepository.findByHotelIdAndSoPhong(room.getHotel().getId(), roomUpdateDTO.getSoPhong()).isPresent()) {
+            Optional<Room> existingRoom = roomRepository.findAll().stream().filter(r -> r.getSoPhong().equals(roomUpdateDTO.getSoPhong())).findFirst();
+            if (existingRoom.isPresent()) {
                 throw new BadRequestException("Số phòng " + roomUpdateDTO.getSoPhong() + " đã tồn tại trong khách sạn này");
             }
         }
@@ -159,20 +152,6 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
-    public List<RoomDTO> getRoomsByHotel(Integer hotelId) {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    public List<RoomDTO> getRoomsByRoomType(Integer roomTypeId) {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getRoomType() != null && room.getRoomType().getId().equals(roomTypeId))
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
     public List<RoomDTO> getRoomsByTrangThai(String trangThai) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getTrangThai() != null && room.getTrangThai().name().equals(trangThai))
@@ -180,24 +159,17 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
-    public List<RoomDTO> getRoomsByHotelAndTrangThai(Integer hotelId, String trangThai) {
+    public List<RoomDTO> getRoomsByTrangThaiPaged(String trangThai, int page, int size) {
         return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
                 .filter(room -> room.getTrangThai() != null && room.getTrangThai().name().equals(trangThai))
+                .skip((long) page * size)
+                .limit(size)
                 .map(RoomDTO::fromEntity)
                 .collect(Collectors.toList());
     }
     
     public List<RoomDTO> getRoomsByTang(Byte tang) {
         return roomRepository.findAll().stream()
-                .filter(room -> room.getTang() != null && room.getTang().equals(tang))
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    public List<RoomDTO> getRoomsByHotelAndTang(Integer hotelId, Byte tang) {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
                 .filter(room -> room.getTang() != null && room.getTang().equals(tang))
                 .map(RoomDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -212,33 +184,12 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
-    public List<RoomDTO> getRoomsByHotelAndPriceRange(Integer hotelId, BigDecimal minPrice, BigDecimal maxPrice) {
+    public List<RoomDTO> getRoomsPaged(int page, int size) {
         return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
-                .filter(room -> room.getGiaCoBan() != null &&
-                        room.getGiaCoBan().compareTo(minPrice) >= 0 &&
-                        room.getGiaCoBan().compareTo(maxPrice) <= 0)
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    public List<RoomDTO> getRoomsByHotelPaged(Integer hotelId, int page, int size) {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
-                .skip((long) page * size)
-                .limit(size)
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    public List<RoomDTO> getRoomsByHotelAndTrangThaiPaged(Integer hotelId, String trangThai, int page, int size) {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getHotel() != null && room.getHotel().getId().equals(hotelId))
-                .filter(room -> room.getTrangThai() != null && room.getTrangThai().name().equals(trangThai))
-                .skip((long) page * size)
-                .limit(size)
-                .map(RoomDTO::fromEntity)
-                .collect(Collectors.toList());
+            .skip((long) page * size)
+            .limit(size)
+            .map(RoomDTO::fromEntity)
+            .collect(Collectors.toList());
     }
     
     // Room Type Operations
@@ -307,17 +258,13 @@ public class QuanLyPhongService {
         return roomRepository.count();
     }
     
-    public long getTotalRoomsByHotel(Integer hotelId) {
-        return roomRepository.findByHotelId(hotelId).size();
-    }
-    
     public long getTotalRoomsByTrangThai(String trangThai) {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
         return roomRepository.findByTrangThai(status).size();
     }
     
-    public long getTotalRoomsByHotelAndTrangThai(Integer hotelId, String trangThai) {
+    public long getTotalRoomsByTrangThaiPaged(String trangThai, int page, int size) {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
-        return roomRepository.findByHotelIdAndTrangThai(hotelId, status).size();
+        return roomRepository.findByTrangThai(status).size();
     }
 } 

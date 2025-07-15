@@ -9,7 +9,6 @@ import java.util.UUID;
 public class InventoryTransactionDTO {
     private Integer id;
     private Integer inventoryId;
-    private String loaiGiaoDich;
     private BigDecimal soLuong;
     private LocalDateTime thoiGianGiaoDich;
     private String ghiChu;

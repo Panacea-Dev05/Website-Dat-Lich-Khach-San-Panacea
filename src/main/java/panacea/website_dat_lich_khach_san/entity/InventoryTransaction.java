@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +22,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDichConverter;
 
 @Entity
 @Table(name = "INVENTORY_TRANSACTION")
@@ -41,10 +39,6 @@ public class InventoryTransaction {
 
     @Column(name = "vat_pham_id", nullable = false)
     private Integer vatPhamId;
-
-    @Convert(converter = LoaiGiaoDichConverter.class)
-    @Column(name = "loai_giao_dich", length = 20)
-    private LoaiGiaoDich loaiGiaoDich;
 
     @Column(name = "so_luong", nullable = false)
     private Short soLuong;
@@ -85,35 +79,6 @@ public class InventoryTransaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "phong_id", insertable = false, updatable = false)
     private Room room;
-
-    // Enums
-    public enum LoaiGiaoDich {
-        NHAP("Nhập"),
-        XUAT("Xuất"),
-        KIEM_KE("Kiểm kê"),
-        HONG("Hỏng");
-
-        private final String label;
-
-        LoaiGiaoDich(String label) {
-            this.label = label;
-        }
-
-        @JsonValue
-        public String getLabel() {
-            return label;
-        }
-
-        @JsonCreator
-        public static LoaiGiaoDich fromLabel(String input) {
-            for (LoaiGiaoDich type : LoaiGiaoDich.values()) {
-                if (type.label.equalsIgnoreCase(input) || type.name().equalsIgnoreCase(input)) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException("Không tìm thấy loại giao dịch: " + input);
-        }
-    }
 
     @PrePersist
     public void prePersist() {

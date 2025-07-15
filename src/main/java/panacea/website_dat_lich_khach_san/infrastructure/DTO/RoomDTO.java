@@ -46,10 +46,6 @@ public class RoomDTO {
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
         
-        if (room.getHotel() != null) {
-            dto.setHotelId(room.getHotel().getId());
-            dto.setHotelName(room.getHotel().getTenKhachSan());
-        }
         
         if (room.getRoomType() != null) {
             dto.setRoomTypeId(room.getRoomType().getId());

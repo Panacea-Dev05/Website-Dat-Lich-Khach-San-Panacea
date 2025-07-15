@@ -24,9 +24,6 @@ public class InventoryManagement {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
-
     @Column(name = "ten_vat_pham", length = 100, nullable = false)
     private String tenVatPham;
 
@@ -73,10 +70,6 @@ public class InventoryManagement {
     private Long lastModifiedDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
-
     @OneToMany(mappedBy = "inventoryItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InventoryTransaction> transactions;
 

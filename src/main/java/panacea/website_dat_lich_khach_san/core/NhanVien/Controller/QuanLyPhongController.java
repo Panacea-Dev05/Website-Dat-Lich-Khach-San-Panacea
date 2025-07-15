@@ -87,7 +87,7 @@ public class QuanLyPhongController {
     public ResponseEntity<List<RoomDTO>> getRoomsPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelPaged(null, page, size);
+        List<RoomDTO> rooms = quanLyPhongService.getRoomsPaged(page, size);
         return ResponseEntity.ok(rooms);
     }
     
@@ -133,60 +133,11 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(rooms);
     }
     
-    // Get rooms by hotel
-    @GetMapping("/api/rooms/hotel/{hotelId}")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotel(@PathVariable Integer hotelId) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotel(hotelId);
-        return ResponseEntity.ok(rooms);
-    }
-    
-    // Get rooms by hotel with pagination
-    @GetMapping("/api/rooms/hotel/{hotelId}/paged")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotelPaged(
-            @PathVariable Integer hotelId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelPaged(hotelId, page, size);
-        return ResponseEntity.ok(rooms);
-    }
-    
-    // Get rooms by room type
-    @GetMapping("/api/rooms/roomtype/{roomTypeId}")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByRoomType(@PathVariable Integer roomTypeId) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByRoomType(roomTypeId);
-        return ResponseEntity.ok(rooms);
-    }
-    
     // Get rooms by status
     @GetMapping("/api/rooms/status/{trangThai}")
     @ResponseBody
     public ResponseEntity<List<RoomDTO>> getRoomsByTrangThai(@PathVariable String trangThai) {
         List<RoomDTO> rooms = quanLyPhongService.getRoomsByTrangThai(trangThai);
-        return ResponseEntity.ok(rooms);
-    }
-    
-    // Get rooms by hotel and status
-    @GetMapping("/api/rooms/hotel/{hotelId}/status/{trangThai}")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotelAndTrangThai(
-            @PathVariable Integer hotelId, 
-            @PathVariable String trangThai) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelAndTrangThai(hotelId, trangThai);
-        return ResponseEntity.ok(rooms);
-    }
-    
-    // Get rooms by hotel and status with pagination
-    @GetMapping("/api/rooms/hotel/{hotelId}/status/{trangThai}/paged")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotelAndTrangThaiPaged(
-            @PathVariable Integer hotelId,
-            @PathVariable String trangThai,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelAndTrangThaiPaged(hotelId, trangThai, page, size);
         return ResponseEntity.ok(rooms);
     }
     
@@ -198,16 +149,6 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(rooms);
     }
     
-    // Get rooms by hotel and floor
-    @GetMapping("/api/rooms/hotel/{hotelId}/floor/{tang}")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotelAndTang(
-            @PathVariable Integer hotelId, 
-            @PathVariable Byte tang) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelAndTang(hotelId, tang);
-        return ResponseEntity.ok(rooms);
-    }
-    
     // Get rooms by price range
     @GetMapping("/api/rooms/price")
     @ResponseBody
@@ -215,17 +156,6 @@ public class QuanLyPhongController {
             @RequestParam BigDecimal minPrice, 
             @RequestParam BigDecimal maxPrice) {
         List<RoomDTO> rooms = quanLyPhongService.getRoomsByPriceRange(minPrice, maxPrice);
-        return ResponseEntity.ok(rooms);
-    }
-    
-    // Get rooms by hotel and price range
-    @GetMapping("/api/rooms/hotel/{hotelId}/price")
-    @ResponseBody
-    public ResponseEntity<List<RoomDTO>> getRoomsByHotelAndPriceRange(
-            @PathVariable Integer hotelId,
-            @RequestParam BigDecimal minPrice, 
-            @RequestParam BigDecimal maxPrice) {
-        List<RoomDTO> rooms = quanLyPhongService.getRoomsByHotelAndPriceRange(hotelId, minPrice, maxPrice);
         return ResponseEntity.ok(rooms);
     }
     
@@ -292,32 +222,12 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(stats);
     }
     
-    // Get total rooms by hotel
-    @GetMapping("/api/statistics/hotel/{hotelId}/total-rooms")
-    @ResponseBody
-    public ResponseEntity<Map<String, Long>> getTotalRoomsByHotel(@PathVariable Integer hotelId) {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("totalRooms", quanLyPhongService.getTotalRoomsByHotel(hotelId));
-        return ResponseEntity.ok(stats);
-    }
-    
     // Get total rooms by status
     @GetMapping("/api/statistics/status/{trangThai}/total-rooms")
     @ResponseBody
     public ResponseEntity<Map<String, Long>> getTotalRoomsByTrangThai(@PathVariable String trangThai) {
         Map<String, Long> stats = new HashMap<>();
         stats.put("totalRooms", quanLyPhongService.getTotalRoomsByTrangThai(trangThai));
-        return ResponseEntity.ok(stats);
-    }
-    
-    // Get total rooms by hotel and status
-    @GetMapping("/api/statistics/hotel/{hotelId}/status/{trangThai}/total-rooms")
-    @ResponseBody
-    public ResponseEntity<Map<String, Long>> getTotalRoomsByHotelAndTrangThai(
-            @PathVariable Integer hotelId, 
-            @PathVariable String trangThai) {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("totalRooms", quanLyPhongService.getTotalRoomsByHotelAndTrangThai(hotelId, trangThai));
         return ResponseEntity.ok(stats);
     }
     
@@ -387,7 +297,6 @@ public class QuanLyPhongController {
     @GetMapping("/search")
     public String searchRooms(@RequestParam(required = false) String soPhong,
                              @RequestParam(required = false) String trangThai,
-                             @RequestParam(required = false) Integer hotelId,
                              Model model) {
         List<RoomDTO> roomDTOs;
         if (soPhong != null && !soPhong.trim().isEmpty()) {

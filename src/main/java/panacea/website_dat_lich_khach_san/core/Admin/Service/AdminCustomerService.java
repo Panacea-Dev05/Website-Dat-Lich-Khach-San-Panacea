@@ -55,7 +55,7 @@ public class AdminCustomerService {
             customer.setEmail(customerDTO.getEmail());
             customer.setSoDienThoai(customerDTO.getSoDienThoai());
             customer.setDiaChi(customerDTO.getDiaChi());
-            customer.setLoaiKhachHang(customerDTO.getLoaiKhachHang() != null ? panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang.valueOf(customerDTO.getLoaiKhachHang()) : null);
+            customer.setLoaiKhachHang(customerDTO.getLoaiKhachHang());
             customer.setDiemTichLuy(customerDTO.getDiemTichLuy());
             customer.setMatKhauHash(customerDTO.getMatKhauHash());
             customer.setTrangThai(customerDTO.getTrangThai() != null ? panacea.website_dat_lich_khach_san.entity.Customer.TrangThaiCustomer.valueOf(customerDTO.getTrangThai()) : null);
@@ -87,7 +87,7 @@ public class AdminCustomerService {
         dto.setSoCmndCccd(customer.getSoCmndCccd());
         dto.setSoHoChieu(customer.getSoHoChieu());
         dto.setDiaChi(customer.getDiaChi());
-        dto.setLoaiKhachHang(customer.getLoaiKhachHang() != null ? customer.getLoaiKhachHang().name() : null);
+        dto.setLoaiKhachHang(customer.getLoaiKhachHang());
         dto.setDiemTichLuy(customer.getDiemTichLuy());
         dto.setMatKhauHash(customer.getMatKhauHash());
         dto.setTrangThai(customer.getTrangThai() != null ? customer.getTrangThai().name() : null);
@@ -110,7 +110,7 @@ public class AdminCustomerService {
         customer.setSoCmndCccd(dto.getSoCmndCccd());
         customer.setSoHoChieu(dto.getSoHoChieu());
         customer.setDiaChi(dto.getDiaChi());
-        customer.setLoaiKhachHang(dto.getLoaiKhachHang() != null ? panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang.valueOf(dto.getLoaiKhachHang()) : null);
+        customer.setLoaiKhachHang(dto.getLoaiKhachHang());
         customer.setDiemTichLuy(dto.getDiemTichLuy());
         customer.setMatKhauHash(dto.getMatKhauHash());
         customer.setTrangThai(dto.getTrangThai() != null ? panacea.website_dat_lich_khach_san.entity.Customer.TrangThaiCustomer.valueOf(dto.getTrangThai()) : null);

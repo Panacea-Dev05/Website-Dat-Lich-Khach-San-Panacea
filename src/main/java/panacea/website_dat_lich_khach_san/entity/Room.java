@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ROOM", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"khach_san_id", "so_phong"})
-})
+@Table(name = "ROOM")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -52,10 +50,6 @@ public class Room {
     private Long lastModifiedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", nullable = false)
-    private Hotel hotel;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loai_phong_id", nullable = false)
     private RoomType roomType;
 
@@ -68,6 +62,7 @@ public class Room {
     // Enums
     public enum TrangThaiPhong {
         SAN_SANG("Sẵn sàng"),
+        DA_DAT("Đã đặt"),
         DANG_SU_DUNG("Đang sử dụng"),
         BAO_TRI("Bảo trì"),
         DON_DEP("Dọn dẹp");

@@ -437,6 +437,15 @@
             font-weight: bold;
         }
 
+        .status-inuse {
+            color: #fff;
+            background: #ff9800;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 2px 10px;
+            display: inline-block;
+        }
+
         /* Ensure the table itself is styled in quanlyphong.css if not already */
         #roomTable {
             width: 100%;
@@ -462,6 +471,42 @@
 
         #roomTable tbody tr:hover {
             background-color: #f1f1f1;
+        }
+
+        .status-available {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-occupied {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-maintenance {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-cleaning {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -700,11 +745,12 @@
                                 th:text="${room.giaQuaDem != null ? #numbers.formatDecimal(room.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
                                 720,000</td>
                             <td>
-                                <span
-                                    th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
-                                                  room.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-cleaning'}"
-                                    th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
-                                                room.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp'}">
+                                <span th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
+                      room.trangThai == 'BAO_TRI' ? 'status-maintenance' :
+                      room.trangThai == 'DANG_SU_DUNG' ? 'status-occupied' : 'status-cleaning'}" th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
+                    room.trangThai == 'BAO_TRI' ? 'Bảo trì' :
+                    room.trangThai == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
+                    room.trangThai == 'DON_DEP' ? 'Dọn dẹp' : room.trangThai}">
                                     Sẵn sàng
                                 </span>
                             </td>
@@ -730,56 +776,50 @@
 
                 <!-- Phân trang - Luôn hiển thị -->
                 <div class="pagination-container"
-                    style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; padding: 20px; border-top: 1px solid #eee;">
-                    <!-- Debug info -->
-                    <div style="margin-bottom: 10px; color: #999; font-size: 12px; ">
-                        Debug: TotalItems=<span th:text="${totalItems}">0</span>,
-                        TotalPages=<span th:text="${totalPages}">0</span>,
-                        CurrentPage=<span th:text="${currentPage}">0</span>
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; padding: 20px; border-top: 1px solid #eee;">
+                    <!-- Nút Previous, Số trang, Nút Next giữ nguyên như cũ -->
+                    <div style="display: flex; gap: 2px; align-items: center; margin-bottom: 8px;">
+                        <!-- Nút Previous -->
+                        <a th:if="${hasPrevious}"
+                            th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage - 1}, size=${pageSize})}"
+                            class="pagination-btn"
+                            style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
+                            &laquo; Trước
+                        </a>
+                        <span th:unless="${hasPrevious}" class="pagination-btn disabled"
+                            style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
+                            &laquo; Trước
+                        </span>
+                        <!-- Số trang -->
+                        <div class="pagination-numbers" style="display: flex; gap: 2px;">
+                            <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${pageNum}, size=${pageSize})}"
+                                th:text="${pageNum + 1}"
+                                th:class="${pageNum == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
+                                style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px; min-width: 40px; text-align: center;">
+                            </a>
+                        </div>
+                        <!-- Nút Next -->
+                        <a th:if="${hasNext}"
+                            th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage + 1}, size=${pageSize})}"
+                            class="pagination-btn"
+                            style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
+                            Sau &raquo;
+                        </a>
+                        <span th:unless="${hasNext}" class="pagination-btn disabled"
+                            style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
+                            Sau &raquo;
+                        </span>
                     </div>
-
-                    <!-- Thông tin trang -->
-                    <div class="pagination-info" style="margin-right: 20px; color: #666; font-size: 14px;">
+                    <!-- Thông tin trang ở dưới -->
+                    <div class="pagination-info"
+                        style="color: #666; font-size: 14px; text-align: center; margin-top: 4px;">
                         Hiển thị <span
                             th:text="${#numbers.formatInteger(currentPage * pageSize + 1, 1, 'COMMA')}">1</span> -
                         <span
                             th:text="${#numbers.formatInteger(T(java.lang.Math).min(((currentPage + 1) * pageSize).longValue(), totalItems), 1, 'COMMA')}">5</span>
                         của <span th:text="${#numbers.formatInteger(totalItems, 1, 'COMMA')}">10</span> phòng
                     </div>
-
-                    <!-- Nút Previous -->
-                    <a th:if="${hasPrevious}"
-                        th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage - 1}, size=${pageSize})}"
-                        class="pagination-btn"
-                        style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
-                        &laquo; Trước
-                    </a>
-                    <span th:unless="${hasPrevious}" class="pagination-btn disabled"
-                        style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
-                        &laquo; Trước
-                    </span>
-
-                    <!-- Số trang -->
-                    <div class="pagination-numbers" style="display: flex; gap: 2px;">
-                        <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                            th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${pageNum}, size=${pageSize})}"
-                            th:text="${pageNum + 1}"
-                            th:class="${pageNum == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
-                            style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px; min-width: 40px; text-align: center;">
-                        </a>
-                    </div>
-
-                    <!-- Nút Next -->
-                    <a th:if="${hasNext}"
-                        th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage + 1}, size=${pageSize})}"
-                        class="pagination-btn"
-                        style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
-                        Sau &raquo;
-                    </a>
-                    <span th:unless="${hasNext}" class="pagination-btn disabled"
-                        style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
-                        Sau &raquo;
-                    </span>
                 </div>
             </section>
         </main>

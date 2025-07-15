@@ -64,7 +64,7 @@ public class HotelApiController {
             }
             
             List<HotelAmenities> amenities = hotelAmenitiesRepository.findAll().stream()
-                .filter(a -> a.getKhachSanId().equals(hotelId))
+
                 .toList();
             return ResponseEntity.ok(amenities);
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class HotelApiController {
             }
             
             List<HotelAmenities> amenities = hotelAmenitiesRepository.findAll().stream()
-                .filter(a -> a.getKhachSanId().equals(hotel.getId()))
+
                 .toList();
             return ResponseEntity.ok(amenities);
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class HotelApiController {
             }
             
             // Set hotelId và lưu
-            amenity.setKhachSanId(hotelId);
+
             HotelAmenities savedAmenity = hotelAmenitiesRepository.save(amenity);
             return ResponseEntity.ok(savedAmenity);
         } catch (Exception e) {
@@ -127,7 +127,7 @@ public class HotelApiController {
             }
             
             // Set hotelId và lưu
-            amenity.setKhachSanId(hotel.getId());
+
             HotelAmenities savedAmenity = hotelAmenitiesRepository.save(amenity);
             return ResponseEntity.ok(savedAmenity);
         } catch (Exception e) {

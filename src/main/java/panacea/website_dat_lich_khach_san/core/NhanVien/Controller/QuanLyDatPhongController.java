@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
 import org.springframework.web.bind.annotation.RequestBody;
+import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
+import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 
 @Controller
 @RequestMapping("/nhanvien/quanlydatphong")
@@ -25,15 +27,18 @@ public class QuanLyDatPhongController {
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
+    private final BookingHistoryRepository bookingHistoryRepository;
     
     public QuanLyDatPhongController(QuanLyDatPhongService quanLyDatPhongService, 
                                    HotelRepository hotelRepository, 
                                    RoomRepository roomRepository,
-                                   ObjectMapper objectMapper) {
+                                   ObjectMapper objectMapper,
+                                   BookingHistoryRepository bookingHistoryRepository) {
         this.quanLyDatPhongService = quanLyDatPhongService;
         this.hotelRepository = hotelRepository;
         this.roomRepository = roomRepository;
         this.objectMapper = objectMapper;
+        this.bookingHistoryRepository = bookingHistoryRepository;
     }
     
     @GetMapping("")
@@ -83,8 +88,6 @@ public class QuanLyDatPhongController {
                 map.put("id", booking.getId());
                 map.put("maDatPhong", booking.getMaDatPhong());
                 map.put("khachHang", booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
-                map.put("hotel", booking.getHotel().getTenKhachSan());
-                map.put("hotelId", booking.getHotel().getId());
                 map.put("ngayNhan", booking.getNgayNhanPhong());
                 map.put("ngayTra", booking.getNgayTraPhong());
                 map.put("soNguoiLon", booking.getSoNguoiLon());
@@ -102,10 +105,10 @@ public class QuanLyDatPhongController {
         return hotelRepository.findAll();
     }
     
-    @GetMapping("/rooms/{hotelId}")
+    @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms(@PathVariable Long hotelId) {
-        List<Room> rooms = quanLyDatPhongService.getAvailableRoomsByHotel(hotelId);
+    public List<Map<String, Object>> getAvailableRooms() {
+        List<Room> rooms = quanLyDatPhongService.getAvailableRooms();
         List<Map<String, Object>> result = new java.util.ArrayList<>();
         for (Room room : rooms) {
             Map<String, Object> map = new java.util.HashMap<>();
@@ -136,5 +139,30 @@ public class QuanLyDatPhongController {
     public Map<String, Object> checkoutBooking(@PathVariable Long bookingId) {
         boolean result = quanLyDatPhongService.checkoutBooking(bookingId);
         return java.util.Map.of("success", result);
+    }
+
+    @PostMapping("/checkin/{bookingId}")
+    @ResponseBody
+    public Map<String, Object> checkInBooking(@PathVariable Long bookingId, @RequestBody Map<String, Object> payload) {
+        String soCmndCccd = (String) payload.getOrDefault("soCmndCccd", null);
+        String ngayCapCmndStr = (String) payload.getOrDefault("ngayCapCmnd", null);
+        String noiCapCmnd = (String) payload.getOrDefault("noiCapCmnd", null);
+        Byte soNguoiLonThucTe = payload.get("soNguoiLonThucTe") != null ? Byte.valueOf(payload.get("soNguoiLonThucTe").toString()) : null;
+        Byte soTreEmThucTe = payload.get("soTreEmThucTe") != null ? Byte.valueOf(payload.get("soTreEmThucTe").toString()) : null;
+        String ghiChuCheckIn = (String) payload.getOrDefault("ghiChuCheckIn", null);
+        java.time.LocalDate ngayCapCmnd = null;
+        if (ngayCapCmndStr != null && !ngayCapCmndStr.isEmpty()) {
+            ngayCapCmnd = java.time.LocalDate.parse(ngayCapCmndStr);
+        }
+        boolean result = quanLyDatPhongService.checkInBooking(bookingId, soCmndCccd, ngayCapCmnd, noiCapCmnd, soNguoiLonThucTe, soTreEmThucTe, ghiChuCheckIn);
+        return java.util.Map.of("success", result);
+    }
+
+    @GetMapping("/history")
+    public String viewHistory(Model model) {
+        java.util.List<BookingHistory> historyList = bookingHistoryRepository.findAll();
+        model.addAttribute("historyList", historyList);
+        model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
+        return "NhanVien/BookingHistory";
     }
 } 
