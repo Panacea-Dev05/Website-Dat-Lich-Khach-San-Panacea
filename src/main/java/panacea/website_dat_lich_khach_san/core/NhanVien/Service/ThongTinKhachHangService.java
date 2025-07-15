@@ -56,7 +56,6 @@ public class ThongTinKhachHangService {
         customer.setTen(dto.getTen().trim());
         customer.setEmail(dto.getEmail().trim());
         customer.setSoDienThoai(dto.getSoDienThoai() != null ? dto.getSoDienThoai().trim() : null);
-        customer.setNgaySinh(dto.getNgaySinh()); // Có thể null
         customer.setGioiTinh(dto.getGioiTinh() != null ? Customer.GioiTinh.fromString(dto.getGioiTinh()) : null);
         customer.setQuocTich(dto.getQuocTich() != null ? dto.getQuocTich().trim() : null);
         customer.setDiaChi(dto.getDiaChi() != null ? dto.getDiaChi().trim() : null);
@@ -79,7 +78,6 @@ public class ThongTinKhachHangService {
         dto.setTen(c.getTen());
         dto.setEmail(c.getEmail());
         dto.setSoDienThoai(c.getSoDienThoai());
-        dto.setNgaySinh(c.getNgaySinh());
         dto.setGioiTinh(c.getGioiTinh() != null ? c.getGioiTinh().getLabel() : null);
         dto.setQuocTich(c.getQuocTich());
         dto.setDiaChi(c.getDiaChi());
@@ -119,7 +117,6 @@ public class ThongTinKhachHangService {
         c.setTen(dto.getTen().trim());
         c.setEmail(dto.getEmail().trim());
         c.setSoDienThoai(dto.getSoDienThoai() != null ? dto.getSoDienThoai().trim() : null);
-        c.setNgaySinh(dto.getNgaySinh()); // Có thể null
         c.setGioiTinh(dto.getGioiTinh() != null ? Customer.GioiTinh.fromString(dto.getGioiTinh()) : null);
         c.setQuocTich(dto.getQuocTich() != null ? dto.getQuocTich().trim() : null);
         c.setDiaChi(dto.getDiaChi() != null ? dto.getDiaChi().trim() : null);

@@ -30,6 +30,7 @@ public class AdminCustomerController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("customerStatuses", Arrays.asList("HOAT_DONG", "TAM_KHOA"));
+        model.addAttribute("gioiTinhs", Arrays.asList("Nam", "Nữ", "Khác"));
         return "Admin/QuanLyKhachSan/ThemKhachHang";
     }
 
@@ -72,6 +73,7 @@ public class AdminCustomerController {
         }
         model.addAttribute("customer", customer);
         model.addAttribute("customerStatuses", Arrays.asList("HOAT_DONG", "TAM_KHOA"));
+        model.addAttribute("gioiTinhs", Arrays.asList("Nam", "Nữ", "Khác"));
         model.addAttribute("isEdit", true);
         return "Admin/view/QuanLyKhachHang";
     }

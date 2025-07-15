@@ -19,6 +19,7 @@
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
     <main role="main" tabindex="0">
         <h1 style="font-size:2.2rem;font-weight:700;color:#065f46;margin-bottom:1.5rem;text-align:left;">Thêm khách hàng mới</h1>
+
         <div class="content-section" style="padding:32px 36px 32px 36px;background:#fff;border-radius:18px;box-shadow:0 6px 32px 0 rgba(16,185,129,0.10);margin:0;width:100%;max-width:unset;">
         <form th:action="@{/admin/customers/add}" method="post" id="customerForm" class="grid-form" style="margin:0;width:100%;max-width:unset;">
             <label for="ho">Họ</label>
@@ -33,6 +34,16 @@
             <label for="soDienThoai">Số điện thoại</label>
             <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
                    pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+
+            <label for="gioiTinh">Giới tính</label>
+            <select id="gioiTinh" name="gioiTinh">
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+                <option value="Khác">Khác</option>
+            </select>
+
+            <label for="quocTich">Quốc tịch</label>
+            <input type="text" id="quocTich" name="quocTich" placeholder="Nhập quốc tịch" />
 
             <label for="diaChi">Địa chỉ</label>
             <textarea id="diaChi" name="diaChi" placeholder="Nhập địa chỉ"></textarea>

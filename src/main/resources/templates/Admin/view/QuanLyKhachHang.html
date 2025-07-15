@@ -45,6 +45,8 @@
               <th>Tên</th>
               <th>Email</th>
               <th>Số điện thoại</th>
+              <th>Giới tính</th>
+              <th>Quốc tịch</th>
               <th>Địa chỉ</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
@@ -57,6 +59,8 @@
               <td th:text="${customer.ho + ' ' + customer.ten}">Nguyễn Văn A</td>
               <td th:text="${customer.email}">nguyenvana@email.com</td>
               <td th:text="${customer.soDienThoai}">0903123456</td>
+              <td th:text="${customer.gioiTinh}">Nam</td>
+              <td th:text="${customer.quocTich}">Việt Nam</td>
               <td th:text="${customer.diaChi}">Hà Nội</td>
               <td>
                 <span th:class="${customer.trangThai == 'HOAT_DONG' ? 'status-active' : 'status-locked'}"
@@ -103,6 +107,16 @@
           <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
             pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" 
             th:value="${customer?.soDienThoai}" />
+
+          <label for="gioiTinh">Giới tính</label>
+          <select id="gioiTinh" name="gioiTinh">
+            <option value="Nam" th:selected="${customer?.gioiTinh == 'Nam'}">Nam</option>
+            <option value="Nữ" th:selected="${customer?.gioiTinh == 'Nữ'}">Nữ</option>
+            <option value="Khác" th:selected="${customer?.gioiTinh == 'Khác'}">Khác</option>
+          </select>
+
+          <label for="quocTich">Quốc tịch</label>
+          <input type="text" id="quocTich" name="quocTich" placeholder="Nhập quốc tịch" th:value="${customer?.quocTich}" />
 
           <label for="diaChi">Địa chỉ</label>
           <textarea id="diaChi" name="diaChi" placeholder="Nhập địa chỉ" 

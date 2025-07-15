@@ -225,9 +225,6 @@
                 <div><label>Tên</label><input type="text" name="ten" th:value="${editCustomer != null ? editCustomer.ten : ''}" required /></div>
                 <div><label>Email</label><input type="email" name="email" th:value="${editCustomer != null ? editCustomer.email : ''}" required /></div>
                 <div><label>Số điện thoại</label><input type="tel" name="soDienThoai" th:value="${editCustomer != null ? editCustomer.soDienThoai : ''}" /></div>
-                <div>
-                    <label>Ngày sinh</label>
-                    <input type="date" name="ngaySinh" th:value="${editCustomer != null and editCustomer.ngaySinh != null ? T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd').format(editCustomer.ngaySinh) : ''}" />                </div>
                 <div><label>Giới tính</label>
                     <select name="gioiTinh">
                         <option value="Nam" th:selected="${editCustomer != null and editCustomer.gioiTinh == 'Nam'}">Nam</option>
@@ -285,7 +282,6 @@
                     <th>Tên</th>
                     <th>Email</th>
                     <th>SĐT</th>
-                    <th>Ngày sinh</th>
                     <th>Giới tính</th>
                     <th>Quốc tịch</th>
                     <th>Địa chỉ</th>
@@ -302,7 +298,6 @@
                     <td th:text="${kh.ten}"></td>
                     <td th:text="${kh.email}"></td>
                     <td th:text="${kh.soDienThoai}"></td>
-                    <td th:text="${#dates.format(kh.ngaySinh, 'yyyy-MM-dd')}"></td>
                     <td th:text="${kh.gioiTinh}"></td>
                     <td th:text="${kh.quocTich}"></td>
                     <td th:text="${kh.diaChi}"></td>
