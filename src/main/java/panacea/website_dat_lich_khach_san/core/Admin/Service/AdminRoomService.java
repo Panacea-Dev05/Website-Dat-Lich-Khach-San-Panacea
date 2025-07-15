@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import panacea.website_dat_lich_khach_san.entity.Room;
@@ -66,6 +65,12 @@ public class AdminRoomService {
             room.setGiaCoBan(roomDTO.getGiaCoBan());
             room.setTrangThai(roomDTO.getTrangThai() != null ? panacea.website_dat_lich_khach_san.entity.Room.TrangThaiPhong.valueOf(roomDTO.getTrangThai()) : null);
             room.setGhiChu(roomDTO.getGhiChu());
+            // Thêm cập nhật hạng phòng
+            if (roomDTO.getRoomTypeId() != null) {
+                RoomType roomType = roomTypeRepository.findById(roomDTO.getRoomTypeId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy hạng phòng"));
+                room.setRoomType(roomType);
+            }
             Room savedRoom = roomRepository.save(room);
             return convertToDTO(savedRoom);
         }
@@ -133,30 +138,30 @@ public class AdminRoomService {
         dto.setGiaCoBan(room.getGiaCoBan());
         dto.setGhiChu(room.getGhiChu());
         dto.setHotelId(room.getHotel() != null ? room.getHotel().getId() : null);
-        dto.setRoomTypeId(room.getRoomType() != null ? room.getRoomType().getId() : null);
         dto.setUuidId(room.getUuidId());
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
-        
-        // Bổ sung setRoomTypeName
+
+        // Bổ sung setRoomTypeName và các trường liên quan
         if (room.getRoomType() != null) {
+            dto.setRoomTypeId(room.getRoomType().getId());
             dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
             dto.setMaLoaiPhong(room.getRoomType().getMaLoaiPhong());
-            
-            // Lấy thông tin giá từ RoomPricing
+        } else {
+            dto.setRoomTypeId(-1); // Để JS không bị lỗi khi không có hạng phòng
+        }
+        // Lấy thông tin giá từ RoomPricing
+        if (room.getRoomType() != null) {
             List<RoomPricing> pricings = roomPricingRepositoty.findAll().stream()
                 .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(room.getRoomType().getId()))
                 .collect(Collectors.toList());
-            
             if (!pricings.isEmpty()) {
-                // Lấy giá đầu tiên (có thể cải thiện logic này để lấy giá hiện tại)
                 RoomPricing pricing = pricings.get(0);
                 dto.setGiaGio(pricing.getGiaGio());
                 dto.setGiaNgay(pricing.getGiaNgay());
                 dto.setGiaQuaDem(pricing.getGiaQuaDem());
             }
         }
-        
         return dto;
     }
     

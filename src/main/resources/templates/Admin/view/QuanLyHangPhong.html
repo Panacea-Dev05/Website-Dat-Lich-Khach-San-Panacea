@@ -178,7 +178,7 @@
                                                 <div style="margin-bottom:14px;">
                                                     <label style="font-weight:500; font-size:1em;">Mã hạng phòng</label>
                                                     <input name="maLoaiPhong" required
-                                                        placeholder="Mã hạng phòng tự động"
+
                                                         style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:4px; font-size:1em;" />
                                                 </div>
                                                 <div style="margin-bottom:14px;">
@@ -389,18 +389,6 @@
                             </select>
                         </div>
                         <div>
-                            <label>Trạng thái</label>
-                            <div style="display: flex; gap: 8px;">
-                                <label><input type="radio" name="status" value=""
-                                        th:checked="${status} == null or status == ''"> Tất cả</label>
-                                <label><input type="radio" name="status" value="ACTIVE"
-                                        th:checked="${status} == 'ACTIVE'">
-                                    Đang kinh doanh</label>
-                                <label><input type="radio" name="status" value="INACTIVE"
-                                        th:checked="${status} == 'INACTIVE'"> Ngừng kinh doanh</label>
-                            </div>
-                        </div>
-                        <div>
                             <label for="pageSize">Số bản ghi:</label>
                             <select id="pageSize" name="pageSize"
                                 style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
@@ -424,8 +412,6 @@
                                 <th>Giá giờ</th>
                                 <th>Giá cả ngày</th>
                                 <th>Giá qua đêm</th>
-                                <th>Trạng thái</th>
-                                <th>Chi nhánh</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -443,8 +429,6 @@
                                 <td
                                     th:text="${type.giaQuaDem != null ? #numbers.formatDecimal(type.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
                                     720,000</td>
-                                <td>Đang kinh doanh</td>
-                                <td>Chi nhánh trung tâm</td>
                                 <td>
                                     <button class="btn-edit" th:onclick="'editRoomType(' + ${type.id} + ')'"
                                         style="background: #007bff; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 4px; cursor: pointer;">
