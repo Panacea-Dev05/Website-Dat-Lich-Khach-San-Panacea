@@ -266,7 +266,7 @@
                     style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <button class="btn" onclick="showAddCustomerModal()" style="background: #3b82f6;" id="addCustomerBtn">
-                            <span class="material-icons">person_add</span>Thêm khách hàng
+                            <span class="material-icons">login</span>Check-in trực tiếp
                         </button>
                         <button class="btn" style="background: #6366f1;" onclick="openHistoryModal()">
                             <span class="material-icons">history</span>Xem lịch sử
@@ -405,7 +405,7 @@
     <div id="addCustomerModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeAddCustomerModal()">&times;</span>
-            <h2><span class="material-icons">person_add</span> Thêm khách hàng vào phòng</h2>
+            <h2><span class="material-icons">login</span> Check-in trực tiếp</h2>
 
             <div style="margin-bottom: 1rem;">
                 <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin khách hàng</h3>
@@ -893,7 +893,8 @@
                 ngayNhanPhong: document.getElementById('checkInDate').value,
                 ngayTraPhong: document.getElementById('checkOutDate').value,
                 soNguoiLon: parseInt(document.getElementById('adultCount').value),
-                soTreEm: parseInt(document.getElementById('childCount').value)
+                soTreEm: parseInt(document.getElementById('childCount').value),
+                isWalkIn: true
             };
 
             // Send request
@@ -921,7 +922,9 @@
         }
 
         function checkoutBooking(bookingId) {
+            const checkoutBtn = document.getElementById('modal-checkout-btn');
             if (!confirm('Xác nhận khách đã trả phòng và thanh toán?')) return;
+            if (checkoutBtn) { checkoutBtn.disabled = true; var oldText = checkoutBtn.innerHTML; checkoutBtn.innerHTML = 'Đang gửi...'; }
             fetch(`/nhanvien/quanlydatphong/checkout/` + bookingId, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -935,7 +938,10 @@
                         alert('Có lỗi xảy ra, vui lòng thử lại!');
                     }
                 })
-                .catch(() => alert('Có lỗi xảy ra, vui lòng thử lại!'));
+                .catch(() => alert('Có lỗi xảy ra, vui lòng thử lại!'))
+                .finally(() => {
+                    if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.innerHTML = oldText; }
+                });
         }
 
         let currentCheckInBookingId = null;
