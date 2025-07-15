@@ -126,4 +126,10 @@ public class AdminRoomController {
     public boolean deleteRoomType(@PathVariable Integer id) {
         return adminRoomService.deleteRoomType(id);
     }
+
+    @GetMapping("/room-types/json")
+    @ResponseBody
+    public List<RoomTypeDTO> getRoomTypesJson() {
+        return adminRoomService.getAllRoomTypes();
+    }
 } 
