@@ -28,9 +28,6 @@ public class Review {
     @Column(name = "khach_hang_id", nullable = false)
     private Integer khachHangId;
 
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
-
     @Column(name = "diem_tong_quan")
     private Byte diemTongQuan;
 
@@ -70,10 +67,6 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "khach_hang_id", insertable = false, updatable = false)
     private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
 
     // Enums
     public enum TrangThaiReview {

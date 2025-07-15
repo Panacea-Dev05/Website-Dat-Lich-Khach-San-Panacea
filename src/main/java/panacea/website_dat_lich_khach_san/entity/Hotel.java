@@ -80,20 +80,6 @@ public class Hotel {
     private Long lastModifiedDate;
 
     // Relationships
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Room> rooms;
-
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Staff> staffList;
-
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Booking> bookings;
-
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Service> services;
-
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<HotelAmenities> amenities;
 
     // Enums
     public enum TrangThaiHotel {

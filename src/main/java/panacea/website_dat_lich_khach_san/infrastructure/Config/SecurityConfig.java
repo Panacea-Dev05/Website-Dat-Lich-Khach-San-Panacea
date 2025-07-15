@@ -118,7 +118,7 @@ public class SecurityConfig {
             newCustomer.setHo(name != null ? name.split(" ")[0] : "");
             newCustomer.setTen(name != null && name.split(" ").length > 1 ? name.substring(name.indexOf(" ") + 1) : "");
             newCustomer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
-            newCustomer.setLoaiKhachHang(LoaiKhachHang.CA_NHAN);
+            newCustomer.setLoaiKhachHang("CA_NHAN");
             newCustomer.setMatKhauHash(""); // Không cần mật khẩu cho Google login
             // Sinh mã khách hàng tự động
             newCustomer.setMaKhachHang(generateCustomerCode());

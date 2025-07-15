@@ -9,9 +9,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "REVENUE_ANALYTICS", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"khach_san_id", "ngay"})
-})
+@Table(name = "REVENUE_ANALYTICS")
 @Getter
 @Setter
 @Data
@@ -23,9 +21,6 @@ public class RevenueAnalytics {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
 
     @Column(name = "ngay", nullable = false)
     private LocalDate ngay;
@@ -67,9 +62,6 @@ public class RevenueAnalytics {
     private Long createdDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
 
     @PrePersist
     public void prePersist() {

@@ -4,10 +4,48 @@
     <meta charset="UTF-8">
     <title>Lịch sử đặt phòng</title>
     <link rel="stylesheet" th:href="@{/css/NhanVien/quanlydatphong.css}" />
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        h2 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        thead th {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        tbody td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        tr:nth-child(even) { background: #f3f4f6; }
+        tr:hover { background: #e0e7ff; }
+        td, th { font-size: 0.95rem; }
+        a { color: #2563eb; text-decoration: none; font-weight: 500; }
+        a:hover { text-decoration: underline; }
+        .back-link { margin-top: 1.5rem; display: inline-block; }
+    </style>
 </head>
 <body>
     <h2>Lịch sử đặt phòng</h2>
     <div>Nhân viên: <span th:text="${staffName}"></span></div>
+    <h3 style="color:#059669; margin-top:2rem;">Đặt phòng đã hoàn thành</h3>
     <table border="1" cellpadding="8" cellspacing="0" style="width:100%;margin-top:1rem;">
         <thead>
             <tr>
@@ -28,7 +66,46 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="h : ${historyList}">
+            <tr th:each="h : ${historyList}" th:if="${h.trangThai} == 'HOAN_THANH'">
+                <td th:text="${h.maDatPhong}"></td>
+                <td th:text="${h.tenKhachHang}"></td>
+                <td th:text="${h.email}"></td>
+                <td th:text="${h.soDienThoai}"></td>
+                <td th:text="${h.tenKhachSan}"></td>
+                <td th:text="${h.soPhong}"></td>
+                <td th:text="${#temporals.format(h.ngayNhanPhong, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(h.ngayTraPhong, 'dd/MM/yyyy')}"></td>
+                <td th:text="${h.soNguoiLon}"></td>
+                <td th:text="${h.soTreEm}"></td>
+                <td th:text="${#numbers.formatDecimal(h.tongThanhToan, 0, 'COMMA', 0, 'POINT')}"></td>
+                <td th:text="${#temporals.format(h.ngayDat, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${#temporals.format(h.ngayHoanThanh, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${h.ghiChu}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <h3 style="color:#ef4444; margin-top:2.5rem;">Đặt phòng đã hủy</h3>
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%;margin-top:1rem;">
+        <thead>
+            <tr>
+                <th>Mã đặt phòng</th>
+                <th>Khách hàng</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Khách sạn</th>
+                <th>Phòng</th>
+                <th>Ngày nhận</th>
+                <th>Ngày trả</th>
+                <th>Số người lớn</th>
+                <th>Số trẻ em</th>
+                <th>Tổng thanh toán</th>
+                <th>Ngày đặt</th>
+                <th>Ngày hủy</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="h : ${historyList}" th:if="${h.trangThai} == 'DA_HUY'">
                 <td th:text="${h.maDatPhong}"></td>
                 <td th:text="${h.tenKhachHang}"></td>
                 <td th:text="${h.email}"></td>

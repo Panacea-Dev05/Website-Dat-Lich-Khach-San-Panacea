@@ -128,11 +128,6 @@ public class AdminPromotionService {
         Promotion promo = promoOpt.get();
         int soLanSuDung = promo.getDaSuDung() != null ? promo.getDaSuDung() : 0;
         java.math.BigDecimal doanhThu = java.math.BigDecimal.ZERO;
-        if (promo.getBookings() != null) {
-            for (var b : promo.getBookings()) {
-                if (b.getTongThanhToan() != null) doanhThu = doanhThu.add(b.getTongThanhToan());
-            }
-        }
         return new PromotionStats(soLanSuDung, doanhThu);
     }
     

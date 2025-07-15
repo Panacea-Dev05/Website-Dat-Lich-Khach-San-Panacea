@@ -41,9 +41,6 @@ public class Service {
     @Column(name = "don_vi_tinh", length = 20)
     private String donViTinh;
 
-    @Column(name = "khach_san_id")
-    private Integer khachSanId;
-
     @Column(name = "trang_thai", length = 20)
     private String trangThai = "Hoạt động";
 
@@ -57,10 +54,6 @@ public class Service {
     private Long lastModifiedDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
-
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServiceDetail> serviceDetails;
 

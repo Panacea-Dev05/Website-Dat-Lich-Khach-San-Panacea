@@ -29,10 +29,6 @@ public class Booking {
     private Customer khachHang;
 
     @ManyToOne
-    @JoinColumn(name = "khach_san_id", nullable = false)
-    private Hotel hotel;
-
-    @ManyToOne
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 

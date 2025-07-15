@@ -7,15 +7,9 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Customer;
-import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
-import panacea.website_dat_lich_khach_san.repository.BookingRepository;
-import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
-import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
-import panacea.website_dat_lich_khach_san.repository.HotelRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.*;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
-import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -43,9 +37,6 @@ public class QuanLyDatPhongService {
     
     @Autowired
     private CustomerRepository customerRepository;
-    
-    @Autowired
-    private HotelRepository hotelRepository;
     
     @Autowired
     private RoomRepository roomRepository;
@@ -98,6 +89,34 @@ public class QuanLyDatPhongService {
             // Gửi email thông báo hủy cho khách hàng
             sendCancellationEmail(booking);
             
+            // Copy sang bảng lịch sử và xóa booking gốc
+            try {
+                BookingHistory history = new BookingHistory();
+                history.setMaDatPhong(booking.getMaDatPhong());
+                history.setTenKhachHang(booking.getKhachHang() != null ? booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen() : null);
+                history.setEmail(booking.getKhachHang() != null ? booking.getKhachHang().getEmail() : null);
+                history.setSoDienThoai(booking.getKhachHang() != null ? booking.getKhachHang().getSoDienThoai() : null);
+                history.setTenKhachSan(null); // Removed booking.getHotel().getTenKhachSan()
+                // Lấy số phòng đầu tiên (nếu có)
+                java.util.List<panacea.website_dat_lich_khach_san.entity.BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+                if (!details.isEmpty()) {
+                    Room room = roomRepository.findById(details.get(0).getPhongId()).orElse(null);
+                    if (room != null) history.setSoPhong(room.getSoPhong());
+                }
+                history.setNgayNhanPhong(booking.getNgayNhanPhong());
+                history.setNgayTraPhong(booking.getNgayTraPhong());
+                history.setSoNguoiLon(booking.getSoNguoiLon());
+                history.setSoTreEm(booking.getSoTreEm());
+                history.setTongThanhToan(booking.getTongThanhToan());
+                history.setNgayDat(booking.getNgayDat());
+                history.setNgayHoanThanh(java.time.LocalDateTime.now());
+                history.setGhiChu(booking.getGhiChuKhachHang());
+                history.setTrangThai("DA_HUY");
+                bookingHistoryRepository.save(history);
+                bookingRepository.delete(booking);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
         return false;
@@ -117,7 +136,7 @@ public class QuanLyDatPhongService {
                     <h3>Thông tin đặt phòng:</h3>
                     <ul>
                         <li><strong>Mã đặt phòng:</strong> %s</li>
-                        <li><strong>Khách sạn:</strong> %s</li>
+                        <li><strong>Khách sạn:</strong> Panacea Hotel</li>
                         <li><strong>Ngày nhận phòng:</strong> %s</li>
                         <li><strong>Ngày trả phòng:</strong> %s</li>
                         <li><strong>Số người lớn:</strong> %d</li>
@@ -133,7 +152,7 @@ public class QuanLyDatPhongService {
                 """, 
                 booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen(),
                 booking.getMaDatPhong(),
-                booking.getHotel().getTenKhachSan(),
+                null, // Removed booking.getHotel().getTenKhachSan()
                 booking.getNgayNhanPhong(),
                 booking.getNgayTraPhong(),
                 booking.getSoNguoiLon(),
@@ -174,7 +193,7 @@ public class QuanLyDatPhongService {
                 """, 
                 booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen(),
                 booking.getMaDatPhong(),
-                booking.getHotel().getTenKhachSan(),
+                null, // Removed booking.getHotel().getTenKhachSan()
                 booking.getNgayNhanPhong(),
                 booking.getNgayTraPhong()
             );
@@ -209,7 +228,7 @@ public class QuanLyDatPhongService {
             customer.setSoCmndCccd((String) customerData.get("soCmndCccd"));
             customer.setDiaChi((String) customerData.get("diaChi"));
             customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
-            customer.setLoaiKhachHang(panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang.CA_NHAN);
+            customer.setLoaiKhachHang("CA_NHAN");
             customer.setDiemTichLuy(0);
             customer.setMatKhauHash("default_password_hash"); // Temporary password
             
@@ -223,16 +242,12 @@ public class QuanLyDatPhongService {
             Integer hotelId = Integer.valueOf(requestData.get("hotelId").toString());
             Long roomId = Long.valueOf(requestData.get("roomId").toString());
             
-            Hotel hotel = hotelRepository.findById(hotelId)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
-            
             Room room = roomRepository.findById(roomId.intValue())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng"));
             
             // Create booking
             Booking booking = new Booking();
             booking.setKhachHang(customer);
-            booking.setHotel(hotel);
             booking.setNgayNhanPhong(LocalDate.parse(requestData.get("ngayNhanPhong").toString()));
             booking.setNgayTraPhong(LocalDate.parse(requestData.get("ngayTraPhong").toString()));
             booking.setSoNguoiLon(Byte.valueOf(requestData.get("soNguoiLon").toString()));
@@ -315,7 +330,7 @@ public class QuanLyDatPhongService {
                     "Đội ngũ Panacea Hotel",
                     customer.getHo() + " " + customer.getTen(),
                     booking.getMaDatPhong(),
-                    booking.getHotel().getTenKhachSan(),
+                    null, // Removed booking.getHotel().getTenKhachSan()
                     room.getSoPhong(),
                     booking.getNgayNhanPhong(),
                     booking.getNgayTraPhong(),
@@ -367,7 +382,7 @@ public class QuanLyDatPhongService {
             history.setTenKhachHang(booking.getKhachHang() != null ? booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen() : null);
             history.setEmail(booking.getKhachHang() != null ? booking.getKhachHang().getEmail() : null);
             history.setSoDienThoai(booking.getKhachHang() != null ? booking.getKhachHang().getSoDienThoai() : null);
-            history.setTenKhachSan(booking.getHotel() != null ? booking.getHotel().getTenKhachSan() : null);
+            history.setTenKhachSan(null); // Removed booking.getHotel().getTenKhachSan()
             // Lấy số phòng đầu tiên (nếu có)
             if (!details.isEmpty()) {
                 Room room = roomRepository.findById(details.get(0).getPhongId()).orElse(null);
@@ -381,6 +396,7 @@ public class QuanLyDatPhongService {
             history.setNgayDat(booking.getNgayDat());
             history.setNgayHoanThanh(java.time.LocalDateTime.now());
             history.setGhiChu(booking.getGhiChuKhachHang());
+            history.setTrangThai("HOAN_THANH");
             bookingHistoryRepository.save(history);
             bookingRepository.delete(booking);
         } catch (Exception e) {
@@ -487,10 +503,6 @@ public class QuanLyDatPhongService {
         return new PageImpl<>(pageContent, pageable, dtoList.size());
     }
 
-    public List<Room> getAvailableRoomsByHotel(Long hotelId) {
-        return roomRepository.findByHotelIdAndTrangThai(hotelId.intValue(), Room.TrangThaiPhong.SAN_SANG);
-    }
-
     public boolean checkInBooking(Long bookingId, String soCmndCccd, LocalDate ngayCapCmnd, String noiCapCmnd, Byte soNguoiLonThucTe, Byte soTreEmThucTe, String ghiChuCheckIn) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return false;
@@ -517,6 +529,12 @@ public class QuanLyDatPhongService {
             }
         }
         return true;
+    }
+
+    public List<Room> getAvailableRooms() {
+        return roomRepository.findAll().stream()
+            .filter(room -> room.getTrangThai() == Room.TrangThaiPhong.SAN_SANG)
+            .collect(java.util.stream.Collectors.toList());
     }
 
     // Tự động hủy booking chưa thanh toán sau 1 ngày

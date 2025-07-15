@@ -167,7 +167,7 @@ public class AdminBookingService {
     public List<BookingDTO> filterBookings(Integer customerId, Integer hotelId, LocalDate from, LocalDate to) {
         return bookingRepository.findAll().stream()
             .filter(b -> (customerId == null || (b.getKhachHang() != null && b.getKhachHang().getId().equals(customerId))))
-            .filter(b -> (hotelId == null || (b.getHotel() != null && b.getHotel().getId().equals(hotelId))))
+            // Đã bỏ filter theo hotelId vì không còn quan hệ hotel
             .filter(b -> (from == null || !b.getNgayNhanPhong().isBefore(from)))
             .filter(b -> (to == null || !b.getNgayTraPhong().isAfter(to)))
             .map(this::convertToDTO)

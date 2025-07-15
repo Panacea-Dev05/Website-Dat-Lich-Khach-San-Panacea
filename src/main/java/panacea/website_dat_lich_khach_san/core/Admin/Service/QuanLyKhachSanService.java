@@ -47,9 +47,6 @@ public class QuanLyKhachSanService {
         Optional<Hotel> hotelOpt = hotelRepository.findById(id);
         if (hotelOpt.isEmpty()) throw new RuntimeException("Hotel not found");
         Hotel hotel = hotelOpt.get();
-        // Fetch amenities nếu cần (Lazy)
-        hotel.getAmenities().size();
-        hotel.getRooms().size();
         return hotel;
     }
 
@@ -68,7 +65,6 @@ public class QuanLyKhachSanService {
     // Thêm tiện ích
     @Transactional
     public HotelAmenities addAmenity(Integer hotelId, HotelAmenities amenity) {
-        amenity.setKhachSanId(hotelId);
         return hotelAmenitiesRepository.save(amenity);
     }
     // Sửa tiện ích
@@ -96,7 +92,6 @@ public class QuanLyKhachSanService {
     // Danh sách tiện ích theo khách sạn
     public List<HotelAmenities> listAmenities(Integer hotelId) {
         return hotelAmenitiesRepository.findAll().stream()
-                .filter(a -> a.getKhachSanId().equals(hotelId))
                 .toList();
     }
 } 
