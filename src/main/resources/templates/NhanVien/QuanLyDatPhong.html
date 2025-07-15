@@ -447,14 +447,6 @@
                 <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin đặt phòng</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Khách sạn:</label>
-                        <select id="hotelSelect"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
-                            onchange="loadAvailableRooms()" required>
-                            <option value="">Chọn khách sạn</option>
-                        </select>
-                    </div>
-                    <div>
                         <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng:</label>
                         <select id="roomSelect"
                             style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
@@ -609,7 +601,6 @@
                         <div>
                             <p><strong>Mã đặt phòng:</strong> ${booking.maDatPhong}</p>
                             <p><strong>Khách hàng:</strong> ${booking.khachHang}</p>
-                            <p><strong>Khách sạn:</strong> ${booking.hotel}</p>
                             <p><strong>Ngày nhận phòng:</strong> ${booking.ngayNhan}</p>
                             <p><strong>Ngày trả phòng:</strong> ${booking.ngayTra}</p>
                         </div>
@@ -637,7 +628,7 @@
                             document.getElementById('modal-cancel-btn').style.display = '';
                             document.getElementById('modal-checkout-btn').style.display = 'none';
                             // Load phòng sẵn sàng
-                            fetch(`/nhanvien/quanlydatphong/rooms/${booking.hotelId}`)
+                            fetch(`/nhanvien/quanlydatphong/rooms/available`)
                                 .then(res => res.json())
                                 .then(rooms => {
                                     const select = document.getElementById('modal-room-select');
@@ -802,7 +793,7 @@
                 console.log('Setting modal display to block');
                 modal.style.display = 'block';
                 console.log('Modal display style:', modal.style.display);
-                loadHotels();
+                loadAvailableRooms(); // Luôn load phòng khi mở modal
             } else {
                 console.error('Modal not found');
                 // Try to find all modals
@@ -819,7 +810,7 @@
                 modal.style.display = 'none';
                 // Reset form fields manually
                 const fields = ['customerHo', 'customerTen', 'customerEmail', 'customerPhone',
-                    'customerIdCard', 'customerAddress', 'hotelSelect', 'roomSelect',
+                    'customerIdCard', 'customerAddress', 'roomSelect',
                     'checkInDate', 'checkOutDate', 'adultCount', 'childCount'];
                 fields.forEach(fieldId => {
                     const field = document.getElementById(fieldId);
@@ -834,55 +825,11 @@
             }
         }
 
-        // Hàm load danh sách khách sạn
-        function loadHotels() {
-            console.log('loadHotels called');
-            fetch('/nhanvien/quanlydatphong/hotels')
-                .then(response => {
-                    console.log('Hotels response:', response);
-                    return response.json();
-                })
-                .then(hotels => {
-                    console.log('Hotels data:', hotels);
-                    const hotelSelect = document.getElementById('hotelSelect');
-                    if (hotelSelect) {
-                        hotelSelect.innerHTML = '<option value="">Chọn khách sạn</option>';
-                        hotels.forEach(hotel => {
-                            const option = document.createElement('option');
-                            option.value = hotel.id;
-                            option.textContent = hotel.tenKhachSan;
-                            hotelSelect.appendChild(option);
-                        });
-                    } else {
-                        console.error('Hotel select not found');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading hotels:', error);
-                    alert('Có lỗi xảy ra khi tải danh sách khách sạn!');
-                });
-        }
-
         // Hàm load phòng có sẵn
         function loadAvailableRooms() {
-            console.log('loadAvailableRooms called');
-            const hotelId = document.getElementById('hotelSelect').value;
-            console.log('Selected hotel ID:', hotelId);
-            if (!hotelId) {
-                const roomSelect = document.getElementById('roomSelect');
-                if (roomSelect) {
-                    roomSelect.innerHTML = '<option value="">Chọn phòng</option>';
-                }
-                return;
-            }
-
-            fetch(`/nhanvien/quanlydatphong/rooms/${hotelId}`)
-                .then(response => {
-                    console.log('Rooms response:', response);
-                    return response.json();
-                })
+            fetch(`/nhanvien/quanlydatphong/rooms/available`)
+                .then(response => response.json())
                 .then(rooms => {
-                    console.log('Rooms data:', rooms);
                     const roomSelect = document.getElementById('roomSelect');
                     if (roomSelect) {
                         roomSelect.innerHTML = '<option value="">Chọn phòng</option>';
@@ -892,8 +839,6 @@
                             option.textContent = `${room.soPhong} - ${room.roomType?.tenLoaiPhong || 'N/A'} - ${room.giaCoBan || 0} VND`;
                             roomSelect.appendChild(option);
                         });
-                    } else {
-                        console.error('Room select not found');
                     }
                 })
                 .catch(error => {
@@ -906,7 +851,7 @@
         function addCustomerBooking() {
             // Validate form
             const requiredFields = ['customerHo', 'customerTen', 'customerEmail', 'customerPhone',
-                'customerIdCard', 'customerAddress', 'hotelSelect', 'roomSelect',
+                'customerIdCard', 'customerAddress', 'roomSelect',
                 'checkInDate', 'checkOutDate', 'adultCount', 'childCount'];
 
             for (let field of requiredFields) {
@@ -944,7 +889,6 @@
                     soCmndCccd: document.getElementById('customerIdCard').value,
                     diaChi: document.getElementById('customerAddress').value
                 },
-                hotelId: document.getElementById('hotelSelect').value,
                 roomId: document.getElementById('roomSelect').value,
                 ngayNhanPhong: document.getElementById('checkInDate').value,
                 ngayTraPhong: document.getElementById('checkOutDate').value,

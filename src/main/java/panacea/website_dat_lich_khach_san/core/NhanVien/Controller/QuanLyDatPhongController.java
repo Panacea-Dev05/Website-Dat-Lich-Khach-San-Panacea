@@ -88,8 +88,6 @@ public class QuanLyDatPhongController {
                 map.put("id", booking.getId());
                 map.put("maDatPhong", booking.getMaDatPhong());
                 map.put("khachHang", booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
-                map.put("hotel", booking.getHotel().getTenKhachSan());
-                map.put("hotelId", booking.getHotel().getId());
                 map.put("ngayNhan", booking.getNgayNhanPhong());
                 map.put("ngayTra", booking.getNgayTraPhong());
                 map.put("soNguoiLon", booking.getSoNguoiLon());
@@ -107,10 +105,10 @@ public class QuanLyDatPhongController {
         return hotelRepository.findAll();
     }
     
-    @GetMapping("/rooms/{hotelId}")
+    @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms(@PathVariable Long hotelId) {
-        List<Room> rooms = quanLyDatPhongService.getAvailableRoomsByHotel(hotelId);
+    public List<Map<String, Object>> getAvailableRooms() {
+        List<Room> rooms = quanLyDatPhongService.getAvailableRooms();
         List<Map<String, Object>> result = new java.util.ArrayList<>();
         for (Room room : rooms) {
             Map<String, Object> map = new java.util.HashMap<>();

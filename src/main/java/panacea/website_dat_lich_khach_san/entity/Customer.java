@@ -3,9 +3,6 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
-import jakarta.persistence.Convert;
-import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHangConverter;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiCustomerConverter;
 
 import java.time.LocalDate;
@@ -58,9 +55,8 @@ public class Customer {
     @Column(name = "dia_chi", length = 200)
     private String diaChi;
 
-    @Convert(converter = LoaiKhachHangConverter.class)
     @Column(name = "loai_khach_hang", length = 20)
-    private LoaiKhachHang loaiKhachHang;
+    private String loaiKhachHang;
 
     @Column(name = "diem_tich_luy")
     private Integer diemTichLuy = 0;

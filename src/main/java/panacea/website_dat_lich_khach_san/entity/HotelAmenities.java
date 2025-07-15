@@ -37,9 +37,6 @@ public class HotelAmenities {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "khach_san_id", nullable = false)
-    private Integer khachSanId;
-
     @Column(name = "ten_tien_ich", length = 100, nullable = false)
     private String tenTienIch;
 
@@ -77,10 +74,6 @@ public class HotelAmenities {
     private Long lastModifiedDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    @JsonIgnore
-    private Hotel hotel;
 
     @PrePersist
     public void prePersist() {

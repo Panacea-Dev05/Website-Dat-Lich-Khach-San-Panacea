@@ -55,6 +55,9 @@ public class BookingHistory {
     @Column(name = "ghi_chu", length = 500)
     private String ghiChu;
 
+    @Column(name = "trang_thai", length = 20)
+    private String trangThai; // HOAN_THANH hoặc DA_HUY
+
     // ... có thể bổ sung thêm các trường khác nếu cần ...
 
     // Getter & Setter
@@ -88,4 +91,6 @@ public class BookingHistory {
     public void setNgayHoanThanh(LocalDateTime ngayHoanThanh) { this.ngayHoanThanh = ngayHoanThanh; }
     public String getGhiChu() { return ghiChu; }
     public void setGhiChu(String ghiChu) { this.ghiChu = ghiChu; }
+    public String getTrangThai() { return trangThai; }
+    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
 } 

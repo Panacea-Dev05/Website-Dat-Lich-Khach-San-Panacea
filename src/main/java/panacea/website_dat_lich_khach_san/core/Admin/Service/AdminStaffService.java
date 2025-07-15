@@ -64,7 +64,6 @@ public class AdminStaffService {
     
     public List<StaffDTO> getStaffByHotel(Integer hotelId) {
         return staffRepository.findAll().stream()
-            .filter(s -> s.getKhachSanId() != null && s.getKhachSanId().equals(hotelId))
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
@@ -97,7 +96,6 @@ public class AdminStaffService {
         dto.setSoDienThoai(staff.getSoDienThoai());
         dto.setChucVu(staff.getChucVu());
         dto.setTrangThai(staff.getTrangThai().name());
-        dto.setHotelId(staff.getKhachSanId());
         dto.setUuidId(staff.getUuidId());
         dto.setCreatedDate(staff.getCreatedDate());
         dto.setLastModifiedDate(staff.getLastModifiedDate());
@@ -111,7 +109,6 @@ public class AdminStaffService {
         staff.setEmail(dto.getEmail());
         staff.setSoDienThoai(dto.getSoDienThoai());
         staff.setChucVu(dto.getChucVu());
-        staff.setKhachSanId(dto.getHotelId());
         staff.setTrangThai(Staff.TrangThaiStaff.valueOf(dto.getTrangThai()));
         return staff;
     }

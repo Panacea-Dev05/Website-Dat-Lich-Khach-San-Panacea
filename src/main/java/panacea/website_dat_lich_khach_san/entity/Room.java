@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ROOM", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"khach_san_id", "so_phong"})
-})
+@Table(name = "ROOM")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -50,10 +48,6 @@ public class Room {
 
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", nullable = false)
-    private Hotel hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loai_phong_id", nullable = false)

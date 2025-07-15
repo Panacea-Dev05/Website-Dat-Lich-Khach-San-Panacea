@@ -132,7 +132,6 @@ public class AdminRoomService {
         dto.setTrangThai(room.getTrangThai() != null ? room.getTrangThai().name() : null);
         dto.setGiaCoBan(room.getGiaCoBan());
         dto.setGhiChu(room.getGhiChu());
-        dto.setHotelId(room.getHotel() != null ? room.getHotel().getId() : null);
         dto.setRoomTypeId(room.getRoomType() != null ? room.getRoomType().getId() : null);
         dto.setUuidId(room.getUuidId());
         dto.setCreatedDate(room.getCreatedDate());
@@ -340,9 +339,7 @@ public class AdminRoomService {
                     if (area != null && !area.isEmpty()) {
                         match &= room.getTang() != null && room.getTang().toString().equals(area);
                     }
-                    if (branch != null && !branch.isEmpty()) {
-                        match &= room.getHotel() != null && room.getHotel().getTenKhachSan().toLowerCase().contains(branch.toLowerCase());
-                    }
+                    // Đã bỏ filter theo hotel vì không còn quan hệ hotel
                     return match;
                 })
                 .map(this::convertToDTO)

@@ -8,7 +8,6 @@ import java.util.UUID;
 @Data
 public class RevenueAnalyticsDTO {
     private Integer id;
-    private Integer khachSanId;
     private LocalDate ngay;
     private BigDecimal tongDoanhThu;
     private BigDecimal doanhThuPhong;

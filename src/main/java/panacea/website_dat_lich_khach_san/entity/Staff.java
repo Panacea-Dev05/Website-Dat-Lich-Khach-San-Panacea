@@ -37,9 +37,6 @@ public class Staff {
     @Column(name = "chuc_vu", length = 50, nullable = false)
     private String chucVu;
 
-    @Column(name = "khach_san_id")
-    private Integer khachSanId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "quyen_han", length = 50)
     private QuyenHan quyenHan = QuyenHan.Staff;
@@ -61,10 +58,6 @@ public class Staff {
     private Long lastModifiedDate;
 
     // Relationships
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
-    private Hotel hotel;
-
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MaintenanceSchedule> maintenanceSchedules;
 
