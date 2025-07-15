@@ -347,3 +347,11 @@ main::-webkit-scrollbar-thumb {
     background: #10b981aa;
     border-radius: 5px;
 }
+.status-booked {
+    background: #dbeafe;   /* Xanh dương nhạt */
+    color: #1e40af;        /* Xanh dương đậm */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}

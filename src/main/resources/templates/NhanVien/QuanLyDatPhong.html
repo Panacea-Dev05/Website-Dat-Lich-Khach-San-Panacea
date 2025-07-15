@@ -183,6 +183,15 @@
             font-weight: 500;
         }
 
+        .status-checkin {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
         /* Checkbox styles */
         .payment-checkbox {
             display: flex;
@@ -255,15 +264,19 @@
                 <!-- Header actions -->
                 <div
                     style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-                    <button class="btn" onclick="showAddCustomerModal()" style="background: #3b82f6;"
-                        id="addCustomerBtn">
-                        <span class="material-icons">person_add</span>Thêm khách hàng
-                    </button>
-
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <button class="btn" onclick="showAddCustomerModal()" style="background: #3b82f6;" id="addCustomerBtn">
+                            <span class="material-icons">person_add</span>Thêm khách hàng
+                        </button>
+                        <button class="btn" style="background: #6366f1;" onclick="openHistoryModal()">
+                            <span class="material-icons">history</span>Xem lịch sử
+                        </button>
+                    </div>
                     <!-- Filter form -->
                     <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                        <input type="date" name="ngayNhan" value="[[${ngayNhan}]]"
-                            style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
+                        <input type="date" name="ngayNhan" 
+                               th:value="${ngayNhan != null} ? ${#temporals.format(ngayNhan, 'yyyy-MM-dd')} : ''"
+                               style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
                         <button class="btn"><span class="material-icons">filter_alt</span>Lọc</button>
                     </form>
                 </div>
@@ -306,9 +319,11 @@
                             <td>
                                 <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
                                        booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
+                                       booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'status-checkin' : 
                                        booking.trangThaiDatPhong == 'DA_HUY' ? 'status-cancelled' : 'status-default'}"
                                     th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
                                        booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'Đã xác nhận' : 
+                                       booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'Đã nhận phòng' : 
                                        booking.trangThaiDatPhong == 'DA_HUY' ? 'Đã hủy' : 'Hoàn thành'}">
                                 </span>
                             </td>
@@ -474,6 +489,53 @@
                 <button class="btn" onclick="closeAddCustomerModal()" style="background: #6b7280;">Hủy</button>
                 <button class="btn" onclick="addCustomerBooking()" style="background: #10b981;">Thêm đặt phòng</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal nhập thông tin check-in -->
+    <div id="checkInModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeCheckInModal()">&times;</span>
+            <h2><span class="material-icons">login</span> Thông tin Check-in</h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label>Số CMND/CCCD:</label>
+                    <input type="text" id="checkinCmnd" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                </div>
+                <div>
+                    <label>Ngày cấp:</label>
+                    <input type="date" id="checkinNgayCap" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                </div>
+                <div>
+                    <label>Nơi cấp:</label>
+                    <input type="text" id="checkinNoiCap" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                </div>
+                <div>
+                    <label>Số người lớn thực tế:</label>
+                    <input type="number" id="checkinNguoiLon" min="1" value="1" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                </div>
+                <div>
+                    <label>Số trẻ em thực tế:</label>
+                    <input type="number" id="checkinTreEm" min="0" value="0" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                </div>
+                <div>
+                    <label>Ghi chú check-in:</label>
+                    <textarea id="checkinGhiChu" rows="2" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></textarea>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button class="btn" onclick="closeCheckInModal()" style="background: #6b7280;">Hủy</button>
+                <button class="btn" id="checkinSubmitBtn" style="background: #10b981;">Xác nhận Check-in</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal lịch sử đặt phòng -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content" style="max-width: 95vw; width: 1200px; min-height: 600px; position: relative;">
+            <span class="close" onclick="closeHistoryModal()">&times;</span>
+            <h2><span class="material-icons">history</span> Lịch sử đặt phòng</h2>
+            <iframe id="historyFrame" src="/nhanvien/quanlydatphong/history" style="width:100%;height:500px;border:none;"></iframe>
         </div>
     </div>
 
@@ -655,7 +717,30 @@
                                     }
                                 }
                             };
-                        } else if (booking.trangThai === 'Đã xác nhận' || booking.trangThai === 'Đã nhận phòng') {
+                        } else if (booking.trangThai === 'Đã xác nhận') {
+                            // Hiện nút check-in
+                            actionArea.style.display = 'flex';
+                            document.getElementById('modal-payment-confirmed').parentElement.style.display = 'none';
+                            document.getElementById('modal-room-select').parentElement.style.display = 'none';
+                            document.getElementById('modal-confirm-btn').style.display = 'none';
+                            document.getElementById('modal-cancel-btn').style.display = 'none';
+                            // Tạo nút check-in nếu chưa có
+                            let checkInBtn = document.getElementById('modal-checkin-btn');
+                            if (!checkInBtn) {
+                                checkInBtn = document.createElement('button');
+                                checkInBtn.className = 'btn';
+                                checkInBtn.style.background = '#10b981';
+                                checkInBtn.id = 'modal-checkin-btn';
+                                checkInBtn.innerHTML = '<span class="material-icons">login</span>Check-in';
+                                document.getElementById('bookingActionArea').appendChild(checkInBtn);
+                            } else {
+                                checkInBtn.style.display = '';
+                            }
+                            checkInBtn.onclick = function () {
+                                openCheckInModal(bookingId);
+                            };
+                            document.getElementById('modal-checkout-btn').style.display = 'none';
+                        } else if (booking.trangThai === 'Đã nhận phòng') {
                             // Chỉ hiện nút xác nhận trả phòng & thanh toán
                             actionArea.style.display = 'flex';
                             document.getElementById('modal-payment-confirmed').parentElement.style.display = 'none';
@@ -663,7 +748,9 @@
                             document.getElementById('modal-confirm-btn').style.display = 'none';
                             document.getElementById('modal-cancel-btn').style.display = 'none';
                             document.getElementById('modal-checkout-btn').style.display = '';
-                            // Gán lại sự kiện cho nút checkout
+                            // Ẩn nút check-in nếu có
+                            let checkInBtn = document.getElementById('modal-checkin-btn');
+                            if (checkInBtn) checkInBtn.style.display = 'none';
                             document.getElementById('modal-checkout-btn').onclick = function () {
                                 checkoutBooking(bookingId);
                             };
@@ -690,11 +777,19 @@
         window.onclick = function (event) {
             const bookingModal = document.getElementById('bookingModal');
             const addCustomerModal = document.getElementById('addCustomerModal');
+            const checkInModal = document.getElementById('checkInModal');
+            const historyModal = document.getElementById('historyModal');
             if (event.target === bookingModal) {
                 bookingModal.style.display = 'none';
             }
             if (event.target === addCustomerModal) {
                 addCustomerModal.style.display = 'none';
+            }
+            if (event.target === checkInModal) {
+                checkInModal.style.display = 'none';
+            }
+            if (event.target === historyModal) {
+                historyModal.style.display = 'none';
             }
         }
 
@@ -897,6 +992,75 @@
                     }
                 })
                 .catch(() => alert('Có lỗi xảy ra, vui lòng thử lại!'));
+        }
+
+        let currentCheckInBookingId = null;
+        function openCheckInModal(bookingId) {
+            currentCheckInBookingId = bookingId;
+            document.getElementById('checkInModal').style.display = 'block';
+            // Gán lại sự kiện cho nút xác nhận check-in mỗi lần mở modal
+            const btn = document.getElementById('checkinSubmitBtn');
+            if (btn) {
+                btn.onclick = async function() {
+                    console.log('Đã bấm nút xác nhận check-in');
+                    // Validate
+                    const soCmndCccd = document.getElementById('checkinCmnd').value.trim();
+                    const ngayCapCmnd = document.getElementById('checkinNgayCap').value;
+                    const noiCapCmnd = document.getElementById('checkinNoiCap').value.trim();
+                    const soNguoiLonThucTe = document.getElementById('checkinNguoiLon').value;
+                    const soTreEmThucTe = document.getElementById('checkinTreEm').value;
+                    const ghiChuCheckIn = document.getElementById('checkinGhiChu').value.trim();
+                    if (!soCmndCccd || !ngayCapCmnd || !noiCapCmnd || !soNguoiLonThucTe) {
+                        alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+                        return;
+                    }
+                    btn.disabled = true;
+                    btn.innerHTML = 'Đang xử lý...';
+                    try {
+                        console.log('Gửi dữ liệu check-in:', { soCmndCccd, ngayCapCmnd, noiCapCmnd, soNguoiLonThucTe, soTreEmThucTe, ghiChuCheckIn });
+                        const res = await fetch(`/nhanvien/quanlydatphong/checkin/` + currentCheckInBookingId, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                soCmndCccd,
+                                ngayCapCmnd,
+                                noiCapCmnd,
+                                soNguoiLonThucTe,
+                                soTreEmThucTe,
+                                ghiChuCheckIn
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert('Check-in thành công!');
+                            closeCheckInModal();
+                            closeModal();
+                            location.reload();
+                        } else {
+                            alert('Có lỗi khi check-in!');
+                        }
+                    } catch (e) {
+                        alert('Có lỗi khi check-in!');
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Xác nhận Check-in';
+                    }
+                }
+            } else {
+                console.log('Không tìm thấy nút checkinSubmitBtn');
+            }
+        }
+        function closeCheckInModal() {
+            document.getElementById('checkInModal').style.display = 'none';
+            currentCheckInBookingId = null;
+        }
+
+        function openHistoryModal() {
+            document.getElementById('historyModal').style.display = 'block';
+            // Có thể reload iframe nếu muốn luôn mới: document.getElementById('historyFrame').contentWindow.location.reload();
+        }
+        function closeHistoryModal() {
+            document.getElementById('historyModal').style.display = 'none';
         }
 
         // Thêm event listener cho tất cả checkbox thanh toán
