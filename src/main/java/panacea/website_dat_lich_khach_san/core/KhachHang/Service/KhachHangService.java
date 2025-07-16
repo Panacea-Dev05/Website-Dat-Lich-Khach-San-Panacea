@@ -57,8 +57,7 @@ public class KhachHangService {
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
             Room room = roomRepository.findById(Integer.valueOf(dto.getRoomId())).orElse(null);
-            Hotel hotel = hotelRepository.findById(dto.getHotelId()).orElse(null);
-            if (room == null || hotel == null) return false;
+            if (room == null) return false;
 
             // Tạo khách hàng nếu chưa có (giả sử theo email)
             Customer customer = customerRepository.findByEmail(dto.getEmailKhach()).orElseGet(() -> {
@@ -75,7 +74,6 @@ public class KhachHangService {
 
             Booking booking = new Booking();
             booking.setKhachHang(customer);
-            booking.setHotel(hotel);
             booking.setNgayNhanPhong(dto.getNgayNhanPhong());
             booking.setNgayTraPhong(dto.getNgayTraPhong());
             booking.setSoNguoiLon(dto.getSoNguoiLon());

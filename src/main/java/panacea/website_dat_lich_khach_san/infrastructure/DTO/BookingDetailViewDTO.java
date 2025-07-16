@@ -43,7 +43,6 @@ public class BookingDetailViewDTO {
         dto.setId(booking.getId());
         dto.setMaDatPhong(booking.getMaDatPhong());
         dto.setKhachHangId(booking.getKhachHang() != null ? booking.getKhachHang().getId() : null);
-        dto.setHotelId(booking.getHotel() != null ? booking.getHotel().getId() : null);
         dto.setNgayNhanPhong(booking.getNgayNhanPhong());
         dto.setNgayTraPhong(booking.getNgayTraPhong());
         dto.setSoNguoiLon(booking.getSoNguoiLon());
@@ -59,11 +58,6 @@ public class BookingDetailViewDTO {
             dto.setCustomerName(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
             dto.setCustomerEmail(booking.getKhachHang().getEmail());
             dto.setCustomerPhone(booking.getKhachHang().getSoDienThoai());
-        }
-        
-        // Set hotel info
-        if (booking.getHotel() != null) {
-            dto.setHotelName(booking.getHotel().getTenKhachSan());
         }
         
         // Set room info from BookingDetail

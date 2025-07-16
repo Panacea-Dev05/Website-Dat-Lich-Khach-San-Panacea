@@ -19,8 +19,6 @@ public class RoomDTO {
     private UUID uuidId;
     private Long createdDate;
     private Long lastModifiedDate;
-    private Integer hotelId;
-    private String hotelName;
     private Integer roomTypeId;
     private String roomTypeName;
     private String maLoaiPhong;
@@ -53,10 +51,8 @@ public class RoomDTO {
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
 
-        if (room.getHotel() != null) {
-            dto.setHotelId(room.getHotel().getId());
-            dto.setHotelName(room.getHotel().getTenKhachSan());
-        }
+        // XÓA: if (room.getHotel() != null) { ... }
+        // Room entity KHÔNG có thuộc tính hotel
 
         if (room.getRoomType() != null) {
             dto.setRoomTypeId(room.getRoomType().getId());
@@ -68,12 +64,10 @@ public class RoomDTO {
             dto.setSucChuaToiDa(room.getRoomType().getSucChuaToiDa());
             dto.setMoTa(room.getRoomType().getMoTa());
             dto.setTienNghi(room.getRoomType().getTienNghi());
-
             // Lấy thông tin giá từ RoomPricing
             // Note: Method này không thể truy cập trực tiếp RoomPricingRepository
             // nên sẽ cần được xử lý ở service layer
         }
-
         return dto;
     }
 } 

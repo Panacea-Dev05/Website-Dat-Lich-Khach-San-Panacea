@@ -13,7 +13,6 @@ public class ServiceDTO {
     private String moTa;
     private BigDecimal donGia;
     private String donViTinh;
-    private Integer khachSanId;
     private String trangThai;
     private UUID uuidId;
     private Long createdDate;

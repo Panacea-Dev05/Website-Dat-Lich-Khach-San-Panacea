@@ -43,7 +43,6 @@ public class AdminServiceService {
     // 3. Xem danh sách dịch vụ theo khách sạn
     public List<panacea.website_dat_lich_khach_san.entity.Service> listServicesByHotel(Integer hotelId) {
         return serviceRepository.findAll().stream()
-            .filter(s -> s.getKhachSanId() != null && s.getKhachSanId().equals(hotelId))
             .toList();
     }
     // 4. Đặt dịch vụ cho booking

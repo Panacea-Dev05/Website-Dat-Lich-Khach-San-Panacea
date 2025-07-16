@@ -55,12 +55,14 @@
                             <td>
                                 <span
                                     th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
+                                                  room.trangThai == 'DA_DAT' ? 'status-booked' :
                                                   room.trangThai == 'DANG_SU_DUNG' ? 'status-occupied' :
                                                   room.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-cleaning'}"
                                     th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
+                                                room.trangThai == 'DA_DAT' ? 'Đã đặt' :
                                                 room.trangThai == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
                                                 room.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp'}">
-                                    Sẵn sàng
+
                                 </span>
                             </td>
                             <td>

@@ -135,7 +135,6 @@ public class AdminReviewService {
     // Xem đánh giá khách sạn với pagination
     public List<ReviewDTO> getReviewsByHotel(Integer hotelId, int page, int size) {
         return reviewRepository.findAll().stream()
-            .filter(r -> r.getKhachSanId() != null && r.getKhachSanId().equals(hotelId))
             .skip((long) page * size)
             .limit(size)
             .map(this::convertToDTO)
@@ -145,7 +144,7 @@ public class AdminReviewService {
     // Thống kê điểm trung bình từng tiêu chí cho khách sạn
     public ReviewStats getHotelReviewStats(Integer hotelId) {
         List<Review> reviews = reviewRepository.findAll().stream()
-            .filter(r -> r.getKhachSanId() != null && r.getKhachSanId().equals(hotelId) && r.getTrangThai() == Review.TrangThaiReview.DA_DUYET)
+            .filter(r -> r.getTrangThai() == Review.TrangThaiReview.DA_DUYET)
             .toList();
         double avgTongQuan = reviews.stream().mapToInt(r -> r.getDiemTongQuan() != null ? r.getDiemTongQuan() : 0).average().orElse(0);
         double avgSachSe = reviews.stream().mapToInt(r -> r.getDiemSachSe() != null ? r.getDiemSachSe() : 0).average().orElse(0);
