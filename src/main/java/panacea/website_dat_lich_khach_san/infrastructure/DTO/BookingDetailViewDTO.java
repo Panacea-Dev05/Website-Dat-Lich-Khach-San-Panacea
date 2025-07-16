@@ -37,6 +37,9 @@ public class BookingDetailViewDTO {
     // Thông tin phòng
     private String roomNumber;
     private String roomTypeName;
+
+    // Thông tin nhân viên tạo booking
+    private String tenNhanVienTao;
     
     public static BookingDetailViewDTO fromEntity(Booking booking, List<BookingDetail> details) {
         BookingDetailViewDTO dto = new BookingDetailViewDTO();

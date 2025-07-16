@@ -36,44 +36,49 @@
               <th>Khách hàng</th>
               <th>Phòng</th>
               <th>Hạng phòng</th>
-              <th>Ngày check-in</th>
-              <th>Ngày check-out</th>
+              <th>Ngày đặt</th>
+              <th>Ngày nhận</th>
+              <th>Ngày trả</th>
               <th>Tổng tiền</th>
               <th>Trạng thái</th>
-              <th>Thao tác</th>
+              <th>Nhân viên tạo</th>
             </tr>
           </thead>
           <tbody id="bookingTableBody">
             <!-- Dữ liệu đặt phòng từ controller -->
-            <tr th:each="booking, stat : ${bookings}">
+            <tr th:each="booking, stat : ${bookings}" th:attr="data-madatphong=${booking.maDatPhong},
+                         data-customername=${booking.customerName},
+                         data-roomnumber=${booking.roomNumber},
+                         data-roomtypename=${booking.roomTypeName},
+                         data-ngaydat=${#temporals.format(booking.ngayDat, 'dd/MM/yyyy')},
+                         data-ngaynhan=${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')},
+                         data-ngaytra=${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')},
+                         data-tongtien=${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')},
+                         data-trangthai=${booking.trangThaiDatPhong},
+                         data-nhanvienta=${booking.tenNhanVienTao}" class="booking-row" style="cursor:pointer;">
               <td th:text="${stat.count}">1</td>
-              <td th:text="${booking.id}">BK001</td>
-              <td
-                th:text="${booking.khachHang != null ? booking.khachHang.ho + ' ' + booking.khachHang.ten : 'Không rõ'}">
+              <td th:text="${booking.maDatPhong}">BK001</td>
+              <td th:text="${booking.customerName != null ? booking.customerName : 'Không rõ'}">
                 Nguyễn Văn A</td>
               <td th:text="${booking.roomNumber}">101</td>
               <td th:text="${booking.roomTypeName != null ? booking.roomTypeName : 'N/A'}">Standard</td>
-              <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">15/12/2024</td>
-              <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">18/12/2024</td>
+              <td th:text="${#temporals.format(booking.ngayDat, 'dd/MM/yyyy')}">15/12/2024</td>
+              <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}">15/12/2024</td>
+              <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}">18/12/2024</td>
               <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000
                 VNĐ</td>
               <td>
-                <span th:class="${booking.status == 'Confirmed' ? 'status-confirmed' : 
-                                  booking.status == 'Pending' ? 'status-pending' : 
-                                  booking.status == 'Cancelled' ? 'status-cancelled' : 'status-completed'}" th:text="${booking.status == 'Confirmed' ? 'Đã xác nhận' : 
-                                booking.status == 'Pending' ? 'Chờ xác nhận' : 
-                                booking.status == 'Cancelled' ? 'Đã hủy' : 'Hoàn thành'}">
-                  Đã xác nhận
+                <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
+                                   booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
+                                   booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'status-checkin' : 
+                                   booking.trangThaiDatPhong == 'DA_HUY' ? 'status-cancelled' : 'status-default'}"
+                  th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
+                                   booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'Đã xác nhận' : 
+                                   booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'Đã nhận phòng' : 
+                                   booking.trangThaiDatPhong == 'DA_HUY' ? 'Đã hủy' : 'Hoàn thành'}">
                 </span>
               </td>
-              <td>
-                <button class="btn-edit" th:onclick="'editBooking(' + ${booking.id} + ')'" title="Sửa">
-                  <span class="material-icons">edit</span>
-                </button>
-                <button class="btn-delete" th:onclick="'deleteBooking(' + ${booking.id} + ')'" title="Xóa">
-                  <span class="material-icons">delete</span>
-                </button>
-              </td>
+              <td th:text="${booking.tenNhanVienTao != null ? booking.tenNhanVienTao : '---'}">---</td>
             </tr>
           </tbody>
         </table>
@@ -125,6 +130,17 @@
           </div>
         </form>
       </section>
+      <!-- Modal chi tiết booking -->
+      <div id="bookingDetailModal" class="modal"
+        style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
+        <div class="modal-content"
+          style="background:#fff; border-radius:12px; max-width:95vw; width:350px; margin:auto; padding:20px; position:relative;">
+          <span style="position:absolute; top:10px; right:16px; font-size:24px; cursor:pointer; color:#888;"
+            onclick="closeBookingDetailModal()">&times;</span>
+          <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết đặt phòng</h2>
+          <div id="bookingDetailContent"></div>
+        </div>
+      </div>
     </main>
 
     <footer>
@@ -133,6 +149,53 @@
   </div>
 
   <script th:src="@{/js/Admin/quanlydatphong.js}"></script>
+  <script>
+    // Hàm dựng HTML chi tiết booking
+    function renderBookingDetailRow(row) {
+      return `<tr class='booking-detail-row'>
+        <td colspan='11' style='background:#f8f9fa;'>
+          <div style='padding:18px 0 8px 0;'>
+            <h3 style='margin-bottom:16px;'>Đặt phòng: ${row.getAttribute('data-madatphong')}</h3>
+            <div style='display:flex;gap:32px;flex-wrap:wrap;'>
+              <div style='flex:1;min-width:220px;'>
+                <div><b>Khách hàng:</b> ${row.getAttribute('data-customername') || ''}</div>
+                <div><b>Phòng:</b> ${row.getAttribute('data-roomnumber') || ''}</div>
+                <div><b>Hạng phòng:</b> ${row.getAttribute('data-roomtypename') || ''}</div>
+                <div><b>Ngày đặt:</b> ${row.getAttribute('data-ngaydat') || ''}</div>
+                <div><b>Ngày nhận:</b> ${row.getAttribute('data-ngaynhan') || ''}</div>
+                <div><b>Ngày trả:</b> ${row.getAttribute('data-ngaytra') || ''}</div>
+              </div>
+              <div style='flex:1;min-width:220px;'>
+                <div><b>Tổng tiền:</b> ${row.getAttribute('data-tongtien') || ''} VNĐ</div>
+                <div><b>Trạng thái:</b> ${row.getAttribute('data-trangthai') || ''}</div>
+                <div><b>Nhân viên tạo:</b> ${row.getAttribute('data-nhanvienta') || ''}</div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    }
+    // Lắng nghe click vào từng dòng booking-row để expand/collapse chi tiết
+    document.addEventListener('DOMContentLoaded', function () {
+      var tableBody = document.getElementById('bookingTableBody');
+      if (tableBody) {
+        tableBody.querySelectorAll('.booking-row').forEach(function (row) {
+          row.addEventListener('click', function () {
+            // Nếu đã có dòng chi tiết ngay sau thì ẩn đi (toggle)
+            var nextRow = row.nextElementSibling;
+            if (nextRow && nextRow.classList.contains('booking-detail-row')) {
+              nextRow.remove();
+              return;
+            }
+            // Xóa mọi dòng chi tiết cũ
+            tableBody.querySelectorAll('.booking-detail-row').forEach(function (e) { e.remove(); });
+            // Chèn dòng chi tiết ngay sau dòng vừa click
+            row.insertAdjacentHTML('afterend', renderBookingDetailRow(row));
+          });
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>
