@@ -8,6 +8,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/css/Admin/quanlykhuyenmai.css}">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem 2.5rem;
+      min-width: 350px;
+      max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    @media (max-width: 600px) {
+      .modal-content { padding: 1rem; min-width: 90vw; }
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #888;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,7 +63,7 @@
     <main role="main" tabindex="0">
       <h1>Quản lý khuyến mãi</h1>
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddPromotion">Thêm khuyến mãi mới</button>
+        <button class="btn" id="btnAddPromotion" type="button" onclick="showAddForm()">Thêm khuyến mãi mới</button>
         <table aria-label="Danh sách khuyến mãi" id="promotionTable">
           <thead>
             <tr>
@@ -43,29 +79,28 @@
             </tr>
           </thead>
           <tbody id="promotionTableBody">
-            <!-- Dữ liệu khuyến mãi từ controller -->
+            <tr th:if="${promotions.size() == 0}">
+              <td colspan="9" style="text-align:center; color:#888;">Không có khuyến mãi nào.</td>
+            </tr>
             <tr th:each="promotion, stat : ${promotions}">
               <td th:text="${stat.count}">1</td>
               <td th:text="${promotion.maKhuyenMai}">KM001</td>
               <td th:text="${promotion.tenKhuyenMai}">Giảm giá mùa hè</td>
               <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? 'Phần trăm' : 'Số tiền'}">Phần trăm</td>
-              <td
-                th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? promotion.giaTriGiam + '%' : #numbers.formatDecimal(promotion.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
-                20%</td>
+              <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? promotion.giaTriGiam + '%' : #numbers.formatDecimal(promotion.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">20%</td>
               <td th:text="${#temporals.format(promotion.ngayBatDau, 'dd/MM/yyyy')}">01/06/2024</td>
               <td th:text="${#temporals.format(promotion.ngayKetThuc, 'dd/MM/yyyy')}">31/08/2024</td>
               <td>
-                <span th:class="${promotion.trangThai == 'HOAT_DONG' ? 'status-active' : 
-                                  promotion.trangThai == 'TAM_NGUNG' ? 'status-paused' : 'status-expired'}" th:text="${promotion.trangThai == 'HOAT_DONG' ? 'Hoạt động' : 
-                                promotion.trangThai == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn'}">
+                <span th:class="${promotion.trangThai == 'HOAT_DONG' ? 'status-active' : promotion.trangThai == 'TAM_NGUNG' ? 'status-paused' : 'status-expired'}"
+                      th:text="${promotion.trangThai == 'HOAT_DONG' ? 'Hoạt động' : promotion.trangThai == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn'}">
                   Hoạt động
                 </span>
               </td>
               <td>
-                <button class="btn-edit" th:onclick="'editPromotion(' + ${promotion.id} + ')'" title="Sửa">
+                <button class="btn-edit" type="button" th:onclick="|editPromotion(${promotion.id})|" title="Sửa">
                   <span class="material-icons">edit</span>
                 </button>
-                <button class="btn-delete" th:onclick="'deletePromotion(' + ${promotion.id} + ')'" title="Xóa">
+                <button class="btn-delete" type="button" th:onclick="|deletePromotion(${promotion.id})|" title="Xóa">
                   <span class="material-icons">delete</span>
                 </button>
               </td>
@@ -73,58 +108,63 @@
           </tbody>
         </table>
 
-        <!-- Form thêm/sửa khuyến mãi -->
-        <form id="promotionForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khuyến mãi mới</h2>
-          <input type="hidden" id="promotionId" name="promotionId" />
+        <!-- Overlay Modal cho form thêm/sửa khuyến mãi -->
+        <div id="promotionModal" class="modal-overlay" th:classappend="${error} ? ' active' : ''">
+          <div class="modal-content">
+            <button type="button" class="modal-close" onclick="hideForm()">&times;</button>
+            <form id="promotionForm" th:action="@{/admin/promotions}" th:object="${promotionForm}" method="post">
+              <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khuyến mãi mới</h2>
+              <div th:if="${error}" style="color:#e53935; font-weight:600; margin-bottom:12px; text-align:center;">[[${error}]]</div>
+              <input type="hidden" th:field="*{id}" />
 
-          <label for="maKhuyenMai">Mã khuyến mãi</label>
-          <input type="text" id="maKhuyenMai" name="maKhuyenMai" required placeholder="KM001" />
+              <label for="maKhuyenMai">Mã khuyến mãi</label>
+              <input type="text" id="maKhuyenMai" th:field="*{maKhuyenMai}" required placeholder="KM001" />
 
-          <label for="tenKhuyenMai">Tên khuyến mãi</label>
-          <input type="text" id="tenKhuyenMai" name="tenKhuyenMai" required placeholder="Giảm giá mùa hè" />
+              <label for="tenKhuyenMai">Tên khuyến mãi</label>
+              <input type="text" id="tenKhuyenMai" th:field="*{tenKhuyenMai}" required placeholder="Giảm giá mùa hè" />
 
-          <label for="moTa">Mô tả</label>
-          <textarea id="moTa" name="moTa" placeholder="Mô tả chi tiết khuyến mãi"></textarea>
+              <label for="moTa">Mô tả</label>
+              <textarea id="moTa" th:field="*{moTa}" placeholder="Mô tả chi tiết khuyến mãi"></textarea>
 
-          <label for="loaiGiamGia">Loại giảm giá</label>
-          <select id="loaiGiamGia" name="loaiGiamGia" required>
-            <option value="" disabled selected>Chọn loại giảm giá</option>
-            <option th:each="type : ${promotionTypes}" th:value="${type}"
-              th:text="${type == 'PHAN_TRAM' ? 'Phần trăm (%)' : 'Số tiền (VNĐ)'}"></option>
-          </select>
+              <label for="loaiGiamGia">Loại giảm giá</label>
+              <select id="loaiGiamGia" th:field="*{loaiGiamGia}" required>
+                <option value="" disabled>Chọn loại giảm giá</option>
+                <option th:each="type : ${promotionTypes}" th:value="${type}"
+                  th:text="${type == 'PHAN_TRAM' ? 'Phần trăm (%)' : 'Số tiền (VNĐ)'}"></option>
+              </select>
 
-          <label for="giaTriGiam">Giá trị giảm</label>
-          <input type="number" id="giaTriGiam" name="giaTriGiam" required min="0" step="0.01" placeholder="20" />
+              <label for="giaTriGiam">Giá trị giảm</label>
+              <input type="number" id="giaTriGiam" th:field="*{giaTriGiam}" min="0" step="0.01" required placeholder="20" />
 
-          <label for="giamToiDa">Giảm tối đa (VNĐ)</label>
-          <input type="number" id="giamToiDa" name="giamToiDa" min="0" step="1000" placeholder="500000" />
+              <label for="giamToiDa">Giảm tối đa (VNĐ)</label>
+              <input type="number" id="giamToiDa" th:field="*{giamToiDa}" min="0" step="1000" placeholder="500000" />
 
-          <label for="ngayBatDau">Ngày bắt đầu</label>
-          <input type="date" id="ngayBatDau" name="ngayBatDau" required />
+              <label for="ngayBatDau">Ngày bắt đầu</label>
+              <input type="date" id="ngayBatDau" th:field="*{ngayBatDau}" required />
 
-          <label for="ngayKetThuc">Ngày kết thúc</label>
-          <input type="date" id="ngayKetThuc" name="ngayKetThuc" required />
+              <label for="ngayKetThuc">Ngày kết thúc</label>
+              <input type="date" id="ngayKetThuc" th:field="*{ngayKetThuc}" required />
 
-          <label for="soLuongToiDa">Số lượng tối đa</label>
-          <input type="number" id="soLuongToiDa" name="soLuongToiDa" min="0" placeholder="100" />
+              <label for="soLuongToiDa">Số lượng tối đa</label>
+              <input type="number" id="soLuongToiDa" th:field="*{soLuongToiDa}" min="1" required placeholder="100" />
 
-          <label for="dieuKienApDung">Điều kiện áp dụng</label>
-          <textarea id="dieuKienApDung" name="dieuKienApDung" placeholder="Điều kiện áp dụng khuyến mãi"></textarea>
+              <label for="dieuKienApDung">Điều kiện áp dụng</label>
+              <textarea id="dieuKienApDung" th:field="*{dieuKienApDung}" placeholder="Điều kiện áp dụng khuyến mãi"></textarea>
 
-          <label for="trangThai">Trạng thái</label>
-          <select id="trangThai" name="trangThai" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
-            <option th:each="status : ${promotionStatuses}" th:value="${status}"
-              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}">
-            </option>
-          </select>
+              <label for="trangThai">Trạng thái</label>
+              <select id="trangThai" th:field="*{trangThai}" required>
+                <option value="" disabled>Chọn trạng thái</option>
+                <option th:each="status : ${promotionStatuses}" th:value="${status}"
+                  th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}"></option>
+              </select>
 
-          <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-            <button type="submit" class="btn" id="submitBtn">Lưu khuyến mãi</button>
-            <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+              <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn" id="submitBtn">Lưu khuyến mãi</button>
+                <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;" onclick="hideForm()">Hủy</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </section>
     </main>
 
@@ -134,6 +174,22 @@
   </div>
 
   <script th:src="@{/js/Admin/quanlykhuyenmai.js}"></script>
+  <script>
+    function showAddForm() {
+      document.getElementById('promotionModal').classList.add('active');
+      document.getElementById('promotionForm').reset();
+      document.getElementById('formTitle').innerText = 'Thêm khuyến mãi mới';
+    }
+    function hideForm() {
+      document.getElementById('promotionModal').classList.remove('active');
+    }
+    // Tự động mở modal nếu có lỗi từ backend
+    window.addEventListener('DOMContentLoaded', function() {
+      if (document.querySelector('#promotionModal').classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  </script>
 </body>
 
 </html>
