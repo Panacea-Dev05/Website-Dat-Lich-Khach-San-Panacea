@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quản Lý Khách Hàng - Panacea Hotel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/Admin/quanlykhachhang.css}">
+</head>
+
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+        <span class="material-icons" aria-hidden="true">hotel</span>
+        <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+      </div>
+      <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+        <span class="material-icons">menu</span>
+      </button>
+    </header>
+
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+
+    <main role="main" tabindex="0">
+      <h1>Quản lý khách hàng</h1>
+      <section class="content-section" id="contentSection">
+        <button class="btn" id="btnAddCustomer">Thêm khách hàng mới</button>
+        <table aria-label="Danh sách khách hàng" id="customerTable">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>ID</th>
+              <th>Tên</th>
+              <th>Email</th>
+              <th>Số điện thoại</th>
+              <th>Địa chỉ</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="customerTableBody">
+            <!-- Dữ liệu khách hàng từ controller -->
+            <tr th:each="customer, stat : ${customers}">
+              <td th:text="${stat.count}">1</td>
+              <td th:text="${customer.id}">1</td>
+              <td th:text="${customer.ho + ' ' + customer.ten}">Nguyễn Văn A</td>
+              <td th:text="${customer.email}">nguyenvana@email.com</td>
+              <td th:text="${customer.soDienThoai}">0903123456</td>
+              <td th:text="${customer.diaChi}">Hà Nội</td>
+              <td>
+                <span th:class="${customer.trangThai == 'HOAT_DONG' ? 'status-active' : 'status-locked'}"
+                  th:text="${customer.trangThai == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}">
+                  Hoạt động
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" th:onclick="'editCustomer(' + ${customer.id} + ')'" title="Sửa">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" th:onclick="'deleteCustomer(' + ${customer.id} + ')'" title="Xóa">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Form thêm/sửa khách hàng -->
+        <form id="customerForm" style="display:none; margin-top: 2rem;">
+          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khách hàng mới</h2>
+          <input type="hidden" id="customerId" name="customerId" />
+
+          <label for="customerName">Tên</label>
+          <input type="text" id="customerName" name="customerName" required placeholder="Nhập tên khách hàng" />
+          <label for="customerEmail">Email</label>
+          <input type="email" id="customerEmail" name="customerEmail" required placeholder="abc@example.com" />
+          <label for="customerPhone">Số điện thoại</label>
+          <input type="text" id="customerPhone" name="customerPhone" required placeholder="0903123456"
+            pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+          <label for="customerAddress">Địa chỉ</label>
+          <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
+          <label for="customerStatus">Trạng thái</label>
+          <select id="customerStatus" name="customerStatus" required>
+            <option value="" disabled selected>Chọn trạng thái</option>
+            <option th:each="status : ${customerStatuses}" th:value="${status}"
+              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"></option>
+          </select>
+          <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+            <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
+            <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+    </footer>
+  </div>
+
+  <script th:src="@{/js/Admin/quanlykhachhang.js}"></script>
+</body>
+
+</html>

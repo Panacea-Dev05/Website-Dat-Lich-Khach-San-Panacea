@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+        <meta charset="UTF-8">
+        <title>Quản trị</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/Admin/adminslidebar.css}" />
+</head>
+
+<body>
+        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính" th:fragment="sidebar">
+                <nav>
+                        <ul>
+                                <li><a th:href="@{/admin/hotels}"><span class="material-icons">business</span> Quản lý
+                                                khách sạn</a></li>
+
+                                <li><a th:href="@{/admin/rooms}" data-section="rooms"><span
+                                                        class="material-icons">meeting_room</span> Quản lý phòng</a>
+                                </li>
+
+                                <li><a th:href="@{/admin/bookings}"><span class="material-icons">book_online</span> Quản
+                                                lý đặt phòng</a></li>
+                                <li><a th:href="@{/admin/customers}"><span class="material-icons">people</span> Quản lý
+                                                khách hàng</a></li>
+                                <li><a th:href="@{/admin/payments}"><span class="material-icons">payment</span> Quản lý
+                                                thanh toán</a></li>
+                                <li><a th:href="@{/admin/promotions}"><span class="material-icons">local_offer</span>
+                                                Quản lý khuyến mãi</a></li>
+                                <li><a th:href="@{/admin/reviews}"><span class="material-icons">rate_review</span> Quản
+                                                lý đánh giá</a></li>
+                                <li><a th:href="@{/admin/staff}"><span class="material-icons">badge</span> Quản lý nhân
+                                                viên</a></li>
+                                <li><a th:href="@{/admin/reports}"><span class="material-icons">bar_chart</span> Báo cáo
+                                                & Thống kê</a></li>
+                                <li><a th:href="@{/admin/system}"><span class="material-icons">settings</span> Cài đặt
+                                                hệ thống</a></li>
+                                <li><a th:href="@{/logout}"><span class="material-icons">logout</span> Đăng xuất</a>
+                                </li>
+                        </ul>
+                </nav>
+        </aside>
+
+        <script>
+                document.querySelectorAll('.has-submenu > a').forEach(function (item) {
+                        item.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                var submenu = item.parentElement.querySelector('.submenu');
+                                if (submenu) submenu.classList.toggle('active');
+                        });
+                });
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản Lý Nhân Viên - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlynhanvien.css}">
+</head>
+
+<body>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+            <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </header>
+
+        <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+
+        <main role="main" tabindex="0">
+            <h1>Quản lý nhân viên</h1>
+            <section class="content-section" id="contentSection">
+                <button class="btn" id="btnAddStaff">Thêm nhân viên mới</button>
+                <table aria-label="Danh sách nhân viên" id="staffTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã NV</th>
+                            <th>Họ và tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Chức vụ</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <!-- Dữ liệu nhân viên từ controller -->
+                        <tr th:each="staff, stat : ${staffList}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${staff.maNhanVien}">NV001</td>
+                            <td th:text="${staff.ho + ' ' + staff.ten}">Nguyễn Văn A</td>
+                            <td th:text="${staff.email}">nguyenvana@panacea.com</td>
+                            <td th:text="${staff.soDienThoai}">0903123456</td>
+                            <td th:text="${staff.chucVu}">Nhân viên lễ tân</td>
+                            <td>
+                                <span th:class="${staff.trangThai == 'HOAT_DONG' ? 'status-active' : 'status-inactive'}"
+                                    th:text="${staff.trangThai == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}">
+                                    Hoạt động
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-edit" th:onclick="'editStaff(' + ${staff.id} + ')'" title="Sửa">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn-delete" th:onclick="'deleteStaff(' + ${staff.id} + ')'" title="Xóa">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Form thêm/sửa nhân viên -->
+                <form id="staffForm" style="display:none; margin-top: 2rem;">
+                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm nhân viên mới</h2>
+                    <input type="hidden" id="staffId" name="staffId" />
+
+                    <label for="maNhanVien">Mã nhân viên</label>
+                    <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
+
+                    <label for="ho">Họ</label>
+                    <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
+
+                    <label for="ten">Tên</label>
+                    <input type="text" id="ten" name="ten" required placeholder="Văn A" />
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
+
+                    <label for="soDienThoai">Số điện thoại</label>
+                    <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456" />
+
+                    <label for="chucVu">Chức vụ</label>
+                    <select id="chucVu" name="chucVu" required>
+                        <option value="" disabled selected>Chọn chức vụ</option>
+                        <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
+                    </select>
+
+                    <label for="trangThai">Trạng thái</label>
+                    <select id="trangThai" name="trangThai" required>
+                        <option value="" disabled selected>Chọn trạng thái</option>
+                        <option th:each="status : ${staffStatuses}" th:value="${status}"
+                            th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
+                    </select>
+
+                    <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+                        <button type="submit" class="btn" id="submitBtn">Lưu nhân viên</button>
+                        <button type="button" class="btn" id="cancelBtn"
+                            style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+
+    <script th:src="@{/js/Admin/quanlynhanvien.js}"></script>
+</body>
+
+</html>

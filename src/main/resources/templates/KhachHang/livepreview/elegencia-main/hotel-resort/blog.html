@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+
+<!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/blog.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:23:10 GMT -->
+<head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Thememarch" />
+    <!-- Favicon Icon -->
+    <link rel="icon" th:href="@{/css/KhachHang/assets/img/favicon.svg}" />
+    <!-- Site Title -->
+    <title>Panacea - Royale Restaurant HTML Template</title>
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="ak-preloader" class="ak-preloader">
+            <div class="animation-preloader">
+                <div class="spinner"></div>
+                <div class="txt-loading">
+                    <span data-text-preloader="P" class="letters-loading">
+                        P
+                    </span>
+
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+
+                    <span data-text-preloader="N" class="letters-loading">
+                        N
+                    </span>
+
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+
+                    <span data-text-preloader="C" class="letters-loading">
+                        C
+                    </span>
+
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
+                    </span>
+
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+                </div>
+            </div>
+            <div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+        </div>
+    </div>
+    <!-- Start Header Section -->
+    <header class="ak-site_header ak-style1 ak-sticky_header ak-site_header_full_width">
+        <div class="header-top">
+            <div class="wrapper">
+                <div class="header-logo">
+                    <a th:href="@{/khachhang/room}" class="logo">Book Now</a>
+                </div>
+                <div class="center-log">
+                    <a th:href="@{/khachhang}"><img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="..."></a>
+                </div>
+                <button class="ak-menu-toggle" id="akMenuToggle" type="button">
+                    <svg viewBox="0 0 20 15" width="40px" height="30px" class="ak-menu-icon">
+                        <path d="M20,2 L2,2" class="bar-1"></path>
+                        <path d="M2,7 L20,7" class="bar-2"></path>
+                        <path d="M30,12 L2,12" class="bar-3"></path>
+                    </svg>
+                </button>
+                <ul class="top-main-menu">
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang}">Home</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_1.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/about}">About</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_about.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/blog}">Blog</a>
+                        <img class="top-main-menu-img menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_menu.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang/resort}">Resort</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_chef.jpg}" alt="...">
+                    </li>
+                    <li class="top-main-menu-li">
+                        <a th:href="@{/khachhang}">Hotel</a>
+                        <img class="top-main-menu-img" th:src="@{/css/KhachHang/assets/img/fullWM_contact.jpg}" alt="...">
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="nav-bar-border"></div>
+        <div class="ak-main_header">
+            <div class="container">
+                <div class="ak-main_header_in">
+                    <div class="ak-main_header_left">
+                        <a class="ak-site_branding" th:href="@{/khachhang}">
+                            <img th:src="@{/css/KhachHang/assets/img/logo.png}" alt="...">
+                        </a>
+                    </div>
+                    <div class="ak-main_header_right">
+                        <div class="ak-nav ak-medium">
+                            <ul class="ak-nav_list">
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang}">Home</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang}">Hotel</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/resort}">Resort</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a th:href="@{/khachhang/about}">About</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/room}">Room</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/room}">Room</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/single-room}">Single Room</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/event-list}">Event</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/event-list}">Event</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/event-single-page}">Single Event</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a th:href="@{/khachhang/blog}">Blog</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/blog}">Blog</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/blog-details}">Blog Details</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="#">Pages</a>
+                                    <ul>
+                                        <li>
+                                            <a th:href="@{/khachhang/restaurant}">Restaurant</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/spa-wellness}">Spa Wellness</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/hotel-facilities}">Hotel Facilities</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/coming}">Comming Soon</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/faq}">faq</a>
+                                        </li>
+                                        <li>
+                                            <a th:href="@{/khachhang/404}">404 Page</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header Section -->
+    <div id="scrollsmoother-container" class="blog-page-container">
+        <!-- Start Hero -->
+        <Section>
+            <div class="ak-commmon-hero ak-style1 ak-bg" th:data-src="@{/css/KhachHang/assets/img/common_bg_2.png}">
+                <div class="ak-commmon-heading">
+                    <div class="ak-section-heading ak-style-1 ak-type-1 ak-color-1 page-top-title">
+                        <div class="ak-section-subtitle">
+                            <span class="ak-section-subtitle-span">Blog</span>
+                        </div>
+                        <div class="ak-section-main-title">
+                            <h2 class="ak-section-title">Latest News & Updates</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Section>
+        <!-- End Hero -->
+        <div class="ak-height-50 ak-height-lg-20"></div>
+
+        <!-- Start Blog Content -->
+        <div class="container">
+            <div class="ak-height-50 ak-height-lg-60"></div>
+            <div class="ak-section-heading ak-style-1 ak-type-1">
+                <div class="ak-section-subtitle">
+                    Similar News
+                </div>
+                <h2 class="ak-section-title anim-title">Similar News</h2>
+            </div>
+            <div class="ak-height-75 ak-height-lg-20"></div>
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="pagination-container">
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_1.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_2.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_3.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_4.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_5.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-right border-none-bottom">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_6.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_7.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_8.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col ak-border border-none-bottom drop-anim-gallery">
+                    <div class="blog h-100">
+                        <img th:src="@{/css/KhachHang/assets/img/blog_9.jpg}" class="blog-img-top" alt="...">
+                        <div class="blog-body">
+                            <p class="blog-time">06 June 2023</p>
+                            <a th:href="@{/khachhang/blog-details}">
+                                <h6 class="blog-title">Exquisite Dining Make Moment</h6>
+                            </a>
+                            <a th:href="@{/khachhang/blog-details}" class="blog-text">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Blog Content -->
+        <div class="ak-height-150 ak-height-lg-60"></div>
+
+        <!-- Start Footer -->
+        <footer>
+            <div class="ak-footer ak-style-1 color-1">
+                <div class="ak-height-150 ak-height-lg-75"></div>
+                <div class="container ak-hr-container">
+                    <div class="ak-braner-logo type-color-1 footer-logo">
+                        <div class="footer-log-elem">
+                            <div class="footer-log-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="13" viewBox="0 0 30 13"
+                                    fill="none">
+                                    <path d="M28.991 12.2063L14.8322 1L0.67334 12.2063" stroke="white"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <img th:src="@{/css/KhachHang/assets/img/Elegencia.png}" alt="...">
+                        </div>
+                    </div>
+
+                    <div class="ak-height-100 ak-height-lg-60"></div>
+                    <div class="ak-footer-hr-top"></div>
+
+                    <div class="footer-main">
+                        <div class="footer-eamil-menu">
+                            <div class="footer-email">
+                                <a th:href="@{mailto:Panecea@gmail.com}">
+                                    Panecea@gmail.com
+                                </a>
+                            </div>
+                            <div class="footer-menu">
+                                <ul>
+                                    <li><a th:href="@{/khachhang}">Home</a></li>
+                                    <li><a th:href="@{/khachhang/resort}">Resort</a></li>
+                                    <li><a th:href="@{/khachhang/about}">About</a></li>
+                                    <li><a th:href="@{/khachhang/events}">Event</a></li>
+                                    <li><a th:href="@{/khachhang/blog}">Blog</a></li>
+                                    <li><a th:href="@{/khachhang/room-detail}">Room</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="ak-height-75 ak-height-lg-5"></div>
+                        <div class="footer-info">
+                            <div class="fooer-phn">
+                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                                <br>
+                                <a href="tel:1-800-915-6271">1-800-915-6271</a>
+                            </div>
+                            <div class="footer-address">
+                                <a href="https://maps.app.goo.gl/6mQFJ7oVQmr6YpbR6" target="_blank">
+                                    2726 Av. PapineauMontreal,<br>QC H2K 4J6, Canada
+                                </a>
+                            </div>
+                            <div class="footer-email">
+                                <form class="email-input">
+                                    <input type="text" class="e-input" name="emailFooter" placeholder="Enter You Email"
+                                        id="emailFooter">
+                                    <button type="submit" class="btn-input">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+                                            viewBox="0 0 25 25" fill="none">
+                                            <g clip-path="url(#clip0_1316_214)">
+                                                <path
+                                                    d="M20.548 5.84478C20.98 4.64978 19.822 3.49178 18.627 3.92478L4.02203 9.20678C2.82303 9.64078 2.67803 11.2768 3.78103 11.9158L8.44303 14.6148L12.606 10.4518C12.7946 10.2696 13.0472 10.1688 13.3094 10.1711C13.5716 10.1734 13.8224 10.2786 14.0078 10.464C14.1933 10.6494 14.2984 10.9002 14.3007 11.1624C14.303 11.4246 14.2022 11.6772 14.02 11.8658L9.85703 16.0288L12.557 20.6908C13.195 21.7938 14.831 21.6478 15.265 20.4498L20.548 5.84478Z"
+                                                    fill="#040D10" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_1316_214">
+                                                    <rect width="24" height="24" fill="white"
+                                                        transform="translate(0.312988 0.158203)" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </button>
+                                </form>
+
+                            </div>
+                            <div class="footer-btn">
+                                <a th:href="@{/khachhang/room-detail}">
+                                    <div class="ak-btn style-5">
+                                        Booking
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ak-footer-hr-bottom qodef-grid-item"></div>
+                    <div class="ak-height-130 ak-height-lg-30"></div>
+
+                    <div class="copy-right-section">
+                        <p class="text-uppercase text-md-center">
+                            Copyright 2023 All Right Reserved
+                        </p>
+                    </div>
+
+                    <div class="ak-height-45 ak-height-lg-30"></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="loading-overlap"></div>
+    <!-- End Footer -->
+    <span class="ak-scrollup">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10L1.7625 11.7625L8.75 4.7875V20H11.25V4.7875L18.225 11.775L20 10L10 0L0 10Z"
+                fill="currentColor" />
+        </svg>
+    </span>
+    <!-- Start Video Popup -->
+    <div class="ak-video-popup">
+        <div class="ak-video-popup-overlay"></div>
+        <div class="ak-video-popup-content">
+            <div class="ak-video-popup-layer"></div>
+            <div class="ak-video-popup-container">
+                <div class="ak-video-popup-align">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="about:blank"></iframe>
+                    </div>
+                </div>
+                <div class="ak-video-popup-close"></div>
+            </div>
+        </div>
+    </div>
+    <!-- End Video Popup -->
+    <!-- Script -->
+    <script th:src="@{/css/KhachHang/assets/js/plugins/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/isotope.pkg.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/swiper.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/lightgallery.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollSmoother.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/SplitText.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollTrigger.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
+    <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+/* AdminSlidebar CSS */
+aside.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+aside.sidebar li {
+  position: relative;
+}
+aside.sidebar li.has-submenu > ul.sidebar-submenu {
+  display: none !important;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #fff;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 100;
+}
+aside.sidebar li.has-submenu:hover > ul.sidebar-submenu {
+  display: block !important;
+}
+.sidebar-submenu {
+    display: none;
+    background-color: #f9f9f9;
+    padding-left: 20px;
+}
+.has-submenu:hover > .sidebar-submenu {
+    display: block;
+}
+.submenu li a {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+}
+.submenu li a:hover {
+  background: #f0f0f0;
+}
+
+ul.submenu {
+  /* display: none !important; */
+  background: #fff;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+li.has-submenu:hover > ul.submenu {
+  /* display: block !important; */
+}
