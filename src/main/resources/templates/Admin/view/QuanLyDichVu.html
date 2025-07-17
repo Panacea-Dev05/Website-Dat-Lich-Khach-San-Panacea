@@ -28,41 +28,41 @@
           <span class="material-icons">add</span> Thêm dịch vụ
         </button>
         <table aria-label="Danh sách dịch vụ" id="serviceTable">
-          <thead>
-            <tr>
+                <thead>
+                <tr>
               <th>STT</th>
-              <th>Mã</th>
-              <th>Tên</th>
-              <th>Loại</th>
-              <th>Đơn giá</th>
-              <th>Đơn vị</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
+                    <th>Mã</th>
+                    <th>Tên</th>
+                    <th>Loại</th>
+                    <th>Đơn giá</th>
+                    <th>Đơn vị</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
           <tbody id="serviceTableBody">
-            <tr th:if="${#lists.isEmpty(services)}">
+                <tr th:if="${#lists.isEmpty(services)}">
               <td colspan="8" style="text-align:center; color:#888;">Không có dịch vụ nào</td>
-            </tr>
+                </tr>
             <tr th:each="service, stat : ${services}">
               <td th:text="${stat.count}">1</td>
-              <td th:text="${service.maDichVu}"></td>
-              <td th:text="${service.tenDichVu}"></td>
-              <td th:text="${service.loaiDichVu}"></td>
-              <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
-              <td th:text="${service.donViTinh}"></td>
-              <td th:text="${service.trangThai}"></td>
-              <td>
+                    <td th:text="${service.maDichVu}"></td>
+                    <td th:text="${service.tenDichVu}"></td>
+                    <td th:text="${service.loaiDichVu}"></td>
+                    <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${service.donViTinh}"></td>
+                    <td th:text="${service.trangThai}"></td>
+                    <td>
                 <button class="btn-edit" th:onclick="'window.location=\'/admin/services/edit/' + ${service.id} + '\''" title="Sửa">
                   <span class="material-icons">edit</span>
                 </button>
                 <button class="btn-delete" th:onclick="'window.location=\'/admin/services/delete/' + ${service.id} + '\''" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?')">
                   <span class="material-icons">delete</span>
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
       </section>
       <!-- Modal form thêm dịch vụ (ẩn mặc định) -->
       <div class="modal" id="serviceModal" style="display:none;">
@@ -134,6 +134,6 @@
       <footer>
           &copy; 2024 Panacea Hotel Booking System - All rights reserved.
       </footer>
-  </div>
+</div>
 </body>
 </html> 
