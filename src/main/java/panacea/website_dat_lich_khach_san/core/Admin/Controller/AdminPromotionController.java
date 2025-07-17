@@ -39,6 +39,20 @@ public class AdminPromotionController {
         return adminPromotionService.getPromotionById(id);
     }
     
+    @GetMapping("/edit/{id}")
+    public String editPromotion(@PathVariable Integer id, Model model) {
+        List<PromotionDTO> promotions = adminPromotionService.getAllPromotions();
+        List<String> promotionTypes = Arrays.asList("PHAN_TRAM", "SO_TIEN");
+        List<String> promotionStatuses = Arrays.asList("HOAT_DONG", "TAM_NGUNG", "HET_HAN");
+        PromotionDTO promotion = adminPromotionService.getPromotionById(id);
+        model.addAttribute("promotions", promotions);
+        model.addAttribute("promotionTypes", promotionTypes);
+        model.addAttribute("promotionStatuses", promotionStatuses);
+        model.addAttribute("promotionForm", promotion);
+        model.addAttribute("editMode", true);
+        return "Admin/view/QuanLyKhuyenMai";
+    }
+    
     @PostMapping
     public String createPromotion(@ModelAttribute("promotionForm") @Validated PromotionDTO promotionDTO,
                                  BindingResult bindingResult,
@@ -66,6 +80,26 @@ public class AdminPromotionController {
         }
         adminPromotionService.createPromotion(promotionDTO);
         redirectAttributes.addFlashAttribute("success", "Thêm khuyến mãi thành công!");
+        return "redirect:/admin/promotions";
+    }
+    
+    @PostMapping("/edit/{id}")
+    public String updatePromotionForm(@PathVariable Integer id,
+                                      @ModelAttribute("promotionForm") @Validated PromotionDTO promotionDTO,
+                                      BindingResult bindingResult,
+                                      Model model,
+                                      RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("promotionForm", promotionDTO);
+            model.addAttribute("promotionTypes", Arrays.asList("PHAN_TRAM", "SO_TIEN"));
+            model.addAttribute("promotionStatuses", Arrays.asList("HOAT_DONG", "TAM_NGUNG", "HET_HAN"));
+            model.addAttribute("promotions", adminPromotionService.getAllPromotions());
+            model.addAttribute("editMode", true);
+            model.addAttribute("error", "Vui lòng nhập đầy đủ và đúng thông tin!");
+            return "Admin/view/QuanLyKhuyenMai";
+        }
+        adminPromotionService.updatePromotion(id, promotionDTO);
+        redirectAttributes.addFlashAttribute("success", "Cập nhật khuyến mãi thành công!");
         return "redirect:/admin/promotions";
     }
     

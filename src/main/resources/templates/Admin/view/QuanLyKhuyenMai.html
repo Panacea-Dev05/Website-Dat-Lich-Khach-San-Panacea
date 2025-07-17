@@ -167,7 +167,7 @@
         <div id="promotionModal" class="modal-overlay" th:classappend="${error} ? ' active' : ''">
           <div class="modal-content">
             <button type="button" class="modal-close" onclick="hideForm()">&times;</button>
-            <form id="promotionForm" th:action="@{/admin/promotions}" th:object="${promotionForm}" method="post">
+            <form id="promotionForm" th:action="${editMode} ? @{'/admin/promotions/edit/' + ${promotionForm.id}} : @{/admin/promotions}" th:object="${promotionForm}" method="post">
               <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khuyến mãi mới</h2>
               <div th:if="${error}" style="color:#e53935; font-weight:600; margin-bottom:12px; text-align:center;">[[${error}]]</div>
               <input type="hidden" th:field="*{id}" />
@@ -195,10 +195,10 @@
               <input type="number" id="giamToiDa" th:field="*{giamToiDa}" min="0" step="1000" placeholder="500000" />
 
               <label for="ngayBatDau">Ngày bắt đầu</label>
-              <input type="date" id="ngayBatDau" th:field="*{ngayBatDau}" required />
+              <input type="date" id="ngayBatDau" name="ngayBatDau" th:value="${promotionForm.ngayBatDau != null ? #temporals.format(promotionForm.ngayBatDau, 'yyyy-MM-dd') : ''}" required />
 
               <label for="ngayKetThuc">Ngày kết thúc</label>
-              <input type="date" id="ngayKetThuc" th:field="*{ngayKetThuc}" required />
+              <input type="date" id="ngayKetThuc" name="ngayKetThuc" th:value="${promotionForm.ngayKetThuc != null ? #temporals.format(promotionForm.ngayKetThuc, 'yyyy-MM-dd') : ''}" required />
 
               <label for="soLuongToiDa">Số lượng tối đa</label>
               <input type="number" id="soLuongToiDa" th:field="*{soLuongToiDa}" min="1" step="1" required placeholder="100" />
@@ -229,18 +229,41 @@
   </div>
 
   <!-- <script th:src="@{/js/Admin/quanlykhuyenmai.js}"></script> -->
-  <script>
+  <script th:inline="javascript">
     function showAddForm() {
       document.getElementById('promotionModal').classList.add('active');
       document.getElementById('promotionForm').reset();
       document.getElementById('formTitle').innerText = 'Thêm khuyến mãi mới';
+      // Reset input ngày về rỗng để tránh giữ giá trị cũ sai định dạng
+      document.getElementById('ngayBatDau').value = '';
+      document.getElementById('ngayKetThuc').value = '';
     }
     function hideForm() {
       document.getElementById('promotionModal').classList.remove('active');
     }
+    function editPromotion(id) {
+      window.location.href = '/admin/promotions/edit/' + id;
+    }
+    function deletePromotion(id) {
+      if(confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')) {
+        fetch('/admin/promotions/' + id, { method: 'DELETE' })
+          .then(res => {
+            if(res.ok) location.reload();
+            else alert('Xóa khuyến mãi thất bại!');
+          });
+      }
+    }
     // Tự động mở modal nếu có lỗi từ backend
     window.addEventListener('DOMContentLoaded', function() {
       if (document.querySelector('#promotionModal').classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      }
+      // Nếu ở chế độ edit, tự động mở modal và đổi tiêu đề
+      var editMode = /*[[${editMode} ? 'true' : 'false']]*/ 'false';
+      var modal = document.getElementById('promotionModal');
+      if(editMode === 'true' && modal) {
+        modal.classList.add('active');
+        document.getElementById('formTitle').innerText = 'Sửa khuyến mãi';
         document.body.style.overflow = 'hidden';
       }
     });
