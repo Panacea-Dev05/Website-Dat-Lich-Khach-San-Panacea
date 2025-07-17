@@ -250,7 +250,7 @@ input[type="date"]:focus {
         align-self: flex-start;
     }
 }
-.footer {
+footer {
     grid-area: footer;
     background: #e6f4ea;
     color: #064e3b;
@@ -263,6 +263,7 @@ input[type="date"]:focus {
     border-top: 1px solid #c4e1cc;
     user-select: none;
 }
+
 main::-webkit-scrollbar {
     width: 8px;
 }
