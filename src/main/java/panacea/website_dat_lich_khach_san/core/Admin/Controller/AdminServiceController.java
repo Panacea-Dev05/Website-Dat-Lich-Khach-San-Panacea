@@ -56,7 +56,18 @@ public class AdminServiceController {
         ServiceDTO dto = adminServiceService.getServiceById(id);
         if (dto != null) {
             model.addAttribute("serviceForm", dto);
-            return "Admin/view/FormDichVu";
+            model.addAttribute("editMode", true);
+            // Truyền lại danh sách dịch vụ và các biến cần thiết cho view
+            Pageable pageable = PageRequest.of(0, 5);
+            Page<ServiceDTO> servicePage = adminServiceService.getAllServicesPaged(pageable);
+            model.addAttribute("services", servicePage.getContent());
+            model.addAttribute("currentPage", 0);
+            model.addAttribute("totalPages", Math.max(1, servicePage.getTotalPages()));
+            model.addAttribute("totalItems", servicePage.getTotalElements());
+            model.addAttribute("pageSize", 5);
+            model.addAttribute("hasNext", servicePage.hasNext());
+            model.addAttribute("hasPrevious", servicePage.hasPrevious());
+            return "Admin/view/QuanLyDichVu";
         }
         return "redirect:/admin/services";
     }
