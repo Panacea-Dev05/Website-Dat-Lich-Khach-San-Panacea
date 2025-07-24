@@ -66,7 +66,7 @@
                 <button class="btn-view" th:onclick="'viewPayment(' + ${payment.id} + ')'" title="Xem chi tiết">
                   <span class="material-icons">visibility</span>
                 </button>
-                <button class="btn-edit" th:onclick="'editPayment(' + ${payment.id} + ')'" title="Sửa">
+                <button class="btn-edit" data-id="[[${payment.id}]]" title="Sửa">
                   <span class="material-icons">edit</span>
                 </button>
               </td>
@@ -74,43 +74,92 @@
           </tbody>
         </table>
 
-        <!-- Form thêm/sửa thanh toán -->
-        <form id="paymentForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm thanh toán mới</h2>
-          <input type="hidden" id="paymentId" name="paymentId" />
+        <!-- Modal form thêm/sửa thanh toán (ẩn mặc định) -->
+        <div class="modal-overlay" id="paymentModal" style="display:none;">
+          <div class="modal-content">
+            <button type="button" class="modal-close" id="closePaymentModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <form id="paymentForm">
+              <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm thanh toán mới</h2>
+              <input type="hidden" id="paymentId" name="paymentId" />
 
-          <label for="bookingId">Mã đặt phòng</label>
-          <select id="bookingId" name="bookingId" required>
-            <option value="" disabled selected>Chọn đặt phòng</option>
-            <option th:each="booking : ${bookings}" th:value="${booking.id}"
-              th:text="${booking.maDatPhong + ' - ' + booking.customerName}"></option>
-          </select>
+              <label for="bookingId">Mã đặt phòng</label>
+              <select id="bookingId" name="bookingId" required>
+                <option value="" disabled selected>Chọn đặt phòng</option>
+                <option th:each="booking : ${bookings}" th:value="${booking.id}"
+                  th:text="${booking.maDatPhong + ' - ' + booking.customerName}"></option>
+              </select>
 
-          <label for="amount">Số tiền (VNĐ)</label>
-          <input type="number" id="amount" name="amount" required min="0" step="1000" placeholder="3600000" />
+              <label for="amount">Số tiền (VNĐ)</label>
+              <input type="number" id="amount" name="amount" required min="0" step="1000" placeholder="3600000" />
 
-          <label for="paymentMethod">Phương thức thanh toán</label>
-          <select id="paymentMethod" name="paymentMethod" required>
-            <option value="" disabled selected>Chọn phương thức</option>
-            <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
-          </select>
+              <label for="paymentMethod">Phương thức thanh toán</label>
+              <select id="paymentMethod" name="paymentMethod" required>
+                <option value="" disabled selected>Chọn phương thức</option>
+                <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
+              </select>
 
-          <label for="paymentDate">Ngày thanh toán</label>
-          <input type="datetime-local" id="paymentDate" name="paymentDate" required />
+              <label for="paymentDate">Ngày thanh toán</label>
+              <input type="datetime-local" id="paymentDate" name="paymentDate" required />
 
-          <label for="status">Trạng thái</label>
-          <select id="status" name="status" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
-            <option th:each="status : ${paymentStatuses}" th:value="${status}"
-              th:text="${status == 'Completed' ? 'Hoàn thành' : (status == 'Pending' ? 'Chờ xử lý' : (status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'))}">
-            </option>
-          </select>
+              <label for="status">Trạng thái</label>
+              <select id="status" name="status" required>
+                <option value="" disabled selected>Chọn trạng thái</option>
+                <option th:each="status : ${paymentStatuses}" th:value="${status}"
+                  th:text="${status == 'Completed' ? 'Hoàn thành' : (status == 'Pending' ? 'Chờ xử lý' : (status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'))}">
+                </option>
+              </select>
 
-          <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-            <button type="submit" class="btn" id="submitBtn">Lưu thanh toán</button>
-            <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+              <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+                <button type="submit" class="btn" id="submitBtn">Lưu thanh toán</button>
+                <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
+
+        <!-- Modal xem chi tiết thanh toán (ẩn mặc định) -->
+        <div class="modal-overlay" id="viewPaymentModal" style="display:none;">
+          <div class="modal-content">
+            <button type="button" class="modal-close" id="closeViewPaymentModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết thanh toán</h2>
+            
+            <div class="payment-details">
+              <div class="detail-row">
+                <div class="detail-label">Mã thanh toán:</div>
+                <div class="detail-value" id="viewPaymentId"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Mã đặt phòng:</div>
+                <div class="detail-value" id="viewBookingId"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Khách hàng:</div>
+                <div class="detail-value" id="viewCustomerName"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Số tiền:</div>
+                <div class="detail-value" id="viewAmount"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Phương thức:</div>
+                <div class="detail-value" id="viewPaymentMethod"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Ngày thanh toán:</div>
+                <div class="detail-value" id="viewPaymentDate"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Trạng thái:</div>
+                <div class="detail-value" id="viewStatus"></div>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              <button type="button" class="btn" id="printInvoiceBtn">In hóa đơn</button>
+              <button type="button" class="btn" id="closeViewBtn" style="background:#ef4444; margin-left: 12px;">Đóng</button>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -120,6 +169,190 @@
   </div>
 
   <script th:src="@{/js/Admin/quanlythanhtoan.js}"></script>
+  <script th:inline="javascript">
+    // Hiển thị form thêm thanh toán mới
+    function showAddPaymentForm() {
+      var modal = document.getElementById('paymentModal');
+      var form = document.getElementById('paymentForm');
+      modal.style.display = 'flex';
+      form.reset();
+      document.getElementById('formTitle').innerText = 'Thêm thanh toán mới';
+      document.getElementById('paymentId').value = '';
+      form.setAttribute('data-mode', 'add');
+      form.setAttribute('action', '/admin/payments');
+    }
+
+    // Hiển thị form sửa thanh toán
+    function showEditPaymentForm(payment) {
+      var modal = document.getElementById('paymentModal');
+      var form = document.getElementById('paymentForm');
+      modal.style.display = 'flex';
+      form.reset();
+      document.getElementById('formTitle').innerText = 'Sửa thanh toán';
+      document.getElementById('paymentId').value = payment.id;
+      document.getElementById('bookingId').value = payment.bookingId;
+      document.getElementById('amount').value = payment.amount;
+      document.getElementById('paymentMethod').value = payment.paymentMethod;
+      document.getElementById('paymentDate').value = payment.paymentDate ? payment.paymentDate.substring(0,16) : '';
+      document.getElementById('status').value = payment.status;
+      form.setAttribute('data-mode', 'edit');
+      form.setAttribute('action', '/admin/payments/' + payment.id);
+    }
+
+    // Hiển thị chi tiết thanh toán
+    function viewPayment(paymentId) {
+      fetch('/admin/payments/' + paymentId)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Lỗi khi tải dữ liệu thanh toán');
+          }
+          return res.json();
+        })
+        .then(data => {
+          // Kiểm tra nếu có lỗi từ server
+          if (data.error) {
+            throw new Error(data.message || 'Lỗi không xác định');
+          }
+          
+          // Nếu không có lỗi, hiển thị thông tin thanh toán
+          document.getElementById('viewPaymentId').textContent = data.id;
+          document.getElementById('viewBookingId').textContent = data.bookingId;
+          document.getElementById('viewCustomerName').textContent = data.customerName;
+          document.getElementById('viewAmount').textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.amount);
+          document.getElementById('viewPaymentMethod').textContent = data.paymentMethod;
+          document.getElementById('viewPaymentDate').textContent = new Date(data.paymentDate).toLocaleString('vi-VN');
+          
+          // Hiển thị trạng thái với màu sắc tương ứng
+          const statusElement = document.getElementById('viewStatus');
+          statusElement.textContent = data.status === 'Completed' ? 'Hoàn thành' : 
+                                      data.status === 'Pending' ? 'Chờ xử lý' : 
+                                      data.status === 'Failed' ? 'Thất bại' : 'Hoàn tiền';
+          statusElement.className = data.status === 'Completed' ? 'status-completed' : 
+                                   data.status === 'Pending' ? 'status-pending' : 
+                                   data.status === 'Failed' ? 'status-failed' : 'status-refunded';
+          
+          // Hiển thị modal
+          document.getElementById('viewPaymentModal').style.display = 'flex';
+          
+          // Lưu ID thanh toán cho nút in hóa đơn
+          document.getElementById('printInvoiceBtn').setAttribute('data-id', data.id);
+        })
+        .catch(error => {
+          console.error('Lỗi:', error);
+          alert('Không thể xem chi tiết thanh toán: ' + error.message);
+        });
+    }
+
+    // In hóa đơn
+    function printInvoice(paymentId) {
+      fetch('/admin/payments/invoice/' + paymentId)
+        .then(res => res.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'invoice-' + paymentId + '.pdf';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+          console.error('Lỗi khi tải hóa đơn:', error);
+          alert('Không thể tải hóa đơn. Vui lòng thử lại sau.');
+        });
+    }
+
+    // Gắn sự kiện cho các nút
+    document.addEventListener('DOMContentLoaded', function() {
+      // Nút thêm thanh toán mới
+      document.getElementById('btnAddPayment').onclick = showAddPaymentForm;
+      
+      // Đóng modal thêm/sửa
+      document.getElementById('closePaymentModal').onclick = function() {
+        document.getElementById('paymentModal').style.display = 'none';
+      };
+      document.getElementById('cancelBtn').onclick = function() {
+        document.getElementById('paymentModal').style.display = 'none';
+      };
+      
+      // Đóng modal xem chi tiết
+      document.getElementById('closeViewPaymentModal').onclick = function() {
+        document.getElementById('viewPaymentModal').style.display = 'none';
+      };
+      document.getElementById('closeViewBtn').onclick = function() {
+        document.getElementById('viewPaymentModal').style.display = 'none';
+      };
+      
+      // Nút in hóa đơn
+      document.getElementById('printInvoiceBtn').onclick = function() {
+        const paymentId = this.getAttribute('data-id');
+        printInvoice(paymentId);
+      };
+      
+      // Gắn sự kiện cho nút Sửa (Edit)
+      document.querySelectorAll('.btn-edit[data-id]').forEach(function(btn) {
+        btn.onclick = function() {
+          var paymentId = this.getAttribute('data-id');
+          fetch('/admin/payments/' + paymentId)
+            .then(res => {
+              if (!res.ok) {
+                throw new Error('Lỗi khi tải dữ liệu thanh toán');
+              }
+              return res.json();
+            })
+            .then(data => {
+              // Kiểm tra nếu có lỗi từ server
+              if (data.error) {
+                throw new Error(data.message || 'Lỗi không xác định');
+              }
+              showEditPaymentForm(data);
+            })
+            .catch(error => {
+              console.error('Lỗi:', error);
+              alert('Không thể chỉnh sửa thanh toán: ' + error.message);
+            });
+        };
+      });
+      
+      // Submit form add/edit
+      document.getElementById('paymentForm').onsubmit = function(e) {
+        e.preventDefault();
+        var form = this;
+        var mode = form.getAttribute('data-mode');
+        var url = form.getAttribute('action');
+        var method = mode === 'edit' ? 'PUT' : 'POST';
+        var data = {
+          id: document.getElementById('paymentId').value,
+          bookingId: document.getElementById('bookingId').value,
+          amount: document.getElementById('amount').value,
+          paymentMethod: document.getElementById('paymentMethod').value,
+          paymentDate: document.getElementById('paymentDate').value,
+          status: document.getElementById('status').value
+        };
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(res => {
+          if(res.ok) {
+            return res.json();
+          } else {
+            throw new Error('Lưu thanh toán thất bại!');
+          }
+        })
+        .then(data => {
+          console.log('Thanh toán đã được lưu:', data);
+          location.reload();
+        })
+        .catch(error => {
+          console.error('Lỗi:', error);
+          alert(error.message);
+        });
+      };
+    });
+  </script>
 </body>
 
 </html>
