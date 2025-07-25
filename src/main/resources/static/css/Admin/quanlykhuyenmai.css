@@ -232,6 +232,110 @@ textarea {
     min-height: 80px;
     resize: vertical;
 }
+/* --- SỬA LẠI FORM MODAL KHUYẾN MÃI: 1 CỘT, SCROLL ĐƯỢC, NGAY NGẮN --- */
+#promotionModal .modal-content {
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.18);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  min-width: 340px;
+  max-width: 420px;
+  width: 96vw;
+  max-height: 92vh;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow-y: auto;
+}
+#promotionForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 0.5rem;
+}
+#promotionForm label {
+  font-size: 1em;
+  font-weight: 600;
+  color: #065f46;
+  margin-bottom: 4px;
+}
+#promotionForm input,
+#promotionForm select,
+#promotionForm textarea {
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1.3px solid #a7f3d0;
+  font-size: 1em;
+  background: #fff;
+  transition: border 0.2s;
+  outline: none;
+  width: 100%;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+#promotionForm input:focus,
+#promotionForm select:focus,
+#promotionForm textarea:focus {
+  border-color: #10b981;
+}
+#promotionForm textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+#promotionForm input[type="date"] {
+  font-family: 'Inter', Arial, sans-serif;
+}
+#promotionForm input[type="number"]::-webkit-inner-spin-button,
+#promotionForm input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#promotionForm input[type="number"] {
+  appearance: textfield;
+}
+#promotionForm > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+#promotionForm button.btn {
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1.08em;
+  font-weight: 700;
+  background: #10b981;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+#promotionForm button.btn:hover {
+  background: #059669;
+  box-shadow: 0 8px 24px rgba(5,150,105,0.18);
+}
+#promotionForm button#cancelBtn {
+  background: #ef4444;
+}
+#promotionForm button#cancelBtn:hover {
+  background: #b91c1c;
+}
+@media (max-width: 600px) {
+  #promotionModal .modal-content {
+    padding: 1rem 0.3rem 1rem 0.3rem;
+    min-width: 0;
+    max-width: 99vw;
+  }
+  #promotionForm {
+    gap: 10px;
+  }
+  #promotionForm > div {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .app {

@@ -212,282 +212,42 @@
             <div class="ak-height-150 ak-height-lg-60"></div>
             <div class="container">
                 <div class="room-section">
-                    <div class="room-card">
+                    <div class="room-card" th:each="roomType, roomStat : ${roomTypes}">
                         <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_1.jpg}" class="room-card-img-top" alt="...">
+                            <a th:href="@{/khachhang/single-room(id=${roomType.id})}">
+                                <img th:src="${roomType.imageUrls != null and !roomType.imageUrls.isEmpty()} ? @{${roomType.imageUrls[0]}} : @{/css/KhachHang/assets/img/room_} + ${roomStat.index % 8 + 1} + '.jpg'" class="room-card-img-top" alt="...">
+                            </a>
                             <div class="room-card-img-btn">
                                 <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
+                                    <a th:href="@{/khachhang/single-room(id=${roomType.id})}" class="text-btn1 text-uppercase">
+                                        Giá ngày: <span th:text="${#numbers.formatDecimal(roomType.giaNgay, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                The Royal Serenity Suite
-                            </a>
+                            <span class="room-card-title">
+                                <a th:href="@{/khachhang/single-room(id=${roomType.id})}" th:text="${roomType.tenLoaiPhong}"></a>
+                            </span>
                             <div class="room-card-info">
-                                <p>120 m2</p>
+                                <p th:text="${roomType.dienTich != null ? roomType.dienTich + ' m2' : 'N/A'}"></p>
                                 <p class="hr-colum"></p>
-                                <p>3 beds</p>
+                                <p th:text="${roomType.soGiuong != null ? roomType.soGiuong + ' beds' : 'N/A'}"></p>
                                 <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
+                                <p th:text="${roomType.loaiGiuong != null ? roomType.loaiGiuong : 'N/A'}"></p>
                             </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-
+                            <p class="room-card-text" th:text="${roomType.moTa != null ? roomType.moTa : 'Đang cập nhật'}"></p>
                         </div>
                         <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
+                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room(id=${roomType.id})}">ROOM DETAILS
                                 <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31" fill="none">
                                         <g clip-path="url(#clip0_1355_128)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
+                                            <path d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z" fill="#FFD28D" />
                                         </g>
                                         <defs>
-                                            <clipPath id="clip0_1355_1286">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="room-card">
-                        <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_2.jpg}" class="room-card-img-top" alt="...">
-                            <div class="room-card-img-btn">
-                                <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                The Platinum Paradiso Suite
-                            </a>
-                            <div class="room-card-info">
-                                <p>120 m2</p>
-                                <p class="hr-colum"></p>
-                                <p>3 beds</p>
-                                <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
-                            </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-                        </div>
-                        <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
-                                <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
-                                        <g clip-path="url(#clip0_1355_1285)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_1355_1285">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="room-card">
-                        <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_5.jpg}" class="room-card-img-top" alt="...">
-                            <div class="room-card-img-btn">
-                                <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                Enchanted Garden Manor
-                            </a>
-                            <div class="room-card-info">
-                                <p>120 m2</p>
-                                <p class="hr-colum"></p>
-                                <p>3 beds</p>
-                                <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
-                            </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-                        </div>
-                        <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
-                                <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
-                                        <g clip-path="url(#clip0_1355_1284)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_1355_1284">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="room-card">
-                        <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_6.jpg}" class="room-card-img-top" alt="...">
-                            <div class="room-card-img-btn">
-                                <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                Supreme Silk & Satin Room
-                            </a>
-                            <div class="room-card-info">
-                                <p>120 m2</p>
-                                <p class="hr-colum"></p>
-                                <p>3 beds</p>
-                                <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
-                            </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-                        </div>
-                        <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
-                                <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
-                                        <g clip-path="url(#clip0_1355_1283)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_1355_1283">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="room-card">
-                        <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_7.jpg}" class="room-card-img-top" alt="...">
-                            <div class="room-card-img-btn">
-                                <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                Sapphire Skyline Penthouse
-                            </a>
-                            <div class="room-card-info">
-                                <p>120 m2</p>
-                                <p class="hr-colum"></p>
-                                <p>3 beds</p>
-                                <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
-                            </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-                        </div>
-                        <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
-                                <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
-                                        <g clip-path="url(#clip0_1355_1282)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_1355_1282">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="room-card">
-                        <div class="room-card-img">
-                            <img th:src="@{/css/KhachHang/assets/img/room_8.jpg}" class="room-card-img-top" alt="...">
-                            <div class="room-card-img-btn">
-                                <div class="text-btn">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        Starts At $259
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="room-card-body">
-                            <a th:href="@{/khachhang/single-room}" class="room-card-title">
-                                The Grand Opulence Retreat
-                            </a>
-                            <div class="room-card-info">
-                                <p>120 m2</p>
-                                <p class="hr-colum"></p>
-                                <p>3 beds</p>
-                                <p class="hr-colum"></p>
-                                <p>1 Bathroom</p>
-                            </div>
-                            <p class="room-card-text">Contrary to popular belief, Lorem Ipsum is not simply random text.
-                                It has roots in a piece of classical Latin literature.
-                            </p>
-                        </div>
-                        <div class="room-footer">
-                            <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
-                                <span class="ms-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
-                                        fill="none">
-                                        <g clip-path="url(#clip0_1355_1281)">
-                                            <path
-                                                d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
-                                                fill="#FFD28D" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_1355_1281">
-                                                <rect width="30" height="30" fill="white"
-                                                    transform="translate(0.5 0.351562)" />
+                                            <clipPath id="clip0_1355_128">
+                                                <rect width="30" height="30" fill="white" transform="translate(0.5 0.351562)" />
                                             </clipPath>
                                         </defs>
                                     </svg>

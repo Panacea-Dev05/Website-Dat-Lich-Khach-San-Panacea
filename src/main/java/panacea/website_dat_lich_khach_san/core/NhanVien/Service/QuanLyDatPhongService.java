@@ -10,6 +10,9 @@ import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.repository.*;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
+import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
+import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDetailDTO;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -28,6 +31,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
+import panacea.website_dat_lich_khach_san.repository.ServiceRepository;
 
 @Service
 public class QuanLyDatPhongService {
@@ -49,6 +53,12 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private BookingHistoryRepository bookingHistoryRepository;
+
+    @Autowired
+    private ServiceDetailRepository serviceDetailRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -533,7 +543,7 @@ public class QuanLyDatPhongService {
         java.util.List<BookingDetailViewDTO> dtoList = filtered.stream()
             .map(booking -> {
                 java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
-                return BookingDetailViewDTO.fromEntity(booking, details);
+                return BookingDetailViewDTO.fromEntity(booking, details, new java.util.ArrayList<>());
             })
             .collect(Collectors.toList());
         
@@ -541,6 +551,31 @@ public class QuanLyDatPhongService {
         int end = Math.min(start + pageable.getPageSize(), dtoList.size());
         java.util.List<BookingDetailViewDTO> pageContent = start > end ? java.util.Collections.emptyList() : dtoList.subList(start, end);
         return new PageImpl<>(pageContent, pageable, dtoList.size());
+    }
+
+    // Trả về chi tiết booking kèm danh sách dịch vụ đã sử dụng
+    public BookingDetailViewDTO getBookingDetailViewDTOById(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking == null) return null;
+        List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+        // Lấy danh sách dịch vụ đã sử dụng
+        List<ServiceDetail> serviceDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
+        List<ServiceDetailDTO> serviceUsages = serviceDetails.stream().map(sd -> {
+            ServiceDetailDTO dto = new ServiceDetailDTO();
+            dto.setId(sd.getId());
+            dto.setBookingId(sd.getDatPhongId());
+            dto.setServiceId(sd.getDichVuId());
+            dto.setSoLuong(sd.getSoLuong() != null ? sd.getSoLuong().intValue() : null);
+            dto.setDonGia(sd.getDonGiaThucTe());
+            if (sd.getDonGiaThucTe() != null && sd.getSoLuong() != null) {
+                dto.setThanhTien(sd.getDonGiaThucTe().multiply(new java.math.BigDecimal(sd.getSoLuong())));
+            }
+            dto.setTrangThai(null);
+            dto.setUuidId(sd.getUuidId());
+            dto.setCreatedDate(sd.getCreatedDate());
+            return dto;
+        }).toList();
+        return BookingDetailViewDTO.fromEntity(booking, details, serviceUsages);
     }
 
     public boolean checkInBooking(Long bookingId, String soCmndCccd, LocalDate ngayCapCmnd, String noiCapCmnd, Byte soNguoiLonThucTe, Byte soTreEmThucTe, String ghiChuCheckIn) {
@@ -571,9 +606,10 @@ public class QuanLyDatPhongService {
         return true;
     }
 
-    public List<Room> getAvailableRooms() {
+    public List<Room> getAvailableRooms(Integer roomTypeId) {
         return roomRepository.findAll().stream()
-            .filter(room -> room.getTrangThai() == Room.TrangThaiPhong.SAN_SANG)
+            .filter(room -> room.getTrangThai() == Room.TrangThaiPhong.SAN_SANG &&
+                            (roomTypeId == null || (room.getRoomType() != null && room.getRoomType().getId().equals(roomTypeId))))
             .collect(java.util.stream.Collectors.toList());
     }
 
@@ -629,5 +665,49 @@ public class QuanLyDatPhongService {
             }
         }
         logger.info("[AutoCancel] Kết thúc kiểm tra booking chưa thanh toán.");
+    }
+
+    // Cập nhật lại danh sách dịch vụ đã sử dụng cho booking
+    public boolean updateBookingServices(Long bookingId, java.util.List<java.util.Map<String, Object>> services) {
+        try {
+            var bookingOpt = bookingRepository.findById(bookingId);
+            if (bookingOpt.isEmpty()) return false;
+            var booking = bookingOpt.get();
+            // Xóa toàn bộ ServiceDetail cũ
+            var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
+            serviceDetailRepository.deleteAll(oldDetails);
+            // Thêm lại các ServiceDetail mới
+            java.math.BigDecimal tongTienDichVu = java.math.BigDecimal.ZERO;
+            for (var s : services) {
+                Integer serviceId = (Integer) (s.get("serviceId") instanceof Integer ? s.get("serviceId") : Integer.parseInt(s.get("serviceId").toString()));
+                Integer soLuong = (Integer) (s.get("soLuong") instanceof Integer ? s.get("soLuong") : Integer.parseInt(s.get("soLuong").toString()));
+                if (soLuong == null || soLuong < 1) continue;
+                var serviceOpt = serviceRepository.findById(serviceId);
+                if (serviceOpt.isEmpty()) continue;
+                var service = serviceOpt.get();
+                var detail = new panacea.website_dat_lich_khach_san.entity.ServiceDetail();
+                detail.setDatPhongId(booking.getId());
+                detail.setDichVuId(serviceId);
+                detail.setSoLuong(soLuong.shortValue());
+                detail.setDonGiaThucTe(service.getDonGia());
+                detail.setGhiChu(null);
+                serviceDetailRepository.save(detail);
+                if (service.getDonGia() != null) {
+                    tongTienDichVu = tongTienDichVu.add(service.getDonGia().multiply(new java.math.BigDecimal(soLuong)));
+                }
+            }
+            // Cập nhật tổng tiền dịch vụ và tổng thanh toán booking
+            booking.setTongTienDichVu(tongTienDichVu);
+            if (booking.getTongTienPhong() != null) {
+                booking.setTongThanhToan(booking.getTongTienPhong().add(tongTienDichVu));
+            } else {
+                booking.setTongThanhToan(tongTienDichVu);
+            }
+            bookingRepository.save(booking);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 } 

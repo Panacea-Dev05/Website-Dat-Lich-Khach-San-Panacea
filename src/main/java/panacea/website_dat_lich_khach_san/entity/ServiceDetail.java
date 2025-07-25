@@ -2,7 +2,6 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -53,7 +52,7 @@ public class ServiceDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dich_vu_id", insertable = false, updatable = false)
-    private Service service;
+    private ServiceEntity service;
 
     @PrePersist
     public void prePersist() {

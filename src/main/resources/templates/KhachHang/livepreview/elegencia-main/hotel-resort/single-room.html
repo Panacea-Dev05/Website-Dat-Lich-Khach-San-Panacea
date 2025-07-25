@@ -17,6 +17,101 @@
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+    <style>
+        .room-detail-section {
+            margin-top: 48px;
+            clear: both;
+            position: relative;
+            z-index: 2;
+        }
+        .room-detail-layout {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            margin-top: 0;
+        }
+        .room-gallery {
+            flex: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .room-image {
+            width: 100%;
+            max-width: 350px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .booking-form {
+            flex: 1;
+            min-width: 320px;
+            max-width: 400px;
+            background: #0d2327;
+            border-radius: 16px;
+            padding: 32px 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+            color: #fff;
+        }
+        @media (max-width: 900px) {
+            .room-detail-layout { flex-direction: column; }
+            .booking-form { max-width: 100%; min-width: 0; margin-top: 24px; }
+        }
+        /* Đảm bảo row chính chia 2 cột rõ ràng */
+        #containerAround {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 32px;
+            position: relative;
+            z-index: 2;
+        }
+        #containerAround > .col-md-8 {
+            flex: 2 1 0;
+            min-width: 0;
+            max-width: 70%;
+        }
+        #containerAround > .col-md-4 {
+            flex: 1 1 320px;
+            min-width: 320px;
+            max-width: 400px;
+        }
+        @media (max-width: 900px) {
+            #containerAround {
+                flex-direction: column;
+            }
+            #containerAround > .col-md-8, #containerAround > .col-md-4 {
+                max-width: 100%;
+                min-width: 0;
+                width: 100%;
+            }
+        }
+        /* Đảm bảo similar room luôn ở dưới cùng, không bị chồng lên */
+        .similar-room-section {
+            clear: both;
+            margin-top: 48px;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+        /* Đảm bảo room-section hiển thị đúng */
+        .room-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .room-section > .col {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,36 +121,30 @@
             <div class="animation-preloader">
                 <div class="spinner"></div>
                 <div class="txt-loading">
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
+                    <span data-text-preloader="P" class="letters-loading">
+                        P
                     </span>
 
-                    <span data-text-preloader="L" class="letters-loading">
-                        L
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
-                    </span>
-
-                    <span data-text-preloader="G" class="letters-loading">
-                        G
-                    </span>
-
-                    <span data-text-preloader="E" class="letters-loading">
-                        E
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
                     </span>
 
                     <span data-text-preloader="N" class="letters-loading">
                         N
                     </span>
 
+                    <span data-text-preloader="A" class="letters-loading">
+                        A
+                    </span>
+
                     <span data-text-preloader="C" class="letters-loading">
                         C
                     </span>
-                    <span data-text-preloader="I" class="letters-loading">
-                        I
+
+                    <span data-text-preloader="E" class="letters-loading">
+                        E
                     </span>
+
                     <span data-text-preloader="A" class="letters-loading">
                         A
                     </span>
@@ -215,37 +304,27 @@
             <div class="row" id="containerAround">
                 <div class="col-md-8">
                     <div class="blog-content" id="scrollGaleria">
-                        <img th:src="@{/css/KhachHang/assets/img/single_room_1.jpg}" alt="...">
+                        <img th:src="${roomType.imageUrls != null and !roomType.imageUrls.isEmpty()} ? @{${roomType.imageUrls[0]}} : @{/css/KhachHang/assets/img/room_1.jpg}" alt="...">
                         <div class="ak-height-75 ak-height-lg-30"></div>
                         <div class="d-flex justify-content-between flex-wrap me-3 align-items-center">
                             <div class="blog-details">
-                                <h5 class="anim-title-3 ak-white-color">The Royal Serenity Suite</h5>
+                                <h5 class="anim-title-3 ak-white-color" th:text="${roomType.tenLoaiPhong}"></h5>
                                 <div class="blog-details-subtitle text-uppercase">
-                                    <p>90 M2</p>
+                                    <p th:text="${roomType.dienTich != null ? roomType.dienTich + ' m2' : 'N/A'}"></p>
                                     <p class="blog-details-date"></p>
-                                    <p>3 beds</p>
+                                    <p th:text="${roomType.soGiuong != null ? roomType.soGiuong + ' beds' : 'N/A'}"></p>
                                     <p class="blog-details-date"></p>
-                                    <p>1 Bathroom</p>
+                                    <p th:text="${roomType.loaiGiuong != null ? roomType.loaiGiuong : 'N/A'}"></p>
                                 </div>
                             </div>
                             <div class="text-btn mt-5 mt-lg-0">
-                                <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                    Price $150.0 Per Night
-                                </a>
+                                <span class="text-btn1 text-uppercase">
+                                    Giá ngày: <span th:text="${#numbers.formatDecimal(roomType.giaNgay, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
+                                </span>
                             </div>
                         </div>
                         <div class="ak-height-30 ak-height-lg-30"></div>
-                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have
-                            suffered alteration in some form, by injected humour, or randomised words which don't look
-                            even slightly believable. If you are going to use
-                            a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in
-                            the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined
-                            chunks as necessary, making this the first
-                            true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with
-                            a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The
-                            generated Lorem Ipsum is always repetition,
-                            injected humour, non-characteristic words etc.
-                        </p>
+                        <p th:text="${roomType.moTa != null ? roomType.moTa : 'Đang cập nhật'}"></p>
 
                         <!-- Start Pets and Somke -->
                         <div class="ak-height-50 ak-height-lg-30"></div>
@@ -439,7 +518,7 @@
                             </div>
                             <div class="ak-height-50 ak-height-lg-30"></div>
                             <form id="bookingNowForm" action="/khachhang/single-room/booking" method="post">
-                                <input type="hidden" name="roomId" value="1" />
+                                <input type="hidden" name="roomTypeId" th:value="${roomType.id}" />
                                 <input type="hidden" name="hotelId" value="1" />
                                 <div class="form-group">
                                     <input type="text" name="hoKhach" class="form-control booking-now-input custom-input-separated" placeholder="First Name" required />
@@ -453,7 +532,19 @@
                                 <div class="form-group">
                                     <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                                 </div>
-                                <!-- ... giữ nguyên các div, class, style ... -->
+                                <div class="form-group">
+                                    <label for="bookingType">Loại thuê:</label>
+                                    <select id="bookingType" name="bookingType" class="form-control booking-now-input custom-input-separated" required>
+                                        <option value="ngay">Theo ngày</option>
+                                        <option value="gio">Theo giờ</option>
+                                        <option value="dem">Theo đêm</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="group-bookingQuantity">
+                                    <label id="label-bookingQuantity" for="bookingQuantity">Số ngày</label>
+                                    <input type="number" id="bookingQuantity" name="bookingQuantity" class="form-control booking-now-input custom-input-separated" min="1" value="1" required />
+                                </div>
+
                                 <div class="check">
                                     <div class="check-data">
                                         <p class="check-title">Check In</p>
@@ -521,41 +612,6 @@
                                             value="Increase Value">+</div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="ak-height-50 ak-height-lg-30"></div>
-                                    <h5 class="ak-white-color">Extra Services</h5>
-                                    <div class="ak-height-25 ak-height-lg-20"></div>
-                                    <div class="row row-cols-1">
-                                        <div class="col">
-                                            <label class="cbox-cursor">
-                                                <input type="checkbox" name="dichVu" value="Bar Service" />&nbsp;Bar
-                                                Service
-                                            </label>
-                                        </div>
-                                        <div class="col">
-                                            <label class="cbox-cursor">
-                                                <input type="checkbox" name="dichVu" value="Business Center" />&nbsp;Business
-                                                Center
-                                            </label>
-                                        </div>
-                                        <div class="col">
-                                            <label class="cbox-cursor">
-                                                <input type="checkbox" name="dichVu" value="Safety and Security" />&nbsp;Safety
-                                                and Security
-                                            </label>
-                                        </div>
-                                        <div class="col">
-                                            <label class="cbox-cursor">
-                                                <input type="checkbox" name="dichVu" value="Fine Dining Restaurants" />&nbsp;Fine
-                                                Dining Restaurants
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="ak-height-50 ak-height-lg-30"></div>
-                                    <div class="total">
-                                        <p class="text-total">Total Price:</p>
-                                        <h4 class="price">$99.0</h4>
-                                    </div>
                                     <div class="ak-height-35 ak-height-lg-20"></div>
                                     <div class="ak-center">
                                         <div class="ak-btn style-5 color-yellow-bg">
@@ -574,8 +630,8 @@
         </section>
         <!-- End Blog Content -->
 
-        <!-- Start Room -->
-        <section>
+        <!-- Di chuyển section Similar Room ra ngoài, ngay sau phần chi tiết phòng -->
+        <section class="similar-room-section">
             <div class="ak-height-150 ak-height-lg-60"></div>
             <div class="container">
                 <div class="ak-section-heading ak-style-1 ak-type-1">
@@ -946,6 +1002,97 @@ function decreaseValue() {
 }
 </script>
 
+    <script>
+// Lấy giá từ Thymeleaf, nếu null thì về 0
+const giaNgay = /*[[${roomType.giaNgay != null ? roomType.giaNgay : 0}]]*/ 0;
+const giaGio = /*[[${roomType.giaGio != null ? roomType.giaGio : 0}]]*/ 0;
+const giaDem = /*[[${roomType.giaQuaDem != null ? roomType.giaQuaDem : 0}]]*/ 0;
+console.log('DEBUG giá phòng:', { giaNgay, giaGio, giaDem });
+
+function formatVND(val) {
+    return Number(val).toLocaleString('vi-VN');
+}
+function setDefaultDates() {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const yyyy2 = tomorrow.getFullYear();
+    const mm2 = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd2 = String(tomorrow.getDate()).padStart(2, '0');
+    const tomorrowStr = `${yyyy2}-${mm2}-${dd2}`;
+    const checkIn = document.querySelector('input[name="ngayNhanPhong"]');
+    const checkOut = document.querySelector('input[name="ngayTraPhong"]');
+    if (checkIn) checkIn.value = todayStr;
+    if (checkOut) checkOut.value = tomorrowStr;
+}
+function updateLabelAndQuantityVisibility() {
+    const type = document.getElementById('bookingType').value;
+    const group = document.getElementById('group-bookingQuantity');
+    if (type === 'ngay') {
+        group.style.display = '';
+    } else {
+        group.style.display = 'none';
+    }
+    // Đổi label nếu cần
+    const label = document.getElementById('label-bookingQuantity');
+    if (type === 'ngay') label.innerText = 'Số ngày';
+    else if (type === 'gio') label.innerText = 'Số giờ';
+    else if (type === 'dem') label.innerText = 'Số đêm';
+}
+function updateQuantityFromDate() {
+    const type = document.getElementById('bookingType').value;
+    const checkIn = document.querySelector('input[name="ngayNhanPhong"]').value;
+    const checkOut = document.querySelector('input[name="ngayTraPhong"]').value;
+    if (type === 'ngay' && checkIn && checkOut) {
+        const d1 = new Date(checkIn);
+        const d2 = new Date(checkOut);
+        const diff = Math.max(1, Math.round((d2 - d1) / (1000*60*60*24)) + 1);
+        document.getElementById('bookingQuantity').value = diff;
+    }
+}
+function updatePrice() {
+    const type = document.getElementById('bookingType').value;
+    let deposit = 0;
+    if (type === 'ngay') {
+        const qty = parseInt(document.getElementById('bookingQuantity').value) || 1;
+        const total = giaNgay * qty;
+        deposit = Math.round(total / 2);
+    }
+    document.getElementById('depositPrice').innerText = formatVND(deposit);
+    // Ẩn cảnh báo nếu giá đã đúng
+    const warn = document.getElementById('price-warning');
+    if (warn && (giaNgay > 0 || giaGio > 0 || giaDem > 0)) warn.style.display = 'none';
+}
+window.addEventListener('DOMContentLoaded', function() {
+    setDefaultDates();
+    document.getElementById('bookingType').addEventListener('change', function() {
+        updateLabelAndQuantityVisibility();
+        setDefaultDates();
+        updateQuantityFromDate();
+        updatePrice();
+    });
+    document.getElementById('bookingQuantity').addEventListener('input', updatePrice);
+    // Lắng nghe thay đổi ngày ở input gốc
+    const checkInInput = document.querySelector('input[name="ngayNhanPhong"]');
+    const checkOutInput = document.querySelector('input[name="ngayTraPhong"]');
+    if (checkInInput) checkInInput.addEventListener('change', function() {
+        updateQuantityFromDate();
+        updatePrice();
+    });
+    if (checkOutInput) checkOutInput.addEventListener('change', function() {
+        updateQuantityFromDate();
+        updatePrice();
+    });
+    updateLabelAndQuantityVisibility();
+    updateQuantityFromDate();
+    updatePrice();
+});
+</script>
+
 <!-- Login Modal -->
 <div id="loginModal" class="modal" style="display:none;">
   <div class="modal-dialog modal-dialog-centered">
@@ -990,10 +1137,31 @@ function decreaseValue() {
   box-shadow: none !important;
   outline: none !important;
   transition: border 0.2s, background 0.2s;
+  width: 100% !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 .custom-input-separated:focus {
   border: 1.5px solid #FFD28D !important;
   background: #f5f5f5 !important;
+}
+/* Đảm bảo các nút và input trong form đặt phòng hiển thị đúng */
+.booking-widget-inner .form-group {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 15px;
+}
+.booking-widget-inner .increase-decrease {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ececec;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
 }
 </style>
 

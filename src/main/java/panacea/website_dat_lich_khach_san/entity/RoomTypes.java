@@ -59,4 +59,3 @@ public class RoomTypes {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 }
-

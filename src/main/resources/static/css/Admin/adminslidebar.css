@@ -1,53 +1,46 @@
-/* AdminSlidebar CSS */
+aside.sidebar {
+  grid-area: sidebar;
+  background: white;
+  border-right: 1px solid #e1e7ee;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  box-shadow: inset -3px 0 8px -6px rgb(0 0 0 / 0.1);
+}
+aside.sidebar nav {
+  flex-grow: 1;
+}
 aside.sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-aside.sidebar li {
-  position: relative;
-}
-aside.sidebar li.has-submenu > ul.sidebar-submenu {
-  display: none !important;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background: #fff;
-  min-width: 160px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  z-index: 100;
-}
-aside.sidebar li.has-submenu:hover > ul.sidebar-submenu {
-  display: block !important;
-}
-.sidebar-submenu {
-    display: none;
-    background-color: #f9f9f9;
-    padding-left: 20px;
-}
-.has-submenu:hover > .sidebar-submenu {
-    display: block;
-}
-.submenu li a {
-  display: block;
-  padding: 10px 20px;
-  color: #333;
+aside.sidebar ul li a {
+  padding: 10px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  color: #334155;
+  transition: background-color 0.3s ease, color 0.3s ease;
   text-decoration: none;
 }
-.submenu li a:hover {
-  background: #f0f0f0;
+aside.sidebar ul li a:hover,
+aside.sidebar ul li a.active {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 8px 16px rgb(16 185 129 / 0.2);
 }
-
-ul.submenu {
-  /* display: none !important; */
-  background: #fff;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  min-width: 160px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 100;
+aside.sidebar ul li a .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
 }
-li.has-submenu:hover > ul.submenu {
-  /* display: block !important; */
+/* Xóa style submenu nếu không dùng */
+.sidebar-submenu, .submenu, .has-submenu, .has-submenu > ul, .submenu li a, .submenu li a:hover {
+  all: unset;
 }
