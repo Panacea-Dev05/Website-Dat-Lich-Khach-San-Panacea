@@ -57,6 +57,9 @@
                 </span>
               </td>
               <td>
+                <button class="btn-view" th:onclick="'viewCustomer(' + ${customer.id} + ')'" title="Xem chi tiết">
+                  <span class="material-icons">visibility</span>
+                </button>
                 <button class="btn-edit" th:onclick="'editCustomer(' + ${customer.id} + ')'" title="Sửa">
                   <span class="material-icons">edit</span>
                 </button>
@@ -68,31 +71,87 @@
           </tbody>
         </table>
 
-        <!-- Form thêm/sửa khách hàng -->
-        <form id="customerForm" style="display:none; margin-top: 2rem;">
-          <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khách hàng mới</h2>
-          <input type="hidden" id="customerId" name="customerId" />
+        <!-- Modal form thêm/sửa khách hàng (ẩn mặc định) -->
+        <div class="modal-overlay" id="customerModal" style="display:none;">
+          <div class="modal-content">
+            <button type="button" class="modal-close" id="closeCustomerModal">&times;</button>
+            <form id="customerForm">
+              <div class="form-header">
+                <h2 id="formTitle">Thêm khách hàng mới</h2>
+                <p>Vui lòng điền đầy đủ thông tin khách hàng vào form dưới đây</p>
+              </div>
+              <input type="hidden" id="customerId" name="customerId" />
 
-          <label for="customerName">Tên</label>
-          <input type="text" id="customerName" name="customerName" required placeholder="Nhập tên khách hàng" />
-          <label for="customerEmail">Email</label>
-          <input type="email" id="customerEmail" name="customerEmail" required placeholder="abc@gmail.com" />
-          <label for="customerPhone">Số điện thoại</label>
-          <input type="text" id="customerPhone" name="customerPhone" required placeholder="0903123456"
-            pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
-          <label for="customerAddress">Địa chỉ</label>
-          <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
-          <label for="customerStatus">Trạng thái</label>
-          <select id="customerStatus" name="customerStatus" required>
-            <option value="" disabled selected>Chọn trạng thái</option>
-            <option th:each="status : ${customerStatuses}" th:value="${status}"
-              th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"></option>
-          </select>
-          <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-            <button type="submit" class="btn" id="submitBtn">Lưu khách hàng</button>
-            <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+              <label for="customerName">Tên</label>
+              <input type="text" id="customerName" name="customerName" required placeholder="Nhập tên khách hàng" />
+              <label for="customerEmail">Email</label>
+              <input type="email" id="customerEmail" name="customerEmail" required placeholder="abc@gmail.com" />
+              <label for="customerPhone">Số điện thoại</label>
+              <input type="text" id="customerPhone" name="customerPhone" required placeholder="0903123456"
+                pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+              <label for="customerAddress">Địa chỉ</label>
+              <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
+              <label for="customerStatus">Trạng thái</label>
+              <select id="customerStatus" name="customerStatus" required>
+                <option value="" disabled selected>Chọn trạng thái</option>
+                <option th:each="status : ${customerStatuses}" th:value="${status}"
+                  th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Khóa'}"></option>
+              </select>
+              <div class="form-footer">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Lưu khách hàng</button>
+                <button type="button" class="btn btn-danger" id="cancelBtn">Hủy</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
+
+        <!-- Modal xem chi tiết khách hàng (ẩn mặc định) -->
+        <div class="modal-overlay" id="viewCustomerModal" style="display:none;">
+          <div class="modal-content">
+            <button type="button" class="modal-close" id="closeViewCustomerModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết khách hàng</h2>
+            
+            <div class="customer-details">
+              <div class="detail-row">
+                <div class="detail-label">ID:</div>
+                <div class="detail-value" id="viewCustomerId"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Tên:</div>
+                <div class="detail-value" id="viewCustomerName"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Email:</div>
+                <div class="detail-value" id="viewCustomerEmail"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Số điện thoại:</div>
+                <div class="detail-value" id="viewCustomerPhone"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Địa chỉ:</div>
+                <div class="detail-value" id="viewCustomerAddress"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Điểm tích lũy:</div>
+                <div class="detail-value" id="viewCustomerPoints"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Trạng thái:</div>
+                <div class="detail-value" id="viewCustomerStatus"></div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Ngày tạo:</div>
+                <div class="detail-value" id="viewCustomerCreatedDate"></div>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              <button type="button" class="btn" id="editCustomerBtn">Chỉnh sửa</button>
+              <button type="button" class="btn" id="closeViewBtn" style="background:#ef4444; margin-left: 12px;">Đóng</button>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -102,6 +161,91 @@
   </div>
 
   <script th:src="@{/js/Admin/quanlykhachhang.js}"></script>
+  <script th:inline="javascript">
+    // Hiển thị chi tiết khách hàng
+    function viewCustomer(customerId) {
+      fetch('/admin/customers/' + customerId)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Lỗi khi tải dữ liệu khách hàng');
+          }
+          return res.json();
+        })
+        .then(data => {
+          // Kiểm tra nếu có lỗi từ server
+          if (data.error) {
+            throw new Error(data.message || 'Lỗi không xác định');
+          }
+          
+          // Nếu không có lỗi, hiển thị thông tin khách hàng
+          document.getElementById('viewCustomerId').textContent = data.id;
+          document.getElementById('viewCustomerName').textContent = data.ho + ' ' + data.ten;
+          document.getElementById('viewCustomerEmail').textContent = data.email;
+          document.getElementById('viewCustomerPhone').textContent = data.soDienThoai || 'Chưa cập nhật';
+          document.getElementById('viewCustomerAddress').textContent = data.diaChi || 'Chưa cập nhật';
+          document.getElementById('viewCustomerPoints').textContent = data.diemTichLuy || '0';
+          
+          // Hiển thị trạng thái với màu sắc tương ứng
+          const statusElement = document.getElementById('viewCustomerStatus');
+          statusElement.textContent = data.trangThai === 'HOAT_DONG' ? 'Hoạt động' : 'Khóa';
+          statusElement.className = data.trangThai === 'HOAT_DONG' ? 'status-active' : 'status-locked';
+          
+          // Hiển thị ngày tạo
+          const createdDate = data.createdDate ? new Date(data.createdDate).toLocaleDateString('vi-VN') : 'Không có thông tin';
+          document.getElementById('viewCustomerCreatedDate').textContent = createdDate;
+          
+          // Hiển thị modal
+          document.getElementById('viewCustomerModal').style.display = 'flex';
+          
+          // Lưu ID khách hàng cho nút chỉnh sửa
+          document.getElementById('editCustomerBtn').setAttribute('data-id', data.id);
+        })
+        .catch(error => {
+          console.error('Lỗi:', error);
+          alert('Không thể xem chi tiết khách hàng: ' + error.message);
+        });
+    }
+
+    // Gắn sự kiện cho các nút
+    document.addEventListener('DOMContentLoaded', function() {
+      // Nút thêm khách hàng mới
+      document.getElementById('btnAddCustomer').onclick = showAddCustomerForm;
+      
+      // Đóng modal thêm/sửa
+      document.getElementById('closeCustomerModal').onclick = function() {
+        document.getElementById('customerModal').style.display = 'none';
+      };
+      document.getElementById('cancelBtn').onclick = function() {
+        document.getElementById('customerModal').style.display = 'none';
+      };
+      
+      // Đóng modal xem chi tiết
+      document.getElementById('closeViewCustomerModal').onclick = function() {
+        document.getElementById('viewCustomerModal').style.display = 'none';
+      };
+      document.getElementById('closeViewBtn').onclick = function() {
+        document.getElementById('viewCustomerModal').style.display = 'none';
+      };
+      
+      // Nút chỉnh sửa từ modal xem chi tiết
+      document.getElementById('editCustomerBtn').onclick = function() {
+        const customerId = this.getAttribute('data-id');
+        document.getElementById('viewCustomerModal').style.display = 'none';
+        editCustomer(customerId);
+      };
+    });
+
+    // Hiển thị form thêm khách hàng mới
+    function showAddCustomerForm() {
+      var modal = document.getElementById('customerModal');
+      var form = document.getElementById('customerForm');
+      modal.style.display = 'flex';
+      form.reset();
+      document.getElementById('formTitle').innerText = 'Thêm khách hàng mới';
+      document.getElementById('customerId').value = '';
+      form.setAttribute('data-mode', 'add');
+    }
+  </script>
 </body>
 
 </html>
