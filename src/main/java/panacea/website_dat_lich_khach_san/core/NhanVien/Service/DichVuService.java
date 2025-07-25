@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
+import panacea.website_dat_lich_khach_san.repository.ServiceRepository;
+import panacea.website_dat_lich_khach_san.entity.ServiceEntity;
 
 import java.util.List;
 
@@ -11,6 +13,8 @@ import java.util.List;
 public class DichVuService {
     @Autowired
     private ServiceDetailRepository serviceDetailRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -18,5 +22,8 @@ public class DichVuService {
 
     public List<ServiceDetail> getAllServiceDetails() {
         return serviceDetailRepository.findAll();
+    }
+    public List<ServiceEntity> getAllServices() {
+        return serviceRepository.findAll();
     }
 } 

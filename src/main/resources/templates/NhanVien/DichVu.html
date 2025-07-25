@@ -193,22 +193,6 @@
 <div class="app-layout">
     <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
     <main class="main-content">
-        <!--    &lt;!&ndash; Tạo dịch vụ mới &ndash;&gt;-->
-        <!--    <div class="section">-->
-        <!--        <h2><span class="material-icons">add</span> Tạo danh mục dịch vụ</h2>-->
-        <!--        <form>-->
-        <!--            <div><label>Tên dịch vụ</label><input type="text" /></div>-->
-        <!--            <div><label>Loại dịch vụ</label><input type="text" placeholder="Spa, Food, Laundry..." /></div>-->
-        <!--            <div><label>Đơn giá (VND)</label><input type="number" /></div>-->
-        <!--            <div><label>Đơn vị tính</label><input type="text" placeholder="lần, kg, người..." /></div>-->
-        <!--            <div style="grid-column: span 2;"><label>Mô tả</label><textarea></textarea></div>-->
-        <!--            <div><label>Trạng thái</label><select><option>Hoạt động</option><option>Tạm ngưng</option></select></div>-->
-        <!--            <div style="align-self: end;">-->
-        <!--                <button class="btn"><span class="material-icons">save</span>Lưu dịch vụ</button>-->
-        <!--            </div>-->
-        <!--        </form>-->
-        <!--    </div>-->
-
         <!-- Danh sách dịch vụ -->
         <div class="section">
             <h2><span class="material-icons">list</span> Danh sách dịch vụ</h2>
@@ -221,21 +205,16 @@
                     <th>Đơn giá</th>
                     <th>Đơn vị</th>
                     <th>Trạng thái</th>
-                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="service : ${serviceDetails}">
-                    <td th:text="${service.id}"></td>
-                    <td th:text="${service.service.tenDichVu}"></td>
-                    <td th:text="${service.service.loaiDichVu}"></td>
-                    <td th:text="${#numbers.formatDecimal(service.donGiaThucTe, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${service.service.donViTinh}"></td>
-                    <td th:text="${service.service.trangThai}"></td>
-                    <td>
-                        <button class="btn"><span class="material-icons">edit</span>Sửa</button>
-                        <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
-                    </td>
+                <tr th:each="service : ${services}">
+                    <td th:text="${service.maDichVu}"></td>
+                    <td th:text="${service.tenDichVu}"></td>
+                    <td th:text="${service.loaiDichVu}"></td>
+                    <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${service.donViTinh}"></td>
+                    <td th:text="${service.trangThai}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -244,7 +223,7 @@
         <!-- Đặt dịch vụ cho booking -->
         <div class="section">
             <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>
-            <form>
+            <form th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">
                 <div><label>Booking</label><select name="bookingId">
                     <option disabled selected>Chọn mã booking...</option>
                     <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
@@ -253,8 +232,8 @@
                     <option disabled selected>Chọn dịch vụ...</option>
                     <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:text="${dv.tenDichVu}"></option>
                 </select></div>
-                <div><label>Số lượng</label><input type="number" min="1" /></div>
-                <div><label>Thời gian sử dụng</label><input type="datetime-local" /></div>
+                <div><label>Số lượng</label><input type="number" min="1" name="soLuong" /></div>
+                <div><label>Thời gian sử dụng</label><input type="datetime-local" name="thoiGianSuDung" /></div>
                 <div style="grid-column: span 2; align-self: end;">
                     <button class="btn" style="padding: 8px 16px; width: 30ch">
                         <span class="material-icons" style="font-size: 34px;">add_circle</span>Thêm
@@ -279,13 +258,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>BK202501</td>
-                    <td>Spa Massage</td>
-                    <td>2</td>
-                    <td>500.000</td>
-                    <td>1.000.000</td>
-                    <td>2025-06-21 15:00</td>
+                <tr th:each="sd : ${bookedServices}">
+                    <td th:text="${sd.datPhongId}"></td>
+                    <td th:text="${sd.service != null ? sd.service.tenDichVu : ''}"></td>
+                    <td th:text="${sd.soLuong}"></td>
+                    <td th:text="${#numbers.formatDecimal(sd.donGiaThucTe, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${#numbers.formatDecimal(sd.donGiaThucTe * sd.soLuong, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${#temporals.format(sd.ngaySuDung, 'yyyy-MM-dd HH:mm')}"></td>
                     <td>
                         <button class="btn"><span class="material-icons">edit</span>Sửa</button>
                         <button class="btn"><span class="material-icons">cancel</span>Hủy</button>

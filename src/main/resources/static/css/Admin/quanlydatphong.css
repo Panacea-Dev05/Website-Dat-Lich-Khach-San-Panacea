@@ -251,6 +251,7 @@ input[type="date"]:focus {
     align-self: flex-start;
   }
 }
+<<<<<<< HEAD
 .footer {
   grid-area: footer;
   background: #e6f4ea;
@@ -263,7 +264,22 @@ input[type="date"]:focus {
   font-weight: 600;
   border-top: 1px solid #c4e1cc;
   user-select: none;
+=======
+footer {
+    grid-area: footer;
+    background: #e6f4ea;
+    color: #064e3b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    border-top: 1px solid #c4e1cc;
+    user-select: none;
+>>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
 }
+
 main::-webkit-scrollbar {
   width: 8px;
 }

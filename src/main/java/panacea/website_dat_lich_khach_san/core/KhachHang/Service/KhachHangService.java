@@ -8,11 +8,13 @@ import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+<<<<<<< HEAD
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
@@ -20,6 +22,11 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import java.util.ArrayList;
 import java.util.List;
+=======
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+>>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -36,6 +43,9 @@ import org.springframework.core.io.ByteArrayResource;
 import java.math.BigDecimal;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class KhachHangService {
@@ -50,11 +60,17 @@ public class KhachHangService {
     @Autowired(required = false)
     private JavaMailSender mailSender;
     @Autowired
+<<<<<<< HEAD
     private RoomPricingRepositoty roomPricingRepositoty;
     @Autowired
     private RoomImagesRepositoty roomImagesRepositoty;
     @Autowired
     private RoomTypeRepository roomTypeRepository;
+=======
+    private RoomTypeRepository roomTypeRepository;
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepositoty;
+>>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
@@ -125,6 +141,7 @@ public class KhachHangService {
                 if ("gio".equals(dto.getBookingType())) bookingTypeLabel = "Theo giờ";
                 else if ("dem".equals(dto.getBookingType())) bookingTypeLabel = "Theo đêm";
                 String text = String.format(
+<<<<<<< HEAD
                     "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
                     "<p>Thông tin đặt phòng của bạn:</p>" +
                     "<ul>" +
@@ -157,6 +174,33 @@ public class KhachHangService {
                     dto.getSoTreEm(),
                     dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
                     dichVuHtml.toString()
+=======
+                        "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
+                                "<p>Thông tin đặt phòng của bạn:</p>" +
+                                "<ul>" +
+                                "<li>Khách sạn: Panacea Hotel</li>" +
+                                "<li>Ngày nhận phòng: %s</li>" +
+                                "<li>Ngày trả phòng: %s</li>" +
+                                "<li>Số người lớn: %d</li>" +
+                                "<li>Số trẻ em: %d</li>" +
+                                "<li>Ghi chú: %s</li>" +
+                                "%s" +
+                                "</ul>" +
+                                "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
+                                "<img src='cid:qr_momo' width='250' height='250'/>" +
+                                "<p><b>Số tiền cần chuyển: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
+                                "<p><b>Nội dung chuyển khoản: </b>DatPhong_" + maDatPhong + "</p>" +
+                                "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
+                                "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
+                                "<br><b>Panacea Hotel</b>",
+                        dto.getTenKhach(),
+                        dto.getNgayNhanPhong(),
+                        dto.getNgayTraPhong(),
+                        dto.getSoNguoiLon(),
+                        dto.getSoTreEm(),
+                        dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
+                        dichVuHtml.toString()
+>>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
                 );
                 sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
             }
@@ -252,4 +296,32 @@ public class KhachHangService {
         }
         mailSender.send(message);
     }
-} 
+
+    /**
+     * Lấy danh sách 4 loại phòng chính cho khách hàng (Standard, Superior, Deluxe, Suite)
+     */
+    public List<RoomType> getMainRoomTypes() {
+        // Giả sử mã loại phòng là: STANDARD, SUPERIOR, DELUXE, SUITE
+        List<String> mainCodes = Arrays.asList("STANDARD", "SUPERIOR", "DELUXE", "SUITE");
+        return roomTypeRepository.findAll().stream()
+                .filter(rt -> mainCodes.contains(rt.getMaLoaiPhong()))
+                .toList();
+    }
+
+    /**
+     * Lấy chi tiết loại phòng theo id
+     */
+    public RoomType getRoomTypeById(Integer id) {
+        Optional<RoomType> opt = roomTypeRepository.findById(id);
+        return opt.orElse(null);
+    }
+
+    /**
+     * Lấy giá cơ bản (BASE) của loại phòng
+     */
+    public java.math.BigDecimal getRoomBasePriceByRoomTypeId(Integer roomTypeId) {
+        return roomPricingRepositoty.findFirstByRoomTypeIdAndLoaiGiaOrderByNgayBatDauDesc(roomTypeId, RoomPricing.LoaiGia.BASE)
+                .map(RoomPricing::getGiaTri)
+                .orElse(null);
+    }
+}
