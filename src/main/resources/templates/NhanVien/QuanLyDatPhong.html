@@ -220,16 +220,21 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            padding: 20px 0;
         }
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: 0 auto;
             padding: 2rem;
             border-radius: 12px;
-            width: 80%;
-            max-width: 600px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .close {
@@ -379,6 +384,36 @@
             <div id="bookingDetailContent">
                 <!-- Nội dung sẽ được load động -->
             </div>
+            
+            <!-- Container cho thông tin thanh toán -->
+            <div class="payment-info-container" style="margin-top: 1rem;">
+                <!-- Thông tin thanh toán sẽ được thêm động -->
+            </div>
+            
+            <!-- Phần áp dụng mã giảm giá -->
+            <div id="promoCodeSection" style="margin-top: 1.5rem; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;">
+                <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 1rem;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">local_offer</span>
+                    Áp dụng mã giảm giá
+                </h4>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                    <input type="text" id="promoCodeInput" placeholder="Nhập mã giảm giá..." 
+                           style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem;">
+                    <button type="button" id="applyPromoBtn" onclick="applyPromoCode()" 
+                            style="background: #FFD28D; color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                        Áp dụng
+                    </button>
+                </div>
+                <div id="promoMessage" style="display: none; font-size: 0.85rem; margin-bottom: 8px;"></div>
+                <div id="discountInfo" style="display: none; background: #dcfce7; padding: 8px; border-radius: 6px; border-left: 3px solid #16a34a;">
+                    <div style="font-size: 0.85rem; color: #166534;">
+                        <strong>Mã giảm giá đã áp dụng:</strong> <span id="appliedPromoCode"></span><br>
+                        <strong>Giảm giá:</strong> <span id="discountAmount"></span> VND<br>
+                        <strong>Tổng tiền sau giảm:</strong> <span id="finalAmount"></span> VND
+                    </div>
+                </div>
+            </div>
+
             <div id="bookingActionArea"
                 style="margin-top: 2rem; display: none; flex-direction: row; gap: 1rem; align-items: center;">
                 <label class="payment-checkbox">
@@ -731,6 +766,11 @@
                                 confirmBtn.innerHTML = oldText;
                             }
                         };
+                        
+                        // Gán sự kiện cho nút hủy
+                        document.getElementById('modal-cancel-btn').onclick = function () {
+                            cancelBooking(bookingId);
+                        };
                     } else if (booking.trangThaiDatPhong === 'DA_XAC_NHAN') {
                         // Hiện nút check-in
                         if (!checkInBtn) {
@@ -757,6 +797,9 @@
 
                     // Hiển thị modal sau khi render xong
                     document.getElementById('bookingModal').style.display = 'block';
+                    
+                    // Cập nhật hiển thị phần mã giảm giá
+                    updateViewBookingDetailForPromo(booking);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -1023,6 +1066,9 @@
         }
 
         let currentServiceEditBookingId = null;
+        let usedServices = [];
+        let allServices = [];
+        
         function openServiceEdit(bookingId) {
             currentServiceEditBookingId = bookingId;
             // Lấy danh sách dịch vụ đã sử dụng từ modal chi tiết booking (đã fetch trước đó)
@@ -1037,7 +1083,15 @@
                             allServices = services;
                             renderServiceEditList();
                             document.getElementById('serviceEditModal').style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi lấy danh sách dịch vụ:', error);
+                            alert('Không thể tải danh sách dịch vụ!');
                         });
+                })
+                .catch(error => {
+                    console.error('Lỗi khi lấy chi tiết booking:', error);
+                    alert('Không thể tải thông tin đặt phòng!');
                 });
         }
 
@@ -1131,6 +1185,251 @@
                 }
             })
             .catch(() => alert('Có lỗi khi cập nhật dịch vụ!'));
+        }
+
+        // Biến lưu thông tin mã giảm giá đã áp dụng
+        let appliedPromo = null;
+        let originalBookingAmount = 0;
+
+        // Hàm áp dụng mã giảm giá
+        async function applyPromoCode() {
+            const promoInput = document.getElementById('promoCodeInput');
+            const promoMessage = document.getElementById('promoMessage');
+            const applyBtn = document.getElementById('applyPromoBtn');
+            
+            const promoCode = promoInput.value.trim();
+            
+            if (!promoCode) {
+                showPromoMessage('Vui lòng nhập mã giảm giá!', 'error');
+                return;
+            }
+            
+            // Disable button và hiển thị loading
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Đang kiểm tra...';
+            
+            try {
+                const response = await fetch('/nhanvien/promotion/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        promoCode: promoCode,
+                        bookingId: currentBookingId,
+                        amount: originalBookingAmount
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    appliedPromo = result.promotion;
+                    const discount = calculateDiscount(originalBookingAmount, appliedPromo);
+                    const finalAmount = originalBookingAmount - discount;
+                    
+                    showPromoMessage(`Áp dụng thành công! ${result.message}`, 'success');
+                    showDiscountInfo(promoCode, discount, finalAmount);
+                    
+                    // Disable input và button sau khi áp dụng thành công
+                    promoInput.disabled = true;
+                    applyBtn.textContent = 'Đã áp dụng';
+                    applyBtn.style.background = '#10b981';
+                    applyBtn.style.color = '#fff';
+                    
+                    // Thêm nút hủy mã giảm giá
+                    if (!document.getElementById('removePromoBtn')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.id = 'removePromoBtn';
+                        removeBtn.type = 'button';
+                        removeBtn.textContent = 'Hủy';
+                        removeBtn.style.cssText = 'background: #ef4444; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-left: 8px; font-size: 0.9rem;';
+                        removeBtn.onclick = removePromoCode;
+                        applyBtn.parentNode.appendChild(removeBtn);
+                    }
+                } else {
+                    showPromoMessage(result.message || 'Mã giảm giá không hợp lệ!', 'error');
+                }
+            } catch (error) {
+                console.error('Error validating promo code:', error);
+                showPromoMessage('Có lỗi xảy ra khi kiểm tra mã giảm giá!', 'error');
+            } finally {
+                if (!appliedPromo) {
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Áp dụng';
+                }
+            }
+        }
+
+        // Hàm hủy mã giảm giá
+        function removePromoCode() {
+            appliedPromo = null;
+            
+            const promoInput = document.getElementById('promoCodeInput');
+            const applyBtn = document.getElementById('applyPromoBtn');
+            const removeBtn = document.getElementById('removePromoBtn');
+            
+            // Reset input và button
+            promoInput.disabled = false;
+            promoInput.value = '';
+            applyBtn.disabled = false;
+            applyBtn.textContent = 'Áp dụng';
+            applyBtn.style.background = '#FFD28D';
+            applyBtn.style.color = '#000';
+            
+            // Xóa nút hủy
+            if (removeBtn) {
+                removeBtn.remove();
+            }
+            
+            // Ẩn thông báo và thông tin giảm giá
+            document.getElementById('promoMessage').style.display = 'none';
+            document.getElementById('discountInfo').style.display = 'none';
+            
+            // Reset lại tiền phải trả về giá trị gốc
+            const finalPaymentElement = document.getElementById('finalPaymentAmount');
+            if (finalPaymentElement && window.currentBookingData) {
+                const datCoc = window.currentBookingData.soTienDatCoc || 0;
+                const tienPhaiTraGoc = originalBookingAmount - datCoc;
+                finalPaymentElement.textContent = `${new Intl.NumberFormat('vi-VN').format(Math.max(0, tienPhaiTraGoc))} VNĐ`;
+                finalPaymentElement.style.color = '#dc3545'; // Trở lại màu đỏ
+            }
+        }
+
+        // Hàm hiển thị thông báo mã giảm giá
+        function showPromoMessage(message, type) {
+            const promoMessage = document.getElementById('promoMessage');
+            promoMessage.textContent = message;
+            promoMessage.style.display = 'block';
+            promoMessage.style.color = type === 'success' ? '#16a34a' : '#dc2626';
+            promoMessage.style.fontWeight = '500';
+        }
+
+        // Hàm hiển thị thông tin giảm giá
+        function showDiscountInfo(promoCode, discount, finalAmount) {
+            document.getElementById('appliedPromoCode').textContent = promoCode;
+            document.getElementById('discountAmount').textContent = new Intl.NumberFormat('vi-VN').format(discount);
+            document.getElementById('finalAmount').textContent = new Intl.NumberFormat('vi-VN').format(finalAmount);
+            document.getElementById('discountInfo').style.display = 'block';
+        }
+
+        // Hàm tính toán giảm giá
+        function calculateDiscount(originalPrice, promotion) {
+            if (!promotion) return 0;
+            
+            let discount = 0;
+            if (promotion.loaiGiamGia === 'PHAN_TRAM') {
+                discount = originalPrice * (promotion.giaTriGiam / 100);
+                // Áp dụng giảm tối đa nếu có
+                if (promotion.giamToiDa && discount > promotion.giamToiDa) {
+                    discount = promotion.giamToiDa;
+                }
+            } else if (promotion.loaiGiamGia === 'SO_TIEN') {
+                discount = promotion.giaTriGiam;
+                // Không được giảm quá tổng tiền
+                if (discount > originalPrice) {
+                    discount = originalPrice;
+                }
+            }
+            
+            return Math.round(discount);
+        }
+
+        // Cập nhật hàm viewBookingDetail để hiển thị phần mã giảm giá
+        function updateViewBookingDetailForPromo(booking) {
+            console.log('updateViewBookingDetailForPromo called with:', booking);
+            
+            // Lưu số tiền gốc
+            originalBookingAmount = booking.tongThanhToan || 0;
+            
+            // Hiển thị phần mã giảm giá chỉ khi checkout (trạng thái DA_XAC_NHAN)
+            const promoSection = document.getElementById('promoCodeSection');
+            console.log('Booking status:', booking.trangThaiDatPhong);
+            
+            if (booking.trangThaiDatPhong === 'DA_XAC_NHAN') {
+                console.log('Showing promo section for DA_XAC_NHAN status');
+                promoSection.style.display = 'block';
+                // Reset form mã giảm giá
+                removePromoCode();
+            } else {
+                console.log('Hiding promo section for status:', booking.trangThaiDatPhong);
+                promoSection.style.display = 'none';
+            }
+            
+            // Cập nhật thông tin thanh toán với cột tiền phải trả
+            updatePaymentInfo(booking);
+        }
+        
+        // Hàm cập nhật thông tin thanh toán
+        function updatePaymentInfo(booking) {
+            const paymentInfoContainer = document.querySelector('.payment-info-container');
+            if (!paymentInfoContainer) {
+                console.log('Payment info container not found');
+                return;
+            }
+            
+            const tongTien = booking.tongThanhToan || 0;
+            // Thử nhiều tên trường có thể có cho tiền đặt cọc
+            const datCoc = booking.tienDatCoc || booking.soTienDatCoc || booking.tienCoc || 0;
+            const tienPhaiTra = Math.max(0, tongTien - datCoc);
+            
+            console.log('Payment info:', { tongTien, datCoc, tienPhaiTra });
+            
+            // Lưu thông tin booking vào biến global để sử dụng sau
+            window.currentBookingData = {
+                ...booking,
+                soTienDatCoc: datCoc // Chuẩn hóa tên trường
+            };
+            
+            // Tìm hoặc tạo phần hiển thị tiền phải trả
+            let tienPhaiTraElement = document.getElementById('tienPhaiTraInfo');
+            if (!tienPhaiTraElement) {
+                tienPhaiTraElement = document.createElement('div');
+                tienPhaiTraElement.id = 'tienPhaiTraInfo';
+                tienPhaiTraElement.style.cssText = 'margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;';
+                paymentInfoContainer.appendChild(tienPhaiTraElement);
+            }
+            
+            tienPhaiTraElement.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 1rem;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">payment</span>
+                    Thông tin thanh toán
+                </h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0;">
+                    <span style="font-weight: 600;">Tổng tiền:</span>
+                    <span style="font-weight: 600;">${new Intl.NumberFormat('vi-VN').format(tongTien)} VNĐ</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0;">
+                    <span style="font-weight: 600;">Đã đặt cọc:</span>
+                    <span style="font-weight: 600; color: #16a34a;">${new Intl.NumberFormat('vi-VN').format(datCoc)} VNĐ</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-top: 2px solid #dee2e6; margin-top: 10px;">
+                    <span style="font-weight: 700; color: #dc3545; font-size: 1.1rem;">Tiền phải trả:</span>
+                    <span style="font-weight: 700; color: #dc3545; font-size: 1.1rem;" id="finalPaymentAmount">${new Intl.NumberFormat('vi-VN').format(tienPhaiTra)} VNĐ</span>
+                </div>
+            `;
+        }
+        
+        // Cập nhật hàm showDiscountInfo để tính toán tiền phải trả sau giảm giá
+        function showDiscountInfo(promoCode, discount, finalAmount) {
+            document.getElementById('appliedPromoCode').textContent = promoCode;
+            document.getElementById('discountAmount').textContent = new Intl.NumberFormat('vi-VN').format(discount);
+            document.getElementById('finalAmount').textContent = new Intl.NumberFormat('vi-VN').format(finalAmount);
+            document.getElementById('discountInfo').style.display = 'block';
+            
+            // Cập nhật tiền phải trả sau khi áp dụng mã giảm giá
+            const finalPaymentElement = document.getElementById('finalPaymentAmount');
+            if (finalPaymentElement && window.currentBookingData) {
+                const datCoc = window.currentBookingData.soTienDatCoc || 0;
+                const tienPhaiTraSauGiam = finalAmount - datCoc;
+                finalPaymentElement.textContent = `${new Intl.NumberFormat('vi-VN').format(Math.max(0, tienPhaiTraSauGiam))} VNĐ`;
+                finalPaymentElement.style.color = '#16a34a'; // Màu xanh để thể hiện đã giảm giá
+            }
+        }
+        
+        // Hàm lấy thông tin booking hiện tại
+        function getCurrentBooking() {
+            return window.currentBookingData || null;
         }
 
         // Thêm event listener cho tất cả checkbox thanh toán

@@ -4,10 +4,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyDatPhongService;
+import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminPromotionService;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.Promotion;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.PromotionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 @RequestMapping("/nhanvien/quanlydatphong")
@@ -29,6 +33,12 @@ public class QuanLyDatPhongController {
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
     private final BookingHistoryRepository bookingHistoryRepository;
+    
+    @Autowired
+    private AdminPromotionService adminPromotionService;
+    
+    @Autowired
+    private PromotionRepository promotionRepository;
     
     public QuanLyDatPhongController(QuanLyDatPhongService quanLyDatPhongService, 
                                    HotelRepository hotelRepository, 
@@ -164,4 +174,157 @@ public class QuanLyDatPhongController {
         model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
         return "NhanVien/BookingHistory";
     }
-} 
+
+    @PostMapping("/promotion/validate")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> validatePromotion(@RequestBody Map<String, Object> request) {
+        String promoCode = (String) request.get("promoCode");
+        Long bookingId = Long.valueOf(request.get("bookingId").toString());
+        java.math.BigDecimal bookingAmount;
+        
+        try {
+            Object amountObj = request.get("amount");
+            if (amountObj == null) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Thiếu thông tin số tiền đặt phòng!"
+                ));
+            }
+            bookingAmount = new java.math.BigDecimal(amountObj.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.ok(Map.of(
+                "success", false,
+                "message", "Số tiền đặt phòng không hợp lệ!"
+            ));
+        }
+        
+        try {
+            // Lấy thông tin booking để tính tiền phải trả
+            java.util.Optional<Booking> bookingOpt = quanLyDatPhongService.getBookingById(bookingId);
+            if (!bookingOpt.isPresent()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Không tìm thấy thông tin đặt phòng!"
+                ));
+            }
+            
+            Booking booking = bookingOpt.get();
+            java.math.BigDecimal tongTien = booking.getTongThanhToan();
+            java.math.BigDecimal datCoc = booking.getTienDatCoc() != null ? booking.getTienDatCoc() : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal tienPhaiTra = tongTien.subtract(datCoc);
+            
+            // Kiểm tra nếu đã thanh toán hết
+            if (tienPhaiTra.compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Đặt phòng này đã được thanh toán đầy đủ!"
+                ));
+            }
+            
+            // Tìm promotion theo mã
+            java.util.List<Promotion> promotions = promotionRepository.findAll().stream()
+                .filter(p -> p.getMaKhuyenMai().equalsIgnoreCase(promoCode))
+                .collect(java.util.stream.Collectors.toList());
+            
+            if (promotions.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Mã giảm giá không tồn tại!"
+                ));
+            }
+            
+            Promotion promotion = promotions.get(0);
+            
+            // Kiểm tra trạng thái
+            if (promotion.getTrangThai() != Promotion.TrangThaiPromotion.HOAT_DONG) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Mã giảm giá không còn hoạt động!"
+                ));
+            }
+            
+            // Kiểm tra thời gian
+            java.time.LocalDate now = java.time.LocalDate.now();
+            if (promotion.getNgayBatDau().isAfter(now)) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Mã giảm giá chưa có hiệu lực!"
+                ));
+            }
+            
+            if (promotion.getNgayKetThuc().isBefore(now)) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Mã giảm giá đã hết hạn!"
+                ));
+            }
+            
+            // Kiểm tra số lượng sử dụng
+            if (promotion.getSoLuongToiDa() != null && 
+                promotion.getDaSuDung() != null && 
+                promotion.getDaSuDung() >= promotion.getSoLuongToiDa()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "message", "Mã giảm giá đã hết lượt sử dụng!"
+                ));
+            }
+            
+            // Kiểm tra điều kiện áp dụng dựa trên tiền phải trả
+            if (promotion.getDieuKienApDung() != null && !promotion.getDieuKienApDung().trim().isEmpty()) {
+                try {
+                    java.math.BigDecimal dieuKienApDung = new java.math.BigDecimal(promotion.getDieuKienApDung());
+                    if (tienPhaiTra.compareTo(dieuKienApDung) < 0) {
+                        return ResponseEntity.ok(Map.of(
+                            "success", false,
+                            "message", "Số tiền phải trả chưa đủ điều kiện áp dụng mã giảm giá! (Tối thiểu: " + 
+                                      new java.text.DecimalFormat("#,###").format(dieuKienApDung) + " VNĐ)"
+                        ));
+                    }
+                } catch (NumberFormatException e) {
+                    // Nếu điều kiện áp dụng không phải là số, bỏ qua kiểm tra này
+                }
+            }
+            
+            // Tính toán giảm giá dựa trên tiền phải trả
+            java.math.BigDecimal discountAmount;
+            if (promotion.getLoaiGiamGia() == Promotion.LoaiGiamGia.PHAN_TRAM) {
+                discountAmount = tienPhaiTra.multiply(promotion.getGiaTriGiam()).divide(java.math.BigDecimal.valueOf(100));
+                if (promotion.getGiamToiDa() != null && discountAmount.compareTo(promotion.getGiamToiDa()) > 0) {
+                    discountAmount = promotion.getGiamToiDa();
+                }
+            } else {
+                discountAmount = promotion.getGiaTriGiam();
+                if (discountAmount.compareTo(tienPhaiTra) > 0) {
+                    discountAmount = tienPhaiTra;
+                }
+            }
+            
+            // Tính tổng tiền sau giảm giá
+            java.math.BigDecimal finalAmount = tongTien.subtract(discountAmount);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Áp dụng mã giảm giá thành công!",
+                "promotion", Map.of(
+                    "id", promotion.getId(),
+                    "maKhuyenMai", promotion.getMaKhuyenMai(),
+                    "tenKhuyenMai", promotion.getTenKhuyenMai(),
+                    "loaiGiamGia", promotion.getLoaiGiamGia().name(),
+                    "giaTriGiam", promotion.getGiaTriGiam(),
+                    "giamToiDa", promotion.getGiamToiDa()
+                ),
+                "discountAmount", discountAmount,
+                "finalAmount", finalAmount,
+                "tienPhaiTra", tienPhaiTra,
+                "datCoc", datCoc
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok(Map.of(
+                "success", false,
+                "message", "Có lỗi xảy ra khi xác thực mã giảm giá!"
+            ));
+        }
+    }
+}

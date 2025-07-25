@@ -8,5 +8,8 @@ import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 
 public interface RoomPricingRepositoty extends JpaRepository<RoomPricing, Integer> {
     // Lấy giá BASE theo loại phòng
+
     RoomPricing findFirstByRoomType_IdAndLoaiGia(Integer roomTypeId, panacea.website_dat_lich_khach_san.entity.RoomPricing.LoaiGia loaiGia);
+
 }
+

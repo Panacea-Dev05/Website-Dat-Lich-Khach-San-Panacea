@@ -1,6 +1,7 @@
 package panacea.website_dat_lich_khach_san.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -55,6 +56,7 @@ public class Service {
 
     // Relationships
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // Tránh vòng lặp JSON
     private List<ServiceDetail> serviceDetails;
 
     @PrePersist

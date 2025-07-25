@@ -597,26 +597,31 @@
                                 <div class="number-of-input">
                                     <p>Adult</p>
                                     <div class="increase-decrease">
-                                        <div class="value-button" id="decrease" value="Decrease Value">-</div>
-                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="1" />
-                                        <div class="value-button" id="increase" value="Increase Value">+</div>
+                                        <div class="value-button" id="decreaseAdult" onclick="decreaseAdult()" value="Decrease Value">-</div>
+                                        <input class="number-input" type="number" id="adultNumber" name="soNguoiLon" value="1" min="1" />
+                                        <div class="value-button" id="increaseAdult" onclick="increaseAdult()" value="Increase Value">+</div>
                                     </div>
                                 </div>
                                 <div class="number-of-input">
                                     <p>Child</p>
                                     <div class="increase-decrease">
-                                        <div class="value-button" id="decrease" onclick="decreaseValue()"
+                                        <div class="value-button" id="decreaseChild" onclick="decreaseChild()"
                                             value="Decrease Value">-</div>
-                                        <input type="number" class="number-input" id="number" name="soTreEm" value="0" />
-                                        <div class="value-button" id="increase" onclick="increaseValue()"
+                                        <input type="number" class="number-input" id="childNumber" name="soTreEm" value="0" min="0" />
+                                        <div class="value-button" id="increaseChild" onclick="increaseChild()"
                                             value="Increase Value">+</div>
                                     </div>
                                 </div>
+                                
+                                <div class="deposit-info" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background: rgba(255, 210, 141, 0.1); border-radius: 8px; border-left: 3px solid #FFD28D;">
+                                    <p style="margin-bottom: 5px; font-size: 14px;">Đặt cọc (50%):</p>
+                                    <p style="font-weight: 600; font-size: 18px; color: #FFD28D;"><span id="depositPrice">0</span> VNĐ</p>
+                                    <div id="price-warning" style="font-size: 12px; color: #ff6b6b; margin-top: 5px; display: none;">* Giá hiển thị có thể chưa chính xác</div>
+                                </div>
                                     <div class="ak-height-35 ak-height-lg-20"></div>
-                                    <div class="ak-center">
-                                        <div class="ak-btn style-5 color-yellow-bg">
-                                            <button type="submit">Book Now</button>
-                                        </div>
+                                <div class="ak-center">
+                                    <div class="ak-btn style-5 color-yellow-bg">
+                                        <button type="submit">Book Now</button>
                                     </div>
                                 </div>
                                 <div class="ak-height-50 ak-height-lg-30"></div>
@@ -990,15 +995,29 @@ function showBookingResult(success, message) {
   }
   modal.style.display = 'flex';
 }
-function increaseValue() {
-  var input = document.getElementById('number');
+function increaseAdult() {
+  var input = document.getElementById('adultNumber');
   var value = parseInt(input.value, 10) || 0;
   input.value = value + 1;
+  // Không gọi updatePrice() ở đây vì đã có event listener
 }
-function decreaseValue() {
-  var input = document.getElementById('number');
+function decreaseAdult() {
+  var input = document.getElementById('adultNumber');
+  var value = parseInt(input.value, 10) || 0;
+  if (value > 1) input.value = value - 1; // Đảm bảo luôn có ít nhất 1 người lớn
+  // Không gọi updatePrice() ở đây vì đã có event listener
+}
+function increaseChild() {
+  var input = document.getElementById('childNumber');
+  var value = parseInt(input.value, 10) || 0;
+  input.value = value + 1;
+  // Không gọi updatePrice() ở đây vì đã có event listener
+}
+function decreaseChild() {
+  var input = document.getElementById('childNumber');
   var value = parseInt(input.value, 10) || 0;
   if (value > 0) input.value = value - 1;
+  // Không gọi updatePrice() ở đây vì đã có event listener
 }
 </script>
 
@@ -1057,15 +1076,43 @@ function updateQuantityFromDate() {
 function updatePrice() {
     const type = document.getElementById('bookingType').value;
     let deposit = 0;
+    let basePrice = 0;
+    
+    // Lấy số lượng người lớn và trẻ em
+    const adultCount = parseInt(document.getElementById('adultNumber').value) || 1;
+    const childCount = parseInt(document.getElementById('childNumber').value) || 0;
+    
+    // Tính giá dựa trên loại đặt phòng
     if (type === 'ngay') {
         const qty = parseInt(document.getElementById('bookingQuantity').value) || 1;
-        const total = giaNgay * qty;
-        deposit = Math.round(total / 2);
+        basePrice = giaNgay * qty;
+    } else if (type === 'gio') {
+        const qty = parseInt(document.getElementById('bookingQuantity').value) || 1;
+        basePrice = giaGio * qty;
+    } else if (type === 'dem') {
+        const qty = parseInt(document.getElementById('bookingQuantity').value) || 1;
+        basePrice = giaDem * qty;
     }
+    
+    // Tính tổng giá dựa trên số người (có thể điều chỉnh theo logic của bạn)
+    // Ví dụ: Người lớn tính 100%, trẻ em tính 50% giá
+    const total = basePrice * adultCount + (basePrice * 0.5 * childCount);
+    
+    // Tính đặt cọc 50%
+    deposit = Math.round(total / 2);
+    
+    // Hiển thị giá đặt cọc
     document.getElementById('depositPrice').innerText = formatVND(deposit);
-    // Ẩn cảnh báo nếu giá đã đúng
+    
+    // Hiển thị cảnh báo nếu giá có thể không chính xác
     const warn = document.getElementById('price-warning');
-    if (warn && (giaNgay > 0 || giaGio > 0 || giaDem > 0)) warn.style.display = 'none';
+    if (warn) {
+        if (giaNgay <= 0 && giaGio <= 0 && giaDem <= 0) {
+            warn.style.display = 'block';
+        } else {
+            warn.style.display = 'none';
+        }
+    }
 }
 window.addEventListener('DOMContentLoaded', function() {
     setDefaultDates();
@@ -1076,6 +1123,29 @@ window.addEventListener('DOMContentLoaded', function() {
         updatePrice();
     });
     document.getElementById('bookingQuantity').addEventListener('input', updatePrice);
+    
+    // Lắng nghe thay đổi số lượng người lớn và trẻ em
+    document.getElementById('adultNumber').addEventListener('change', updatePrice);
+    document.getElementById('childNumber').addEventListener('change', updatePrice);
+    
+    // Lắng nghe sự kiện click trên các nút tăng/giảm
+    document.getElementById('increaseAdult').addEventListener('click', function() {
+        increaseAdult();
+        updatePrice();
+    });
+    document.getElementById('decreaseAdult').addEventListener('click', function() {
+        decreaseAdult();
+        updatePrice();
+    });
+    document.getElementById('increaseChild').addEventListener('click', function() {
+        increaseChild();
+        updatePrice();
+    });
+    document.getElementById('decreaseChild').addEventListener('click', function() {
+        decreaseChild();
+        updatePrice();
+    });
+    
     // Lắng nghe thay đổi ngày ở input gốc
     const checkInInput = document.querySelector('input[name="ngayNhanPhong"]');
     const checkOutInput = document.querySelector('input[name="ngayTraPhong"]');
@@ -1087,6 +1157,15 @@ window.addEventListener('DOMContentLoaded', function() {
         updateQuantityFromDate();
         updatePrice();
     });
+    
+    // Hiển thị cảnh báo giá nếu cần
+    const warn = document.getElementById('price-warning');
+    if (warn) {
+        if (giaNgay <= 0 && giaGio <= 0 && giaDem <= 0) {
+            warn.style.display = 'block';
+        }
+    }
+    
     updateLabelAndQuantityVisibility();
     updateQuantityFromDate();
     updatePrice();
@@ -1162,6 +1241,49 @@ window.addEventListener('DOMContentLoaded', function() {
   margin-bottom: 15px;
   position: relative;
   z-index: 2;
+}
+.booking-widget-inner .value-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #d1d5db;
+  color: #333;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.booking-widget-inner .value-button:hover {
+  background: #FFD28D;
+}
+.booking-widget-inner .number-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  padding: 8px;
+  width: 50px;
+  -moz-appearance: textfield; /* Firefox */
+}
+.booking-widget-inner .number-input::-webkit-outer-spin-button,
+.booking-widget-inner .number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.booking-widget-inner .number-of-input {
+  margin-bottom: 15px;
+}
+.booking-widget-inner .number-of-input p {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.deposit-info {
+  transition: all 0.3s ease;
 }
 </style>
 
