@@ -47,17 +47,40 @@ function createSearchAndFilterElements() {
   const btnAddCustomer = document.getElementById('btnAddCustomer');
   if (!btnAddCustomer) return;
   
+  // Tạo container cho tìm kiếm và lọc
+  const searchFilterContainer = document.createElement('div');
+  searchFilterContainer.className = 'search-filter-container';
+  
+  // Tạo container cho tìm kiếm
+  const searchContainer = document.createElement('div');
+  searchContainer.className = 'search-container';
+  
+  // Tạo icon tìm kiếm
+  const searchIcon = document.createElement('span');
+  searchIcon.className = 'material-icons search-icon';
+  searchIcon.textContent = 'search';
+  searchContainer.appendChild(searchIcon);
+  
   // Tạo phần tử tìm kiếm
   const searchInput = document.createElement('input');
   searchInput.type = 'text';
-  searchInput.placeholder = 'Tìm kiếm khách hàng...';
+  searchInput.placeholder = 'Tìm kiếm theo tên, email, số điện thoại...';
   searchInput.className = 'search-input';
-  searchInput.style.cssText = 'padding: 10px 16px; border-radius: 8px; border: 1px solid #d1fae5; margin-bottom: 16px; width: 300px;';
+  searchContainer.appendChild(searchInput);
+  
+  // Tạo container cho lọc
+  const filterContainer = document.createElement('div');
+  filterContainer.className = 'filter-container';
+  
+  // Tạo icon lọc
+  const filterIcon = document.createElement('span');
+  filterIcon.className = 'material-icons filter-icon';
+  filterIcon.textContent = 'filter_list';
+  filterContainer.appendChild(filterIcon);
   
   // Tạo phần tử lọc trạng thái
   const filterSelect = document.createElement('select');
   filterSelect.className = 'filter-select';
-  filterSelect.style.cssText = 'padding: 10px 16px; border-radius: 8px; border: 1px solid #d1fae5; margin-bottom: 16px; margin-left: 16px; width: 200px;';
   
   const filterOptions = [
     { value: '', text: 'Tất cả trạng thái' },
@@ -72,13 +95,14 @@ function createSearchAndFilterElements() {
     filterSelect.appendChild(optionElement);
   });
   
-  // Thêm các phần tử vào DOM
-  const filterContainer = document.createElement('div');
-  filterContainer.style.cssText = 'display: flex; align-items: center; margin-bottom: 16px;';
-  filterContainer.appendChild(searchInput);
   filterContainer.appendChild(filterSelect);
   
-  btnAddCustomer.parentNode.insertBefore(filterContainer, btnAddCustomer.nextSibling);
+  // Thêm các phần tử vào container chính
+  searchFilterContainer.appendChild(searchContainer);
+  searchFilterContainer.appendChild(filterContainer);
+  
+  // Thêm container vào DOM
+  btnAddCustomer.parentNode.insertBefore(searchFilterContainer, btnAddCustomer.nextSibling);
   
   // Gắn sự kiện tìm kiếm và lọc
   searchInput.addEventListener('input', filterTable);
@@ -123,6 +147,7 @@ function showAddCustomerForm() {
   document.getElementById('formTitle').innerText = 'Thêm khách hàng mới';
   document.getElementById('customerId').value = '';
   form.setAttribute('data-mode', 'add');
+  clearFormError();
 }
 
 /**
@@ -138,6 +163,7 @@ function hideCustomerForm() {
  */
 function handleCustomerFormSubmit(event) {
   event.preventDefault();
+  clearFormError();
   
   const form = event.target;
   const customerId = document.getElementById('customerId').value;
@@ -176,11 +202,21 @@ function handleCustomerFormSubmit(event) {
   })
   .then(response => {
     if (!response.ok) {
+      if (response.status === 500) {
+        throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+      }
       return response.json().then(data => {
         throw new Error(data.message || 'Có lỗi xảy ra khi lưu khách hàng');
+      }).catch(err => {
+        // Xử lý trường hợp response không phải JSON
+        throw new Error('Có lỗi xảy ra khi lưu khách hàng');
       });
     }
     return response.json();
+  }).catch(error => {
+    console.error('Lỗi hệ thống:', error);
+    showFormError(error.message || 'Có lỗi xảy ra khi lưu khách hàng');
+    throw error;
   })
   .then(data => {
     // Hiển thị thông báo thành công
@@ -191,8 +227,7 @@ function handleCustomerFormSubmit(event) {
     window.location.reload();
   })
   .catch(error => {
-    console.error('Lỗi:', error);
-    alert(error.message || 'Có lỗi xảy ra khi lưu khách hàng');
+    // Đã hiển thị lỗi ở trên, không cần alert lại
   });
 }
 
@@ -205,6 +240,12 @@ function editCustomer(customerId) {
   fetch(`/admin/customers/${customerId}`)
     .then(response => {
       if (!response.ok) {
+        if (response.status === 500) {
+          throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+        }
+        if (response.status === 404) {
+          throw new Error('Không tìm thấy thông tin khách hàng');
+        }
         throw new Error('Không thể tải thông tin khách hàng');
       }
       return response.json();
@@ -245,11 +286,17 @@ function deleteCustomer(customerId) {
   })
   .then(response => {
     if (!response.ok) {
+      if (response.status === 500) {
+        throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+      }
       if (response.status === 404) {
         throw new Error('Không tìm thấy khách hàng');
       }
       return response.json().then(data => {
         throw new Error(data.message || 'Có lỗi xảy ra khi xóa khách hàng');
+      }).catch(err => {
+        // Xử lý trường hợp response không phải JSON
+        throw new Error('Có lỗi xảy ra khi xóa khách hàng');
       });
     }
     
@@ -271,6 +318,12 @@ function viewCustomer(customerId) {
   fetch('/admin/customers/' + customerId)
     .then(res => {
       if (!res.ok) {
+        if (res.status === 500) {
+          throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+        }
+        if (res.status === 404) {
+          throw new Error('Không tìm thấy thông tin khách hàng');
+        }
         throw new Error('Lỗi khi tải dữ liệu khách hàng');
       }
       return res.json();
@@ -309,15 +362,21 @@ function viewCustomer(customerId) {
       alert('Không thể xem chi tiết khách hàng: ' + error.message);
     });
 }
-// Xóa hàm showAddCustomerForm trùng lặp vì đã được định nghĩa ở trên
-/*function showAddCustomerForm() {
-  const form = document.getElementById('customerForm');
-  form.reset();
-  document.getElementById('formTitle').innerText = 'Thêm khách hàng mới';
-  document.getElementById('customerId').value = '';
-  form.setAttribute('data-mode', 'add');
-  form.style.display = 'grid';
-}*/
+
+function showFormError(message) {
+  const errorDiv = document.getElementById('customerFormError');
+  if (errorDiv) {
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+  }
+}
+function clearFormError() {
+  const errorDiv = document.getElementById('customerFormError');
+  if (errorDiv) {
+    errorDiv.textContent = '';
+    errorDiv.style.display = 'none';
+  }
+}
 
 // Các hàm này đã được định nghĩa ở trên, nên không cần định nghĩa lại
 // Xem các hàm editCustomer, hideCustomerForm và deleteCustomer ở phần trên của file

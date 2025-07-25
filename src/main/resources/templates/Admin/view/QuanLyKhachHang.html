@@ -27,7 +27,10 @@
     <main role="main" tabindex="0">
       <h1>Quản lý khách hàng</h1>
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddCustomer">Thêm khách hàng mới</button>
+        <button class="btn btn-primary" id="btnAddCustomer">
+          <span class="material-icons">person_add</span>
+          Thêm khách hàng mới
+        </button>
         <table aria-label="Danh sách khách hàng" id="customerTable">
           <thead>
             <tr>
@@ -80,6 +83,7 @@
                 <h2 id="formTitle">Thêm khách hàng mới</h2>
                 <p>Vui lòng điền đầy đủ thông tin khách hàng vào form dưới đây</p>
               </div>
+              <div id="customerFormError" class="form-error" style="display:none;"></div>
               <input type="hidden" id="customerId" name="customerId" />
 
               <label for="customerName">Tên</label>
@@ -88,7 +92,7 @@
               <input type="email" id="customerEmail" name="customerEmail" required placeholder="abc@gmail.com" />
               <label for="customerPhone">Số điện thoại</label>
               <input type="text" id="customerPhone" name="customerPhone" required placeholder="0903123456"
-                pattern="^[0-9()+ -]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+                pattern="^[0-9()+\- ]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
               <label for="customerAddress">Địa chỉ</label>
               <textarea id="customerAddress" name="customerAddress" placeholder="Nhập địa chỉ"></textarea>
               <label for="customerStatus">Trạng thái</label>
@@ -108,8 +112,11 @@
         <!-- Modal xem chi tiết khách hàng (ẩn mặc định) -->
         <div class="modal-overlay" id="viewCustomerModal" style="display:none;">
           <div class="modal-content">
-            <button type="button" class="modal-close" id="closeViewCustomerModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
-            <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết khách hàng</h2>
+            <button type="button" class="modal-close" id="closeViewCustomerModal">&times;</button>
+            <div class="form-header">
+              <h2>Chi tiết khách hàng</h2>
+              <p>Thông tin chi tiết của khách hàng trong hệ thống</p>
+            </div>
             
             <div class="customer-details">
               <div class="detail-row">
@@ -146,9 +153,9 @@
               </div>
             </div>
             
-            <div class="action-buttons">
-              <button type="button" class="btn" id="editCustomerBtn">Chỉnh sửa</button>
-              <button type="button" class="btn" id="closeViewBtn" style="background:#ef4444; margin-left: 12px;">Đóng</button>
+            <div class="form-footer">
+              <button type="button" class="btn btn-primary" id="editCustomerBtn">Chỉnh sửa</button>
+              <button type="button" class="btn btn-danger" id="closeViewBtn">Đóng</button>
             </div>
           </div>
         </div>
@@ -167,6 +174,12 @@
       fetch('/admin/customers/' + customerId)
         .then(res => {
           if (!res.ok) {
+            if (res.status === 500) {
+              throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+            }
+            if (res.status === 404) {
+              throw new Error('Không tìm thấy thông tin khách hàng');
+            }
             throw new Error('Lỗi khi tải dữ liệu khách hàng');
           }
           return res.json();
