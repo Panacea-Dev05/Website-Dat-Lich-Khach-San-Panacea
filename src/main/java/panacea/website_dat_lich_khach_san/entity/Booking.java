@@ -32,6 +32,10 @@ public class Booking {
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
+    @ManyToOne
+    @JoinColumn(name = "loai_phong_id")
+    private RoomType roomType;
+
     @Column(name = "ngay_nhan_phong", nullable = false)
     private LocalDate ngayNhanPhong;
 

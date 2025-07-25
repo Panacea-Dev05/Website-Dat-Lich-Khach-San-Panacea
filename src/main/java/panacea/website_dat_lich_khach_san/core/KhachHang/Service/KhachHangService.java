@@ -13,6 +13,13 @@ import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
+import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -42,11 +49,18 @@ public class KhachHangService {
     private CustomerRepository customerRepository;
     @Autowired(required = false)
     private JavaMailSender mailSender;
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepositoty;
+    @Autowired
+    private RoomImagesRepositoty roomImagesRepositoty;
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
-            Room room = roomRepository.findById(Integer.valueOf(dto.getRoomId())).orElse(null);
-            if (room == null) return false;
+            // KHÔNG lấy room theo id nữa, chỉ lấy loại phòng
+            var roomType = roomTypeRepository.findById(dto.getRoomTypeId()).orElse(null);
+            if (roomType == null) return false;
 
             // Tạo khách hàng nếu chưa có (giả sử theo email)
             Customer customer = customerRepository.findByEmail(dto.getEmailKhach()).orElseGet(() -> {
@@ -56,8 +70,7 @@ public class KhachHangService {
                 c.setEmail(dto.getEmailKhach());
                 c.setSoDienThoai(dto.getSoDienThoai());
                 c.setMaKhachHang("KH" + System.currentTimeMillis());
-                c.setMatKhauHash("default"); // hoặc sinh random nếu muốn
-                // Có thể set thêm các trường mặc định khác nếu cần
+                c.setMatKhauHash("default");
                 return customerRepository.save(c);
             });
 
@@ -70,24 +83,26 @@ public class KhachHangService {
             booking.setGhiChuKhachHang(dto.getGhiChuKhachHang());
             booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.CHO_XAC_NHAN);
             booking.setNgayDat(LocalDateTime.now());
+            // Lưu loại phòng khách chọn
+            booking.setRoomType(roomType);
             // Sinh mã đặt phòng tự động
             String maDatPhong = "BOOK" + System.currentTimeMillis();
             booking.setMaDatPhong(maDatPhong);
-            // Đảm bảo các trường số không null/hợp lệ (>= 1 nếu constraint > 0)
-            if (booking.getSoNguoiLon() == null || booking.getSoNguoiLon() < 1) booking.setSoNguoiLon((byte) 1);
-            if (booking.getSoTreEm() == null || booking.getSoTreEm() < 0) booking.setSoTreEm((byte) 0);
-            if (booking.getTongTienPhong() == null || booking.getTongTienPhong().compareTo(BigDecimal.ONE) < 0)
-                booking.setTongTienPhong(new BigDecimal("10000")); // hoặc lấy giá phòng thực tế
-            if (booking.getTongThanhToan() == null || booking.getTongThanhToan().compareTo(BigDecimal.ONE) < 0)
-                booking.setTongThanhToan(booking.getTongTienPhong());
-            if (booking.getTongTienDichVu() == null || booking.getTongTienDichVu().compareTo(BigDecimal.ZERO) < 0)
-                booking.setTongTienDichVu(BigDecimal.ZERO);
-            if (booking.getGiamGiaPromotion() == null || booking.getGiamGiaPromotion().compareTo(BigDecimal.ZERO) < 0)
-                booking.setGiamGiaPromotion(BigDecimal.ZERO);
-            if (booking.getPhiThue() == null || booking.getPhiThue().compareTo(BigDecimal.ZERO) < 0)
-                booking.setPhiThue(BigDecimal.ZERO);
-            if (booking.getTienDatCoc() == null || booking.getTienDatCoc().compareTo(BigDecimal.ZERO) < 0)
-                booking.setTienDatCoc(BigDecimal.ZERO);
+            // --- TÍNH GIÁ THEO LOẠI THUÊ ---
+            String bookingType = dto.getBookingType();
+            Integer bookingQuantity = dto.getBookingQuantity() != null && dto.getBookingQuantity() > 0 ? dto.getBookingQuantity() : 1;
+            BigDecimal unitPrice = BigDecimal.ZERO;
+            RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(roomType.getId(), RoomPricing.LoaiGia.BASE);
+            if (pricing != null) {
+                if ("ngay".equals(bookingType)) unitPrice = pricing.getGiaNgay();
+                else if ("gio".equals(bookingType)) unitPrice = pricing.getGiaGio();
+                else if ("dem".equals(bookingType)) unitPrice = pricing.getGiaQuaDem();
+            }
+            BigDecimal tongTienPhong = unitPrice.multiply(BigDecimal.valueOf(bookingQuantity));
+            BigDecimal tienDatCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            booking.setTongTienPhong(tongTienPhong);
+            booking.setTongThanhToan(tongTienPhong); // Nếu chưa có dịch vụ/phí khác
+            booking.setTienDatCoc(tienDatCoc);
             // TODO: set thêm các trường khác nếu cần
 
             bookingRepository.save(booking);
@@ -106,11 +121,17 @@ public class KhachHangService {
                     }
                     dichVuHtml.append("</ul></li>");
                 }
+                String bookingTypeLabel = "Theo ngày";
+                if ("gio".equals(dto.getBookingType())) bookingTypeLabel = "Theo giờ";
+                else if ("dem".equals(dto.getBookingType())) bookingTypeLabel = "Theo đêm";
                 String text = String.format(
                     "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
                     "<p>Thông tin đặt phòng của bạn:</p>" +
                     "<ul>" +
                     "<li>Khách sạn: Panacea Hotel</li>" +
+                    "<li>Loại phòng: %s</li>" +
+                    "<li>Loại thuê: %s</li>" +
+                    "<li>Số lượng: %d</li>" +
                     "<li>Ngày nhận phòng: %s</li>" +
                     "<li>Ngày trả phòng: %s</li>" +
                     "<li>Số người lớn: %d</li>" +
@@ -120,12 +141,16 @@ public class KhachHangService {
                     "</ul>" +
                     "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
                     "<img src='cid:qr_momo' width='250' height='250'/>" +
-                    "<p><b>Số tiền cần chuyển: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
+                    "<p><b>Số tiền cần thanh toán khi trả phòng: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
+                    "<p><b>Tiền đặt cọc (50%%): </b>" + booking.getTienDatCoc() + " VNĐ</p>" +
                     "<p><b>Nội dung chuyển khoản: </b>DatPhong_" + maDatPhong + "</p>" +
                     "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
                     "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
                     "<br><b>Panacea Hotel</b>",
                     dto.getTenKhach(),
+                    roomType.getTenLoaiPhong(),
+                    bookingTypeLabel,
+                    dto.getBookingQuantity() != null ? dto.getBookingQuantity() : 1,
                     dto.getNgayNhanPhong(),
                     dto.getNgayTraPhong(),
                     dto.getSoNguoiLon(),
@@ -140,6 +165,54 @@ public class KhachHangService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<RoomTypeDTO> getAllRoomTypesForCustomer() {
+        List<panacea.website_dat_lich_khach_san.entity.RoomType> roomTypes = roomTypeRepository.findAll();
+        List<RoomTypeDTO> result = new ArrayList<>();
+        for (var rt : roomTypes) {
+            RoomTypeDTO dto = RoomTypeDTO.fromEntity(rt);
+            // Lấy giá BASE
+            RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(rt.getId(), RoomPricing.LoaiGia.BASE);
+            if (pricing != null) {
+                dto.setGiaNgay(pricing.getGiaNgay());
+                dto.setGiaGio(pricing.getGiaGio());
+                dto.setGiaQuaDem(pricing.getGiaQuaDem());
+            }
+            // Lấy ảnh
+            var images = roomImagesRepositoty.findByLoaiPhong_Id(rt.getId());
+            List<String> urls = new ArrayList<>();
+            for (var img : images) {
+                urls.add(img.getUrlHinhAnh());
+            }
+            dto.setImageUrls(urls);
+            result.add(dto);
+        }
+        return result;
+    }
+
+    public RoomTypeDTO getRoomTypeDTOById(Integer id) {
+        var rtOpt = roomTypeRepository.findById(id);
+        if (rtOpt.isEmpty()) return null;
+        var rt = rtOpt.get();
+        RoomTypeDTO dto = RoomTypeDTO.fromEntity(rt);
+        // Lấy giá BASE
+        RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(rt.getId(), panacea.website_dat_lich_khach_san.entity.RoomPricing.LoaiGia.BASE);
+        if (pricing != null) {
+            dto.setGiaNgay(pricing.getGiaNgay());
+            dto.setGiaGio(pricing.getGiaGio());
+            dto.setGiaQuaDem(pricing.getGiaQuaDem());
+        }
+        // Log debug giá
+        System.out.println("[DEBUG] Giá phòng DTO: id=" + id + ", giaNgay=" + dto.getGiaNgay() + ", giaGio=" + dto.getGiaGio() + ", giaQuaDem=" + dto.getGiaQuaDem());
+        // Lấy ảnh
+        var images = roomImagesRepositoty.findByLoaiPhong_Id(rt.getId());
+        List<String> urls = new ArrayList<>();
+        for (var img : images) {
+            urls.add(img.getUrlHinhAnh());
+        }
+        dto.setImageUrls(urls);
+        return dto;
     }
 
     private void sendMail(String to, String subject, String text) throws MessagingException {

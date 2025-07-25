@@ -11,6 +11,7 @@ import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangServic
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -38,19 +39,22 @@ public class KhachHangController {
 
     // Trang phòng
     @GetMapping("/room")
-    public String rooms() {
+    public String rooms(Model model) {
+        model.addAttribute("roomTypes", khachHangService.getAllRoomTypesForCustomer());
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
     }
 
     // Trang phòng (alias)
     @GetMapping("/rooms")
-    public String roomsAlias() {
+    public String roomsAlias(Model model) {
+        model.addAttribute("roomTypes", khachHangService.getAllRoomTypesForCustomer());
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
     }
 
     // Trang chi tiết phòng
     @GetMapping("/single-room")
-    public String roomDetail() {
+    public String roomDetail(@RequestParam("id") Integer id, Model model) {
+        model.addAttribute("roomType", khachHangService.getRoomTypeDTOById(id));
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
     }
 
