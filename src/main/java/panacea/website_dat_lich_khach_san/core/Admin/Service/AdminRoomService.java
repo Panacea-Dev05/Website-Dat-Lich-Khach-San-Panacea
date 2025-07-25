@@ -214,6 +214,7 @@ public class AdminRoomService {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         if (opt.isEmpty()) return null;
         RoomType roomType = opt.get();
+        // Cho phép cập nhật mã hạng phòng
         roomType.setMaLoaiPhong(dto.getMaLoaiPhong());
         roomType.setTenLoaiPhong(dto.getTenLoaiPhong());
         roomType.setDienTich(dto.getDienTich());
@@ -378,4 +379,4 @@ public class AdminRoomService {
                 .map(this::convertRoomTypeToDTO)
                 .collect(Collectors.toList());
     }
-} 
+}

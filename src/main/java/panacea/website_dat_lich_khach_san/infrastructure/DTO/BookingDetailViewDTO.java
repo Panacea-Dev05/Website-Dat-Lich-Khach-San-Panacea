@@ -41,6 +41,9 @@ public class BookingDetailViewDTO {
     // Thông tin phòng
     private String roomNumber;
     private String roomTypeName;
+
+    // Thông tin nhân viên tạo booking
+    private String tenNhanVienTao;
     
     // Thêm trường danh sách dịch vụ đã sử dụng
     private List<ServiceDetailDTO> serviceUsages;
