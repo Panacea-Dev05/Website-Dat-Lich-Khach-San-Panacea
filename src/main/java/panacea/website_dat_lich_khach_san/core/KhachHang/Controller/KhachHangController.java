@@ -9,17 +9,14 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-<<<<<<< HEAD
 import org.springframework.web.bind.annotation.RequestParam;
-=======
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
 
 @Controller
 @RequestMapping("/khachhang")
-
 public class KhachHangController {
+
     @Autowired
     private KhachHangService khachHangService;
 
@@ -42,38 +39,35 @@ public class KhachHangController {
 
     // Trang phòng
     @GetMapping("/room")
-<<<<<<< HEAD
     public String rooms(Model model) {
         model.addAttribute("roomTypes", khachHangService.getAllRoomTypesForCustomer());
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
-=======
+    }
+
     public String rooms() {
         return "KhachHang/hotel-resort/room";
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
     }
 
     // Trang phòng (alias)
     @GetMapping("/rooms")
-<<<<<<< HEAD
     public String roomsAlias(Model model) {
         model.addAttribute("roomTypes", khachHangService.getAllRoomTypesForCustomer());
         return "KhachHang/livepreview/elegencia-main/hotel-resort/room";
-=======
+    }
+
     public String roomsAlias() {
         return "KhachHang/hotel-resort/room";
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
     }
 
     // Trang chi tiết phòng
     @GetMapping("/single-room")
-<<<<<<< HEAD
     public String roomDetail(@RequestParam("id") Integer id, Model model) {
         model.addAttribute("roomType", khachHangService.getRoomTypeDTOById(id));
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
-=======
+    }
+
     public String roomDetail() {
         return "KhachHang/hotel-resort/single-room";
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
     }
 
     // Trang chi tiết phòng (alias)
@@ -213,16 +207,6 @@ public class KhachHangController {
             );
         }
     }
-
-    // Xử lý đặt phòng từ form single-room
-//    @PostMapping("/single-room/booking")
-//    public String datPhong(@ModelAttribute BookingRequestDTO bookingRequestDTO, Model model) {
-//        boolean result = khachHangService.datPhongChoKhachHang(bookingRequestDTO);
-//        model.addAttribute("result", result);
-//        model.addAttribute("email", bookingRequestDTO.getEmailKhach());
-//        // Trả về template thông báo chờ xác nhận
-//        return result ? "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-success" : "KhachHang/livepreview/elegencia-main/hotel-resort/single-room-fail";
-//    }
 
     // Trang chi tiết phòng động theo id loại phòng
     @GetMapping("/single-room/{roomTypeId}")

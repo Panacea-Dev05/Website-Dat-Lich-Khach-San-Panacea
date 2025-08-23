@@ -14,7 +14,7 @@ import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
-<<<<<<< HEAD
+
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
@@ -22,11 +22,11 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import java.util.ArrayList;
 import java.util.List;
-=======
+
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
+
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -60,17 +60,14 @@ public class KhachHangService {
     @Autowired(required = false)
     private JavaMailSender mailSender;
     @Autowired
-<<<<<<< HEAD
+
     private RoomPricingRepositoty roomPricingRepositoty;
     @Autowired
     private RoomImagesRepositoty roomImagesRepositoty;
     @Autowired
     private RoomTypeRepository roomTypeRepository;
-=======
-    private RoomTypeRepository roomTypeRepository;
-    @Autowired
-    private RoomPricingRepositoty roomPricingRepositoty;
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
+
+
 
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
@@ -141,7 +138,7 @@ public class KhachHangService {
                 if ("gio".equals(dto.getBookingType())) bookingTypeLabel = "Theo giờ";
                 else if ("dem".equals(dto.getBookingType())) bookingTypeLabel = "Theo đêm";
                 String text = String.format(
-<<<<<<< HEAD
+
                     "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
                     "<p>Thông tin đặt phòng của bạn:</p>" +
                     "<ul>" +
@@ -173,8 +170,8 @@ public class KhachHangService {
                     dto.getSoNguoiLon(),
                     dto.getSoTreEm(),
                     dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
-                    dichVuHtml.toString()
-=======
+                    dichVuHtml.toString(),
+
                         "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
                                 "<p>Thông tin đặt phòng của bạn:</p>" +
                                 "<ul>" +
@@ -200,7 +197,7 @@ public class KhachHangService {
                         dto.getSoTreEm(),
                         dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
                         dichVuHtml.toString()
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
+
                 );
                 sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
             }
