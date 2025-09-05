@@ -140,6 +140,39 @@ main > h1 {
     text-shadow: 0 0 6px rgb(6 78 59 / 0.1);
     user-select: none;
 }
+
+/* Tab container */
+.tab-container {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.tab {
+    padding: 10px 32px;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    color: #009966;
+    font-size: 1.1rem;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: none;
+}
+
+.tab.active {
+    background: #009966;
+    color: #fff;
+    font-weight: 700;
+}
+
+.tab:hover:not(.active) {
+    background: #e6f7f1;
+    color: #007d4a;
+}
 /*section.content-section {*/
 /*    background: white;*/
 /*    border-radius: 16px;*/

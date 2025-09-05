@@ -485,21 +485,21 @@ function startCountdown() {
   /*--------------------------------------------------------------
      11. Gsap Register Plugin
  --------------------------------------------------------------*/
-  gsap.registerPlugin(ScrollTrigger, ScrollSmoother, ScrollToPlugin);
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
   gsap.config({
     nullTargetWarn: false,
   });
   const widthall = window.innerWidth;
 
-  // create the smooth scroller FIRST!
-  const smoother = ScrollSmoother.create({
-    content: "#scrollsmoother-container",
-    smooth: 1.1,
-    normalizeScroll: true,
-    ignoreMobileResize: true,
-    effects: widthall > 991 ? true : false,
-    smoothTouch: true,
-  });
+  // ScrollSmoother disabled to fix overlay scrolling issue
+  // const smoother = ScrollSmoother.create({
+  //   content: "#scrollsmoother-container",
+  //   smooth: 1.1,
+  //   normalizeScroll: true,
+  //   ignoreMobileResize: true,
+  //   effects: widthall > 991 ? true : false,
+  //   smoothTouch: true,
+  // });
 
   /*--------------------------------------------------------------
      12. Heder Border Animations

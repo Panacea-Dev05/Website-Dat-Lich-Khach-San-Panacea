@@ -1055,40 +1055,65 @@ function updateQuantityFromDate() {
     }
 }
 function updatePrice() {
-    const type = document.getElementById('bookingType').value;
+    const typeElement = document.getElementById('bookingType');
+    if (!typeElement) return;
+    
+    const type = typeElement.value;
     let deposit = 0;
     if (type === 'ngay') {
-        const qty = parseInt(document.getElementById('bookingQuantity').value) || 1;
-        const total = giaNgay * qty;
+        const qtyElement = document.getElementById('bookingQuantity');
+        if (!qtyElement) return;
+        
+        const qty = parseInt(qtyElement.value) || 1;
+        const total = (typeof giaNgay !== 'undefined' ? giaNgay : 0) * qty;
         deposit = Math.round(total / 2);
     }
-    document.getElementById('depositPrice').innerText = formatVND(deposit);
+    
+    const depositElement = document.getElementById('depositPrice');
+    if (depositElement && typeof formatVND === 'function') {
+        depositElement.innerText = formatVND(deposit);
+    }
+    
     // Ẩn cảnh báo nếu giá đã đúng
     const warn = document.getElementById('price-warning');
-    if (warn && (giaNgay > 0 || giaGio > 0 || giaDem > 0)) warn.style.display = 'none';
+    if (warn && (typeof giaNgay !== 'undefined' && giaNgay > 0 || 
+                 typeof giaGio !== 'undefined' && giaGio > 0 || 
+                 typeof giaDem !== 'undefined' && giaDem > 0)) {
+        warn.style.display = 'none';
+    }
 }
 window.addEventListener('DOMContentLoaded', function() {
-    setDefaultDates();
-    document.getElementById('bookingType').addEventListener('change', function() {
-        updateLabelAndQuantityVisibility();
-        setDefaultDates();
-        updateQuantityFromDate();
-        updatePrice();
-    });
-    document.getElementById('bookingQuantity').addEventListener('input', updatePrice);
+    if (typeof setDefaultDates === 'function') setDefaultDates();
+    
+    const bookingTypeElement = document.getElementById('bookingType');
+    if (bookingTypeElement) {
+        bookingTypeElement.addEventListener('change', function() {
+            if (typeof updateLabelAndQuantityVisibility === 'function') updateLabelAndQuantityVisibility();
+            if (typeof setDefaultDates === 'function') setDefaultDates();
+            if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
+            updatePrice();
+        });
+    }
+    
+    const bookingQuantityElement = document.getElementById('bookingQuantity');
+    if (bookingQuantityElement) {
+        bookingQuantityElement.addEventListener('input', updatePrice);
+    }
+    
     // Lắng nghe thay đổi ngày ở input gốc
     const checkInInput = document.querySelector('input[name="ngayNhanPhong"]');
     const checkOutInput = document.querySelector('input[name="ngayTraPhong"]');
     if (checkInInput) checkInInput.addEventListener('change', function() {
-        updateQuantityFromDate();
+        if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
         updatePrice();
     });
     if (checkOutInput) checkOutInput.addEventListener('change', function() {
-        updateQuantityFromDate();
+        if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
         updatePrice();
     });
-    updateLabelAndQuantityVisibility();
-    updateQuantityFromDate();
+    
+    if (typeof updateLabelAndQuantityVisibility === 'function') updateLabelAndQuantityVisibility();
+    if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
     updatePrice();
 });
 </script>
