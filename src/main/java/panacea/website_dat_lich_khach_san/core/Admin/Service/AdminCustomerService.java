@@ -13,6 +13,7 @@ import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.CustomerPreferences;
 import panacea.website_dat_lich_khach_san.entity.UserSession;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
 import panacea.website_dat_lich_khach_san.repository.CustomerPreferencesRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.UserSessionRepository;
@@ -41,7 +42,13 @@ public class AdminCustomerService {
     }
     
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        // Kiểm tra trùng email
+        if (customerRepository.findByEmail(customerDTO.getEmail()).isPresent()) {
+            throw new BadRequestException("Email đã tồn tại!");
+        }
         Customer customer = convertToEntity(customerDTO);
+        // Xử lý trạng thái
+        customer.setTrangThai(parseTrangThai(customerDTO.getTrangThai()));
         Customer savedCustomer = customerRepository.save(customer);
         return convertToDTO(savedCustomer);
     }
@@ -49,6 +56,11 @@ public class AdminCustomerService {
     public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) {
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if (existingCustomer.isPresent()) {
+            // Kiểm tra trùng email với khách hàng khác
+            Optional<Customer> emailOwner = customerRepository.findByEmail(customerDTO.getEmail());
+            if (emailOwner.isPresent() && !emailOwner.get().getId().equals(id)) {
+                throw new BadRequestException("Email đã tồn tại!");
+            }
             Customer customer = existingCustomer.get();
             customer.setHo(customerDTO.getHo());
             customer.setTen(customerDTO.getTen());
@@ -57,8 +69,12 @@ public class AdminCustomerService {
             customer.setDiaChi(customerDTO.getDiaChi());
             customer.setLoaiKhachHang(customerDTO.getLoaiKhachHang());
             customer.setDiemTichLuy(customerDTO.getDiemTichLuy());
-            customer.setMatKhauHash(customerDTO.getMatKhauHash());
-            customer.setTrangThai(customerDTO.getTrangThai() != null ? panacea.website_dat_lich_khach_san.entity.Customer.TrangThaiCustomer.valueOf(customerDTO.getTrangThai()) : null);
+            // Nếu không truyền matKhauHash thì giữ nguyên mật khẩu cũ
+            if (customerDTO.getMatKhauHash() != null && !customerDTO.getMatKhauHash().isEmpty()) {
+                customer.setMatKhauHash(customerDTO.getMatKhauHash());
+            }
+            // Xử lý trạng thái
+            customer.setTrangThai(parseTrangThai(customerDTO.getTrangThai()));
             Customer savedCustomer = customerRepository.save(customer);
             return convertToDTO(savedCustomer);
         }
@@ -180,5 +196,14 @@ public class AdminCustomerService {
         return customerPreferencesRepository.findAll().stream()
             .filter(p -> p.getKhachHang() != null && p.getKhachHang().getId().equals(customerId))
             .findFirst().orElse(null);
+    }
+
+    private Customer.TrangThaiCustomer parseTrangThai(String trangThaiStr) {
+        if (trangThaiStr == null) return Customer.TrangThaiCustomer.HOAT_DONG;
+        try {
+            return Customer.TrangThaiCustomer.valueOf(trangThaiStr);
+        } catch (Exception e) {
+            throw new BadRequestException("Trạng thái khách hàng không hợp lệ. Chỉ nhận: HOAT_DONG, TAM_KHOA, DA_XOA");
+        }
     }
 } 
