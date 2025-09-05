@@ -40,6 +40,9 @@ public class BookingDTO {
     private String roomTypeName;
     private String customerName;
 
+    // Thông tin nhân viên tạo booking
+    private String tenNhanVienTao;
+
     public CustomerDTO getKhachHang() {
         return khachHang;
     }
@@ -70,5 +73,25 @@ public class BookingDTO {
     }
     public String getStatus() {
         return trangThaiDatPhong;
+    }
+
+    public LocalDate getNgayNhanPhong() {
+        return ngayNhanPhong;
+    }
+    public void setNgayNhanPhong(LocalDate ngayNhanPhong) {
+        this.ngayNhanPhong = ngayNhanPhong;
+    }
+    public LocalDate getNgayTraPhong() {
+        return ngayTraPhong;
+    }
+    public void setNgayTraPhong(LocalDate ngayTraPhong) {
+        this.ngayTraPhong = ngayTraPhong;
+    }
+
+    public String getTenNhanVienTao() {
+        return tenNhanVienTao;
+    }
+    public void setTenNhanVienTao(String tenNhanVienTao) {
+        this.tenNhanVienTao = tenNhanVienTao;
     }
 } 

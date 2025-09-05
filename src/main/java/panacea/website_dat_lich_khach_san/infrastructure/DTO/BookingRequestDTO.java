@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class BookingRequestDTO {
-    private Integer roomId;
+    private Integer roomTypeId; // Khách chỉ chọn loại phòng
     private Integer hotelId;
     private LocalDate ngayNhanPhong;
     private LocalDate ngayTraPhong;
@@ -17,5 +17,7 @@ public class BookingRequestDTO {
     private String soDienThoai;
     private String ghiChuKhachHang;
     private String hoKhach;
+    private String bookingType; // Loại thuê: ngay, gio, dem
+    private Integer bookingQuantity; // Số lượng (ngày/giờ/đêm)
     private List<String> dichVu;
 } 

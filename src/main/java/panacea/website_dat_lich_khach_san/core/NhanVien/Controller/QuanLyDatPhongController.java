@@ -19,6 +19,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDT
 import org.springframework.web.bind.annotation.RequestBody;
 import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/nhanvien/quanlydatphong")
@@ -82,21 +83,9 @@ public class QuanLyDatPhongController {
     @GetMapping("/detail/{bookingId}")
     @ResponseBody
     public Object getBookingDetail(@PathVariable Long bookingId) {
-        return quanLyDatPhongService.getBookingById(bookingId)
-            .map(booking -> {
-                Map<String, Object> map = new java.util.HashMap<>();
-                map.put("id", booking.getId());
-                map.put("maDatPhong", booking.getMaDatPhong());
-                map.put("khachHang", booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
-                map.put("ngayNhan", booking.getNgayNhanPhong());
-                map.put("ngayTra", booking.getNgayTraPhong());
-                map.put("soNguoiLon", booking.getSoNguoiLon());
-                map.put("soTreEm", booking.getSoTreEm());
-                map.put("tongThanhToan", booking.getTongThanhToan());
-                map.put("trangThai", booking.getTrangThaiDatPhong().getLabel());
-                return map;
-            })
-            .orElse(new java.util.HashMap<>());
+        BookingDetailViewDTO dto = quanLyDatPhongService.getBookingDetailViewDTOById(bookingId);
+        if (dto == null) return new java.util.HashMap<>();
+        return dto;
     }
     
     @GetMapping("/hotels")
@@ -107,8 +96,11 @@ public class QuanLyDatPhongController {
     
     @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms() {
-        List<Room> rooms = quanLyDatPhongService.getAvailableRooms();
+    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId") Long bookingId) {
+        // Lấy booking để biết loại phòng khách đã chọn
+        Booking booking = quanLyDatPhongService.getBookingById(bookingId).orElse(null);
+        Integer roomTypeId = (booking != null && booking.getRoomType() != null) ? booking.getRoomType().getId() : null;
+        List<Room> rooms = quanLyDatPhongService.getAvailableRooms(roomTypeId);
         List<Map<String, Object>> result = new java.util.ArrayList<>();
         for (Room room : rooms) {
             Map<String, Object> map = new java.util.HashMap<>();
@@ -156,6 +148,13 @@ public class QuanLyDatPhongController {
         }
         boolean result = quanLyDatPhongService.checkInBooking(bookingId, soCmndCccd, ngayCapCmnd, noiCapCmnd, soNguoiLonThucTe, soTreEmThucTe, ghiChuCheckIn);
         return java.util.Map.of("success", result);
+    }
+
+    @PostMapping("/update-services/{bookingId}")
+    @ResponseBody
+    public ResponseEntity<?> updateBookingServices(@PathVariable Long bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> services) {
+        boolean success = quanLyDatPhongService.updateBookingServices(bookingId, services);
+        return ResponseEntity.ok(java.util.Map.of("success", success));
     }
 
     @GetMapping("/history")
