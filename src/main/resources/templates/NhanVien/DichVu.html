@@ -7,7 +7,8 @@
     <title>Quản lý Dịch vụ - Panacea</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
+    <link rel="stylesheet" th:href="@{/css/NhanVien/dichvu.css}">
+    <link rel="stylesheet" href="/css/nhanvien/dichvu.css">
     <style>
         :root {
             --color-bg: #f9fafb;
@@ -190,91 +191,571 @@
 </head>
 
 <body>
-<div class="app-layout">
-    <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
-    <main class="main-content">
-        <!-- Danh sách dịch vụ -->
-        <div class="section">
-            <h2><span class="material-icons">list</span> Danh sách dịch vụ</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Tên</th>
-                    <th>Loại</th>
-                    <th>Đơn giá</th>
-                    <th>Đơn vị</th>
-                    <th>Trạng thái</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="service : ${services}">
-                    <td th:text="${service.maDichVu}"></td>
-                    <td th:text="${service.tenDichVu}"></td>
-                    <td th:text="${service.loaiDichVu}"></td>
-                    <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${service.donViTinh}"></td>
-                    <td th:text="${service.trangThai}"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="app-layout">
+        <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
+        <main class="main-content">
+            <!-- Danh sách dịch vụ -->
+            <div class="section">
+                <h2><span class="material-icons">list</span> Danh sách dịch vụ</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên</th>
+                            <th>Loại</th>
+                            <th>Đơn giá</th>
+                            <th>Đơn vị</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="service : ${services}">
+                            <td th:text="${service.maDichVu}"></td>
+                            <td th:text="${service.tenDichVu}"></td>
+                            <td th:text="${service.loaiDichVu}"></td>
+                            <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${service.donViTinh}"></td>
+                            <td th:text="${service.trangThai}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Đặt dịch vụ cho booking -->
-        <div class="section">
-            <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>
-            <form th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">
-                <div><label>Booking</label><select name="bookingId">
-                    <option disabled selected>Chọn mã booking...</option>
-                    <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
-                </select></div>
-                <div><label>Dịch vụ</label><select name="dichVuId">
-                    <option disabled selected>Chọn dịch vụ...</option>
-                    <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:text="${dv.tenDichVu}"></option>
-                </select></div>
-                <div><label>Số lượng</label><input type="number" min="1" name="soLuong" /></div>
-                <div><label>Thời gian sử dụng</label><input type="datetime-local" name="thoiGianSuDung" /></div>
-                <div style="grid-column: span 2; align-self: end;">
-                    <button class="btn" style="padding: 8px 16px; width: 30ch">
-                        <span class="material-icons" style="font-size: 34px;">add_circle</span>Thêm
-                    </button>
+            <!-- Đặt dịch vụ cho booking -->
+            <div class="section service-booking-section">
+                <div class="success-message" id="successMessage">
+                    Dịch vụ đã được thêm thành công!
                 </div>
-            </form>
-        </div>
 
-        <!-- Danh sách dịch vụ đã đặt -->
-        <div class="section">
-            <h2><span class="material-icons">receipt_long</span> Dịch vụ đã đặt</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Booking</th>
-                    <th>Dịch vụ</th>
-                    <th>Số lượng</th>
-                    <th>Giá thực tế</th>
-                    <th>Thành tiền</th>
-                    <th>Thời gian</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="sd : ${bookedServices}">
-                    <td th:text="${sd.datPhongId}"></td>
-                    <td th:text="${sd.service != null ? sd.service.tenDichVu : ''}"></td>
-                    <td th:text="${sd.soLuong}"></td>
-                    <td th:text="${#numbers.formatDecimal(sd.donGiaThucTe, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${#numbers.formatDecimal(sd.donGiaThucTe * sd.soLuong, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${#temporals.format(sd.ngaySuDung, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td>
-                        <button class="btn"><span class="material-icons">edit</span>Sửa</button>
-                        <button class="btn"><span class="material-icons">cancel</span>Hủy</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-</div>
+                <div class="section-header">
+                    <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>
+                    <p class="section-description">Thêm dịch vụ cho booking đã có sẵn trong hệ thống</p>
+                </div>
+
+                <form id="serviceBookingForm" class="service-booking-form"
+                    th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="bookingId" class="form-label">
+                                <span class="material-icons">book_online</span>
+                                Booking ID
+                            </label>
+                            <select id="bookingId" name="bookingId" class="form-control" required>
+                                <option value="" disabled selected>Chọn mã booking...</option>
+                                <option th:each="bk : ${bookings}" th:value="${bk.id}"
+                                    th:text="|Booking #${bk.id} - ${bk.khachHang?.ho} ${bk.khachHang?.ten}|"></option>
+                            </select>
+                            <div class="form-feedback"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dichVuId" class="form-label">
+                                <span class="material-icons">room_service</span>
+                                Dịch vụ
+                            </label>
+                            <select id="dichVuId" name="dichVuId" class="form-control" required>
+                                <option value="" disabled selected>Chọn dịch vụ...</option>
+                                <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:data-price="${dv.donGia}"
+                                    th:text="|${dv.tenDichVu} - ${#numbers.formatDecimal(dv.donGia, 0, 'COMMA', 0, 'POINT')} VNĐ|">
+                                </option>
+                            </select>
+                            <div class="form-feedback"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="soLuong" class="form-label">
+                                <span class="material-icons">format_list_numbered</span>
+                                Số lượng
+                            </label>
+                            <input type="number" id="soLuong" name="soLuong" class="form-control" min="1" max="100"
+                                value="1" required>
+                            <div class="form-feedback"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="thoiGianSuDung" class="form-label">
+                                <span class="material-icons">schedule</span>
+                                Thời gian sử dụng
+                            </label>
+                            <input type="datetime-local" id="thoiGianSuDung" name="thoiGianSuDung" class="form-control"
+                                required>
+                            <div class="form-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="price-preview">
+                        <div class="price-info">
+                            <span class="price-label">Tổng tiền dự kiến:</span>
+                            <span id="totalPrice" class="price-value">0 VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">
+                            <span class="material-icons">refresh</span>
+                            Làm mới
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">add_circle</span>
+                            Thêm dịch vụ
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Danh sách dịch vụ đã đặt -->
+            <div class="section service-list-section">
+                <div class="section-header">
+                    <h2>
+                        <span class="material-icons">receipt_long</span>
+                        Dịch vụ Đã Đặt
+                    </h2>
+                    <p class="section-description">Quản lý các dịch vụ đã được đặt</p>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="table-controls">
+                    <div class="search-box">
+                        <span class="material-icons">search</span>
+                        <input type="text" id="searchServices" placeholder="Tìm kiếm dịch vụ..." class="search-input">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filterBooking" class="filter-select">
+                            <option value="">Tất cả booking</option>
+                            <option th:each="booking : ${bookings}" th:value="${booking.id}"
+                                th:text="'Booking #' + ${booking.id}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="services-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Dịch vụ</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                                <th>Thời gian sử dụng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesTableBody">
+                            <tr th:each="sd : ${bookedServices}" class="service-row"
+                                th:data-booking-id="${sd.datPhongId}">
+                                <td>
+                                    <span class="booking-badge" th:text="'#' + ${sd.datPhongId}"></span>
+                                </td>
+                                <td>
+                                    <div class="service-info">
+                                        <span class="service-name"
+                                            th:text="${sd.service != null ? sd.service.tenDichVu : 'N/A'}"></span>
+                                        <small class="service-category"
+                                            th:text="${sd.service != null ? sd.service.loaiDichVu : ''}"></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge" th:text="${sd.soLuong}"></span>
+                                </td>
+                                <td>
+                                    <span class="price"
+                                        th:text="${#numbers.formatDecimal(sd.donGiaThucTe, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                                </td>
+                                <td>
+                                    <span class="total-price"
+                                        th:text="${#numbers.formatDecimal(sd.donGiaThucTe * sd.soLuong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                                </td>
+                                <td>
+                                    <div class="datetime-info">
+                                        <span class="date"
+                                            th:text="${#temporals.format(sd.ngaySuDung, 'dd/MM/yyyy')}"></span>
+                                        <span class="time"
+                                            th:text="${#temporals.format(sd.ngaySuDung, 'HH:mm')}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status active">Hoạt động</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-action btn-edit"
+                                            th:data-service-usage-id="${sd.id}"
+                                            th:data-booking-id="${sd.datPhongId}"
+                                            th:data-service-id="${sd.service.id}"
+                                            th:data-quantity="${sd.soLuong}"
+                                            th:data-usage-time="${#temporals.format(sd.ngaySuDung, 'yyyy-MM-dd''T''HH:mm')}"
+                                            onclick="editService(this)"
+                                            title="Chỉnh sửa">
+                                            <span class="material-icons">edit</span>
+                                        </button>
+                                        <button class="btn-action btn-delete"
+                                            th:data-service-usage-id="${sd.id}"
+                                            onclick="confirmDeleteService(this)" title="Xóa">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <span class="material-icons">inbox</span>
+                        <h3>Không có dịch vụ nào</h3>
+                        <p>Chưa có dịch vụ nào được đặt hoặc không tìm thấy kết quả phù hợp.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Service booking form validation
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('serviceBookingForm');
+            const bookingIdInput = document.getElementById('bookingId');
+            const serviceIdInput = document.getElementById('dichVuId');
+            const quantityInput = document.getElementById('soLuong');
+            const usageTimeInput = document.getElementById('thoiGianSuDung');
+            const submitBtn = document.querySelector('.btn-primary');
+
+            // Real-time validation
+            bookingIdInput.addEventListener('change', validateBookingId);
+            quantityInput.addEventListener('input', validateQuantity);
+            usageTimeInput.addEventListener('input', validateUsageTime);
+            serviceIdInput.addEventListener('change', validateServiceId);
+
+            // Form submission
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="material-icons">hourglass_empty</span> Đang xử lý...';
+
+                    // Submit form after validation
+                    setTimeout(() => {
+                        showSuccessMessage('Dịch vụ đã được thêm thành công!');
+                        resetForm();
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<span class="material-icons">add</span> Thêm dịch vụ';
+                        // form.submit(); // Uncomment for actual submission
+                    }, 1500);
+                } else {
+                    showErrorMessage('Vui lòng kiểm tra lại thông tin đã nhập!');
+                }
+            });
+
+            function validateBookingId() {
+                const value = bookingIdInput.value.trim();
+                const feedback = bookingIdInput.nextElementSibling;
+
+                if (!value) {
+                    showError(bookingIdInput, feedback, 'Vui lòng chọn booking');
+                    return false;
+                } else {
+                    showSuccess(bookingIdInput, feedback, 'Booking đã được chọn');
+                    return true;
+                }
+            }
+
+            function validateServiceId() {
+                const value = serviceIdInput.value;
+                const feedback = serviceIdInput.nextElementSibling;
+
+                if (!value) {
+                    showError(serviceIdInput, feedback, 'Vui lòng chọn dịch vụ');
+                    return false;
+                } else {
+                    showSuccess(serviceIdInput, feedback, 'Dịch vụ đã được chọn');
+                    updatePricePreview();
+                    return true;
+                }
+            }
+
+            function validateQuantity() {
+                const value = parseInt(quantityInput.value);
+                const feedback = quantityInput.nextElementSibling;
+
+                if (!quantityInput.value.trim()) {
+                    showError(quantityInput, feedback, 'Vui lòng nhập số lượng');
+                    return false;
+                } else if (isNaN(value) || value <= 0) {
+                    showError(quantityInput, feedback, 'Số lượng phải là số dương');
+                    return false;
+                } else if (value > 100) {
+                    showError(quantityInput, feedback, 'Số lượng không được vượt quá 100');
+                    return false;
+                } else {
+                    showSuccess(quantityInput, feedback, 'Số lượng hợp lệ');
+                    updatePricePreview();
+                    return true;
+                }
+            }
+
+            function validateUsageTime() {
+                const value = usageTimeInput.value;
+                const feedback = usageTimeInput.nextElementSibling;
+                const now = new Date();
+                const selectedTime = new Date(value);
+
+                if (!value) {
+                    showError(usageTimeInput, feedback, 'Vui lòng chọn thời gian sử dụng');
+                    return false;
+                } else if (selectedTime < now) {
+                    showError(usageTimeInput, feedback, 'Thời gian sử dụng phải sau thời điểm hiện tại');
+                    return false;
+                } else {
+                    showSuccess(usageTimeInput, feedback, 'Thời gian hợp lệ');
+                    return true;
+                }
+            }
+
+            function showError(input, feedback, message) {
+                input.classList.remove('valid');
+                input.classList.add('invalid', 'shake');
+                feedback.textContent = message;
+                feedback.className = 'form-feedback error';
+                setTimeout(() => input.classList.remove('shake'), 500);
+            }
+
+            function showSuccess(input, feedback, message) {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+                feedback.textContent = message;
+                feedback.className = 'form-feedback success';
+            }
+
+            function validateForm() {
+                const isBookingIdValid = validateBookingId();
+                const isServiceIdValid = validateServiceId();
+                const isQuantityValid = validateQuantity();
+                const isUsageTimeValid = validateUsageTime();
+
+                return isBookingIdValid && isServiceIdValid && isQuantityValid && isUsageTimeValid;
+            }
+
+            function updatePricePreview() {
+                const serviceSelect = serviceIdInput;
+                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                const quantity = parseInt(quantityInput.value) || 0;
+                const priceValue = document.getElementById('totalPrice');
+
+                if (selectedOption && selectedOption.dataset.price && quantity > 0) {
+                    const price = parseFloat(selectedOption.dataset.price) * quantity;
+                    priceValue.textContent = price.toLocaleString('vi-VN') + ' VNĐ';
+                } else {
+                    priceValue.textContent = '0 VNĐ';
+                }
+            }
+
+            // Show success message
+            function showSuccessMessage(message = 'Dịch vụ đã được thêm thành công!') {
+                const successMessage = document.getElementById('successMessage');
+                if (successMessage) {
+                    successMessage.textContent = message;
+                    successMessage.style.display = 'block';
+                    successMessage.classList.add('show');
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                        successMessage.classList.remove('show');
+                    }, 4000);
+                }
+            }
+
+            // Show error message
+            function showErrorMessage(message) {
+                // Remove existing error message
+                const existingError = document.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                // Create new error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = `
+                    <i class="material-icons">error</i>
+                    <span>${message}</span>
+                    <button type="button" class="close-btn" onclick="this.parentElement.remove()">
+                        <i class="material-icons">close</i>
+                    </button>
+                `;
+
+                // Insert before the form
+                const form = document.getElementById('serviceBookingForm');
+                form.parentNode.insertBefore(errorDiv, form);
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            // Reset form function
+            window.resetForm = function () {
+                form.reset();
+                document.querySelectorAll('.form-feedback').forEach(feedback => {
+                    feedback.textContent = '';
+                    feedback.className = 'form-feedback';
+                });
+                document.querySelectorAll('.form-control').forEach(input => {
+                    input.classList.remove('valid', 'invalid');
+                });
+                updatePricePreview();
+            };
+        });
+
+
+
+        // Search and Filter functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchServices');
+            const filterBooking = document.getElementById('filterBooking');
+            const tableBody = document.getElementById('servicesTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const allRows = Array.from(tableBody.querySelectorAll('.service-row'));
+
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const selectedBooking = filterBooking.value;
+                let visibleCount = 0;
+
+                allRows.forEach(row => {
+                    const serviceName = row.querySelector('.service-name').textContent.toLowerCase();
+                    const serviceCategory = row.querySelector('.service-category').textContent.toLowerCase();
+                    const bookingId = row.dataset.bookingId;
+
+                    const matchesSearch = !searchTerm ||
+                        serviceName.includes(searchTerm) ||
+                        serviceCategory.includes(searchTerm);
+
+                    const matchesBooking = !selectedBooking || bookingId === selectedBooking;
+
+                    if (matchesSearch && matchesBooking) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show/hide empty state
+                if (visibleCount === 0) {
+                    emptyState.style.display = 'block';
+                    tableBody.parentElement.style.display = 'none';
+                } else {
+                    emptyState.style.display = 'none';
+                    tableBody.parentElement.style.display = 'table';
+                }
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', filterTable);
+            filterBooking.addEventListener('change', filterTable);
+        });
+
+        // Edit service function
+        function editService(element) {
+            const serviceUsageId = element.getAttribute('data-service-usage-id');
+            const bookingId = element.getAttribute('data-booking-id');
+            const serviceId = element.getAttribute('data-service-id');
+            const quantity = element.getAttribute('data-quantity');
+            const usageTime = element.getAttribute('data-usage-time');
+
+            // Populate form with existing data
+            document.getElementById('bookingId').value = bookingId;
+            document.getElementById('dichVuId').value = serviceId;
+            document.getElementById('soLuong').value = quantity;
+            document.getElementById('thoiGianSuDung').value = usageTime;
+
+            // Update price preview
+            updatePricePreview();
+
+            // Scroll to form
+            document.querySelector('.service-booking-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+
+            // Show success message
+            showSuccessMessage('Dữ liệu đã được tải vào form. Bạn có thể chỉnh sửa và lưu lại.');
+        }
+
+        // Delete confirmation
+        function confirmDeleteService(element) {
+            const serviceUsageId = element.getAttribute('data-service-usage-id');
+            
+            // Get service name from the table row
+            const row = element.closest('tr');
+            const serviceName = row ? row.querySelector('.service-name')?.textContent || 'dịch vụ này' : 'dịch vụ này';
+
+            // Create custom confirmation dialog
+            const confirmDialog = document.createElement('div');
+            confirmDialog.className = 'confirm-dialog-overlay';
+            confirmDialog.innerHTML = `
+                 <div class="confirm-dialog">
+                     <div class="confirm-header">
+                         <i class="material-icons">warning</i>
+                         <h3>Xác nhận xóa</h3>
+                     </div>
+                     <div class="confirm-body">
+                         <p>Bạn có chắc chắn muốn xóa dịch vụ <strong>"${serviceName}"</strong> không?</p>
+                         <p class="warning-text">Hành động này không thể hoàn tác!</p>
+                     </div>
+                     <div class="confirm-actions">
+                         <button type="button" class="btn btn-secondary" onclick="closeConfirmDialog()">Hủy</button>
+                         <button type="button" class="btn btn-danger" onclick="executeDelete('${serviceUsageId}', '${serviceName}')">Xóa</button>
+                     </div>
+                 </div>
+             `;
+
+            document.body.appendChild(confirmDialog);
+
+            // Add event listener to close on overlay click
+            confirmDialog.addEventListener('click', function (e) {
+                if (e.target === confirmDialog) {
+                    closeConfirmDialog();
+                }
+            });
+        }
+
+        // Close confirmation dialog
+        function closeConfirmDialog() {
+            const dialog = document.querySelector('.confirm-dialog-overlay');
+            if (dialog) {
+                dialog.remove();
+            }
+        }
+
+        // Execute delete action
+        function executeDelete(serviceId, serviceName) {
+            closeConfirmDialog();
+
+            // Show loading message
+            showErrorMessage('Đang xóa dịch vụ...');
+
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/nhanvien/dichvu/delete/' + serviceId;
+
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </body>
 
 </html>

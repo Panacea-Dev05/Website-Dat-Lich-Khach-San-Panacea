@@ -60,7 +60,7 @@ public class AdminPaymentService {
     }
 
     // 5. Hoàn tiền (refund)
-    public Payment refundPayment(Long paymentId, BigDecimal soTien) {
+    public Payment refundPayment(Integer paymentId, BigDecimal soTien) {
         Optional<Payment> opt = paymentRepository.findById(paymentId);
         if (opt.isEmpty()) return null;
         Payment payment = opt.get();
@@ -83,11 +83,11 @@ public class AdminPaymentService {
     }
 
     // 7. In hóa đơn (giả lập trả về chuỗi PDF)
-    public String generateInvoice(Long paymentId) {
+    public String generateInvoice(Integer paymentId) {
         Optional<Payment> opt = paymentRepository.findById(paymentId);
         if (opt.isEmpty()) return null;
         Payment payment = opt.get();
         // Giả lập nội dung PDF
         return "INVOICE\nPayment: " + payment.getMaThanhToan() + "\nAmount: " + payment.getSoTien() + "\nDate: " + payment.getNgayThanhToan();
     }
-} 
+}

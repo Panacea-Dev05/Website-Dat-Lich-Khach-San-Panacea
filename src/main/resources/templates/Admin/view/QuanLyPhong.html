@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlyphong.css}">
     <link rel="stylesheet" th:href="@{/css/Admin/admin-modal.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
     <style>
         /* General Modal Styles */
         .modal-overlay {
@@ -528,7 +529,7 @@
 
         <main role="main" tabindex="0">
             <div class="tab-container">
-                <a th:href="@{/admin/rooms/room-types}" class="tab">Hạng phòng</a>
+                <a th:href="@{/admin/rooms/room-types}" class="tab" style="font-weight: bold;">Hạng phòng</a>
                 <a th:href="@{/admin/rooms}" class="tab active">Danh sách phòng</a>
             </div>
             <div class="main-header">
@@ -1404,6 +1405,7 @@
             }
         }
     </style>
+<script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>

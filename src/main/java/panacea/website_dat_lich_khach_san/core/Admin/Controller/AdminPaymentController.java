@@ -81,7 +81,7 @@ public class AdminPaymentController {
     
     @GetMapping("/{id}")
     @ResponseBody
-    public Object getPayment(@PathVariable Long id) {
+    public Object getPayment(@PathVariable Integer id) {
         try {
             Payment payment = paymentRepository.findById(id).orElse(null);
             if (payment == null) {
@@ -117,7 +117,7 @@ public class AdminPaymentController {
     // API: Sửa thanh toán
     @PutMapping("/{id}")
     @ResponseBody
-    public PaymentDTO updatePayment(@PathVariable Long id, @RequestBody PaymentDTO dto) {
+    public PaymentDTO updatePayment(@PathVariable Integer id, @RequestBody PaymentDTO dto) {
         Payment payment = paymentRepository.findById(id).orElse(null);
         if (payment == null) return null;
         if (dto.getSoTien() != null) payment.setSoTien(dto.getSoTien());

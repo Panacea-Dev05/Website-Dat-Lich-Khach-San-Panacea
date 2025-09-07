@@ -11,6 +11,9 @@
 
 </head>
 
+<aside class="sidebar">
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+</aside>
 <body>
     <div class="app" id="app">
         <header>
@@ -19,39 +22,16 @@
                 <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
             </div>
         </header>
-        
-        <aside class="sidebar">
-            <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
-        </aside>
-        
+
+
         <main role="main" tabindex="0">
-            <div class="tab-container">
-                <a href="/admin/rooms/room-types" class="tab active">Hạng phòng</a>
-                <a href="/admin/rooms" class="tab">Danh sách phòng</a>
-            </div>
+         
             <div class="main-header">
                 <h1>Quản lý hạng phòng</h1>
                 <button id="btnOpenAddRoomTypeModal" class="btn-add-room">+ Thêm hạng phòng</button>
             </div>
             
-            <form method="get" class="filter-form">
-                <div>
-                    <label for="keyword">Tìm kiếm</label><br>
-                    <input type="text" id="keyword" name="keyword" placeholder="Tìm kiếm hạng phòng..." class="filter-input">
-                </div>
-                <div>
-                    <label for="sortBy">Sắp xếp theo</label><br>
-                    <select id="sortBy" name="sortBy" class="filter-select">
-                        <option value="">Mặc định</option>
-                        <option value="name">Tên hạng phòng</option>
-                        <option value="price">Giá phòng</option>
-                        <option value="capacity">Số lượng</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="btn-filter">Lọc</button>
-                </div>
-            </form>
+
             
             <section class="content-section" id="contentSection">
                     <!-- Modal thêm hạng phòng mới (giao diện giống mẫu) -->
@@ -276,10 +256,10 @@
                     <!-- Tab chuyển đổi giữa Hạng phòng và Danh sách phòng -->
                     <div class="tab-container"
                         style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 24px;">
-                        <a href="/admin/rooms/room-types" class="tab active">Hạng phòng</a>
-                        <a href="/admin/rooms" class="tab">Danh sách phòng</a>
+                        <a href="/admin/rooms/room-types" class="tab active" style="font-weight: bold; text-decoration: none; list-style: none;">Hạng phòng</a>
+                        <a href="/admin/rooms" class="tab" style="font-weight: bold; text-decoration: none; list-style: none;">Danh sách phòng</a>
                     </div>
-                    <!-- Filter bar trên cùng -->
+                    <!-- Filter bar hợp nhất -->
                     <form method="get" class="filter-bar"
                         style="display: flex; gap: 24px; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap;">
                         <div>
@@ -287,6 +267,16 @@
                             <input type="text" id="keyword" name="keyword" th:value="${keyword}"
                                 placeholder="Tìm kiếm hạng phòng"
                                 style="width: 180px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                        </div>
+                        <div>
+                            <label for="sortBy">Sắp xếp theo</label>
+                            <select id="sortBy" name="sortBy"
+                                style="width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                                <option value="">Mặc định</option>
+                                <option value="name">Tên hạng phòng</option>
+                                <option value="price">Giá phòng</option>
+                                <option value="capacity">Số lượng</option>
+                            </select>
                         </div>
                         <div>
                             <label for="branch">Chi nhánh</label>

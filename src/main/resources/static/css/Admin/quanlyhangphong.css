@@ -1,4 +1,31 @@
 /* CSS cho trang Quản lý Hạng phòng */
+
+/* Remove all underlines globally */
+
+body {
+  font-family: "Inter", sans-serif;
+  background: #f4f7fc;
+  color: #2e3a59;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+ul {
+  list-style: none;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
 body,
 html {
   font-family: "Inter", Arial, sans-serif;
@@ -42,13 +69,7 @@ header {
   font-weight: 700;
 }
 
-aside.sidebar {
-  grid-area: sidebar;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  overflow-y: auto;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-}
+/* Sidebar styles removed to avoid conflict with adminslidebar.css */
 
 main {
   grid-area: main;
@@ -212,21 +233,18 @@ tbody tr:hover {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
   }
-  
-  aside.sidebar {
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
+
+  /* Responsive sidebar styles removed to avoid conflict with adminslidebar.css */
+
   main {
     padding: 16px;
   }
-  
+
   .filter-form {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .filter-form div {
     min-width: 100%;
   }
@@ -312,4 +330,73 @@ select:focus {
   outline: none;
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Tab container styles */
+.tab-container {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-bottom: 24px;
+}
+
+.tab-container .tab {
+  text-decoration: none ;
+  list-style: none ;
+  font-weight: bold ;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.tab-container .tab:hover {
+  background-color: #f3f4f6;
+  text-decoration: none ;
+}
+
+.tab-container .tab.active {
+  background-color: #10b981;
+  color: white;
+  text-decoration: none ;
+}
+
+
+aside.sidebar {
+  grid-area: sidebar;
+  background: white;
+  border-right: 1px solid #e1e7ee;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  box-shadow: inset -3px 0 8px -6px rgb(0 0 0 / 0.1);
+}
+aside.sidebar nav {
+  flex-grow: 1;
+}
+aside.sidebar nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+aside.sidebar nav ul li a {
+  padding: 10px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  color: #334155;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+aside.sidebar nav ul li a:hover,
+aside.sidebar nav ul li a.active {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 8px 16px rgb(16 185 129 / 0.2);
+}
+aside.sidebar nav ul li a .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
 }

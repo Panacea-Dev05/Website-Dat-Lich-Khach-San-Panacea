@@ -7,6 +7,8 @@
     <title>Quản lý Thanh toán - Panacea</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         body {
@@ -173,6 +175,19 @@
                 min-width: 70px;
             }
         }
+        
+        /* Modal styles */
+        .modal-backdrop {
+            z-index: 1040;
+        }
+        
+        .modal {
+            z-index: 1050;
+        }
+        
+        .modal-dialog {
+            margin: 1.75rem auto;
+        }
     </style>
 </head>
 
@@ -183,19 +198,20 @@
             <!-- Tạo giao dịch thanh toán -->
             <div class="section">
                 <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
-                <form>
-                    <div><label>Mã booking</label><select name="bookingId">
+                <form id="paymentForm" action="/nhanvien/thanhtoan/create" method="post">
+                    <div><label>Mã booking</label><select id="bookingId" name="bookingId" required>
                             <option disabled selected>Chọn booking...</option>
-                            <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id}"></option>
+                            <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id + ' - ' + (bk.khachHang != null ? (bk.khachHang.ho + ' ' + bk.khachHang.ten) : 'Không rõ') + ' (' + bk.tongThanhToan + ' VND)'}"></option>
                         </select></div>
-                    <div><label>Số tiền</label><input type="number" placeholder="VND" /></div>
-                    <div><label>Phương thức</label><select name="phuongThuc">
-                            <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt}"></option>
+                    <div><label>Số tiền</label><input id="soTien" type="number" name="soTien" placeholder="VND" min="1000" step="1000" required /></div>
+                    <div><label>Phương thức</label><select id="phuongThuc" name="phuongThuc" required>
+                            <option value="" disabled selected>Chọn phương thức...</option>
+                            <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt == 'CASH' ? 'Tiền mặt' : (pt == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : pt)}"></option>
                         </select></div>
-                    <div><label>Nội dung</label><input type="text" /></div>
-                    <div><label>Mã giao dịch (nếu có)</label><input type="text" /></div>
+                    <div><label>Nội dung</label><input id="noiDung" type="text" name="noiDung" placeholder="Nhập nội dung thanh toán" /></div>
+                    <div><label>Mã giao dịch (nếu có)</label><input id="maGiaoDich" type="text" name="maGiaoDich" placeholder="Mã giao dịch từ ngân hàng" /></div>
                     <div style="align-self:end">
-                        <button class="btn"><span class="material-icons">add</span>Tạo</button>
+                        <button type="submit" class="btn"><span class="material-icons">add</span>Tạo</button>
                     </div>
                 </form>
             </div>
@@ -218,16 +234,32 @@
                     <tbody>
                         <tr th:each="payment : ${payments}">
                             <td th:text="${payment.id}"></td>
-                            <td th:text="${payment.booking.id}"></td>
-                            <td th:text="${payment.phuongThuc}"></td>
-                            <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
-                            <td th:text="${payment.trangThai}"></td>
-                            <td th:text="${#temporals.format(payment.ngayThanhToan, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${payment.booking?.id ?: 'N/A'}"></td>
+                            <td th:text="${payment.phuongThuc == 'CASH' ? 'Tiền mặt' : (payment.phuongThuc == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : payment.phuongThuc)}"></td>
+                            <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                            <td>
+                                <span th:class="'status ' + ${payment.trangThai?.name() == 'THANH_CONG' ? 'completed' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'pending' : 'failed')}"
+                                      th:text="${payment.trangThai?.name() == 'THANH_CONG' ? 'Hoàn thành' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'Đang xử lý' : (payment.trangThai?.value ?: 'N/A'))}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(payment.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn"><span class="material-icons">print</span>In hóa đơn</button>
-                                    <button class="btn"><span class="material-icons">undo</span>Hoàn tiền</button>
+                                    <button class="btn btn-view-detail" th:data-payment-id="${payment.id}" title="Xem chi tiết">
+                                        <span class="material-icons">visibility</span>Chi tiết
+                                    </button>
+                                    <button class="btn btn-print-invoice" th:data-payment-id="${payment.id}" title="In hóa đơn">
+                                        <span class="material-icons">print</span>In hóa đơn
+                                    </button>
+                                    <button th:if="${payment.trangThai?.name() == 'DANG_XU_LY'}" class="btn btn-confirm-payment" th:data-payment-id="${payment.id}" title="Xác nhận thanh toán">
+                                        <span class="material-icons">check</span>Xác nhận
+                                    </button>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(payments)}">
+                            <td colspan="7" style="text-align: center; color: #6b7280; padding: 2rem;">
+                                <span class="material-icons" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">inbox</span>
+                                Chưa có giao dịch nào
                             </td>
                         </tr>
                     </tbody>
@@ -235,6 +267,12 @@
             </div>
         </main>
     </div>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script th:src="@{/js/nhanvien/thanhtoan.js}"></script>
 </body>
 
 </html>

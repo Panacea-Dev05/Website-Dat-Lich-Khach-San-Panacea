@@ -1,3 +1,23 @@
+/* Global styles for sidebar */
+aside.sidebar * {
+  text-decoration: none !important;
+  list-style: none !important;
+  font-weight: bold !important;
+}
+
+aside.sidebar ul {
+  list-style: none !important;
+}
+
+aside.sidebar li {
+  list-style: none !important;
+  font-weight: bold !important;
+}
+
+aside.sidebar a {
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
 aside.sidebar {
   grid-area: sidebar;
   background: white;
@@ -25,7 +45,7 @@ aside.sidebar ul li a {
   display: flex;
   align-items: center;
   gap: 1rem;
-  font-weight: 600;
+  font-weight: bold;
   color: #334155;
   transition: background-color 0.3s ease, color 0.3s ease;
   text-decoration: none;
@@ -41,6 +61,6 @@ aside.sidebar ul li a .material-icons {
   flex-shrink: 0;
 }
 /* Xóa style submenu nếu không dùng */
-.sidebar-submenu, .submenu, .has-submenu, .has-submenu > ul, .submenu li a, .submenu li a:hover {
+/* .sidebar-submenu, .submenu, .has-submenu, .has-submenu > ul, .submenu li a, .submenu li a:hover {
   all: unset;
-}
+} */
