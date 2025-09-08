@@ -11,9 +11,6 @@
 
 </head>
 
-<aside class="sidebar">
-    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
-</aside>
 <body>
     <div class="app" id="app">
         <header>
@@ -22,6 +19,10 @@
                 <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
             </div>
         </header>
+
+        <aside class="sidebar">
+            <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+        </aside>
 
 
         <main role="main" tabindex="0">
@@ -35,198 +36,158 @@
             
             <section class="content-section" id="contentSection">
                     <!-- Modal thêm hạng phòng mới (giao diện giống mẫu) -->
-                    <div id="addRoomTypeModal"
-                        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center;">
-                        <div
-                            style="background:#fff; border-radius:10px; padding:0; min-width:480px; max-width:610px; max-height:80vh; overflow-y:auto; position:relative; box-shadow:0 2px 16px rgba(0,0,0,0.15);">
-                            <div
-                                style="border-bottom:1px solid #eee; padding:16px 18px 0 18px; display:flex; align-items:center; justify-content:space-between;">
-                                <h2 style="margin:0; font-size:1.1em; font-weight:600;">Thêm hạng phòng mới</h2>
-                                <button id="btnCloseAddRoomTypeModal"
-                                    style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;">&times;</button>
+                    <div id="addRoomTypeModal" class="roomtype-modal-overlay">
+                        <div class="roomtype-modal-content">
+                            <div class="roomtype-modal-header">
+                                <h2 class="roomtype-modal-title"><i class="material-icons">hotel</i>Thêm hạng phòng mới</h2>
+                                <button id="btnCloseAddRoomTypeModal" class="roomtype-modal-close">&times;</button>
                             </div>
                             <div style="padding:0;">
                                 <!-- Tabs -->
-                                <div style="display:flex; border-bottom:1px solid #eee; margin:0;">
-                                    <button type="button" class="tab-btn active" data-tab="tab1"
-                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#009966; border-bottom:2px solid #009966; cursor:pointer; font-size:0.95em; min-width:100px;">Thông
-                                        tin</button>
-                                    <button type="button" class="tab-btn" data-tab="tab2"
-                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#333; cursor:pointer; font-size:0.95em; min-width:100px;">Hình
-                                        ảnh, Mô tả</button>
-                                    <button type="button" class="tab-btn" data-tab="tab3"
-                                        style="padding:12px 20px; border:none; background:none; font-weight:500; color:#333; cursor:pointer; font-size:0.95em; min-width:100px;">Danh
-                                        sách phòng</button>
+                                <div class="roomtype-tab-container">
+                                    <button type="button" class="roomtype-tab-btn active" data-tab="tab1">
+                                        <i class="material-icons">info</i>Thông tin
+                                    </button>
+                                    <button type="button" class="roomtype-tab-btn" data-tab="tab2">
+                                        <i class="material-icons">image</i>Hình ảnh, Mô tả
+                                    </button>
+                                    <button type="button" class="roomtype-tab-btn" data-tab="tab3">
+                                        <i class="material-icons">list</i>Danh sách phòng
+                                    </button>
                                 </div>
                                 <form id="addRoomTypeForm" enctype="multipart/form-data" method="post"
                                     th:action="@{/admin/rooms/room-types}">
                                     <!-- Tab 1: Thông tin -->
                                     <div class="tab-content" id="tab1" style="display:block; padding:20px;">
-                                        <div style="display:flex; gap:18px;">
-                                            <div style="flex:1;">
-                                                <div style="margin-bottom:14px;">
-                                                    <label style="font-weight:500; font-size:1em;">Mã hạng phòng</label>
-                                                    <input name="maLoaiPhong" required
-
-                                                        style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:4px; font-size:1em;" />
+                                        <div class="roomtype-form-row">
+                                            <div class="roomtype-form-left">
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Mã hạng phòng</label>
+                                                    <input name="maLoaiPhong" required class="roomtype-input" />
                                                 </div>
-                                                <div style="margin-bottom:14px;">
-                                                    <label style="font-weight:500; font-size:1em;">Tên hạng
-                                                        phòng</label>
-                                                    <input name="tenLoaiPhong" required
-                                                        style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:4px; font-size:1em;" />
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Tên hạng phòng</label>
+                                                    <input name="tenLoaiPhong" required class="roomtype-input" />
                                                 </div>
-                                                <div style="margin-bottom:14px;">
-                                                    <div style="display:flex; align-items:flex-end; gap:12px;">
-                                                        <div style="flex:1;">
-                                                            <label
-                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
-                                                                giờ</label>
-                                                            <input name="giaGio" type="number" min="0" value="0"
-                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                <div class="roomtype-form-group">
+                                                    <div class="roomtype-price-row">
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Giá giờ</label>
+                                                            <input name="giaGio" type="number" min="0" value="0" class="roomtype-input" />
                                                         </div>
-                                                        <div style="flex:1;">
-                                                            <label
-                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
-                                                                cả ngày</label>
-                                                            <input name="giaNgay" type="number" min="0" value="0"
-                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Giá cả ngày</label>
+                                                            <input name="giaNgay" type="number" min="0" value="0" class="roomtype-input" />
                                                         </div>
-                                                        <div style="flex:1;">
-                                                            <label
-                                                                style="font-size:1em; display:block; margin-bottom:4px;">Giá
-                                                                qua đêm</label>
-                                                            <input name="giaQuaDem" type="number" min="0" value="0"
-                                                                style="width:100%; padding:10px 8px; border-radius:6px; border:1px solid #ccc; font-size:1em; box-sizing:border-box;" />
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Giá qua đêm</label>
+                                                            <input name="giaQuaDem" type="number" min="0" value="0" class="roomtype-input" />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div
-                                                style="flex:1; background:#f7f7f7; border-radius:8px; padding:14px; margin-top:8px;">
-                                                <div style="font-weight:500; margin-bottom:8px; font-size:1em;">Thời
-                                                    gian nhận - trả quy định</div>
-                                                <ul
-                                                    style="margin:0 0 8px 16px; padding:0; font-size:0.98em; color:#444;">
+                                            <div class="roomtype-info-box">
+                                                <div class="roomtype-info-title">Thời gian nhận - trả quy định</div>
+                                                <ul class="roomtype-info-list">
                                                     <li>Cả ngày tính từ 14:00 đến 12:00</li>
                                                     <li>Qua đêm tính từ 22:00 đến 11:00</li>
                                                 </ul>
-                                                <span
-                                                    style="font-size:1.2em; color:#bbb; cursor:pointer;">&#9998;</span>
+                                                <span class="roomtype-edit-icon">&#9998;</span>
                                             </div>
                                         </div>
                                         <!-- Phụ thu quá giờ -->
-                                        <div
-                                            style="background:#f5f5f5; border-radius:8px; padding:14px; margin-top:18px; border:1px solid #e0e0e0;">
-                                            <div style="font-weight:600; margin-bottom:10px; font-size:1em;">Phụ thu quá
-                                                giờ <span style="font-weight:400; color:#888;">(Khi quá thời gian quy
-                                                    định)</span></div>
-                                            <div
-                                                style="display:flex; gap:12px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
-                                                <div>
-                                                    <label style="font-size:1em;">Hình thức</label><br>
-                                                    <select name="hinhThucPhuThu"
-                                                        style="padding:7px 14px; border-radius:6px; border:1px solid #ccc; font-size:1em;">
+                                        <div class="roomtype-section">
+                                            <div class="roomtype-section-title">Phụ thu quá giờ <span class="roomtype-subtitle">(Khi quá thời gian quy định)</span></div>
+                                            <div class="roomtype-surcharge-row">
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Hình thức</label>
+                                                    <select name="hinhThucPhuThu" class="roomtype-select">
                                                         <option value="theo_gio">Tính tiền mỗi giờ</option>
                                                         <option value="theo_block">Tính theo block</option>
                                                     </select>
                                                 </div>
-                                                <div>
-                                                    <label style="font-size:1em;">Nhận sớm</label><br>
-                                                    <input name="phuThuNhanSom" type="number" min="0" value="0"
-                                                        style="width:70px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
-                                                    <span style="color:#888; font-size:1em;">/giờ</span>
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Nhận sớm</label>
+                                                    <div class="roomtype-input-with-unit">
+                                                        <input name="phuThuNhanSom" type="number" min="0" value="0" class="roomtype-input-small" />
+                                                        <span class="roomtype-unit">/giờ</span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <label style="font-size:1em;">Trả muộn</label><br>
-                                                    <input name="phuThuTraMuon" type="number" min="0" value="0"
-                                                        style="width:70px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
-                                                    <span style="color:#888; font-size:1em;">/giờ</span>
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Trả muộn</label>
+                                                    <div class="roomtype-input-with-unit">
+                                                        <input name="phuThuTraMuon" type="number" min="0" value="0" class="roomtype-input-small" />
+                                                        <span class="roomtype-unit">/giờ</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
-                                                <label style="font-size:1em;"><input type="checkbox"
-                                                        name="macDinhPhuThu" style="margin-right:6px;" /> Mặc định tính
-                                                    phụ thu cho hạng phòng</label>
-                                                <label style="font-size:1em;"><input type="checkbox" name="apDungTatCa"
-                                                        style="margin-right:6px;" /> Áp dụng cho tất cả hạng
-                                                    phòng</label>
+                                            <div class="roomtype-checkbox-row">
+                                                <label class="roomtype-checkbox-label"><input type="checkbox" name="macDinhPhuThu" class="roomtype-checkbox" /> Mặc định tính phụ thu cho hạng phòng</label>
+                                                <label class="roomtype-checkbox-label"><input type="checkbox" name="apDungTatCa" class="roomtype-checkbox" /> Áp dụng cho tất cả hạng phòng</label>
                                             </div>
                                         </div>
                                         <!-- Sức chứa -->
-                                        <div
-                                            style="background:#f5f5f5; border-radius:8px; padding:14px; margin-top:18px; border:1px solid #e0e0e0;">
-                                            <div style="font-weight:600; margin-bottom:10px; font-size:1em;">Sức chứa
-                                            </div>
-                                            <div style="display:flex; gap:24px; flex-wrap:wrap;">
-                                                <div>
-                                                    <div style="font-size:0.98em; color:#888;">Tiêu chuẩn</div>
-                                                    <input name="tieuChuanNguoiLon" type="number" min="1" value="2"
-                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; margin-right:6px; font-size:1em;" />
-                                                    người lớn và
-                                                    <input name="tieuChuanTreEm" type="number" min="0" value="1"
-                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
-                                                    trẻ em
+                                        <div class="roomtype-section">
+                                            <div class="roomtype-section-title">Sức chứa</div>
+                                            <div class="roomtype-capacity-row">
+                                                <div class="roomtype-capacity-group">
+                                                    <div class="roomtype-capacity-label">Tiêu chuẩn</div>
+                                                    <div class="roomtype-capacity-inputs">
+                                                        <input name="tieuChuanNguoiLon" type="number" min="1" value="2" class="roomtype-input-tiny" />
+                                                        <span class="roomtype-capacity-text">người lớn và</span>
+                                                        <input name="tieuChuanTreEm" type="number" min="0" value="1" class="roomtype-input-tiny" />
+                                                        <span class="roomtype-capacity-text">trẻ em</span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div style="font-size:0.98em; color:#888;">Tối đa</div>
-                                                    <input name="toiDaNguoiLon" type="number" min="1" value="2"
-                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; margin-right:6px; font-size:1em;" />
-                                                    người lớn và
-                                                    <input name="toiDaTreEm" type="number" min="0" value="1"
-                                                        style="width:38px; padding:7px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
-                                                    trẻ em
+                                                <div class="roomtype-capacity-group">
+                                                    <div class="roomtype-capacity-label">Tối đa</div>
+                                                    <div class="roomtype-capacity-inputs">
+                                                        <input name="toiDaNguoiLon" type="number" min="1" value="2" class="roomtype-input-tiny" />
+                                                        <span class="roomtype-capacity-text">người lớn và</span>
+                                                        <input name="toiDaTreEm" type="number" min="0" value="1" class="roomtype-input-tiny" />
+                                                        <span class="roomtype-capacity-text">trẻ em</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- Tab 2: Hình ảnh, Mô tả -->
                                     <div class="tab-content" id="tab2" style="display:none; padding:20px;">
-                                        <div id="image-upload-list" style="display:flex; gap:10px; margin-bottom:14px;">
-                                            <!-- 6 khung ảnh, mỗi khung là 1 div, click để chọn ảnh -->
-                                            <div class="image-upload-box" data-idx="0"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                        <div class="roomtype-image-section">
+                                            <div class="roomtype-image-header">
+                                                <h4 class="roomtype-section-title">Hình ảnh phòng</h4>
+                                                <p class="roomtype-section-subtitle">Thêm tối đa 6 hình ảnh để giới thiệu hạng phòng</p>
                                             </div>
-                                            <div class="image-upload-box" data-idx="1"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            
+                                            <div class="roomtype-image-upload-area" id="imageUploadArea">
+                                                <div class="roomtype-upload-placeholder">
+                                                    <div class="roomtype-upload-icon">
+                                                        <span class="material-icons">cloud_upload</span>
+                                                    </div>
+                                                    <div class="roomtype-upload-text">
+                                                        <h5>Kéo thả hình ảnh vào đây</h5>
+                                                        <p>hoặc <span class="roomtype-upload-link">chọn từ máy tính</span></p>
+                                                        <small>Hỗ trợ: JPG, PNG, GIF (tối đa 5MB mỗi file)</small>
+                                                    </div>
+                                                </div>
+                                                <input id="image-upload-input" name="images" type="file" accept="image/*"
+                                                    multiple class="roomtype-file-input" />
                                             </div>
-                                            <div class="image-upload-box" data-idx="2"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            
+                                            <div class="roomtype-image-preview-container" id="imagePreviewContainer">
+                                                <!-- Preview images will be inserted here -->
                                             </div>
-                                            <div class="image-upload-box" data-idx="3"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
+                                            
+                                            <div class="roomtype-upload-progress" id="uploadProgress" style="display: none;">
+                                                <div class="roomtype-progress-bar">
+                                                    <div class="roomtype-progress-fill" id="progressFill"></div>
+                                                </div>
+                                                <span class="roomtype-progress-text" id="progressText">0%</span>
                                             </div>
-                                            <div class="image-upload-box" data-idx="4"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
-                                            </div>
-                                            <div class="image-upload-box" data-idx="5"
-                                                style="width:70px; height:70px; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.5em; background:#fafafa; cursor:pointer; overflow:hidden; position:relative;">
-                                                <span class="material-icons">image</span>
-                                                <img
-                                                    style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;" />
-                                            </div>
-                                            <input id="image-upload-input" name="images" type="file" accept="image/*"
-                                                multiple style="display:none;" />
                                         </div>
-                                        <div style="margin-bottom:10px;">
-                                            <label style="font-weight:500; font-size:1em;">Mô tả</label>
-                                            <textarea name="moTa" rows="3"
-                                                style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:1em;"></textarea>
+                                        <div class="roomtype-form-group">
+                                            <label class="roomtype-label">Mô tả</label>
+                                            <textarea name="moTa" rows="3" class="roomtype-textarea"></textarea>
                                         </div>
                                     </div>
                                     <!-- Tab 3: Danh sách phòng -->
@@ -238,15 +199,15 @@
                                         </div>
                                     </div>
                                     <!-- Nút action -->
-                                    <div
-                                        style="display:flex; justify-content:flex-end; gap:14px; border-top:1px solid #eee; margin-top:20px; padding:20px 0 0 0;">
-                                        <button type="submit"
-                                            style="background:#009966; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:600; font-size:1em;">Lưu</button>
-                                        <button type="button"
-                                            style="background:#00b86b; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:600; font-size:1em;">Lưu
-                                            & Thêm mới</button>
-                                        <button type="button" id="btnCloseAddRoomTypeModal2"
-                                            style="background:#888; color:#fff; border:none; border-radius:6px; padding:10px 24px; font-weight:500; font-size:1em;">Bỏ
+                                    <div class="roomtype-modal-actions">
+                                        <button type="submit" class="roomtype-btn roomtype-btn-primary">
+                                            <i class="material-icons">save</i>Lưu
+                                        </button>
+                                        <button type="button" class="roomtype-btn roomtype-btn-success">
+                                            <i class="material-icons">add_circle</i>Lưu & Thêm mới
+                                        </button>
+                                        <button type="button" id="btnCloseAddRoomTypeModal2" class="roomtype-btn roomtype-btn-secondary">
+                                            <i class="material-icons">close</i>Bỏ
                                             qua</button>
                                     </div>
                                 </form>
@@ -590,7 +551,156 @@
                 });
             }
         })();
+        
+        // Image Upload Functionality
+        (function() {
+            const uploadArea = document.getElementById('imageUploadArea');
+            const fileInput = document.getElementById('image-upload-input');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            let uploadedFiles = [];
+            const maxFiles = 6;
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                if (uploadedFiles.length < maxFiles) {
+                    fileInput.click();
+                }
+            });
+            
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+            
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            function handleFiles(files) {
+                const fileArray = Array.from(files);
+                const remainingSlots = maxFiles - uploadedFiles.length;
+                const filesToProcess = fileArray.slice(0, remainingSlots);
+                
+                filesToProcess.forEach(file => {
+                    if (validateFile(file)) {
+                        uploadedFiles.push(file);
+                        createPreview(file);
+                    }
+                });
+                
+                updateUploadArea();
+                simulateUpload();
+            }
+            
+            function validateFile(file) {
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Chỉ chấp nhận file hình ảnh!');
+                    return false;
+                }
+                
+                // Check file size
+                if (file.size > maxFileSize) {
+                    alert('File quá lớn! Tối đa 5MB.');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function createPreview(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'roomtype-image-preview';
+                    previewDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="roomtype-image-preview-overlay">
+                            <button type="button" class="roomtype-image-delete-btn" onclick="removeImage(this)">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                    `;
+                    previewContainer.appendChild(previewDiv);
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            function updateUploadArea() {
+                if (uploadedFiles.length >= maxFiles) {
+                    uploadArea.style.display = 'none';
+                } else {
+                    uploadArea.style.display = 'block';
+                }
+            }
+            
+            function simulateUpload() {
+                if (uploadedFiles.length === 0) return;
+                
+                progressContainer.style.display = 'block';
+                let progress = 0;
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            progressFill.style.width = '0%';
+                            progressText.textContent = '0%';
+                        }, 1000);
+                    }
+                    
+                    progressFill.style.width = progress + '%';
+                    progressText.textContent = Math.round(progress) + '%';
+                }, 200);
+            }
+            
+            // Global function to remove image
+            window.removeImage = function(button) {
+                const previewDiv = button.closest('.roomtype-image-preview');
+                const index = Array.from(previewContainer.children).indexOf(previewDiv);
+                
+                if (index > -1) {
+                    uploadedFiles.splice(index, 1);
+                    previewDiv.remove();
+                    updateUploadArea();
+                }
+            };
+            
+            // Update file input with current files
+            function updateFileInput() {
+                const dt = new DataTransfer();
+                uploadedFiles.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+            }
+            
+            // Update file input whenever files change
+            const observer = new MutationObserver(() => {
+                updateFileInput();
+            });
+            
+            observer.observe(previewContainer, { childList: true });
+        })();
     </script>
 </body>
-
 </html>
