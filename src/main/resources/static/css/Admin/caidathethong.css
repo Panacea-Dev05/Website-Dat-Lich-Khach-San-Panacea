@@ -28,16 +28,30 @@ button {
     font-family: inherit;
 }
 /* Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f4f7fc;
+}
+
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-thumb {
     background: #ccc;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 ::-webkit-scrollbar-track {
-    background: #f4f7fc;
+    background: transparent;
+}
+
+/* Prevent layout shift from scrollbars */
+html {
+    scrollbar-gutter: stable;
+}
+
+main {
+    scrollbar-gutter: stable;
 }
 /* Layout */
 .app {
@@ -124,11 +138,11 @@ aside.sidebar nav ul li a .material-icons {
 }
 main {
     grid-area: main;
-    background: #f9fafb;
+   background: #f9fafb;
     overflow-y: auto;
-    padding: 2rem 3rem;
-    display: flex;
-    flex-direction: column;
+   padding: 2rem 3rem;
+   display: flex;
+  flex-direction: column;
     min-height: 0;
 }
 main > h1 {
@@ -144,16 +158,16 @@ section.content-section {
     border-radius: 16px;
     padding: 1.75rem 2rem;
     box-shadow: 0 4px 16px rgb(16 185 129 / 0.1);
-    max-width: 100%;
-    overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 2rem;
+    overflow: visible;
 }
 /* Form */
 form {
-    max-width: 700px;
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 1rem 2rem;
+    width: 100%;
+    max-width: none;
+    display: block;
     user-select: none;
 }
 label {
@@ -186,10 +200,7 @@ textarea {
     min-height: 100px;
     resize: vertical;
 }
-.form-group {
-    grid-column: 1 / span 2;
-    margin-bottom: 1rem;
-}
+
 .switch {
     position: relative;
     display: inline-block;
@@ -249,21 +260,230 @@ input:checked + .slider:before {
     transform: translateY(0);
     box-shadow: 0 4px 9px rgb(5 150 105 / 0.35);
 }
+/* System Info Styles */
+.system-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid #10b981;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-item span {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.status-active {
+    color: #059669 ;
+    font-weight: 600;
+}
+
+.status-maintenance {
+    color: #dc2626 ;
+    font-weight: 600;
+}
+
+/* Form Improvements */
+.form-group label {
+    justify-self: start;
+    align-self: center;
+}
+
+.form-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+    accent-color: #10b981;
+}
+
+.form-group input[type="number"] {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #a7f3d0;
+    font-size: 1rem;
+    outline-offset: 2px;
+    outline-color: #10b981;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="number"]:focus {
+    border-color: #059669;
+}
+
+/* System Actions */
+.system-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.action-item {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+    border-color: #a7f3d0;
+}
+
+.action-item h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #064e3b;
+    margin-bottom: 0.5rem;
+}
+
+.action-item p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.action-item .btn {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+}
+
+/* Section Headers */
+section.content-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #064e3b;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+    position: relative;
+}
+
+section.content-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 1px;
+}
+
+/* Footer */
+footer {
+    grid-area: footer;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+    padding: 0 2rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-    main {
-        padding: 1rem 1rem;
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "main"
+            "footer";
     }
-    section.content-section {
+
+    aside.sidebar {
+        display: none;
+    }
+
+    header .mobile-toggle {
+        display: block;
+        color: white;
+    }
+
+    main {
         padding: 1rem;
     }
-    form {
-        grid-template-columns: 1fr;
-    }
-    label {
-        margin-bottom: 0.25rem;
-    }
+
+    /*section.content-section {*/
+    /*    padding: 1rem;*/
+    /*}*/
+
+    .form-group {
+         grid-template-columns: 1fr;
+         gap: 0.5rem;
+     }
+
+     .form-group label {
+         margin-bottom: 0.25rem;
+         justify-self: start;
+     }
+
     .btn {
         max-width: 100%;
     }
+
+    .system-info {
+        grid-template-columns: 1fr;
+    }
+
+    .system-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 0.75rem;
+    }
+
+    /*section.content-section {*/
+    /*    padding: 0.75rem;*/
+    /*    margin-bottom: 1rem;*/
+    /*}*/
+
+    main > h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-item {
+        padding: 1rem;
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #f4f7fc;
 }

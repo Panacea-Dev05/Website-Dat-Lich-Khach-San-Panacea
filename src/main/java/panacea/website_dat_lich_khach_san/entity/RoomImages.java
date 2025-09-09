@@ -33,7 +33,7 @@ public class RoomImages {
 
     @ManyToOne
     @JoinColumn(name = "loai_phong_id")
-    private RoomTypes loaiPhong;
+    private RoomType loaiPhong;
 
     @Column(name = "url_hinh_anh", nullable = false)
     private String urlHinhAnh;

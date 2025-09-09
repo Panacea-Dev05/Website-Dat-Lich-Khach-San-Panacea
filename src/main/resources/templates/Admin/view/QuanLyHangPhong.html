@@ -70,6 +70,41 @@
                                                     <input name="tenLoaiPhong" required class="roomtype-input" />
                                                 </div>
                                                 <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Diện tích (m²)</label>
+                                                    <input name="dienTich" type="number" min="0" step="0.01" class="roomtype-input" placeholder="VD: 25.5" />
+                                                </div>
+                                                <div class="roomtype-form-group">
+                                                    <div class="roomtype-price-row">
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Số giường (tối đa 2)</label>
+                                                            <input name="soGiuong" type="number" min="1" max="2" class="roomtype-input" placeholder="VD: 2" onchange="updateMaxCapacity()" />
+                                                        </div>
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Loại giường</label>
+                                                            <select name="loaiGiuong" class="roomtype-input">
+                                                                <option value="">Chọn loại giường</option>
+                                                                <option value="Đơn">Giường đơn</option>
+                                                                <option value="Đôi">Giường đôi</option>
+                                                                <option value="Queen">Giường Queen</option>
+                                                                <option value="King">Giường King</option>
+                                                                <option value="Sofa bed">Sofa bed</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="roomtype-price-item">
+                                                            <label class="roomtype-label">Sức chứa tối đa (2 người/giường)</label>
+                                                            <input name="sucChuaToiDa" type="number" min="1" max="4" class="roomtype-input" placeholder="VD: 4" readonly />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Mô tả</label>
+                                                    <textarea name="moTa" rows="3" class="roomtype-input" placeholder="Mô tả chi tiết về hạng phòng..."></textarea>
+                                                </div>
+                                                <div class="roomtype-form-group">
+                                                    <label class="roomtype-label">Tiện nghi</label>
+                                                    <textarea name="tienNghi" rows="3" class="roomtype-input" placeholder="VD: WiFi miễn phí, TV màn hình phẳng, Điều hòa, Tủ lạnh mini..."></textarea>
+                                                </div>
+                                                <div class="roomtype-form-group">
                                                     <div class="roomtype-price-row">
                                                         <div class="roomtype-price-item">
                                                             <label class="roomtype-label">Giá giờ</label>
@@ -191,13 +226,47 @@
                                         </div>
                                     </div>
                                     <!-- Tab 3: Danh sách phòng -->
-                                    <div class="tab-content" id="tab3" style="display:none; padding:20px;">
-                                        <div style="margin-bottom:14px;">
-                                            <label style="font-weight:500; font-size:1em;">Chọn phòng</label>
-                                            <input type="text" placeholder="Nhập mã hoặc tên phòng"
-                                                style="width:220px; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:1em;" />
-                                        </div>
-                                    </div>
+                    <div class="tab-content" id="tab3" style="display:none; padding:20px;">
+                        <div class="roomtype-room-list-section">
+                            <div class="roomtype-room-list-header">
+                                <h4 class="roomtype-section-title">Danh sách phòng thuộc hạng phòng này</h4>
+                                <p class="roomtype-section-subtitle">Hiển thị tất cả các phòng đang sử dụng hạng phòng này</p>
+                            </div>
+                            
+                            <div class="roomtype-room-search">
+                                <div class="roomtype-search-box">
+                                    <i class="material-icons">search</i>
+                                    <input type="text" id="roomSearchInput" placeholder="Tìm kiếm phòng theo mã hoặc tên..." class="roomtype-search-input" />
+                                </div>
+                                <div class="roomtype-room-stats">
+                                    <span class="roomtype-stat-item">
+                                        <i class="material-icons">hotel</i>
+                                        <span id="totalRoomsCount">0</span> phòng
+                                    </span>
+                                    <span class="roomtype-stat-item">
+                                        <i class="material-icons">check_circle</i>
+                                        <span id="availableRoomsCount">0</span> trống
+                                    </span>
+                                    <span class="roomtype-stat-item">
+                                        <i class="material-icons">person</i>
+                                        <span id="occupiedRoomsCount">0</span> đang sử dụng
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="roomtype-room-list-container" id="roomListContainer">
+                                <div class="roomtype-room-list-empty" id="roomListEmpty">
+                                    <i class="material-icons">hotel_class</i>
+                                    <p>Chưa có phòng nào thuộc hạng phòng này</p>
+                                    <small>Phòng sẽ được hiển thị khi bạn lưu hạng phòng và tạo phòng mới</small>
+                                </div>
+                                
+                                <div class="roomtype-room-grid" id="roomGrid" style="display: none;">
+                                    <!-- Room items will be dynamically loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                                     <!-- Nút action -->
                                     <div class="roomtype-modal-actions">
                                         <button type="submit" class="roomtype-btn roomtype-btn-primary">
@@ -312,12 +381,12 @@
     </div>
     <script>
         // Tab switching logic
-        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabBtns = document.querySelectorAll('.roomtype-tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         tabBtns.forEach(btn => {
             btn.onclick = function () {
-                tabBtns.forEach(b => { b.classList.remove('active'); b.style.color = '#333'; b.style.borderBottom = 'none'; });
-                btn.classList.add('active'); btn.style.color = '#009966'; btn.style.borderBottom = '2px solid #009966';
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 tabContents.forEach(tc => tc.style.display = 'none');
                 document.getElementById(btn.dataset.tab).style.display = 'block';
             }
@@ -339,12 +408,13 @@
         };
         btnClose.onclick = btnClose2.onclick = () => {
             modal.style.display = 'none';
-            document.getElementById('addRoomTypeForm').reset();
+            resetForm();
             document.body.style.overflow = 'auto';
         };
         window.onclick = function (event) {
             if (event.target === modal) {
                 modal.style.display = 'none';
+                resetForm();
                 document.body.style.overflow = 'auto';
             }
         };
@@ -414,6 +484,27 @@
         // Khai báo form variable
         const form = document.getElementById('addRoomTypeForm');
 
+        // Function để reset form
+        function resetForm() {
+            form.reset();
+            delete form.dataset.editId;
+            document.querySelector('#addRoomTypeModal h2').textContent = 'Thêm hạng phòng mới';
+            // Reset các trường mới
+            document.querySelector('input[name="dienTich"]').value = '';
+            document.querySelector('input[name="soGiuong"]').value = '';
+            document.querySelector('select[name="loaiGiuong"]').value = '';
+            document.querySelector('input[name="sucChuaToiDa"]').value = '';
+            document.querySelector('textarea[name="moTa"]').value = '';
+            document.querySelector('textarea[name="tienNghi"]').value = '';
+        }
+
+        // Function để tự động cập nhật sức chứa tối đa dựa trên số giường
+        function updateMaxCapacity() {
+            const soGiuong = parseInt(document.querySelector('input[name="soGiuong"]').value) || 0;
+            const sucChuaToiDa = soGiuong * 2; // Mỗi giường tối đa 2 người
+            document.querySelector('input[name="sucChuaToiDa"]').value = sucChuaToiDa;
+        }
+
         // Functions để xử lý edit và delete
         async function editRoomType(id) {
             try {
@@ -424,6 +515,14 @@
                 // Điền dữ liệu vào form
                 document.querySelector('input[name="maLoaiPhong"]').value = roomType.maLoaiPhong || '';
                 document.querySelector('input[name="tenLoaiPhong"]').value = roomType.tenLoaiPhong || '';
+                document.querySelector('input[name="dienTich"]').value = roomType.dienTich || '';
+                document.querySelector('input[name="soGiuong"]').value = roomType.soGiuong || '';
+                document.querySelector('select[name="loaiGiuong"]').value = roomType.loaiGiuong || '';
+                document.querySelector('input[name="sucChuaToiDa"]').value = roomType.sucChuaToiDa || '';
+                // Cập nhật sức chứa tối đa dựa trên số giường hiện tại
+                updateMaxCapacity();
+                document.querySelector('textarea[name="moTa"]').value = roomType.moTa || '';
+                document.querySelector('textarea[name="tienNghi"]').value = roomType.tienNghi || '';
                 document.querySelector('input[name="giaGio"]').value = roomType.giaGio || '';
                 document.querySelector('input[name="giaNgay"]').value = roomType.giaNgay || '';
                 document.querySelector('input[name="giaQuaDem"]').value = roomType.giaQuaDem || '';
@@ -435,6 +534,9 @@
                 // Thay đổi form để update thay vì create
                 form.dataset.editId = id;
                 document.querySelector('#addRoomTypeModal h2').textContent = 'Chỉnh sửa hạng phòng';
+                
+                // Load danh sách phòng cho hạng phòng này
+                loadRoomsForEdit(id);
 
             } catch (error) {
                 alert('Lỗi: ' + error.message);
@@ -485,9 +587,7 @@
 
                 // Đóng modal, reload trang để cập nhật danh sách
                 modal.style.display = 'none';
-                form.reset();
-                delete form.dataset.editId;
-                document.querySelector('#addRoomTypeModal h2').textContent = 'Thêm hạng phòng mới';
+                resetForm();
                 location.reload();
             } catch (err) {
                 alert(err.message);
@@ -537,9 +637,9 @@
                                                 <div><b>Giá qua đêm:</b> ${type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0'}</div>
                                             </div>
                                             <div style='flex:1;min-width:220px;'>
-                                                <div><b>Mô tả:</b> ${type.moTa || ''}</div>
-                                                <div><b>Tiện nghi:</b> ${type.tienNghi || ''}</div>
-                                                <div><b>Số lượng phòng:</b> ${type.soLuongPhong || ''}</div>
+                                                <div><b>Mô tả:</b> ${type.moTa || 'Chưa có mô tả'}</div>
+                                                <div><b>Tiện nghi:</b> ${type.tienNghi || 'Chưa có thông tin tiện nghi'}</div>
+                                                <div><b>Số lượng phòng:</b> ${type.soLuongPhong || '0'}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -701,6 +801,142 @@
             
             observer.observe(previewContainer, { childList: true });
         })();
+        
+        // Room List Management
+        const roomSearchInput = document.getElementById('roomSearchInput');
+        const roomListContainer = document.getElementById('roomListContainer');
+        const roomListEmpty = document.getElementById('roomListEmpty');
+        const roomGrid = document.getElementById('roomGrid');
+        const totalRoomsCount = document.getElementById('totalRoomsCount');
+        const availableRoomsCount = document.getElementById('availableRoomsCount');
+        const occupiedRoomsCount = document.getElementById('occupiedRoomsCount');
+        
+        // Sample room data (in real app, this would come from API)
+        let roomsData = [];
+        
+        function loadRoomsByRoomType(roomTypeId) {
+            // Simulate API call to get rooms by room type
+            // In real implementation, this would be an AJAX call
+            if (roomTypeId) {
+                // Sample data for demonstration
+                roomsData = [
+                    {
+                        id: 1,
+                        code: 'P101',
+                        name: 'Phòng 101',
+                        status: 'available',
+                        floor: 1,
+                        capacity: 2,
+                        lastCleaned: '2024-01-15 10:30'
+                    },
+                    {
+                        id: 2,
+                        code: 'P102',
+                        name: 'Phòng 102',
+                        status: 'occupied',
+                        floor: 1,
+                        capacity: 2,
+                        lastCleaned: '2024-01-14 14:20',
+                        guestName: 'Nguyễn Văn A'
+                    },
+                    {
+                        id: 3,
+                        code: 'P201',
+                        name: 'Phòng 201',
+                        status: 'available',
+                        floor: 2,
+                        capacity: 4,
+                        lastCleaned: '2024-01-15 09:15'
+                    }
+                ];
+            } else {
+                roomsData = [];
+            }
+            
+            displayRooms(roomsData);
+            updateRoomStats();
+        }
+        
+        function displayRooms(rooms) {
+            if (rooms.length === 0) {
+                roomListEmpty.style.display = 'flex';
+                roomGrid.style.display = 'none';
+                return;
+            }
+            
+            roomListEmpty.style.display = 'none';
+            roomGrid.style.display = 'grid';
+            
+            roomGrid.innerHTML = rooms.map(room => `
+                <div class="roomtype-room-item ${room.status}" onclick="selectRoom('${room.code}')">
+                    <div class="roomtype-room-header">
+                        <span class="roomtype-room-code">${room.code}</span>
+                        <span class="roomtype-room-status ${room.status}">
+                            ${room.status === 'available' ? 'Trống' : 'Đang sử dụng'}
+                        </span>
+                    </div>
+                    <div class="roomtype-room-info">
+                        <div class="roomtype-room-detail">
+                            <i class="material-icons">location_on</i>
+                            <span>Tầng ${room.floor}</span>
+                        </div>
+                        <div class="roomtype-room-detail">
+                            <i class="material-icons">people</i>
+                            <span>Sức chứa: ${room.capacity} người</span>
+                        </div>
+                        <div class="roomtype-room-detail">
+                            <i class="material-icons">cleaning_services</i>
+                            <span>Dọn dẹp: ${room.lastCleaned}</span>
+                        </div>
+                        ${room.guestName ? `
+                            <div class="roomtype-room-detail">
+                                <i class="material-icons">person</i>
+                                <span>Khách: ${room.guestName}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateRoomStats() {
+            const total = roomsData.length;
+            const available = roomsData.filter(room => room.status === 'available').length;
+            const occupied = roomsData.filter(room => room.status === 'occupied').length;
+            
+            totalRoomsCount.textContent = total;
+            availableRoomsCount.textContent = available;
+            occupiedRoomsCount.textContent = occupied;
+        }
+        
+        function selectRoom(roomCode) {
+            console.log('Selected room:', roomCode);
+            // Handle room selection logic here
+        }
+        
+        function filterRooms(searchTerm) {
+            const filtered = roomsData.filter(room => 
+                room.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                room.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            displayRooms(filtered);
+        }
+        
+        // Event listeners
+        if (roomSearchInput) {
+            roomSearchInput.addEventListener('input', (e) => {
+                filterRooms(e.target.value);
+            });
+        }
+        
+        // Load rooms when editing existing room type
+        function loadRoomsForEdit(roomTypeId) {
+            loadRoomsByRoomType(roomTypeId);
+        }
+        
+        // Expose functions globally
+        window.loadRoomsByRoomType = loadRoomsByRoomType;
+        window.loadRoomsForEdit = loadRoomsForEdit;
     </script>
 </body>
 </html>
