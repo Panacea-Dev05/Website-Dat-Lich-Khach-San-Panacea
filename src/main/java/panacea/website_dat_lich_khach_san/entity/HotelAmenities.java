@@ -74,6 +74,9 @@ public class HotelAmenities {
     private Long lastModifiedDate;
 
     // Relationships
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id", nullable = false)
+    private Hotel hotel;
 
     @PrePersist
     public void prePersist() {

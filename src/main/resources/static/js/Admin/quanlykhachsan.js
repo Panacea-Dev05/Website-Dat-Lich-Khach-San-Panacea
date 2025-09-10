@@ -8,69 +8,129 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebar.classList.toggle("open");
     });
   }
+  
+  // Initialize hotel info form functionality
+  initializeHotelInfoForm();
 });
 
-// Hiển thị modal khi bấm Thêm mới
-// const btnAddHotel = document.getElementById('btnAddHotel');
-// const hotelModal = new bootstrap.Modal(document.getElementById('hotelModal'));
-// const hotelForm = document.getElementById('hotelForm');
-//
-// btnAddHotel.addEventListener('click', function() {
-//   hotelForm.reset();
-//   document.getElementById('hotelId').value = '';
-//   document.getElementById('hotelModalLabel').innerText = 'Thêm Khách Sạn';
-//   hotelModal.show();
-// });
-
-// Hàm mở modal sửa, nhận dữ liệu hotel (giả lập, cần fetch thực tế)
-const hotelModal = new bootstrap.Modal(document.getElementById("hotelModal"));
-const hotelForm = document.getElementById("hotelForm");
-
-window.editHotel = function (id) {
-  // TODO: Gọi API lấy dữ liệu hotel theo id, sau đó fill vào form
-  // Ví dụ:
-  fetch(`/api/hotels/${id}`)
-    .then((res) => res.json())
-    .then((hotel) => {
-      hotelForm.reset();
-      document.getElementById("hotelId").value = hotel.id;
-      document.getElementById("tenKhachSan").value = hotel.tenKhachSan;
-      document.getElementById("diaChi").value = hotel.diaChi;
-      document.getElementById("soDienThoai").value = hotel.soDienThoai;
-      document.getElementById("email").value = hotel.email;
-      document.getElementById("trangThai").value = hotel.trangThai;
-      document.getElementById("hotelModalLabel").innerText = "Sửa Khách Sạn";
-      hotelModal.show();
+// Khởi tạo chức năng form thông tin khách sạn
+function initializeHotelInfoForm() {
+  const btnEditHotel = document.getElementById('btnEditHotel');
+  const btnCancelEdit = document.getElementById('btnCancelEdit');
+  const btnSaveHotel = document.getElementById('btnSaveHotel');
+  const hotelInfoForm = document.getElementById('hotelInfoForm');
+  const formActions = document.querySelector('.form-actions');
+  
+  if (btnEditHotel) {
+    btnEditHotel.addEventListener('click', function() {
+      enableEditMode();
     });
-};
+  }
+  
+  if (btnCancelEdit) {
+    btnCancelEdit.addEventListener('click', function() {
+      disableEditMode();
+    });
+  }
+  
+  if (hotelInfoForm) {
+    hotelInfoForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      saveHotelInfo();
+    });
+  }
+}
 
-// Đóng modal khi submit thành công (giả lập)
-hotelForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const id = document.getElementById("hotelId").value;
-  const data = {
-    tenKhachSan: document.getElementById("tenKhachSan").value,
-    diaChi: document.getElementById("diaChi").value,
-    soDienThoai: document.getElementById("soDienThoai").value,
-    email: document.getElementById("email").value,
-    trangThai: document.getElementById("trangThai").value,
-  };
-  fetch(`/api/hotels/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => {
-    if (res.ok) {
-      hotelModal.hide();
-      // Có thể reload lại bảng dữ liệu hoặc cập nhật DOM ở đây
-      location.reload();
-    } else {
-      alert("Cập nhật khách sạn thất bại!");
+// Chức năng bật/tắt chế độ chỉnh sửa
+function enableEditMode() {
+  const formInputs = document.querySelectorAll('#hotelInfoForm input, #hotelInfoForm select, #hotelInfoForm textarea');
+  const formActions = document.querySelector('.form-actions');
+  const btnEditHotel = document.getElementById('btnEditHotel');
+  
+  formInputs.forEach(input => {
+    if (input.type !== 'hidden') {
+      input.removeAttribute('readonly');
+      input.removeAttribute('disabled');
     }
   });
-});
+  
+  if (formActions) {
+    formActions.style.display = 'block';
+  }
+  
+  if (btnEditHotel) {
+    btnEditHotel.style.display = 'none';
+  }
+}
+
+function disableEditMode() {
+  const formInputs = document.querySelectorAll('#hotelInfoForm input, #hotelInfoForm select, #hotelInfoForm textarea');
+  const formActions = document.querySelector('.form-actions');
+  const btnEditHotel = document.getElementById('btnEditHotel');
+  
+  formInputs.forEach(input => {
+    if (input.type !== 'hidden') {
+      if (input.tagName === 'SELECT') {
+        input.setAttribute('disabled', 'disabled');
+      } else {
+        input.setAttribute('readonly', 'readonly');
+      }
+    }
+  });
+  
+  if (formActions) {
+    formActions.style.display = 'none';
+  }
+  
+  if (btnEditHotel) {
+    btnEditHotel.style.display = 'inline-flex';
+  }
+  
+  // Reload trang để khôi phục dữ liệu gốc
+  location.reload();
+}
+
+// Lưu thông tin khách sạn
+function saveHotelInfo() {
+  const hotelId = document.getElementById('hotelId').value;
+  const data = {
+    id: parseInt(hotelId),
+    tenKhachSan: document.getElementById('tenKhachSan').value,
+    maKhachSan: document.getElementById('maKhachSan').value,
+    diaChi: document.getElementById('diaChi').value,
+    thanhPho: document.getElementById('thanhPho').value,
+    quocGia: document.getElementById('quocGia').value,
+    soDienThoai: document.getElementById('soDienThoai').value,
+    email: document.getElementById('email').value,
+    website: document.getElementById('website').value,
+    soSao: parseInt(document.getElementById('soSao').value),
+    trangThai: document.getElementById('trangThai').value,
+    thoiGianNhanPhong: document.getElementById('thoiGianNhanPhong').value,
+    thoiGianTraPhong: document.getElementById('thoiGianTraPhong').value,
+    moTa: document.getElementById('moTa').value,
+    chinhSachHuy: document.getElementById('chinhSachHuy').value
+  };
+  
+  fetch('/admin/hotels/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    if (response.ok) {
+      alert('Cập nhật thông tin khách sạn thành công!');
+      disableEditMode();
+    } else {
+      alert('Cập nhật thông tin khách sạn thất bại!');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Có lỗi xảy ra khi cập nhật thông tin!');
+  });
+}
 
 // Modal xem chi tiết khách sạn
 const hotelDetailModal = new bootstrap.Modal(

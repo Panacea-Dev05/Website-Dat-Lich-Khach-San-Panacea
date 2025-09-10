@@ -103,8 +103,10 @@ public class HotelApiController {
                 return ResponseEntity.badRequest().body("Tên tiện ích không được để trống");
             }
             
-            // Set hotelId và lưu
-
+            // Set hotel và lưu
+            Hotel hotel = hotelRepository.findById(hotelId).orElse(null);
+            amenity.setHotel(hotel);
+            
             HotelAmenities savedAmenity = hotelAmenitiesRepository.save(amenity);
             return ResponseEntity.ok(savedAmenity);
         } catch (Exception e) {
@@ -126,8 +128,9 @@ public class HotelApiController {
                 return ResponseEntity.badRequest().body("Tên tiện ích không được để trống");
             }
             
-            // Set hotelId và lưu
-
+            // Set hotel và lưu
+            amenity.setHotel(hotel);
+            
             HotelAmenities savedAmenity = hotelAmenitiesRepository.save(amenity);
             return ResponseEntity.ok(savedAmenity);
         } catch (Exception e) {
@@ -201,4 +204,4 @@ public class HotelApiController {
         dto.setLastModifiedDate(hotel.getLastModifiedDate());
         return dto;
     }
-} 
+}
