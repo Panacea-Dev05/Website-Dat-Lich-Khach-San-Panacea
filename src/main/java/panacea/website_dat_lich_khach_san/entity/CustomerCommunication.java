@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,10 +21,12 @@ public class CustomerCommunication {
     @Column(name = "id")
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "khach_hang_id", nullable = false)
     private Customer khachHang;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dat_phong_id")
     private Booking datPhong;
@@ -48,6 +51,7 @@ public class CustomerCommunication {
     @Column(name = "ngay_doc")
     private LocalDateTime ngayDoc;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nguoi_gui")
     private Staff nguoiGui;

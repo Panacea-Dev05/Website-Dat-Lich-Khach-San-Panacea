@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -80,9 +81,11 @@ public class Hotel {
     private Long lastModifiedDate;
 
     // Relationships
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RoomType> roomTypes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HotelAmenities> hotelAmenities;
 

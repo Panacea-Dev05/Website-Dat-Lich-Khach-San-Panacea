@@ -15,6 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/auth-styles.css}" />
 </head>
 
 <body>
@@ -125,6 +126,9 @@
                                 <li>
                                     <a th:href="@{/khachhang/about}">About</a>
                                 </li>
+                                <!-- <li>
+                                <a th:href="@{/khachhang/my-bookings}">Quản lý đặt phòng</a>
+                            </li> -->
                                 <li class="menu-item-has-children">
                                     <a th:href="@{/khachhang/room}">Room</a>
                                     <ul>
@@ -183,7 +187,23 @@
                                 </li>
                             </ul>
                         </div>
-
+                        <div class="ak-nav-auth">
+                            <div sec:authorize="!isAuthenticated()">
+                                <a href="/login" class="ak-btn ak-style1 ak-color1">Đăng nhập</a>
+                            </div>
+                            <div sec:authorize="isAuthenticated()" class="user-menu">
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fas fa-user"></i>
+                                        <span sec:authentication="name">User</span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/khachhang/my-bookings">Đặt phòng của tôi</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="logoutAndStay()">Đăng xuất</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -772,6 +792,34 @@
     <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+    
+    <!-- Auth Dropdown Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            if (dropdownToggle && dropdownMenu) {
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+        
+        // Logout function that keeps user on current page
+        function logoutAndStay() {
+            const currentUrl = window.location.pathname + window.location.search;
+            window.location.href = '/custom-logout?returnUrl=' + encodeURIComponent(currentUrl);
+        }
+    </script>
 
 </body>
 </html>

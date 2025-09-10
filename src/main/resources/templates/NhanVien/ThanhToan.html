@@ -126,6 +126,43 @@
             gap: 0.5rem;
         }
 
+        .actions .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status.completed { background: #dcfce7; color: #166534; }
+        .status.pending { background: #fef3c7; color: #92400e; }
+        .status.failed { background: #fecaca; color: #991b1b; }
+
+        /* Responsive cho layout 2 cột */
+        @media (max-width: 1200px) {
+            .section[style*="grid-template-columns: 1fr 400px"] {
+                grid-template-columns: 1fr 350px !important;
+                gap: 1.5rem !important;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .section[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            #paymentDetails {
+                position: static !important;
+                margin-top: 1rem;
+            }
+        }
+
         @media (max-width: 768px) {
             form {
                 grid-template-columns: 1fr;
@@ -134,6 +171,14 @@
             .btn {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            .section[style*="grid-template-columns"] {
+                padding: 1rem;
+            }
+            
+            #paymentDetails {
+                padding: 1rem !important;
             }
         }
 
@@ -195,25 +240,64 @@
     <div class="app-layout">
         <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
         <main class="main-content">
-            <!-- Tạo giao dịch thanh toán -->
-            <div class="section">
-                <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
-                <form id="paymentForm" action="/nhanvien/thanhtoan/create" method="post">
-                    <div><label>Mã booking</label><select id="bookingId" name="bookingId" required>
-                            <option disabled selected>Chọn booking...</option>
-                            <option th:each="bk : ${bookings}" th:value="${bk.id}" th:text="${bk.id + ' - ' + (bk.khachHang != null ? (bk.khachHang.ho + ' ' + bk.khachHang.ten) : 'Không rõ') + ' (' + bk.tongThanhToan + ' VND)'}"></option>
-                        </select></div>
-                    <div><label>Số tiền</label><input id="soTien" type="number" name="soTien" placeholder="VND" min="1000" step="1000" required /></div>
-                    <div><label>Phương thức</label><select id="phuongThuc" name="phuongThuc" required>
-                            <option value="" disabled selected>Chọn phương thức...</option>
-                            <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt == 'CASH' ? 'Tiền mặt' : (pt == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : pt)}"></option>
-                        </select></div>
-                    <div><label>Nội dung</label><input id="noiDung" type="text" name="noiDung" placeholder="Nhập nội dung thanh toán" /></div>
-                    <div><label>Mã giao dịch (nếu có)</label><input id="maGiaoDich" type="text" name="maGiaoDich" placeholder="Mã giao dịch từ ngân hàng" /></div>
-                    <div style="align-self:end">
-                        <button type="submit" class="btn"><span class="material-icons">add</span>Tạo</button>
+            <!-- Layout 2 cột: Form bên trái, Chi tiết bên phải -->
+            <div class="section" style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem; align-items: start;">
+                <!-- Form tạo thanh toán -->
+                <div>
+                    <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
+                    <form id="paymentForm" action="/nhanvien/thanhtoan/create" method="post">
+                        <div><label>Mã booking</label><select id="bookingId" name="bookingId" required onchange="updatePaymentInfo()">
+                                <option disabled selected>Chọn booking...</option>
+                                <option th:each="bk : ${bookings}" 
+                                        th:value="${bk.id}" 
+                                        th:text="${bk.id + ' - ' + (bk.khachHang != null ? (bk.khachHang.ho + ' ' + bk.khachHang.ten) : 'Không rõ')}"
+                                        th:data-room-total="${bk.tongTienPhong}"
+                                        th:data-service-total="${bk.tongTienDichVu}"
+                                        th:data-deposit="${bk.tongTienPhong != null ? bk.tongTienPhong / 2 : 0}"
+                                        th:data-payment-total="${bookingTotalAmounts[bk.id]}"></option>
+                            </select></div>
+                        
+                        <div><label>Số tiền</label><input id="soTien" type="number" name="soTien" placeholder="VND" min="1000" step="1000" readonly required style="background-color: #f3f4f6; cursor: not-allowed;" /></div>
+                        <div><label>Phương thức</label><select id="phuongThuc" name="phuongThuc" required>
+                                <option value="" disabled selected>Chọn phương thức...</option>
+                                <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt == 'CASH' ? 'Tiền mặt' : (pt == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : pt)}"></option>
+                            </select></div>
+                        <div><label>Nội dung</label><input id="noiDung" type="text" name="noiDung" placeholder="Nhập nội dung thanh toán" /></div>
+                        <div><label>Mã giao dịch (nếu có)</label><input id="maGiaoDich" type="text" name="maGiaoDich" placeholder="Mã giao dịch từ ngân hàng" /></div>
+                        <div style="align-self:end">
+                            <button type="submit" class="btn"><span class="material-icons">add</span>Tạo</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Chi tiết tính toán bên phải -->
+                <div id="paymentDetails" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); position: sticky; top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: white; display: flex; align-items: center; gap: 0.5rem;"><span class="material-icons">calculate</span>Chi tiết tính toán</h3>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Tổng tiền phòng:</span>
+                            <span id="roomTotal" style="font-weight: bold;">0 VND</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Tổng tiền dịch vụ:</span>
+                            <span id="serviceTotal" style="font-weight: bold;">0 VND</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #ffcccb;">
+                            <span>Tiền cọc đã trả (50%):</span>
+                            <span id="depositAmount" style="font-weight: bold;">0 VND</span>
+                        </div>
                     </div>
-                </form>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: bold;">Tổng cần thanh toán:</span>
+                            <span id="totalPayment" style="font-size: 1.3rem; font-weight: bold; color: #90EE90;">0 VND</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.85rem; text-align: center;">
+                        <span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 0.25rem;">info</span>
+                        Công thức: Tiền phòng + Dịch vụ - Cọc
+                    </div>
+                </div>
             </div>
 
             <!-- Danh sách thanh toán -->

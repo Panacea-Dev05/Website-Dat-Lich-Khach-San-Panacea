@@ -13,6 +13,9 @@ import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDetailDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationInfoDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationRequestDTO;
+import panacea.website_dat_lich_khach_san.service.CancellationService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -58,6 +61,9 @@ public class QuanLyDatPhongService {
     private ServiceDetailRepository serviceDetailRepository;
 
     @Autowired
+    private CancellationService cancellationService;
+
+    @Autowired
     private ServiceRepository serviceRepository;
 
     public String getStaffName() {
@@ -92,12 +98,36 @@ public class QuanLyDatPhongService {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isPresent()) {
             Booking booking = bookingOpt.get();
-            booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HUY);
-            booking.setNgayHuy(LocalDateTime.now());
-            bookingRepository.save(booking);
             
-            // Gửi email thông báo hủy cho khách hàng
-            sendCancellationEmail(booking);
+            // Lấy thông tin hủy đặt phòng
+            CancellationInfoDTO cancellationInfo;
+            try {
+                cancellationInfo = cancellationService.getCancellationInfo(booking.getId().longValue());
+            } catch (RuntimeException e) {
+                logger.warn("Không thể hủy booking {} - {}", booking.getMaDatPhong(), e.getMessage());
+                return false;
+            }
+            
+            // Kiểm tra xem có thể hủy không
+            if (!cancellationInfo.isCanCancel()) {
+                logger.warn("Không thể hủy booking {} - {}", booking.getMaDatPhong(), cancellationInfo.getCancellationReason());
+                return false;
+            }
+            
+            // Thực hiện hủy đặt phòng
+            CancellationRequestDTO request = new CancellationRequestDTO();
+            request.setBookingId(booking.getId().longValue());
+            request.setCancellationReason("Hủy bởi nhân viên");
+            
+            try {
+                cancellationService.cancelBooking(request);
+            } catch (RuntimeException e) {
+                logger.error("Lỗi khi hủy booking {}: {}", booking.getMaDatPhong(), e.getMessage());
+                return false;
+            }
+            
+            // Gửi email thông báo hủy cho khách hàng với thông tin hoàn tiền
+            sendCancellationEmailWithRefund(booking, cancellationInfo);
             
             // Copy sang bảng lịch sử và xóa booking gốc
             try {
@@ -204,6 +234,60 @@ public class QuanLyDatPhongService {
                 booking.getMaDatPhong(),
                 booking.getNgayNhanPhong(),
                 booking.getNgayTraPhong()
+            );
+            
+            sendEmail(booking.getKhachHang().getEmail(), subject, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void sendCancellationEmailWithRefund(Booking booking, CancellationInfoDTO cancellationInfo) {
+        if (mailSender == null) return;
+        
+        try {
+            String subject = "Thông báo hủy đặt phòng và hoàn tiền - Panacea Hotel";
+            String content = String.format("""
+                <html>
+                <body>
+                    <h2>Xin chào %s!</h2>
+                    <p>Chúng tôi xin thông báo rằng đặt phòng của bạn tại Panacea Hotel đã được hủy thành công.</p>
+                    
+                    <h3>Thông tin đặt phòng đã hủy:</h3>
+                    <ul>
+                        <li><strong>Mã đặt phòng:</strong> %s</li>
+                        <li><strong>Khách sạn:</strong> Panacea Hotel</li>
+                        <li><strong>Ngày nhận phòng:</strong> %s</li>
+                        <li><strong>Ngày trả phòng:</strong> %s</li>
+                        <li><strong>Tổng tiền đã thanh toán:</strong> %,.0f VND</li>
+                    </ul>
+                    
+                    <h3>Thông tin hoàn tiền:</h3>
+                    <ul>
+                        <li><strong>Chính sách hủy:</strong> %s</li>
+                        <li><strong>Số tiền hoàn lại:</strong> %,.0f VND (%s)</li>
+                        <li><strong>Phí hủy:</strong> %,.0f VND</li>
+                        <li><strong>Thời gian còn lại đến check-in:</strong> %d giờ</li>
+                    </ul>
+                    
+                    <p>Số tiền hoàn lại sẽ được chuyển về tài khoản của bạn trong vòng 3-5 ngày làm việc.</p>
+                    
+                    <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi.</p>
+                    
+                    <p>Trân trọng,<br>Đội ngũ Panacea Hotel</p>
+                </body>
+                </html>
+                """, 
+                booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen(),
+                booking.getMaDatPhong(),
+                booking.getNgayNhanPhong(),
+                booking.getNgayTraPhong(),
+                cancellationInfo.getOriginalAmount(),
+                cancellationInfo.getCancellationPolicy().getLabel(),
+                cancellationInfo.getRefundAmount(),
+                cancellationInfo.getCancellationPolicy().getRefundPercentage(),
+                cancellationInfo.getCancellationFee(),
+                cancellationInfo.getHoursUntilCheckIn()
             );
             
             sendEmail(booking.getKhachHang().getEmail(), subject, content);
@@ -565,6 +649,24 @@ public class QuanLyDatPhongService {
             dto.setId(sd.getId());
             dto.setBookingId(sd.getDatPhongId());
             dto.setServiceId(sd.getDichVuId());
+            
+            // Lấy tên dịch vụ từ ServiceRepository
+            String serviceName = "Dịch vụ không xác định";
+            if (sd.getDichVuId() != null) {
+                var service = serviceRepository.findById(sd.getDichVuId());
+                if (service.isPresent()) {
+                    serviceName = service.get().getTenDichVu();
+                }
+            }
+            dto.setServiceName(serviceName);
+            
+            // Lấy thông tin phòng từ BookingDetail đầu tiên (giả sử 1 booking = 1 phòng)
+            if (!details.isEmpty() && details.get(0).getRoom() != null) {
+                Room room = details.get(0).getRoom();
+                dto.setRoomId(room.getId());
+                dto.setRoomNumber(room.getSoPhong());
+            }
+            
             dto.setSoLuong(sd.getSoLuong() != null ? sd.getSoLuong().intValue() : null);
             dto.setDonGia(sd.getDonGiaThucTe());
             if (sd.getDonGiaThucTe() != null && sd.getSoLuong() != null) {
@@ -710,4 +812,4 @@ public class QuanLyDatPhongService {
             return false;
         }
     }
-} 
+}

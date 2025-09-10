@@ -336,4 +336,12 @@ public class KhachHangService {
                 .map(RoomPricing::getGiaTri)
                 .orElse(null);
     }
+
+    public List<Booking> getBookingsByEmail(String email) {
+        Optional<Customer> customer = customerRepository.findByEmail(email);
+        if (customer.isPresent()) {
+            return bookingRepository.findByKhachHang(customer.get());
+        }
+        return new ArrayList<>();
+    }
 }

@@ -190,6 +190,16 @@ public class KhachHangController {
         return "KhachHang/hotel-resort/comming";
     }
 
+    // Trang quản lý booking của khách hàng
+    @GetMapping("/my-bookings")
+    public String myBookings(@RequestParam(required = false) String email, Model model) {
+        if (email != null && !email.isEmpty()) {
+            model.addAttribute("bookings", khachHangService.getBookingsByEmail(email));
+            model.addAttribute("customerEmail", email);
+        }
+        return "KhachHang/MyBookings";
+    }
+
     // Đặt phòng qua AJAX (JSON)
     @PostMapping(value = "/single-room/booking", consumes = "application/json", produces = "application/json")
     @ResponseBody

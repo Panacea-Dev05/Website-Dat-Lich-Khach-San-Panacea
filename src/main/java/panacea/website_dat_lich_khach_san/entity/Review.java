@@ -4,6 +4,7 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -60,10 +61,12 @@ public class Review {
     private Long createdDate;
 
     // Relationships
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dat_phong_id", insertable = false, updatable = false)
     private Booking booking;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "khach_hang_id", insertable = false, updatable = false)
     private Customer customer;

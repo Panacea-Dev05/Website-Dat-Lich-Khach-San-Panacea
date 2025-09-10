@@ -139,7 +139,37 @@ public class ThanhToanService {
         }
     }
     
-    // Tạo hóa đơn đơn giản
+    // Tính tổng tiền cần thanh toán: Tổng tiền phòng + dịch vụ - 50% tiền phòng (tiền cọc đã trả)
+    public BigDecimal calculateTotalPaymentAmount(Integer bookingId) {
+        try {
+            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId.longValue());
+            if (!bookingOpt.isPresent()) {
+                return BigDecimal.ZERO;
+            }
+            
+            Booking booking = bookingOpt.get();
+            
+            // Tổng tiền phòng
+            BigDecimal tongTienPhong = booking.getTongTienPhong() != null ? booking.getTongTienPhong() : BigDecimal.ZERO;
+            
+            // Tổng tiền dịch vụ
+            BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
+            
+            // Tiền cọc (50% tiền phòng)
+            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            
+            // Tổng cần thanh toán = Tiền phòng + Tiền dịch vụ - Tiền cọc
+            BigDecimal tongCanThanhToan = tongTienPhong.add(tongTienDichVu).subtract(tienCoc);
+            
+            return tongCanThanhToan.compareTo(BigDecimal.ZERO) > 0 ? tongCanThanhToan : BigDecimal.ZERO;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BigDecimal.ZERO;
+        }
+    }
+    
+    // Tạo hóa đơn chi tiết với tính toán mới
     public String generateInvoice(Integer paymentId) {
         try {
             Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
@@ -150,12 +180,25 @@ public class ThanhToanService {
             Payment payment = paymentOpt.get();
             Booking booking = payment.getBooking();
             
+            // Tính toán chi tiết
+            BigDecimal tongTienPhong = booking.getTongTienPhong() != null ? booking.getTongTienPhong() : BigDecimal.ZERO;
+            BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
+            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            BigDecimal tongCanThanhToan = calculateTotalPaymentAmount(booking.getId());
+            
             StringBuilder invoice = new StringBuilder();
             invoice.append("=== HÓA ĐƠN THANH TOÁN ===\n");
             invoice.append("Mã thanh toán: ").append(payment.getId()).append("\n");
             invoice.append("Mã booking: ").append(booking.getId()).append("\n");
             invoice.append("Khách hàng: ").append(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen()).append("\n");
-            invoice.append("Số tiền: ").append(payment.getSoTien()).append(" VND\n");
+            invoice.append("\n--- CHI TIẾT TÍNH TOÁN ---\n");
+            invoice.append("Tổng tiền phòng: ").append(String.format("%,.0f", tongTienPhong)).append(" VND\n");
+            invoice.append("Tổng tiền dịch vụ: ").append(String.format("%,.0f", tongTienDichVu)).append(" VND\n");
+            invoice.append("Tiền cọc đã trả (50%): ").append(String.format("%,.0f", tienCoc)).append(" VND\n");
+            invoice.append("\n--- TỔNG KẾT ---\n");
+            invoice.append("Tổng cần thanh toán: ").append(String.format("%,.0f", tongCanThanhToan)).append(" VND\n");
+            invoice.append("Số tiền thanh toán này: ").append(String.format("%,.0f", payment.getSoTien())).append(" VND\n");
+            invoice.append("\n--- THÔNG TIN THANH TOÁN ---\n");
             invoice.append("Phương thức: ").append(payment.getPhuongThuc()).append("\n");
             invoice.append("Trạng thái: ").append(payment.getTrangThai()).append("\n");
             invoice.append("Ngày tạo: ").append(payment.getCreatedDate()).append("\n");

@@ -638,6 +638,7 @@
                         content += `<h3 style='margin-top:1.5rem;'>Dịch vụ đã sử dụng</h3>`;
                         content += `<table style='width:100%;margin-top:0.5rem;border-collapse:collapse;'>
                             <thead><tr>
+                                <th style='border-bottom:1px solid #ccc;'>Phòng</th>
                                 <th style='border-bottom:1px solid #ccc;'>Tên dịch vụ</th>
                                 <th style='border-bottom:1px solid #ccc;'>Số lượng</th>
                                 <th style='border-bottom:1px solid #ccc;'>Đơn giá</th>
@@ -645,7 +646,8 @@
                             </tr></thead><tbody>`;
                         booking.serviceUsages.forEach(sv => {
                             content += `<tr>
-                                <td>${sv.serviceId}</td>
+                                <td>${sv.roomNumber || 'N/A'}</td>
+                                <td>${sv.serviceName || sv.serviceId}</td>
                                 <td>${sv.soLuong}</td>
                                 <td>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
                                 <td>${sv.thanhTien ? new Intl.NumberFormat('vi-VN').format(sv.thanhTien) : ''}</td>

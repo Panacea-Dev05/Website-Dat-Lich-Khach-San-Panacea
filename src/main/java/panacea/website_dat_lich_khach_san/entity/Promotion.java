@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -70,6 +71,7 @@ public class Promotion {
     private Long lastModifiedDate;
 
     // Relationships
+    @JsonIgnore
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
 

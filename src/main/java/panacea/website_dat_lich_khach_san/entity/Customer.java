@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiCustomerConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -78,6 +79,7 @@ public class Customer {
     private Long lastModifiedDate;
 
     // Relationships
+    @JsonIgnore
     @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
 
