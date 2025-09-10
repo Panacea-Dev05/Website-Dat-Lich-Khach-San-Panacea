@@ -65,6 +65,8 @@ public class QuanLyKhachSanService {
     // Thêm tiện ích
     @Transactional
     public HotelAmenities addAmenity(Integer hotelId, HotelAmenities amenity) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElse(null);
+        amenity.setHotel(hotel);
         return hotelAmenitiesRepository.save(amenity);
     }
     // Sửa tiện ích
@@ -94,4 +96,4 @@ public class QuanLyKhachSanService {
         return hotelAmenitiesRepository.findAll().stream()
                 .toList();
     }
-} 
+}

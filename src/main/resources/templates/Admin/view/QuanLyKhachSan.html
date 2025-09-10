@@ -27,56 +27,157 @@
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
-            <h1>Quản lý khách sạn</h1>
+            <h1>Thông tin khách sạn</h1>
             <section class="content-section" id="contentSection">
-                <table aria-label="Danh sách khách sạn" id="hotelTable">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên khách sạn</th>
-                            <th>Địa chỉ</th>
-                            <th>Số điện thoại</th>
-                            <th>Email</th>
-                            <th>Đánh giá</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="hotelTableBody">
-                        <!-- Dữ liệu khách sạn từ controller -->
-                        <tr th:each="hotel, stat : ${hotels}">
-                            <input type="hidden" th:value="${hotel.id}" name="hotelId" />
-                            <td th:text="${stat.count}">1</td>
-                            <td th:text="${hotel.tenKhachSan}">Panacea Hotel Central</td>
-                            <td th:text="${hotel.diaChi}">123 Đường ABC, Quận 1, TP.HCM</td>
-                            <td th:text="${hotel.soDienThoai}">028 1234 5678</td>
-                            <td th:text="${hotel.email}">contact@panacea.com</td>
-                            <td th:text="${hotel.soSao}">5</td>
-                            <td>
-                                <span
-                                    th:class="${hotel.trangThai == 'HOAT_DONG' ? 'status-active' : (hotel.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-inactive')}"
-                                    th:text="${hotel.trangThai == 'HOAT_DONG' ? 'Hoạt động' : (hotel.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Tạm ngưng')}">
-                                    Hoạt động
-                                </span>
-                            </td>
-                            <td>
-                                <a href="#" class="btn-view" th:onclick="'viewHotel(' + ${hotel.id} + ');return false;'"
-                                    title="Xem chi tiết" role="button">
-                                    <span class="material-icons">visibility</span>
-                                </a>
-                                <a href="#" class="btn-edit" th:onclick="'editHotel(' + ${hotel.id} + ');return false;'"
-                                    title="Sửa" role="button">
-                                    <span class="material-icons">edit</span>
-                                </a>
-                                <a href="#" class="btn-delete"
-                                    th:onclick="'deleteHotel(' + ${hotel.id} + ');return false;'" title="Xóa"
-                                    role="button">
-                                    <span class="material-icons">delete</span>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Form thông tin khách sạn duy nhất -->
+                <div class="hotel-info-container" th:if="${hotel}">
+                    <div class="hotel-info-header">
+                        <h2>Thông tin chi tiết khách sạn</h2>
+                        <button type="button" class="btn btn-primary" id="btnEditHotel">
+                            <span class="material-icons">edit</span>
+                            Chỉnh sửa thông tin
+                        </button>
+                    </div>
+                    
+                    <form id="hotelInfoForm" class="hotel-info-form">
+                        <input type="hidden" id="hotelId" th:value="${hotel.id}" />
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tenKhachSan" class="form-label">Tên khách sạn</label>
+                                    <input type="text" class="form-control" id="tenKhachSan" name="tenKhachSan" 
+                                           th:value="${hotel.tenKhachSan}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="maKhachSan" class="form-label">Mã khách sạn</label>
+                                    <input type="text" class="form-control" id="maKhachSan" name="maKhachSan" 
+                                           th:value="${hotel.maKhachSan}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="diaChi" class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" id="diaChi" name="diaChi" 
+                                           th:value="${hotel.diaChi}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="thanhPho" class="form-label">Thành phố</label>
+                                    <input type="text" class="form-control" id="thanhPho" name="thanhPho" 
+                                           th:value="${hotel.thanhPho}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="quocGia" class="form-label">Quốc gia</label>
+                                    <input type="text" class="form-control" id="quocGia" name="quocGia" 
+                                           th:value="${hotel.quocGia}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="soDienThoai" class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="soDienThoai" name="soDienThoai" 
+                                           th:value="${hotel.soDienThoai}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           th:value="${hotel.email}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="website" class="form-label">Website</label>
+                                    <input type="text" class="form-control" id="website" name="website" 
+                                           th:value="${hotel.website}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="soSao" class="form-label">Số sao</label>
+                                    <select class="form-select" id="soSao" name="soSao" disabled>
+                                        <option th:each="i : ${#numbers.sequence(1, 5)}" 
+                                                th:value="${i}" th:text="${i} + ' sao'" 
+                                                th:selected="${hotel.soSao == i}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="trangThai" class="form-label">Trạng thái</label>
+                                    <select class="form-select" id="trangThai" name="trangThai" disabled>
+                                        <option value="HOAT_DONG" th:selected="${hotel.trangThai == 'HOAT_DONG'}">Hoạt động</option>
+                                        <option value="BAO_TRI" th:selected="${hotel.trangThai == 'BAO_TRI'}">Bảo trì</option>
+                                        <option value="DONG_CUA" th:selected="${hotel.trangThai == 'DONG_CUA'}">Đóng cửa</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="thoiGianNhanPhong" class="form-label">Giờ nhận phòng</label>
+                                    <input type="time" class="form-control" id="thoiGianNhanPhong" name="thoiGianNhanPhong" 
+                                           th:value="${hotel.thoiGianNhanPhong}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="thoiGianTraPhong" class="form-label">Giờ trả phòng</label>
+                                    <input type="time" class="form-control" id="thoiGianTraPhong" name="thoiGianTraPhong" 
+                                           th:value="${hotel.thoiGianTraPhong}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="moTa" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="moTa" name="moTa" rows="4" readonly th:text="${hotel.moTa}"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="chinhSachHuy" class="form-label">Chính sách hủy</label>
+                            <textarea class="form-control" id="chinhSachHuy" name="chinhSachHuy" rows="3" readonly th:text="${hotel.chinhSachHuy}"></textarea>
+                        </div>
+                        
+                        <div class="form-actions" style="display: none;">
+                            <button type="button" class="btn btn-secondary" id="btnCancelEdit">Hủy</button>
+                            <button type="submit" class="btn btn-primary" id="btnSaveHotel">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                    
+                    <div class="amenities-section">
+                        <div class="amenities-header">
+                            <h3>Tiện ích khách sạn</h3>
+                            <button type="button" class="btn btn-outline-primary" id="btnManageAmenities">
+                                <span class="material-icons">settings</span>
+                                Quản lý tiện ích
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Thông báo khi không có dữ liệu khách sạn -->
+                <div class="no-hotel-message" th:unless="${hotel}">
+                    <div class="alert alert-warning">
+                        <h4>Chưa có thông tin khách sạn</h4>
+                        <p>Vui lòng liên hệ quản trị viên để thiết lập thông tin khách sạn.</p>
+                    </div>
+                </div>
 
                 <!-- Modal Sửa Khách Sạn (nhỏ, giữa màn hình) -->
                 <div class="modal fade" id="hotelModal" tabindex="-1" aria-labelledby="hotelModalLabel"

@@ -13,12 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomImages;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
@@ -38,6 +40,9 @@ public class AdminRoomService {
 
     @Autowired
     private RoomPricingRepositoty roomPricingRepositoty;
+    
+    @Autowired
+    private HotelRepository hotelRepository;
 
     public List<RoomDTO> getAllRooms() {
         return roomRepository.findAll().stream()
@@ -180,6 +185,9 @@ public class AdminRoomService {
     }
 
     public RoomTypeDTO createRoomType(RoomTypeDTO dto) {
+        // Lấy hotel đầu tiên (single hotel model)
+        Hotel hotel = hotelRepository.findAll().stream().findFirst().orElse(null);
+        
         RoomType roomType = new RoomType();
         roomType.setMaLoaiPhong(dto.getMaLoaiPhong());
         roomType.setTenLoaiPhong(dto.getTenLoaiPhong());
@@ -189,6 +197,7 @@ public class AdminRoomService {
         roomType.setSucChuaToiDa(dto.getSucChuaToiDa());
         roomType.setMoTa(dto.getMoTa());
         roomType.setTienNghi(dto.getTienNghi());
+        roomType.setHotel(hotel); // Set hotel relationship
         RoomType saved = roomTypeRepository.save(roomType);
 
         // Tạo RoomPricing cho hạng phòng mới

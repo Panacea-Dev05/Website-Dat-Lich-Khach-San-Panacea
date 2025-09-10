@@ -22,13 +22,50 @@ public class AdminHotelController {
     
     @GetMapping
     public String hotelManagement(Model model) {
-        List<HotelDTO> hotels = hotelRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        // Lấy khách sạn đầu tiên (hoặc duy nhất) trong hệ thống
+        Hotel hotel = hotelRepository.findAll().stream().findFirst().orElse(null);
         List<String> hotelStatuses = Arrays.asList("HOAT_DONG", "DONG_CUA", "BAO_TRI");
-        model.addAttribute("hotels", hotels);
+        
+        if (hotel != null) {
+            model.addAttribute("hotel", convertToDTO(hotel));
+        }
         model.addAttribute("hotelStatuses", hotelStatuses);
         return "Admin/view/QuanLyKhachSan";
+    }
+    
+    @PostMapping("/update")
+    @ResponseBody
+    public ResponseEntity<HotelDTO> updateHotel(@RequestBody HotelDTO hotelDTO) {
+        try {
+            Hotel hotel = hotelRepository.findById(hotelDTO.getId()).orElse(null);
+            if (hotel == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Cập nhật thông tin khách sạn
+            hotel.setTenKhachSan(hotelDTO.getTenKhachSan());
+            hotel.setDiaChi(hotelDTO.getDiaChi());
+            hotel.setThanhPho(hotelDTO.getThanhPho());
+            // Đảm bảo quocGia không null
+            hotel.setQuocGia(hotelDTO.getQuocGia() != null ? hotelDTO.getQuocGia() : "Việt Nam");
+            hotel.setSoDienThoai(hotelDTO.getSoDienThoai());
+            hotel.setEmail(hotelDTO.getEmail());
+            hotel.setWebsite(hotelDTO.getWebsite());
+            hotel.setSoSao(hotelDTO.getSoSao());
+            hotel.setMoTa(hotelDTO.getMoTa());
+            hotel.setChinhSachHuy(hotelDTO.getChinhSachHuy());
+            hotel.setThoiGianNhanPhong(hotelDTO.getThoiGianNhanPhong());
+            hotel.setThoiGianTraPhong(hotelDTO.getThoiGianTraPhong());
+            
+            if (hotelDTO.getTrangThai() != null) {
+                hotel.setTrangThai(Hotel.TrangThaiHotel.valueOf(hotelDTO.getTrangThai()));
+            }
+            
+            Hotel savedHotel = hotelRepository.save(hotel);
+            return ResponseEntity.ok(convertToDTO(savedHotel));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
     @GetMapping("/{id}")
@@ -72,4 +109,4 @@ public class AdminHotelController {
         dto.setLastModifiedDate(hotel.getLastModifiedDate());
         return dto;
     }
-} 
+}

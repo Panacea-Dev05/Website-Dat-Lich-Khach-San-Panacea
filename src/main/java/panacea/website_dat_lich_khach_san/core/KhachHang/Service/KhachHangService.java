@@ -212,7 +212,14 @@ public class KhachHangService {
         List<panacea.website_dat_lich_khach_san.entity.RoomType> roomTypes = roomTypeRepository.findAll();
         List<RoomTypeDTO> result = new ArrayList<>();
         for (var rt : roomTypes) {
+            // Debug log để kiểm tra dienTich
+            System.out.println("[DEBUG] RoomType ID: " + rt.getId() + ", Ten: " + rt.getTenLoaiPhong() + ", DienTich: " + rt.getDienTich());
+            
             RoomTypeDTO dto = RoomTypeDTO.fromEntity(rt);
+            
+            // Debug log sau khi convert
+            System.out.println("[DEBUG] DTO DienTich: " + dto.getDienTich());
+            
             // Lấy giá BASE
             RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(rt.getId(), RoomPricing.LoaiGia.BASE);
             if (pricing != null) {
@@ -236,7 +243,15 @@ public class KhachHangService {
         var rtOpt = roomTypeRepository.findById(id);
         if (rtOpt.isEmpty()) return null;
         var rt = rtOpt.get();
+        
+        // Debug log để kiểm tra dienTich
+        System.out.println("[DEBUG] Single RoomType ID: " + rt.getId() + ", Ten: " + rt.getTenLoaiPhong() + ", DienTich: " + rt.getDienTich());
+        
         RoomTypeDTO dto = RoomTypeDTO.fromEntity(rt);
+        
+        // Debug log sau khi convert
+        System.out.println("[DEBUG] Single DTO DienTich: " + dto.getDienTich());
+        
         // Lấy giá BASE
         RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(rt.getId(), panacea.website_dat_lich_khach_san.entity.RoomPricing.LoaiGia.BASE);
         if (pricing != null) {

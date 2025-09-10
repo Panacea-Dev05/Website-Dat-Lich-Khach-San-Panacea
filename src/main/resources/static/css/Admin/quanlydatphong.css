@@ -251,7 +251,7 @@ input[type="date"]:focus {
     align-self: flex-start;
   }
 }
-<<<<<<< HEAD
+
 .footer {
   grid-area: footer;
   background: #e6f4ea;
@@ -264,7 +264,7 @@ input[type="date"]:focus {
   font-weight: 600;
   border-top: 1px solid #c4e1cc;
   user-select: none;
-=======
+
 footer {
     grid-area: footer;
     background: #e6f4ea;
@@ -277,7 +277,6 @@ footer {
     font-weight: 600;
     border-top: 1px solid #c4e1cc;
     user-select: none;
->>>>>>> c94b5f18d09cd35734cbddc478ddd32df49c736e
 }
 
 main::-webkit-scrollbar {
@@ -286,4 +285,4 @@ main::-webkit-scrollbar {
 main::-webkit-scrollbar-thumb {
   background: #10b981aa;
   border-radius: 5px;
-}
+}}

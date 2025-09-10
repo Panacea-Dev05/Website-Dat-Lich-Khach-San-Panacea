@@ -35,7 +35,7 @@ public class CustomerPreferences {
 
     @ManyToOne
     @JoinColumn(name = "loai_phong_uu_thien")
-    private RoomTypes loaiPhongUuThien;
+    private RoomType loaiPhongUuThien;
 
     @Column(name = "tang_uu_thien")
     private String tangUuThien;

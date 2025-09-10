@@ -110,6 +110,10 @@ public class Payment {
         if (this.ngayThanhToan == null) {
             this.ngayThanhToan = LocalDateTime.now();
         }
+        // Đảm bảo maThanhToan luôn có giá trị
+        if (this.maThanhToan == null || this.maThanhToan.trim().isEmpty()) {
+            this.maThanhToan = "PAY" + System.currentTimeMillis();
+        }
     }
 
     @PreUpdate

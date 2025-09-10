@@ -306,10 +306,11 @@
                         <tr th:each="booking : ${bookings}">
                             <td th:text="${booking.maDatPhong}"></td>
                             <td>
-                                <a href="javascript:void(0);"
+                                <a
                                     style="color: #2563eb; text-decoration: underline; cursor: pointer;"
                                     th:text="${booking.customerName}"
-                                    th:onclick="'viewBookingDetail(' + ${booking.id} + ')'">
+                                    th:data-booking-id="${booking.id}"
+                                    onclick="viewBookingDetail(this)">
                                 </a>
                             </td>
                             <td th:text="${booking.roomNumber != null ? booking.roomNumber : 'N/A'}"></td>
@@ -331,7 +332,7 @@
                                 </span>
                             </td>
                             <td style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                                <button class="btn" th:onclick="'viewBookingDetail(' + ${booking.id} + ')'">
+                                <button class="btn" th:data-booking-id="${booking.id}" onclick="viewBookingDetail(this)">
                                     <span class="material-icons">visibility</span>Xem
                                 </button>
                             </td>
@@ -611,7 +612,8 @@
         }
 
         // Hàm xem chi tiết booking
-        function viewBookingDetail(bookingId) {
+        function viewBookingDetail(element) {
+            const bookingId = element.getAttribute('data-booking-id');
             fetch(`/nhanvien/quanlydatphong/detail/${bookingId}`)
                 .then(response => response.json())
                 .then(booking => {

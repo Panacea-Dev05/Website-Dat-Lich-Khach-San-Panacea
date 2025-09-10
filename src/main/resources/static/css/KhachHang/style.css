@@ -249,4 +249,384 @@
   .ak-site_branding img {
     max-height: 30px;
   }
-}/*# sourceMappingURL=style.css.map */
+} /*# sourceMappingURL=style.css.map */
+
+/* Fixes for Similar Room and Luxury Room display issues */
+.room-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px; /* Reduced from 50px for better mobile display */
+  justify-content: center; /* Center the room cards */
+  align-items: stretch; /* Ensure equal height */
+}
+
+.room-section > .col {
+  flex: 1 1 300px; /* Better responsive behavior */
+  min-width: 300px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure proper spacing for Similar Room section */
+.similar-room-section {
+  clear: both;
+  margin-top: 48px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Fix for room cards to ensure proper display */
+.room-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.room-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 210, 141, 0.2);
+}
+
+/* Responsive fixes for mobile devices */
+@media screen and (max-width: 768px) {
+  .room-section {
+    gap: 20px; /* Smaller gap on mobile */
+    padding: 0 15px; /* Add padding for mobile */
+  }
+
+  .room-section > .col {
+    flex: 1 1 100%; /* Full width on mobile */
+    min-width: 280px;
+    max-width: 100%;
+  }
+
+  .similar-room-section {
+    margin-top: 30px;
+    padding: 0 15px;
+  }
+
+  .ak-section-heading.ak-style-1 .ak-section-title {
+    font-size: 28px; /* Smaller title on mobile */
+    text-align: center;
+  }
+
+  .ak-section-heading.ak-style-1 .ak-section-subtitle {
+    font-size: 16px;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .room-section {
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  .room-section > .col {
+    min-width: 250px;
+  }
+
+  .room-card .room-card-body .room-card-title {
+    font-size: 20px; /* Smaller room title on very small screens */
+  }
+
+  .room-card .room-card-body .room-card-info {
+    gap: 15px; /* Smaller gap between room info items */
+    flex-wrap: wrap;
+  }
+}
+
+/* Fix for container alignment */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Ensure proper display of section headings */
+.ak-section-heading.ak-style-1.ak-type-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Fix for room card images */
+.room-card .room-card-img {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.room-card .room-card-img img {
+  width: 100%;
+  height: 250px; /* Fixed height for consistency */
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.room-card:hover .room-card-img img {
+  transform: scale(1.05);
+}
+
+/* Fix for room card buttons */
+.room-card .room-card-img .room-card-img-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  text-align: center;
+}
+
+.room-card .room-card-img .room-card-img-btn .text-btn1 {
+  background: rgba(255, 210, 141, 0.9);
+  color: #040d10;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  min-width: 120px;
+}
+
+.room-card .room-card-img .room-card-img-btn .text-btn1:hover {
+  background: #ffd28d;
+  color: #040d10;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 210, 141, 0.4);
+}
+
+/* Fix for overlap issues between sections */
+/* Ensure proper stacking context and prevent overlap */
+#containerAround {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* Fix for booking widget positioning */
+.booking-widget {
+  position: relative;
+  z-index: 2;
+  background-color: var(--body-bg-color-two);
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+/* Ensure Similar Room section doesn't overlap with booking widget */
+.similar-room-section {
+  clear: both;
+  margin-top: 60px; /* Increased margin to prevent overlap */
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  overflow: visible;
+  background-color: var(--body-bg-color);
+}
+
+/* Fix for main content section */
+section.container {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+/* Ensure proper spacing between sections */
+section:not(:last-child) {
+  margin-bottom: 0;
+}
+
+/* Fix for row and column spacing */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.col-md-8, .col-md-4 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Ensure proper display order */
+.blog-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix for sticky header overlap */
+.ak-sticky_header {
+  z-index: 999 !important;
+}
+
+/* Ensure content below sticky header is visible */
+body {
+  padding-top: 0;
+}
+
+/* Fix for any absolute positioned elements that might cause overlap */
+.ak-commmon-hero.ak-style1 {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure proper flow for all sections */
+section {
+  position: relative;
+  z-index: auto;
+}
+
+/* Specific fix for room section to prevent overlap */
+.room-section {
+  position: relative;
+  z-index: 2;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+/* Fix for responsive overlap issues */
+@media screen and (max-width: 991px) {
+  .booking-widget {
+    margin-top: 40px;
+    margin-bottom: 60px;
+  }
+  
+  .similar-room-section {
+    margin-top: 80px; /* More space on tablet */
+  }
+  
+  .col-md-4 {
+    margin-top: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .similar-room-section {
+    margin-top: 100px; /* Even more space on mobile */
+  }
+  
+  .booking-widget {
+    margin-bottom: 80px;
+  }
+}
+
+/* Enhanced styling for room details button */
+.room-card .room-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 210, 141, 0.1);
+  background: linear-gradient(135deg, rgba(255, 210, 141, 0.05) 0%, rgba(255, 210, 141, 0.02) 100%);
+  transition: all 0.3s ease;
+}
+
+.room-card:hover .room-footer {
+  background: linear-gradient(135deg, rgba(255, 210, 141, 0.1) 0%, rgba(255, 210, 141, 0.05) 100%);
+  border-top-color: rgba(255, 210, 141, 0.3);
+}
+
+.room-card .room-footer .room-card-bottom-text {
+  color: #FFD28D;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  border: 2px solid transparent;
+  border-radius: 30px;
+  background: linear-gradient(135deg, rgba(255, 210, 141, 0.1) 0%, rgba(255, 210, 141, 0.05) 100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.room-card .room-footer .room-card-bottom-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.room-card .room-footer .room-card-bottom-text:hover::before {
+  left: 100%;
+}
+
+.room-card .room-footer .room-card-bottom-text:hover {
+  color: #040d10;
+  background: linear-gradient(135deg, #FFD28D 0%, #f5c76b 100%);
+  border-color: #FFD28D;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 210, 141, 0.3);
+}
+
+.room-card .room-footer .room-card-bottom-text span {
+  margin-left: 8px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.room-card .room-footer .room-card-bottom-text:hover span {
+  margin-left: 12px;
+  transform: translateX(3px);
+}
+
+.room-card .room-footer .room-card-bottom-text svg {
+  transition: all 0.3s ease;
+}
+
+.room-card .room-footer .room-card-bottom-text:hover svg {
+  transform: translateX(2px) scale(1.1);
+}
+
+.room-card .room-footer .room-card-bottom-text:hover svg path {
+  fill: #040d10;
+}
+
+/* Enhanced room card hover effects */
+.room-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+}
+
+.room-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(255, 210, 141, 0.15);
+}
+
+/* Responsive adjustments for room details button */
+@media screen and (max-width: 768px) {
+  .room-card .room-footer .room-card-bottom-text {
+    font-size: 12px;
+    padding: 10px 16px;
+    letter-spacing: 0.5px;
+  }
+  
+  .room-card .room-footer {
+    padding: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .room-card .room-footer .room-card-bottom-text {
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+}

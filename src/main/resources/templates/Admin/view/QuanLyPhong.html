@@ -9,506 +9,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlyphong.css}">
     <link rel="stylesheet" th:href="@{/css/Admin/admin-modal.css}">
-    <style>
-        /* General Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.35);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
-        .modal-content-wrapper {
-            background: #fff;
-            border-radius: 18px;
-            padding: 0;
-            min-width: 540px;
-            max-width: 740px;
-            width: 98vw;
-            max-height: 92vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid #eee;
-            padding: 20px 32px 0 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title {
-            margin: 0;
-            font-size: 1.4em;
-            font-weight: 700;
-            text-align: center;
-            flex: 1;
-            letter-spacing: 0.5px;
-            color: #222;
-        }
-
-        .modal-close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #888;
-            cursor: pointer;
-        }
-
-        .modal-form {
-            padding: 0;
-        }
-
-        /* Room Modal Flex Layout (Form and Price Info) */
-        .room-modal-flex {
-            display: flex;
-            gap: 32px;
-            padding: 28px 32px 0 32px;
-            align-items: flex-start;
-        }
-
-        .form-column {
-            flex: 1;
-            min-width: 240px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-label {
-            width: 110px;
-            font-weight: 600;
-        }
-
-        .form-label.required {
-            color: #e53935;
-            /* Specific color for required fields */
-        }
-
-        .form-input,
-        .form-select {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1.2px solid #e0e0e0;
-            font-size: 1em;
-            background: #fff;
-            transition: border 0.2s;
-            outline: none;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            border-color: #4fc3f7;
-        }
-
-        .btn-add-small {
-            background: #f5f5f5;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 10px;
-            margin-left: 4px;
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-
-        .icon-calendar,
-        .icon-edit {
-            color: #888;
-            font-size: 1.2em;
-            margin-left: 4px;
-        }
-
-        .price-info-column {
-            flex: 1;
-            min-width: 220px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .price-info-box {
-            background: #f5f6fa;
-            border-radius: 12px;
-            padding: 18px 20px;
-            font-size: 1em;
-            color: #444;
-            width: 100%;
-        }
-
-        .price-info-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .price-info-list {
-            margin: 0 0 0 18px;
-            padding: 0;
-            font-size: 0.98em;
-            color: #444;
-        }
-
-        /* Image Upload Section */
-        .image-upload-section {
-            padding: 24px 32px 0 32px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-scroll-image {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 1.6em;
-            cursor: pointer;
-        }
-
-        .room-image-upload-list-responsive {
-            display: flex;
-            gap: 12px;
-            flex: 1;
-        }
-
-        .room-image-upload-box {
-            width: 80px;
-            height: 80px;
-            border: 2px dashed #d0d0d0;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #bbb;
-            font-size: 1.3em;
-            background: #fafbfc;
-            cursor: pointer;
-            overflow: hidden;
-            position: relative;
-            transition: border-color 0.2s;
-        }
-
-        .room-image-upload-box .material-icons {
-            font-size: 2em;
-        }
-
-        .room-image-upload-box img {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .room-image-upload-box:hover {
-            border-color: #4fc3f7 !important;
-            /* Keep important for hover interaction */
-        }
-
-        .hidden-input {
-            display: none;
-        }
-
-        /* Modal Actions */
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            border-top: 1px solid #eee;
-            margin-top: 24px;
-            padding: 14px 32px 14px 32px;
-            background: #fff;
-        }
-
-        .btn-save,
-        .btn-save-add-new,
-        .btn-cancel {
-            border: none;
-            border-radius: 7px;
-            padding: 8px 18px;
-            font-weight: 700;
-            font-size: 1em;
-            letter-spacing: 0.2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #fff;
-            /* Common color for these buttons */
-            cursor: pointer;
-        }
-
-        .btn-save {
-            background: #009966;
-        }
-
-        .btn-save:hover {
-            background: #007d4e !important;
-        }
-
-        .btn-save-add-new {
-            background: #00b86b;
-        }
-
-        .btn-cancel {
-            background: #888;
-            font-weight: 600;
-            /* Slightly different font-weight */
-        }
-
-        .btn-save-add-new:hover,
-        .btn-cancel:hover {
-            filter: brightness(0.95);
-        }
-
-        .btn-save .material-icons,
-        .btn-save-add-new .material-icons,
-        .btn-cancel .material-icons {
-            font-size: 1.1em;
-        }
-
-        /* General Filter Form Styles */
-        .filter-form {
-            display: flex;
-            gap: 16px;
-            align-items: flex-end;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .filter-input,
-        .filter-select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        .btn-filter {
-            padding: 8px 20px;
-            border-radius: 6px;
-            background: #009966;
-            color: #fff;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Header above table */
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .main-header h1 {
-            margin: 0;
-        }
-
-        .btn-add-room {
-            padding: 8px 20px;
-            border-radius: 6px;
-            background: #009966;
-            color: #fff;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        /* Tab container styles */
-        .tab-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .tab {
-            padding: 8px 24px;
-            border: none;
-            border-radius: 8px 8px 0 0;
-            background: #f4f7fc;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .tab.active {
-            background: #009966;
-            color: #fff;
-        }
-
-        /* Table action buttons */
-        .btn-action {
-            display: inline-flex;
-            /* To align icon and potential text */
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            padding: 4px;
-            /* Adjust as needed for spacing */
-            border-radius: 4px;
-            margin-right: 5px;
-            /* Spacing between buttons */
-        }
-
-        .btn-action .material-icons {
-            font-size: 1.2em;
-            /* Adjust icon size */
-        }
-
-        .btn-edit {
-            color: #2196F3;
-            /* Blue for edit */
-            /* Add hover/focus styles if desired */
-        }
-
-        .btn-delete {
-            color: #F44336;
-            /* Red for delete */
-            /* Add hover/focus styles if desired */
-        }
-
-        /* Media Queries (from previous response, now integrated) */
-        @media (max-width: 900px) {
-            .room-modal-flex {
-                flex-direction: column !important;
-                gap: 20px !important;
-                padding: 20px !important;
-            }
-
-            .modal-content-wrapper {
-                min-width: unset !important;
-                max-width: 95vw !important;
-                width: auto !important;
-                margin: 20px auto !important;
-            }
-
-            .modal-form {
-                padding: 0 !important;
-            }
-
-            .modal-header {
-                padding: 15px 20px 0 20px !important;
-            }
-
-            .room-image-upload-list-responsive {
-                flex-wrap: wrap;
-                justify-content: center !important;
-            }
-
-            .image-upload-section {
-                padding: 20px !important;
-            }
-
-            .modal-actions {
-                padding: 14px 20px !important;
-            }
-        }
-
-        /* Original styles from quanlyphong.css that might be needed or overridden */
-        .status-available {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-maintenance {
-            color: orange;
-            font-weight: bold;
-        }
-
-        .status-cleaning {
-            color: blue;
-            font-weight: bold;
-        }
-
-        .status-inuse {
-            color: #fff;
-            background: #ff9800;
-            font-weight: bold;
-            border-radius: 6px;
-            padding: 2px 10px;
-            display: inline-block;
-        }
-
-        /* Ensure the table itself is styled in quanlyphong.css if not already */
-        #roomTable {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        #roomTable th,
-        #roomTable td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        #roomTable th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        #roomTable tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        #roomTable tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .status-available {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .status-occupied {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .status-maintenance {
-            background: #e0e7ff;
-            color: #3730a3;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .status-cleaning {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-    </style>
 </head>
 
 <body>
@@ -527,15 +29,15 @@
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
-            <div class="tab-container">
-                <a th:href="@{/admin/rooms/room-types}" class="tab">Hạng phòng</a>
-                <a th:href="@{/admin/rooms}" class="tab active">Danh sách phòng</a>
-            </div>
+
             <div class="main-header">
                 <h1>Quản lý phòng</h1>
                 <button id="btnOpenAddRoomModal" class="btn-add-room">+ Thêm phòng</button>
             </div>
-
+            <div class="tab-container">
+                <a th:href="@{/admin/rooms/room-types}" class="tab" style="font-weight: bold;">Hạng phòng</a>
+                <a th:href="@{/admin/rooms}" class="tab active">Danh sách phòng</a>
+            </div>
             <!-- Modal thêm phòng mới -->
             <div id="addRoomModal" class="admin-modal-overlay">
                 <div class="admin-modal-content">
@@ -710,114 +212,89 @@
             <section class="content-section" id="contentSection">
                 <table aria-label="Danh sách phòng khách sạn" id="roomTable">
                     <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Số phòng</th>
-                            <th>Hạng phòng</th>
-                            <th>Tầng</th>
-                            <th>View</th>
-                            <th>Giá giờ</th>
-                            <th>Giá cả ngày</th>
-                            <th>Giá qua đêm</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
+                    <tr>
+                        <th>STT</th>
+                        <th>Số phòng</th>
+                        <th>Hạng phòng</th>
+                        <th>Tầng</th>
+                        <th>View</th>
+                        <th>Giá giờ</th>
+                        <th>Giá cả ngày</th>
+                        <th>Giá qua đêm</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
                     </thead>
                     <tbody id="roomTableBody">
-                        <tr th:if="${#lists.isEmpty(rooms)}">
-                            <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
-                                Không có dữ liệu phòng nào
-                            </td>
-                        </tr>
-                        <tr th:each="room, stat : ${rooms}" th:attr="data-id=${room.id}">
-                            <td th:text="${stat.count}">1</td>
-                            <td th:text="${room.soPhong}">101</td>
-                            <td th:text="${room.roomTypeName}">Standard</td>
-                            <td th:text="${room.tang}">1</td>
-                            <td th:text="${room.viewPhong}">City</td>
-                            <td
-                                th:text="${room.giaGio != null ? #numbers.formatDecimal(room.giaGio, 1, 'COMMA', 0, 'POINT') : '0'}">
-                                180,000</td>
-                            <td
-                                th:text="${room.giaNgay != null ? #numbers.formatDecimal(room.giaNgay, 1, 'COMMA', 0, 'POINT') : '0'}">
-                                720,000</td>
-                            <td
-                                th:text="${room.giaQuaDem != null ? #numbers.formatDecimal(room.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
-                                720,000</td>
-                            <td>
-                                <span th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
-                      room.trangThai == 'BAO_TRI' ? 'status-maintenance' :
-                      room.trangThai == 'DANG_SU_DUNG' ? 'status-occupied' : 'status-cleaning'}" th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
-                    room.trangThai == 'BAO_TRI' ? 'Bảo trì' :
-                    room.trangThai == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
-                    room.trangThai == 'DON_DEP' ? 'Dọn dẹp' : room.trangThai}">
-                                    Sẵn sàng
-                                </span>
-                            </td>
-                            <td>
-                                <button type="button" class="btn-action btn-edit" title="Sửa"
-                                    th:data-room-id="${room.id}">
-                                    <span class="material-icons">edit</span>
-                                </button>
-                                <a th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" class="btn-action btn-delete"
-                                    title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
-                                    <span class="material-icons">delete</span>
-                                </a>
-                            </td>
-                        </tr>
+                    <tr th:if="${#lists.isEmpty(rooms)}">
+                        <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+                            Không có dữ liệu phòng nào
+                        </td>
+                    </tr>
+                    <tr th:each="room, stat : ${rooms}" th:attr="data-id=${room.id}">
+                        <td th:text="${stat.count}">1</td>
+                        <td th:text="${room.soPhong}">101</td>
+                        <td th:text="${room.roomTypeName}">Standard</td>
+                        <td th:text="${room.tang}">1</td>
+                        <td th:text="${room.viewPhong}">City</td>
+                        <td th:text="${room.giaGio != null ? #numbers.formatDecimal(room.giaGio, 1, 'COMMA', 0, 'POINT') : '0'}">
+                            180,000</td>
+                        <td th:text="${room.giaNgay != null ? #numbers.formatDecimal(room.giaNgay, 1, 'COMMA', 0, 'POINT') : '0'}">
+                            720,000</td>
+                        <td th:text="${room.giaQuaDem != null ? #numbers.formatDecimal(room.giaQuaDem, 1, 'COMMA', 0, 'POINT') : '0'}">
+                            720,000</td>
+                        <td>
+                    <span th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
+                        room.trangThai == 'BAO_TRI' ? 'status-maintenance' :
+                        room.trangThai == 'DANG_SU_DUNG' ? 'status-occupied' : 'status-cleaning'}" th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
+                        room.trangThai == 'BAO_TRI' ? 'Bảo trì' :
+                        room.trangThai == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
+                        room.trangThai == 'DON_DEP' ? 'Dọn dẹp' : room.trangThai}">
+                        Sẵn sàng
+                    </span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn-action btn-edit" title="Sửa" th:data-room-id="${room.id}">
+                                <span class="material-icons">edit</span>
+                            </button>
+                            <a th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" class="btn-action btn-delete"
+                               title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
+                                <span class="material-icons">delete</span>
+                            </a>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
 
-                <!-- Khu vực hiển thị chi tiết phòng -->
-                <div id="room-detail-panel"
-                    style="display:none; margin: 32px 0; padding: 24px; background: #f8f9fa; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                    <!-- Nội dung chi tiết phòng sẽ được render ở đây bằng JS -->
-                </div>
-
-                <!-- Phân trang - Luôn hiển thị -->
-                <div class="pagination-container"
-                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; padding: 20px; border-top: 1px solid #eee;">
-                    <!-- Nút Previous, Số trang, Nút Next giữ nguyên như cũ -->
-                    <div style="display: flex; gap: 2px; align-items: center; margin-bottom: 8px;">
-                        <!-- Nút Previous -->
+                <div th:if="${totalItems > 0}" id="room-pagination-container" class="pagination-container">
+                    <div class="pagination-buttons">
                         <a th:if="${hasPrevious}"
-                            th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage - 1}, size=${pageSize})}"
-                            class="pagination-btn"
-                            style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
+                           th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage - 1}, size=${pageSize})}"
+                           class="pagination-btn">
                             &laquo; Trước
                         </a>
-                        <span th:unless="${hasPrevious}" class="pagination-btn disabled"
-                            style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
-                            &laquo; Trước
-                        </span>
-                        <!-- Số trang -->
-                        <div class="pagination-numbers" style="display: flex; gap: 2px;">
+                        <span th:unless="${hasPrevious}" class="pagination-btn disabled">
+                &laquo; Trước
+            </span>
+                        <div class="pagination-numbers">
                             <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                                th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${pageNum}, size=${pageSize})}"
-                                th:text="${pageNum + 1}"
-                                th:class="${pageNum == currentPage ? 'pagination-btn active' : 'pagination-btn'}"
-                                style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px; min-width: 40px; text-align: center;">
+                               th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${pageNum}, size=${pageSize})}"
+                               th:text="${pageNum + 1}"
+                               th:class="${pageNum == currentPage ? 'pagination-btn active' : 'pagination-btn'}">
                             </a>
                         </div>
-                        <!-- Nút Next -->
                         <a th:if="${hasNext}"
-                            th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage + 1}, size=${pageSize})}"
-                            class="pagination-btn"
-                            style="padding: 8px 12px; border: 1px solid #ddd; background: #fff; color: #333; text-decoration: none; border-radius: 4px; margin: 0 2px;">
+                           th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage + 1}, size=${pageSize})}"
+                           class="pagination-btn">
                             Sau &raquo;
                         </a>
-                        <span th:unless="${hasNext}" class="pagination-btn disabled"
-                            style="padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5; color: #999; border-radius: 4px; margin: 0 2px; cursor: not-allowed;">
-                            Sau &raquo;
-                        </span>
+                        <span th:unless="${hasNext}" class="pagination-btn disabled">
+                Sau &raquo;
+            </span>
                     </div>
-                    <!-- Thông tin trang ở dưới -->
-                    <div class="pagination-info"
-                        style="color: #666; font-size: 14px; text-align: center; margin-top: 4px;">
-                        Hiển thị <span
-                            th:text="${#numbers.formatInteger(currentPage * pageSize + 1, 1, 'COMMA')}">1</span> -
-                        <span
-                            th:text="${#numbers.formatInteger(T(java.lang.Math).min(((currentPage + 1) * pageSize).longValue(), totalItems), 1, 'COMMA')}">5</span>
+                    <div class="pagination-info">
+                        Hiển thị <span th:text="${#numbers.formatInteger(currentPage * pageSize + 1, 1, 'COMMA')}">1</span> -
+                        <span th:text="${#numbers.formatInteger(T(java.lang.Math).min(((currentPage + 1) * pageSize).longValue(), totalItems), 1, 'COMMA')}">5</span>
                         của <span th:text="${#numbers.formatInteger(totalItems, 1, 'COMMA')}">10</span> phòng
                     </div>
                 </div>
@@ -1081,312 +558,8 @@
             };
         })();
     </script>
-    <style>
-        #addRoomModal.admin-modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.35);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .admin-modal-content {
-            background: #fff;
-            border-radius: 18px;
-            min-width: 340px;
-            max-width: 680px;
-            width: 96vw;
-            max-height: 92vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .admin-modal-form {
-            display: flex;
-            flex-direction: column;
-            flex: 1 1 auto;
-            min-height: 0;
-        }
-
-        .admin-modal-header {
-            border-bottom: 1px solid #eee;
-            padding: 20px 28px 0 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .admin-modal-title {
-            margin: 0;
-            font-size: 1.4em;
-            font-weight: 700;
-            text-align: center;
-            flex: 1;
-            letter-spacing: 0.5px;
-            color: #222;
-        }
-
-        .admin-modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #888;
-            cursor: pointer;
-        }
-
-        .admin-modal-form {
-            padding: 0;
-        }
-
-        .admin-modal-flex {
-            display: flex;
-            gap: 24px;
-            padding: 24px 28px 0 28px;
-            align-items: flex-start;
-        }
-
-        .admin-modal-form-col {
-            flex: 6;
-            min-width: 180px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .admin-modal-form-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-modal-label {
-            width: 110px;
-            font-weight: 600;
-        }
-
-        /* CSS cho phân trang */
-        .pagination-container {
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .pagination-btn {
-            transition: all 0.2s ease;
-        }
-
-        .pagination-btn:hover {
-            background: #f0f0f0 !important;
-            border-color: #ccc !important;
-            transform: translateY(-1px);
-        }
-
-        .pagination-btn.active {
-            background: #009966 !important;
-            color: white !important;
-            border-color: #009966 !important;
-            font-weight: bold;
-        }
-
-        .pagination-btn.disabled {
-            cursor: not-allowed !important;
-        }
-
-        .pagination-btn.disabled:hover {
-            background: #f5f5f5 !important;
-            transform: none;
-        }
-
-        .pagination-numbers {
-            display: flex;
-            gap: 2px;
-            align-items: center;
-        }
-
-        .admin-modal-label.required {
-            color: #e53935;
-        }
-
-        .admin-modal-input,
-        .admin-modal-select {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1.2px solid #e0e0e0;
-            font-size: 1em;
-            background: #fff;
-            transition: border 0.2s;
-            outline: none;
-        }
-
-        .admin-modal-input:focus,
-        .admin-modal-select:focus {
-            border-color: #4fc3f7;
-        }
-
-        .admin-modal-btn-add {
-            background: #f5f5f5;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 10px;
-            margin-left: 4px;
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-
-        .admin-modal-icon {
-            color: #888;
-            font-size: 1.2em;
-            margin-left: 4px;
-        }
-
-        .admin-modal-price-col {
-            flex: 4;
-            min-width: 180px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .admin-modal-price-box {
-            background: #f5f6fa;
-            border-radius: 12px;
-            padding: 18px 20px;
-            font-size: 1em;
-            color: #444;
-            width: 100%;
-        }
-
-        .admin-modal-price-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .admin-modal-price-list {
-            margin: 0 0 0 18px;
-            padding: 0;
-            font-size: 0.98em;
-            color: #444;
-        }
-
-        .admin-modal-image-section {
-            padding: 24px 28px 0 28px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .admin-modal-btn-save-add {
-            background: #00b86b;
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            padding: 8px 18px;
-            font-weight: 700;
-            font-size: 1em;
-            letter-spacing: 0.2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .admin-modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 12px;
-            border-top: 1px solid #eee;
-            margin-top: auto;
-            padding: 16px 28px 16px 28px;
-            background: #fff;
-        }
-
-        .admin-modal-btn-save,
-        .admin-modal-btn-save-add,
-        .admin-modal-btn-cancel {
-            border: none;
-            border-radius: 7px;
-            padding: 8px 18px;
-            font-weight: 700;
-            font-size: 1em;
-            letter-spacing: 0.2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .admin-modal-btn-save {
-            background: #009966;
-        }
-
-        .admin-modal-btn-save:hover {
-            background: #007d4e;
-        }
-
-        .admin-modal-btn-save-add {
-            background: #00b86b;
-        }
-
-        .admin-modal-btn-cancel {
-            background: #888;
-            font-weight: 600;
-        }
-
-        .admin-modal-btn-save-add:hover,
-        .admin-modal-btn-cancel:hover {
-            filter: brightness(0.95);
-        }
-
-        .admin-modal-btn-save .material-icons,
-        .admin-modal-btn-save-add .material-icons,
-        .admin-modal-btn-cancel .material-icons {
-            font-size: 1.1em;
-        }
-
-        @media (max-width: 600px) {
-            .admin-modal-content {
-                max-width: 99vw;
-                min-width: 0;
-                width: 99vw;
-            }
-
-            .admin-modal-flex {
-                flex-direction: column;
-                gap: 18px;
-                padding: 14px 8px 0 8px;
-            }
-
-            .admin-modal-form-col,
-            .admin-modal-price-col {
-                min-width: 0;
-            }
-
-            .admin-modal-header {
-                padding: 14px 8px 0 8px;
-            }
-
-            .admin-modal-image-section {
-                padding: 14px 8px 0 8px;
-            }
-
-            .admin-modal-actions {
-                padding: 12px 8px 12px 8px;
-                gap: 8px;
-            }
-        }
-    </style>
+<script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>

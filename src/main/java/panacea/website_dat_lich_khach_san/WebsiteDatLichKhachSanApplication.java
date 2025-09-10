@@ -59,6 +59,7 @@ public class WebsiteDatLichKhachSanApplication {
         standardRoom.setSucChuaToiDa((byte) 2);
         standardRoom.setMoTa("Phòng tiêu chuẩn với đầy đủ tiện nghi hiện đại");
         standardRoom.setTienNghi("WiFi, TV, Điều hòa, Tủ lạnh mini");
+        standardRoom.setHotel(hotel); // Set hotel relationship
         standardRoom = roomTypeRepository.save(standardRoom);
 
         RoomType deluxeRoom = new RoomType();
@@ -70,6 +71,7 @@ public class WebsiteDatLichKhachSanApplication {
         deluxeRoom.setSucChuaToiDa((byte) 3);
         deluxeRoom.setMoTa("Phòng deluxe rộng rãi với view đẹp");
         deluxeRoom.setTienNghi("WiFi, TV, Điều hòa, Tủ lạnh mini, Bồn tắm");
+        deluxeRoom.setHotel(hotel); // Set hotel relationship
         deluxeRoom = roomTypeRepository.save(deluxeRoom);
 
         RoomType suiteRoom = new RoomType();
@@ -81,6 +83,7 @@ public class WebsiteDatLichKhachSanApplication {
         suiteRoom.setSucChuaToiDa((byte) 4);
         suiteRoom.setMoTa("Phòng suite cao cấp với không gian riêng biệt");
         suiteRoom.setTienNghi("WiFi, TV, Điều hòa, Tủ lạnh mini, Bồn tắm, Phòng khách");
+        suiteRoom.setHotel(hotel); // Set hotel relationship
         suiteRoom = roomTypeRepository.save(suiteRoom);
 
         // Tạo phòng mẫu
