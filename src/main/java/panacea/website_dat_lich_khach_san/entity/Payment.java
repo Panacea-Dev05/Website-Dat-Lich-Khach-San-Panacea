@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "PAYMENT")
@@ -37,6 +38,7 @@ public class Payment {
     @Column(name = "ma_thanh_toan", length = 20, nullable = false, unique = true)
     private String maThanhToan;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dat_phong_id", nullable = false)
     private Booking booking;

@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -53,6 +54,7 @@ public class ServiceEntity {
     private Long lastModifiedDate;
 
     // Relationships
+    @JsonIgnore
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServiceDetail> serviceDetails;
 

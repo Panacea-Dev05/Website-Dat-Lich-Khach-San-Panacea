@@ -62,12 +62,16 @@ public class KhachHangController {
     // Trang chi tiết phòng
     @GetMapping("/single-room")
     public String roomDetail(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("roomType", khachHangService.getRoomTypeDTOById(id));
+        var roomType = khachHangService.getRoomTypeDTOById(id);
+        model.addAttribute("roomType", roomType);
+        model.addAttribute("room", roomType); // Thêm room để template có thể truy cập donGia
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
     }
 
     public String roomDetail() {
-        return "KhachHang/hotel-resort/single-room";
+        // Trả về trang mặc định với room type id = 1
+        var roomType = khachHangService.getRoomTypeDTOById(1);
+        return "redirect:/khachhang/single-room?id=1";
     }
 
     // Trang chi tiết phòng (alias)
@@ -190,6 +194,16 @@ public class KhachHangController {
         return "KhachHang/hotel-resort/comming";
     }
 
+    // Trang quản lý booking của khách hàng
+    @GetMapping("/my-bookings")
+    public String myBookings(@RequestParam(required = false) String email, Model model) {
+        if (email != null && !email.isEmpty()) {
+            model.addAttribute("bookings", khachHangService.getBookingsByEmail(email));
+            model.addAttribute("customerEmail", email);
+        }
+        return "KhachHang/MyBookings";
+    }
+
     // Đặt phòng qua AJAX (JSON)
     @PostMapping(value = "/single-room/booking", consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -211,13 +225,12 @@ public class KhachHangController {
     // Trang chi tiết phòng động theo id loại phòng
     @GetMapping("/single-room/{roomTypeId}")
     public String roomDetailByType(@PathVariable Integer roomTypeId, Model model) {
-        var roomType = khachHangService.getRoomTypeById(roomTypeId);
+        var roomType = khachHangService.getRoomTypeDTOById(roomTypeId);
         if (roomType == null) {
             return "KhachHang/hotel-resort/404";
         }
         model.addAttribute("roomType", roomType);
-        var roomBasePrice = khachHangService.getRoomBasePriceByRoomTypeId(roomTypeId);
-        model.addAttribute("roomBasePrice", roomBasePrice);
+        model.addAttribute("room", roomType); // Thêm room để template có thể truy cập donGia
         return "KhachHang/hotel-resort/single-room";
     }
 }

@@ -2,11 +2,13 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import panacea.website_dat_lich_khach_san.entity.CancellationPolicy;
 
 @Entity
 @Table(name = "BOOKING")
@@ -75,6 +77,9 @@ public class Booking {
     @Column(name = "ghi_chu_khach_hang", length = 500)
     private String ghiChuKhachHang;
 
+    @Column(name = "yeu_cau_dac_biet", length = 1000)
+    private String yeuCauDacBiet;
+
     @Column(name = "ghi_chu_noi_bo", length = 500)
     private String ghiChuNoiBo;
 
@@ -120,13 +125,26 @@ public class Booking {
     @Column(name = "ghi_chu_checkin", length = 500)
     private String ghiChuCheckIn;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cancellation_policy", length = 20)
+    private CancellationPolicy cancellationPolicy = CancellationPolicy.MODERATE;
+
+    @Column(name = "refund_amount", precision = 15, scale = 2)
+    private BigDecimal refundAmount = BigDecimal.ZERO;
+
+    @Column(name = "cancellation_fee", precision = 15, scale = 2)
+    private BigDecimal cancellationFee = BigDecimal.ZERO;
+
     // Relationships
+    @JsonIgnore
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServiceDetail> serviceDetails;
 
@@ -176,6 +194,30 @@ public class Booking {
             }
             throw new IllegalArgumentException("Giá trị không hợp lệ cho TrangThaiThanhToan: " + input);
         }
+    }
+
+    public CancellationPolicy getCancellationPolicy() {
+        return cancellationPolicy;
+    }
+
+    public void setCancellationPolicy(CancellationPolicy cancellationPolicy) {
+        this.cancellationPolicy = cancellationPolicy;
+    }
+
+    public BigDecimal getRefundAmount() {
+        return refundAmount;
+    }
+
+    public void setRefundAmount(BigDecimal refundAmount) {
+        this.refundAmount = refundAmount;
+    }
+
+    public BigDecimal getCancellationFee() {
+        return cancellationFee;
+    }
+
+    public void setCancellationFee(BigDecimal cancellationFee) {
+        this.cancellationFee = cancellationFee;
     }
 
     @PrePersist

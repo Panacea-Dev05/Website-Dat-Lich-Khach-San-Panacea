@@ -55,9 +55,9 @@
                             th:selected="${view == room.viewPhong}"></option>
                     </select>
 
-                    <label for="giaCoBan">Giá cơ bản (VNĐ)</label>
+                    <label for="giaCoBan" style="display: none;">Giá cơ bản (VNĐ)</label>
                     <input type="number" id="giaCoBan" name="giaCoBan" th:value="${room.giaCoBan}" required min="0"
-                        step="1000" placeholder="1200000" />
+                        step="1000" placeholder="1200000" style="display: none;" />
 
                     <label for="trangThai">Trạng thái</label>
                     <select id="trangThai" name="trangThai" required>

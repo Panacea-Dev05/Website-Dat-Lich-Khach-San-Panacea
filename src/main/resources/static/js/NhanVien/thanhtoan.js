@@ -49,6 +49,48 @@ function loadInitialData() {
     console.log('Trang thanh toán đã được khởi tạo');
 }
 
+// Cập nhật thông tin chi tiết thanh toán khi chọn booking
+function updatePaymentInfo() {
+    const bookingSelect = document.getElementById('bookingId');
+    const selectedOption = bookingSelect.options[bookingSelect.selectedIndex];
+    const paymentDetails = document.getElementById('paymentDetails');
+    
+    if (selectedOption.value === '' || selectedOption.disabled) {
+        paymentDetails.style.display = 'none';
+        return;
+    }
+    
+    // Lấy dữ liệu từ data attributes
+    const roomTotal = parseFloat(selectedOption.getAttribute('data-room-total')) || 0;
+    const serviceTotal = parseFloat(selectedOption.getAttribute('data-service-total')) || 0;
+    const deposit = parseFloat(selectedOption.getAttribute('data-deposit')) || 0;
+    const paymentTotal = parseFloat(selectedOption.getAttribute('data-payment-total')) || 0;
+    
+    // Cập nhật hiển thị
+    document.getElementById('roomTotal').textContent = formatCurrency(roomTotal);
+    document.getElementById('serviceTotal').textContent = formatCurrency(serviceTotal);
+    document.getElementById('depositAmount').textContent = formatCurrency(deposit);
+    document.getElementById('totalPayment').textContent = formatCurrency(paymentTotal);
+    
+    // Tự động điền số tiền cần thanh toán và không cho phép thay đổi
+    const soTienInput = document.getElementById('soTien');
+    soTienInput.value = paymentTotal;
+    soTienInput.setAttribute('readonly', true);
+    soTienInput.style.backgroundColor = '#f3f4f6';
+    soTienInput.style.cursor = 'not-allowed';
+    
+    // Hiển thị phần chi tiết
+    paymentDetails.style.display = 'block';
+}
+
+// Format số tiền thành định dạng VND
+function formatCurrency(amount) {
+    if (isNaN(amount) || amount === null || amount === undefined) {
+        return '0 VND';
+    }
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' VND';
+}
+
 // Tạo thanh toán mới
 function createPayment() {
     const formData = {

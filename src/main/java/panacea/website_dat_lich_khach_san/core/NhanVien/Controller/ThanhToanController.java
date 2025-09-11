@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/nhanvien/thanhtoan")
@@ -30,11 +31,30 @@ public class ThanhToanController {
     
     @GetMapping("")
     public String view(Model model) {
-        model.addAttribute("staffName", thanhToanService.getStaffName());
-        model.addAttribute("payments", thanhToanService.getAllPayments());
-        model.addAttribute("bookings", thanhToanService.getActiveBookings());
-        model.addAttribute("phuongThucList", thanhToanService.getPaymentMethods());
-        return "NhanVien/ThanhToan";
+        try {
+            model.addAttribute("staffName", thanhToanService.getStaffName());
+            
+            List<Payment> payments = thanhToanService.getAllPayments();
+            model.addAttribute("payments", payments);
+            
+            List<Booking> bookings = thanhToanService.getActiveBookings();
+            model.addAttribute("bookings", bookings);
+            
+            // Thêm map để tính toán tổng tiền cần thanh toán cho mỗi booking
+            Map<Integer, BigDecimal> bookingTotalAmounts = new java.util.HashMap<>();
+            for (Booking booking : bookings) {
+                BigDecimal totalAmount = thanhToanService.calculateTotalPaymentAmount(booking.getId());
+                bookingTotalAmounts.put(booking.getId(), totalAmount);
+            }
+            model.addAttribute("bookingTotalAmounts", bookingTotalAmounts);
+            
+            model.addAttribute("phuongThucList", thanhToanService.getPaymentMethods());
+            return "NhanVien/ThanhToan";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Có lỗi xảy ra khi tải trang thanh toán");
+            return "NhanVien/ThanhToan";
+        }
     }
     
     // API: Tạo thanh toán tại quầy (nhân viên chỉ được tạo thanh toán cash)

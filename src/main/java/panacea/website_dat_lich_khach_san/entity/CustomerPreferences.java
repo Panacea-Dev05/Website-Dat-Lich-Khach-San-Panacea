@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalTime;
 import java.util.UUID;
@@ -29,10 +30,12 @@ public class CustomerPreferences {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "khach_hang_id", nullable = false, unique = true)
     private Customer khachHang;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "loai_phong_uu_thien")
     private RoomType loaiPhongUuThien;

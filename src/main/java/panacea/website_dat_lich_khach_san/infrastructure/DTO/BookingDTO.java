@@ -27,6 +27,7 @@ public class BookingDTO {
     private String trangThaiDatPhong;
     private String trangThaiThanhToan;
     private String ghiChuKhachHang;
+    private String yeuCauDacBiet; // Yêu cầu đặc biệt từ khách hàng
     private String ghiChuNoiBo;
     private LocalDateTime ngayDat;
     private LocalDateTime ngayXacNhan;
@@ -94,4 +95,4 @@ public class BookingDTO {
     public void setTenNhanVienTao(String tenNhanVienTao) {
         this.tenNhanVienTao = tenNhanVienTao;
     }
-} 
+}

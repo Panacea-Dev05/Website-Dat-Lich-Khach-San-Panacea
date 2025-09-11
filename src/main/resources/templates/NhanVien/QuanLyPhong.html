@@ -37,7 +37,7 @@
                             <th>Hạng phòng</th>
                             <th>Tầng</th>
                             <th>View</th>
-                            <th>Giá cơ bản</th>
+                            <th style="display: none;">Giá cơ bản</th>
                             <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
@@ -50,7 +50,7 @@
                             <td th:text="${room.roomTypeName}">Standard</td>
                             <td th:text="${room.tang}">1</td>
                             <td th:text="${room.viewPhong}">City</td>
-                            <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                            <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" style="display: none;">
                                 1,200,000 VNĐ</td>
                             <td>
                                 <span

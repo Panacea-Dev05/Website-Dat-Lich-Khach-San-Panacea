@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByTrangThaiDatPhong(Booking.TrangThaiDatPhong trangThai);
+    List<Booking> findByKhachHang(panacea.website_dat_lich_khach_san.entity.Customer khachHang);
     Page<Booking> findAll(Pageable pageable);
-} 
+}

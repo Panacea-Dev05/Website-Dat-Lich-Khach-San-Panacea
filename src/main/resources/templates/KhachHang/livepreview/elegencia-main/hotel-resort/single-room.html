@@ -533,6 +533,26 @@
                                     <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                                 </div>
                                 <div class="form-group">
+                                    <input type="text" name="soCmndCccd" class="form-control booking-now-input custom-input-separated" placeholder="ID Card Number (CMND/CCCD)" required />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="diaChi" class="form-control booking-now-input custom-input-separated" placeholder="Address" required />
+                                </div>
+                                <div class="form-group">
+                                    <input type="date" name="ngaySinh" class="form-control booking-now-input custom-input-separated" placeholder="Date of Birth" />
+                                </div>
+                                <div class="form-group">
+                                    <select name="gioiTinh" class="form-control booking-now-input custom-input-separated">
+                                        <option value="">Select Gender</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="quocTich" class="form-control booking-now-input custom-input-separated" placeholder="Nationality" />
+                                </div>
+                                <div class="form-group">
                                     <label for="bookingType">Loại thuê:</label>
                                     <select id="bookingType" name="bookingType" class="form-control booking-now-input custom-input-separated" required>
                                         <option value="ngay">Theo ngày</option>
@@ -612,12 +632,43 @@
                                             value="Increase Value">+</div>
                                     </div>
                                 </div>
-                                    <div class="ak-height-35 ak-height-lg-20"></div>
-                                    <div class="ak-center">
-                                        <div class="ak-btn style-5 color-yellow-bg">
-                                            <button type="submit">Book Now</button>
-                                        </div>
+                                
+
+                                <div class="ak-height-50 ak-height-lg-30"></div>
+                                
+                                <!-- Special Requests Section -->
+                                <div class="form-group">
+                                    <h5 class="ak-white-color">Yêu cầu đặc biệt</h5>
+                                    <div class="ak-height-15 ak-height-lg-10"></div>
+                                    <textarea name="yeuCauDacBiet" class="form-control booking-now-input custom-input-separated" 
+                                              rows="3" placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy, view hồ bơi..."
+                                              style="resize: vertical; min-height: 80px;"></textarea>
+                                    <small class="text-muted" style="color: #ccc !important;">Chúng tôi sẽ cố gắng đáp ứng yêu cầu của bạn tùy theo tình trạng phòng trống</small>
+                                </div>
+                                <div class="ak-height-30 ak-height-lg-20"></div>
+                                
+                                <!-- Chọn loại giá -->
+                                <div class="form-group">
+                                    <h5 class="ak-white-color">Loại giá:</h5>
+                                    <div class="ak-height-15 ak-height-lg-10"></div>
+                                    <select name="loaiGia" id="priceType" class="form-control booking-now-input custom-input-separated" onchange="updatePrice()">
+                                        <option value="giaNgay" selected>Theo ngày</option>
+                                        <option value="giaGio">Theo giờ</option>
+                                        <option value="giaQuaDem">Qua đêm</option>
+                                    </select>
+                                </div>
+                                <div class="ak-height-20 ak-height-lg-10"></div>
+                                
+                                <div class="total">
+                                    <p class="text-total">Giá phòng:</p>
+                                    <h4 class="price" id="roomPrice" th:text="${#numbers.formatDecimal(room.giaNgay, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h4>
+                                </div>
+                                <div class="ak-height-35 ak-height-lg-20"></div>
+                                <div class="ak-center">
+                                    <div class="ak-btn style-5 color-yellow-bg">
+                                        <button type="submit">Book Now</button>
                                     </div>
+                                </div>
                                 </div>
                                 <div class="ak-height-50 ak-height-lg-30"></div>
                             </form>
@@ -923,14 +974,33 @@ if (bookingForm) {
     const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
     const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
     const soNguoiLon = parseInt(bookingForm.querySelector('input[name="soNguoiLon"]').value, 10) || 0;
+    const soTreEm = parseInt(bookingForm.querySelector('input[name="soTreEm"]').value, 10) || 0;
     const today = new Date();
     today.setHours(0,0,0,0);
     const nhanDate = new Date(ngayNhan);
     const traDate = new Date(ngayTra);
+    
     if (soNguoiLon < 1) {
       alert('Phải có ít nhất 1 người lớn!');
       if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
       return;
+    }
+    
+    // Kiểm tra sức chứa phòng và hiển thị thông báo
+    const tongSoKhach = soNguoiLon + soTreEm;
+    const sucChuaToiDa = 2; // Sức chứa tối đa mỗi phòng
+    
+    if (tongSoKhach > sucChuaToiDa) {
+      const soPhongCanThiet = Math.ceil(tongSoKhach / sucChuaToiDa);
+      const confirmMessage = `Bạn đặt cho ${tongSoKhach} khách nhưng mỗi phòng chỉ chứa tối đa ${sucChuaToiDa} người.\n\n` +
+                            `Hệ thống sẽ tự động phân bổ ${soPhongCanThiet} phòng cho bạn.\n` +
+                            `Tổng tiền sẽ được tính theo ${soPhongCanThiet} phòng.\n\n` +
+                            `Bạn có muốn tiếp tục đặt phòng không?`;
+      
+      if (!confirm(confirmMessage)) {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+        return;
+      }
     }
     if (nhanDate < today) {
       alert('Ngày nhận phòng phải từ hôm nay trở đi!');
@@ -1196,6 +1266,23 @@ function showLoginModal() {
 }
 function closeLoginModal() {
   document.getElementById('loginModal').style.display = 'none';
+}
+
+// Dữ liệu giá từ server
+const roomPrices = {
+    giaGio: /*[[${room.giaGio}]]*/ 0,
+    giaNgay: /*[[${room.giaNgay}]]*/ 0,
+    giaQuaDem: /*[[${room.giaQuaDem}]]*/ 0
+};
+
+function updatePrice() {
+    const priceType = document.getElementById('priceType').value;
+    const priceElement = document.getElementById('roomPrice');
+    const price = roomPrices[priceType] || 0;
+    
+    // Format số theo định dạng Việt Nam
+    const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+    priceElement.textContent = formattedPrice + ' VNĐ';
 }
 </script>
 </body>

@@ -74,6 +74,7 @@ public class HotelAmenities {
     private Long lastModifiedDate;
 
     // Relationships
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;

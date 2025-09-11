@@ -18,6 +18,7 @@
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/KhachHang/auth-styles.css}" />
 </head>
 
 <body>
@@ -132,6 +133,9 @@
                                 <li>
                                     <a th:href="@{/khachhang/about}">About</a>
                                 </li>
+                                <!-- <li>
+                                <a th:href="@{/khachhang/my-bookings}">Quản lý đặt phòng</a>
+                            </li> -->
                                 <li class="menu-item-has-children">
                                     <a th:href="@{/khachhang/rooms}">Room</a>
                                     <ul>
@@ -190,7 +194,23 @@
                                 </li>
                             </ul>
                         </div>
-
+                        <div class="ak-nav-auth">
+                            <div sec:authorize="!isAuthenticated()">
+                                <a href="/login" class="ak-btn ak-style1 ak-color1">Đăng nhập</a>
+                            </div>
+                            <div sec:authorize="isAuthenticated()" class="user-menu">
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fas fa-user"></i>
+                                        <span sec:authentication="name">User</span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/khachhang/my-bookings">Đặt phòng của tôi</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="logoutAndStay()">Đăng xuất</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -267,8 +287,9 @@
                         </div>
                         <div class="hero-checkig-from-section">
                             <div class="checkig-from">
+                                <!-- Thông tin đặt phòng cơ bản -->
                                 <div class="date-input-style1">
-                                    <input class="date-input" value="2023-07-22" type="date" name="date">
+                                    <input class="date-input" id="checkInDate" value="2023-07-22" type="date" name="checkInDate">
                                     <div class="date-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                             viewBox="0 0 25 25" fill="none">
@@ -287,7 +308,7 @@
                                     </div>
                                 </div>
                                 <div class="date-input-style1">
-                                    <input class="date-input" value="2023-07-22" type="date" name="date">
+                                    <input class="date-input" id="checkOutDate" value="2023-07-22" type="date" name="checkOutDate">
                                     <div class="date-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                             viewBox="0 0 25 25" fill="none">
@@ -306,11 +327,11 @@
                                     </div>
                                 </div>
                                 <div class="select-input-style1">
-                                    <select class="select-option">
-                                        <option selected="" value="1">Adult</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="select-option" id="adults">
+                                        <option selected="" value="1">1 Adult</option>
+                                        <option value="2">2 Adults</option>
+                                        <option value="3">3 Adults</option>
+                                        <option value="4">4 Adults</option>
                                     </select>
                                     <div class="select-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="10"
@@ -322,11 +343,11 @@
                                     </div>
                                 </div>
                                 <div class="select-input-style1">
-                                    <select class="select-option">
-                                        <option selected="" value="1">Children</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="select-option" id="children">
+                                        <option selected="" value="0">0 Children</option>
+                                        <option value="1">1 Child</option>
+                                        <option value="2">2 Children</option>
+                                        <option value="3">3 Children</option>
                                     </select>
                                     <div class="select-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="10"
@@ -337,9 +358,52 @@
                                         </svg>
                                     </div>
                                 </div>
+                                
+                                <!-- Thông tin khách hàng -->
+                                <div class="customer-info-section" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                                    <h4 style="color: #FFD28D; margin-bottom: 15px;">Thông tin khách hàng</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input type="text" id="firstName" placeholder="Họ" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" id="lastName" placeholder="Tên" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="email" id="email" placeholder="Email" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="tel" id="phone" placeholder="Số điện thoại" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" id="idCard" placeholder="CCCD/CMND" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="date" id="dateOfBirth" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <select id="gender" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                                <option value="">Chọn giới tính</option>
+                                                <option value="Nam">Nam</option>
+                                                <option value="Nữ">Nữ</option>
+                                                <option value="Khác">Khác</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" id="nationality" placeholder="Quốc tịch" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-12">
+                                            <input type="text" id="address" placeholder="Địa chỉ" class="form-control mb-3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px;">
+                                        </div>
+                                        <div class="col-12">
+                                            <textarea id="yeuCauDacBiet" placeholder="Yêu cầu đặc biệt (tùy chọn)" class="form-control mb-3" rows="3" style="background: rgba(255, 255, 255, 0.9); border: none; padding: 10px; resize: vertical;"></textarea>
+                                            <small style="color: #FFD28D;">* Vui lòng ghi rõ các yêu cầu đặc biệt như: phòng không hút thuốc, tầng cao, giường đôi/đơn, v.v.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="ak-btn style-5 color-yellow-bg">
-                                    <button type="submit">Check Availability
-                                    </button>
+                                    <button type="button" id="quickBookingBtn">Đặt phòng nhanh</button>
                                 </div>
                             </div>
                         </div>
@@ -403,7 +467,7 @@
                                 <div class="room-card-img">
                                     <img src="/css/KhachHang/assets/img/room_1.jpg" class="room-card-img-top" alt="...">
                                     <div class="room-card-img-btn">
-                                        <div class="text-btn">
+                                        <div class="text-btn" style="display: none;">
                                             <a th:href="@{/khachhang/room-detail}" class="text-btn1 text-uppercase">
                                                 <span th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,200,000 VNĐ</span>
                                             </a>
@@ -1269,6 +1333,152 @@
     <script th:src="@{/css/KhachHang/assets/js/plugins/ScrollToPlugin.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/plugins/gsap.min.js}"></script>
     <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
+    
+    <!-- Auth Dropdown Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            if (dropdownToggle && dropdownMenu) {
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+        
+        // Logout function that keeps user on current page
+        function logoutAndStay() {
+            const currentUrl = window.location.pathname + window.location.search;
+            window.location.href = '/custom-logout?returnUrl=' + encodeURIComponent(currentUrl);
+        }
+        
+        // Quick booking form functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickBookingBtn = document.getElementById('quickBookingBtn');
+            const customerInfoSection = document.querySelector('.customer-info-section');
+            let isFormExpanded = false;
+            
+            // Toggle customer info form
+            quickBookingBtn.addEventListener('click', function() {
+                if (!isFormExpanded) {
+                    // Show customer info form
+                    customerInfoSection.style.display = 'block';
+                    quickBookingBtn.textContent = 'Xác nhận đặt phòng';
+                    isFormExpanded = true;
+                } else {
+                    // Process booking
+                    processQuickBooking();
+                }
+            });
+            
+            function processQuickBooking() {
+                // Validate required fields
+                const checkInDate = document.getElementById('checkInDate').value;
+                const checkOutDate = document.getElementById('checkOutDate').value;
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                
+                if (!checkInDate || !checkOutDate || !firstName || !lastName || !email || !phone) {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                    return;
+                }
+                
+                // Validate dates
+                const checkIn = new Date(checkInDate);
+                const checkOut = new Date(checkOutDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (checkIn < today) {
+                    alert('Ngày nhận phòng không thể là ngày trong quá khứ!');
+                    return;
+                }
+                
+                if (checkOut <= checkIn) {
+                    alert('Ngày trả phòng phải sau ngày nhận phòng!');
+                    return;
+                }
+                
+                // Collect all form data
+                const bookingData = {
+                    checkInDate: checkInDate,
+                    checkOutDate: checkOutDate,
+                    adults: document.getElementById('adults').value,
+                    children: document.getElementById('children').value,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phone: phone,
+                    idCard: document.getElementById('idCard').value,
+                    address: document.getElementById('address').value,
+                    dateOfBirth: document.getElementById('dateOfBirth').value,
+                    gender: document.getElementById('gender').value,
+                    nationality: document.getElementById('nationality').value,
+                    yeuCauDacBiet: document.getElementById('yeuCauDacBiet').value
+                };
+                
+                // Show loading
+                quickBookingBtn.textContent = 'Đang xử lý...';
+                quickBookingBtn.disabled = true;
+                
+                // Send booking request
+                fetch('/khachhang/api/quick-booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookingData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Đặt phòng thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.');
+                        resetQuickBookingForm();
+                    } else {
+                        alert('Có lỗi xảy ra: ' + (data.message || 'Vui lòng thử lại sau.'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại sau.');
+                })
+                .finally(() => {
+                    quickBookingBtn.textContent = 'Đặt phòng nhanh';
+                    quickBookingBtn.disabled = false;
+                });
+            }
+            
+            function resetQuickBookingForm() {
+                // Reset form
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('idCard').value = '';
+                document.getElementById('address').value = '';
+                document.getElementById('dateOfBirth').value = '';
+                document.getElementById('gender').value = '';
+                document.getElementById('nationality').value = '';
+                document.getElementById('yeuCauDacBiet').value = '';
+                
+                // Hide customer info section
+                customerInfoSection.style.display = 'none';
+                quickBookingBtn.textContent = 'Đặt phòng nhanh';
+                isFormExpanded = false;
+            }
+        });
+    </script>
 </body>
 
 

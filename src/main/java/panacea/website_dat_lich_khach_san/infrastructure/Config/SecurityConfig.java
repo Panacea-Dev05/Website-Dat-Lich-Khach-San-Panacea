@@ -73,7 +73,12 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService()))
                         .defaultSuccessUrl("/api/auth/current-role", true)
                 )
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout"));
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/khachhang")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                );
         return http.build();
     }
 

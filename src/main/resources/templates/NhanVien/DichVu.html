@@ -222,86 +222,86 @@
             </div>
 
             <!-- Đặt dịch vụ cho booking -->
-            <div class="section service-booking-section">
-                <div class="success-message" id="successMessage">
-                    Dịch vụ đã được thêm thành công!
-                </div>
+<!--            <div class="section service-booking-section" style="display: none;">-->
+<!--                <div class="success-message" id="successMessage">-->
+<!--                    Dịch vụ đã được thêm thành công!-->
+<!--                </div>-->
 
-                <div class="section-header">
-                    <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>
-                    <p class="section-description">Thêm dịch vụ cho booking đã có sẵn trong hệ thống</p>
-                </div>
+<!--                <div class="section-header">-->
+<!--                    <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>-->
+<!--                    <p class="section-description">Thêm dịch vụ cho booking đã có sẵn trong hệ thống</p>-->
+<!--                </div>-->
 
-                <form id="serviceBookingForm" class="service-booking-form"
-                    th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="bookingId" class="form-label">
-                                <span class="material-icons">book_online</span>
-                                Booking ID
-                            </label>
-                            <select id="bookingId" name="bookingId" class="form-control" required>
-                                <option value="" disabled selected>Chọn mã booking...</option>
-                                <option th:each="bk : ${bookings}" th:value="${bk.id}"
-                                    th:text="|Booking #${bk.id} - ${bk.khachHang?.ho} ${bk.khachHang?.ten}|"></option>
-                            </select>
-                            <div class="form-feedback"></div>
-                        </div>
+<!--                <form id="serviceBookingForm" class="service-booking-form"-->
+<!--                    th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">-->
+<!--                    <div class="form-grid">-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="bookingId" class="form-label">-->
+<!--                                <span class="material-icons">book_online</span>-->
+<!--                                Booking ID-->
+<!--                            </label>-->
+<!--                            <select id="bookingId" name="bookingId" class="form-control" required>-->
+<!--                                <option value="" disabled selected>Chọn mã booking...</option>-->
+<!--                                <option th:each="bk : ${bookings}" th:value="${bk.id}"-->
+<!--                                    th:text="|Booking #${bk.id} - ${bk.khachHang?.ho} ${bk.khachHang?.ten}|"></option>-->
+<!--                            </select>-->
+<!--                            <div class="form-feedback"></div>-->
+<!--                        </div>-->
 
-                        <div class="form-group">
-                            <label for="dichVuId" class="form-label">
-                                <span class="material-icons">room_service</span>
-                                Dịch vụ
-                            </label>
-                            <select id="dichVuId" name="dichVuId" class="form-control" required>
-                                <option value="" disabled selected>Chọn dịch vụ...</option>
-                                <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:data-price="${dv.donGia}"
-                                    th:text="|${dv.tenDichVu} - ${#numbers.formatDecimal(dv.donGia, 0, 'COMMA', 0, 'POINT')} VNĐ|">
-                                </option>
-                            </select>
-                            <div class="form-feedback"></div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label for="dichVuId" class="form-label">-->
+<!--                                <span class="material-icons">room_service</span>-->
+<!--                                Dịch vụ-->
+<!--                            </label>-->
+<!--                            <select id="dichVuId" name="dichVuId" class="form-control" required>-->
+<!--                                <option value="" disabled selected>Chọn dịch vụ...</option>-->
+<!--                                <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:data-price="${dv.donGia}"-->
+<!--                                    th:text="|${dv.tenDichVu} - ${#numbers.formatDecimal(dv.donGia, 0, 'COMMA', 0, 'POINT')} VNĐ|">-->
+<!--                                </option>-->
+<!--                            </select>-->
+<!--                            <div class="form-feedback"></div>-->
+<!--                        </div>-->
 
-                        <div class="form-group">
-                            <label for="soLuong" class="form-label">
-                                <span class="material-icons">format_list_numbered</span>
-                                Số lượng
-                            </label>
-                            <input type="number" id="soLuong" name="soLuong" class="form-control" min="1" max="100"
-                                value="1" required>
-                            <div class="form-feedback"></div>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label for="soLuong" class="form-label">-->
+<!--                                <span class="material-icons">format_list_numbered</span>-->
+<!--                                Số lượng-->
+<!--                            </label>-->
+<!--                            <input type="number" id="soLuong" name="soLuong" class="form-control" min="1" max="100"-->
+<!--                                value="1" required>-->
+<!--                            <div class="form-feedback"></div>-->
+<!--                        </div>-->
 
-                        <div class="form-group">
-                            <label for="thoiGianSuDung" class="form-label">
-                                <span class="material-icons">schedule</span>
-                                Thời gian sử dụng
-                            </label>
-                            <input type="datetime-local" id="thoiGianSuDung" name="thoiGianSuDung" class="form-control"
-                                required>
-                            <div class="form-feedback"></div>
-                        </div>
-                    </div>
+<!--                        <div class="form-group">-->
+<!--                            <label for="thoiGianSuDung" class="form-label">-->
+<!--                                <span class="material-icons">schedule</span>-->
+<!--                                Thời gian sử dụng-->
+<!--                            </label>-->
+<!--                            <input type="datetime-local" id="thoiGianSuDung" name="thoiGianSuDung" class="form-control"-->
+<!--                                required>-->
+<!--                            <div class="form-feedback"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="price-preview">
-                        <div class="price-info">
-                            <span class="price-label">Tổng tiền dự kiến:</span>
-                            <span id="totalPrice" class="price-value">0 VNĐ</span>
-                        </div>
-                    </div>
+<!--                    <div class="price-preview">-->
+<!--                        <div class="price-info">-->
+<!--                            <span class="price-label">Tổng tiền dự kiến:</span>-->
+<!--                            <span id="totalPrice" class="price-value">0 VNĐ</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="form-actions">
-                        <button type="reset" class="btn btn-secondary">
-                            <span class="material-icons">refresh</span>
-                            Làm mới
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <span class="material-icons">add_circle</span>
-                            Thêm dịch vụ
-                        </button>
-                    </div>
-                </form>
-            </div>
+<!--                    <div class="form-actions">-->
+<!--                        <button type="reset" class="btn btn-secondary">-->
+<!--                            <span class="material-icons">refresh</span>-->
+<!--                            Làm mới-->
+<!--                        </button>-->
+<!--                        <button type="submit" class="btn btn-primary">-->
+<!--                            <span class="material-icons">add_circle</span>-->
+<!--                            Thêm dịch vụ-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
 
             <!-- Danh sách dịch vụ đã đặt -->
             <div class="section service-list-section">
