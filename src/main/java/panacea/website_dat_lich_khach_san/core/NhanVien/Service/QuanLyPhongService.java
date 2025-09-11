@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomCreateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeCreateDTO;
@@ -17,6 +18,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestExc
 import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,6 +33,9 @@ public class QuanLyPhongService {
     
     @Autowired
     private RoomTypeRepository roomTypeRepository;
+    
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepository;
     
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -202,24 +207,43 @@ public class QuanLyPhongService {
     public RoomTypeDTO getRoomTypeById(Integer id) {
         RoomType roomType = roomTypeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + id));
-        return RoomTypeDTO.fromEntity(roomType);
+        // Lấy pricing information
+        List<RoomPricing> pricings = roomPricingRepository.findAll().stream()
+                .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(id))
+                .collect(Collectors.toList());
+        return RoomTypeDTO.fromEntityWithPricing(roomType, pricings);
     }
     
     public List<RoomTypeDTO> searchRoomTypesByTenLoaiPhong(String tenLoaiPhong) {
         return roomTypeRepository.findByTenLoaiPhongContaining(tenLoaiPhong).stream()
-                .map(RoomTypeDTO::fromEntity)
+                .map(roomType -> {
+                    List<RoomPricing> pricings = roomPricingRepository.findAll().stream()
+                            .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomType.getId()))
+                            .collect(Collectors.toList());
+                    return RoomTypeDTO.fromEntityWithPricing(roomType, pricings);
+                })
                 .collect(Collectors.toList());
     }
     
     public List<RoomTypeDTO> getRoomTypesBySoGiuong(Byte soGiuong) {
         return roomTypeRepository.findBySoGiuong(soGiuong).stream()
-                .map(RoomTypeDTO::fromEntity)
+                .map(roomType -> {
+                    List<RoomPricing> pricings = roomPricingRepository.findAll().stream()
+                            .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomType.getId()))
+                            .collect(Collectors.toList());
+                    return RoomTypeDTO.fromEntityWithPricing(roomType, pricings);
+                })
                 .collect(Collectors.toList());
     }
     
     public List<RoomTypeDTO> getRoomTypesBySucChua(Byte sucChua) {
         return roomTypeRepository.findBySucChuaToiDaGreaterThanEqual(sucChua).stream()
-                .map(RoomTypeDTO::fromEntity)
+                .map(roomType -> {
+                    List<RoomPricing> pricings = roomPricingRepository.findAll().stream()
+                            .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomType.getId()))
+                            .collect(Collectors.toList());
+                    return RoomTypeDTO.fromEntityWithPricing(roomType, pricings);
+                })
                 .collect(Collectors.toList());
     }
     
@@ -267,4 +291,4 @@ public class QuanLyPhongService {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
         return roomRepository.findByTrangThai(status).size();
     }
-} 
+}

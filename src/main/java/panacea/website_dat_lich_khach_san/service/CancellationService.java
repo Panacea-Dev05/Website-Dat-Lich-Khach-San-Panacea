@@ -4,8 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.BookingDetail;
+import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.CancellationPolicy;
 import panacea.website_dat_lich_khach_san.repository.BookingRepository;
+import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationInfoDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationRequestDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationResponseDTO;
@@ -21,6 +25,12 @@ public class CancellationService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private BookingDetailRepository bookingDetailRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     @Autowired
     private EmailService emailService;
@@ -96,6 +106,18 @@ public class CancellationService {
         booking.setRefundAmount(calculation.getRefundAmount());
         
         bookingRepository.save(booking);
+
+        // Giải phóng phòng - cập nhật trạng thái phòng về SAN_SANG
+        java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
+        for (BookingDetail detail : details) {
+            if (detail.getPhongId() != null) {
+                Room room = roomRepository.findById(detail.getPhongId()).orElse(null);
+                if (room != null) {
+                    room.setTrangThai(Room.TrangThaiPhong.SAN_SANG); // Trả về trạng thái sẵn sàng
+                    roomRepository.save(room);
+                }
+            }
+        }
 
         // Gửi email thông báo
         try {

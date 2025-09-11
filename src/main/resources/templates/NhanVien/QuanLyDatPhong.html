@@ -89,8 +89,9 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            margin-top: 0;
             font-size: 0.875rem;
+            min-width: 800px;
         }
 
         th,
@@ -286,25 +287,30 @@
                     </form>
                 </div>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã đặt phòng</th>
-                            <th>Khách hàng</th>
-                            <th>Phòng</th>
-                            <th>Hạng phòng</th>
-                            <th>Ngày nhận</th>
-                            <th>Ngày trả</th>
-                            <th>Số người</th>
-                            <th>Tiền cọc</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div style="max-height: 60vh; overflow-y: scroll; border: 1px solid #e5e7eb; border-radius: 8px; -webkit-overflow-scrolling: touch;">
+                    <table>
+                        <thead style="position: sticky; top: 0; background: #f9fafb; z-index: 10;">
+                            <tr>
+                                <th>Mã đặt phòng</th>
+                                <th>Khách hàng</th>
+                                <th>Phòng</th>
+                                <th>Hạng phòng</th>
+                                <th>Ngày nhận</th>
+                                <th>Ngày trả</th>
+                                <th>Số người</th>
+                                <th>Tiền cọc</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         <tr th:each="booking : ${bookings}">
-                            <td th:text="${booking.maDatPhong}"></td>
+                            <td>
+                                <span th:text="${booking.maDatPhong}"></span>
+                                <span th:if="${#strings.startsWith(booking.maDatPhong, 'COMBO')}" 
+                                      style="background: #10b981; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; margin-left: 5px;">COMBO</span>
+                            </td>
                             <td>
                                 <a
                                     style="color: #2563eb; text-decoration: underline; cursor: pointer;"
@@ -313,8 +319,20 @@
                                     onclick="viewBookingDetail(this)">
                                 </a>
                             </td>
-                            <td th:text="${booking.roomNumber != null ? booking.roomNumber : 'N/A'}"></td>
-                            <td th:text="${booking.roomTypeName != null ? booking.roomTypeName : 'N/A'}"></td>
+                            <td>
+                                <div th:if="${booking.roomNumbers != null and !#lists.isEmpty(booking.roomNumbers)}">
+                                    <span th:each="roomNum, iterStat : ${booking.roomNumbers}" 
+                                          th:text="${roomNum + (iterStat.last ? '' : ', ')}"></span>
+                                </div>
+                                <span th:if="${booking.roomNumbers == null or #lists.isEmpty(booking.roomNumbers)}" th:text="'N/A'"></span>
+                            </td>
+                            <td>
+                                <div th:if="${booking.roomTypeNames != null and !#lists.isEmpty(booking.roomTypeNames)}">
+                                    <span th:each="roomType, iterStat : ${booking.roomTypeNames}" 
+                                          th:text="${roomType + (iterStat.last ? '' : ', ')}"></span>
+                                </div>
+                                <span th:if="${booking.roomTypeNames == null or #lists.isEmpty(booking.roomTypeNames)}" th:text="'N/A'"></span>
+                            </td>
                             <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}"></td>
                             <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}"></td>
                             <td th:text="${booking.soNguoiLon + ' người lớn, ' + booking.soTreEm + ' trẻ em'}"></td>
@@ -343,8 +361,9 @@
                                 <p>Không có đặt phòng nào</p>
                             </td>
                         </tr>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- Pagination -->
                 <div style="display: flex; justify-content: center; align-items: center; margin-top: 1.5rem; gap: 8px;">
                     <nav th:if="${totalPages > 1}">
@@ -386,11 +405,12 @@
                     <input type="checkbox" id="modal-payment-confirmed">
                     Đã thanh toán
                 </label>
-                <label style="font-weight: 500;">
-                    Chọn phòng:
-                    <select id="modal-room-select"
-                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #d1d5db; min-width: 120px;"></select>
-                </label>
+                <div style="font-weight: 500;">
+                    <label style="display: block; margin-bottom: 0.5rem;">Chọn phòng:</label>
+                    <div id="modal-room-select" class="room-selection-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+                        <div style="color: #6b7280; text-align: center; padding: 1rem;">Đang tải danh sách phòng...</div>
+                    </div>
+                </div>
                 <button class="btn" style="background: #10b981;" id="modal-confirm-btn">
                     <span class="material-icons">check</span>Xác nhận
                 </button>
@@ -407,121 +427,135 @@
 
     <!-- Modal thêm khách hàng -->
     <div id="addCustomerModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close" onclick="closeAddCustomerModal()">&times;</span>
-            <h2><span class="material-icons">login</span> Check-in trực tiếp</h2>
+        <div class="modal-content" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+            <!-- Header cố định -->
+            <div style="flex-shrink: 0; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; background: white;">
+                <span class="close" onclick="closeAddCustomerModal()">&times;</span>
+                <h2><span class="material-icons">login</span> Check-in trực tiếp</h2>
+            </div>
+            
+            <!-- Nội dung có thể scroll -->
+            <div style="flex: 1; overflow-y: auto; padding: 1.5rem; -webkit-overflow-scrolling: touch;">
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin khách hàng</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Họ:</label>
+                            <input type="text" id="customerHo"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Tên:</label>
+                            <input type="text" id="customerTen"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Email:</label>
+                            <input type="email" id="customerEmail"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số điện thoại:</label>
+                            <input type="tel" id="customerPhone"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">CMND/CCCD:</label>
+                            <input type="text" id="customerIdCard"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Địa chỉ:</label>
+                            <input type="text" id="customerAddress"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                    </div>
+                </div>
 
-            <div style="margin-bottom: 1rem;">
-                <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin khách hàng</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Họ:</label>
-                        <input type="text" id="customerHo"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Tên:</label>
-                        <input type="text" id="customerTen"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Email:</label>
-                        <input type="email" id="customerEmail"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số điện thoại:</label>
-                        <input type="tel" id="customerPhone"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">CMND/CCCD:</label>
-                        <input type="text" id="customerIdCard"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Địa chỉ:</label>
-                        <input type="text" id="customerAddress"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin đặt phòng</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng (có thể chọn nhiều):</label>
+                            <div id="roomSelect" class="room-selection-container" 
+                                style="width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px; background: white;">
+                                <div class="room-loading">Đang tải danh sách phòng...</div>
+                            </div>
+                            <div class="selected-rooms-summary" style="margin-top: 8px; font-size: 14px; color: #666;">
+                                <span id="selectedRoomsCount">Chưa chọn phòng nào</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày nhận
+                                phòng:</label>
+                            <input type="date" id="checkInDate"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày trả phòng:</label>
+                            <input type="date" id="checkOutDate"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số người lớn:</label>
+                            <input type="number" id="adultCount" min="1" value="1"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số trẻ em:</label>
+                            <input type="number" id="childCount" min="0" value="0"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div style="margin-bottom: 1rem;">
-                <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin đặt phòng</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng:</label>
-                        <select id="roomSelect"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                            <option value="">Chọn phòng</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày nhận
-                            phòng:</label>
-                        <input type="date" id="checkInDate"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày trả phòng:</label>
-                        <input type="date" id="checkOutDate"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số người lớn:</label>
-                        <input type="number" id="adultCount" min="1" value="1"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số trẻ em:</label>
-                        <input type="number" id="childCount" min="0" value="0"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
-                    </div>
+            
+            <!-- Footer cố định -->
+            <div style="flex-shrink: 0; padding: 1.5rem; border-top: 1px solid #e5e7eb; background: white;">
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn" onclick="closeAddCustomerModal()" style="background: #6b7280;">Hủy</button>
+                    <button class="btn" onclick="addCustomerBooking()" style="background: #10b981;">Thêm đặt phòng</button>
                 </div>
-            </div>
-
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                <button class="btn" onclick="closeAddCustomerModal()" style="background: #6b7280;">Hủy</button>
-                <button class="btn" onclick="addCustomerBooking()" style="background: #10b981;">Thêm đặt phòng</button>
             </div>
         </div>
     </div>
 
     <!-- Modal nhập thông tin check-in -->
     <div id="checkInModal" class="modal">
-        <div class="modal-content" style="max-width: 95vw; width: 500px; padding: 10px 12px; border-radius: 10px; background: #fff; margin: 5% auto;">
-            <span class="close" onclick="closeCheckInModal()">&times;</span>
-            <h2><span class="material-icons">login</span> Thông tin Check-in</h2>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="modal-content" style="max-width: 90vw; width: 400px; max-height: 85vh; padding: 0; border-radius: 10px; background: #fff; margin: 2% auto; position: relative; top: 50%; transform: translateY(-50%); overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;">
+                <span class="close" onclick="closeCheckInModal()">&times;</span>
+                <h2 style="margin: 0; font-size: 1.2rem;"><span class="material-icons" style="font-size: 1.2rem; vertical-align: middle;">login</span> Thông tin Check-in</h2>
+            </div>
+            <div style="padding: 10px 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem;">
                 <div>
-                    <label>Số CMND/CCCD:</label>
-                    <input type="text" id="checkinCmnd" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số CMND/CCCD:</label>
+                    <input type="text" id="checkinCmnd" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
                 </div>
                 <div>
-                    <label>Ngày cấp:</label>
-                    <input type="date" id="checkinNgayCap" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ngày cấp:</label>
+                    <input type="date" id="checkinNgayCap" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
                 </div>
                 <div>
-                    <label>Nơi cấp:</label>
-                    <input type="text" id="checkinNoiCap" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Nơi cấp:</label>
+                    <input type="text" id="checkinNoiCap" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
                 </div>
                 <div>
-                    <label>Số người lớn thực tế:</label>
-                    <input type="number" id="checkinNguoiLon" min="1" value="1" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số người lớn thực tế:</label>
+                    <input type="number" id="checkinNguoiLon" min="1" value="1" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
                 </div>
                 <div>
-                    <label>Số trẻ em thực tế:</label>
-                    <input type="number" id="checkinTreEm" min="0" value="0" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số trẻ em thực tế:</label>
+                    <input type="number" id="checkinTreEm" min="0" value="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
                 </div>
                 <div>
-                    <label>Ghi chú check-in:</label>
-                    <textarea id="checkinGhiChu" rows="2" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></textarea>
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ghi chú check-in:</label>
+                    <textarea id="checkinGhiChu" rows="2" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem; resize: vertical;"></textarea>
                 </div>
             </div>
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                <button class="btn" onclick="closeCheckInModal()" style="background: #6b7280;">Hủy</button>
-                <button class="btn" id="checkinSubmitBtn" style="background: #10b981;">Xác nhận Check-in</button>
+            <div style="padding: 10px 12px; border-top: 1px solid #e5e7eb; flex-shrink: 0; display: flex; gap: 0.8rem; justify-content: flex-end;">
+                <button class="btn" onclick="closeCheckInModal()" style="background: #6b7280; padding: 6px 12px; font-size: 0.9rem;">Hủy</button>
+                <button class="btn" id="checkinSubmitBtn" style="background: #10b981; padding: 6px 12px; font-size: 0.9rem;">Xác nhận Check-in</button>
             </div>
         </div>
     </div>
@@ -537,7 +571,7 @@
 
     <!-- Modal chỉnh sửa dịch vụ đã sử dụng -->
     <div id="serviceEditModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 850px;">
             <span class="close" onclick="closeServiceEditModal()">&times;</span>
             <h2><span class="material-icons">edit</span> Chỉnh sửa dịch vụ đã sử dụng</h2>
             <form id="serviceEditForm" onsubmit="saveServiceEdit(event)">
@@ -617,10 +651,14 @@
             fetch(`/nhanvien/quanlydatphong/detail/${bookingId}`)
                 .then(response => response.json())
                 .then(booking => {
+                    // Kiểm tra xem có phải booking combo không
+                    const isComboBooking = booking.maDatPhong && booking.maDatPhong.startsWith('COMBO');
+                    
                     let content = `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
                         <div>
                             <p><strong>Mã đặt phòng:</strong> ${booking.maDatPhong}</p>
+                            ${isComboBooking ? '<p><strong>Loại:</strong> <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">COMBO PHÒNG</span></p>' : ''}
                             <p><strong>Khách hàng:</strong> ${booking.customerName || booking.khachHang}</p>
                             <p><strong>Ngày nhận phòng:</strong> ${booking.ngayNhanPhong || booking.ngayNhan}</p>
                             <p><strong>Ngày trả phòng:</strong> ${booking.ngayTraPhong || booking.ngayTra}</p>
@@ -632,28 +670,39 @@
                             <p><strong>Trạng thái:</strong> ${booking.trangThaiDatPhong || booking.trangThai}</p>
                         </div>
                     </div>`;
+                    
+                    // Hiển thị thông tin combo nếu là booking combo
+                    if (isComboBooking && booking.ghiChuKhachHang) {
+                        const comboMatch = booking.ghiChuKhachHang.match(/COMBO PHÒNG: ([^.]+)/);
+                        if (comboMatch) {
+                            content += `
+                            <div style="margin-top: 1.5rem; padding: 1rem; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 4px;">
+                                <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">Chi tiết combo phòng:</h4>
+                                <p style="margin: 0; color: #047857;">${comboMatch[1]}</p>
+                            </div>`;
+                        }
+                    }
 
                     // Hiển thị danh sách dịch vụ đã sử dụng (nếu có)
                     if (booking.serviceUsages && booking.serviceUsages.length > 0) {
                         content += `<h3 style='margin-top:1.5rem;'>Dịch vụ đã sử dụng</h3>`;
-                        content += `<table style='width:100%;margin-top:0.5rem;border-collapse:collapse;'>
-                            <thead><tr>
-                                <th style='border-bottom:1px solid #ccc;'>Phòng</th>
-                                <th style='border-bottom:1px solid #ccc;'>Tên dịch vụ</th>
-                                <th style='border-bottom:1px solid #ccc;'>Số lượng</th>
-                                <th style='border-bottom:1px solid #ccc;'>Đơn giá</th>
-                                <th style='border-bottom:1px solid #ccc;'>Thành tiền</th>
-                            </tr></thead><tbody>`;
+                        content += `<div style='max-height:200px;overflow-y:auto;border:1px solid #ddd;border-radius:4px;'>
+                            <table style='width:100%;margin:0;border-collapse:collapse;'>
+                                <thead><tr style='background:#f8f9fa;position:sticky;top:0;'>
+                                    <th style='border-bottom:1px solid #ccc;padding:8px;text-align:left;'>Tên dịch vụ</th>
+                                    <th style='border-bottom:1px solid #ccc;padding:8px;text-align:center;'>Số lượng</th>
+                                    <th style='border-bottom:1px solid #ccc;padding:8px;text-align:right;'>Đơn giá</th>
+                                    <th style='border-bottom:1px solid #ccc;padding:8px;text-align:right;'>Thành tiền</th>
+                                </tr></thead><tbody>`;
                         booking.serviceUsages.forEach(sv => {
                             content += `<tr>
-                                <td>${sv.roomNumber || 'N/A'}</td>
-                                <td>${sv.serviceName || sv.serviceId}</td>
-                                <td>${sv.soLuong}</td>
-                                <td>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
-                                <td>${sv.thanhTien ? new Intl.NumberFormat('vi-VN').format(sv.thanhTien) : ''}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;'>${sv.serviceName || 'Dịch vụ không xác định'}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;text-align:center;'>${sv.soLuong}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.thanhTien ? new Intl.NumberFormat('vi-VN').format(sv.thanhTien) : ''}</td>
                             </tr>`;
                         });
-                        content += `</tbody></table>`;
+                        content += `</tbody></table></div>`;
                     } else {
                         content += `<p style='margin-top:1.5rem;color:#888;'>Chưa sử dụng dịch vụ nào.</p>`;
                     }
@@ -690,27 +739,31 @@
                         fetch(`/nhanvien/quanlydatphong/rooms/available?bookingId=${bookingId}`)
                             .then(res => res.json())
                             .then(rooms => {
-                                const select = document.getElementById('modal-room-select');
-                                select.innerHTML = '';
+                                const container = document.getElementById('modal-room-select');
+                                container.innerHTML = '';
                                 if (rooms.length === 0) {
-                                    select.innerHTML = '<option value="">Không còn phòng phù hợp</option>';
+                                    container.innerHTML = '<div style="color: #6b7280; text-align: center; padding: 1rem;">Không còn phòng phù hợp</div>';
                                 } else {
                                     rooms.forEach(room => {
-                                        const option = document.createElement('option');
-                                        option.value = room.id;
-                                        option.textContent = `${room.soPhong} - ${room.roomType || ''}`;
-                                        select.appendChild(option);
+                                        const roomItem = document.createElement('div');
+                                        roomItem.style.cssText = 'display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #f3f4f6; cursor: pointer;';
+                                        roomItem.innerHTML = `
+                                             <input type="checkbox" class="modal-room-checkbox" value="${room.id}" id="modal-room-${room.id}" style="margin-right: 8px;">
+                                             <label for="modal-room-${room.id}" style="cursor: pointer; flex: 1;">${room.soPhong} - ${room.roomType || ''}</label>
+                                         `;
+                                        container.appendChild(roomItem);
                                     });
                                 }
                             });
                         // Gán lại sự kiện cho nút xác nhận
                         document.getElementById('modal-confirm-btn').onclick = async function () {
                             const paymentConfirmed = document.getElementById('modal-payment-confirmed').checked;
-                            const roomId = document.getElementById('modal-room-select').value;
-                            if (!roomId) {
-                                alert('Vui lòng chọn phòng!');
+                            const selectedRooms = document.querySelectorAll('.modal-room-checkbox:checked');
+                            if (selectedRooms.length === 0) {
+                                alert('Vui lòng chọn ít nhất một phòng!');
                                 return;
                             }
+                            const roomIds = Array.from(selectedRooms).map(room => room.value);
                             if (!paymentConfirmed) {
                                 alert('Vui lòng xác nhận đã thanh toán!');
                                 return;
@@ -723,7 +776,7 @@
                                 const res = await fetch(`/nhanvien/quanlydatphong/confirm`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ bookingId, roomId })
+                                    body: JSON.stringify({ bookingId, roomIds })
                                 });
                                 const data = await res.json();
                                 alert(data.message || 'Xác nhận thành công!');
@@ -840,17 +893,38 @@
 
         // Hàm load phòng có sẵn
         function loadAvailableRooms() {
-            fetch(`/nhanvien/quanlydatphong/rooms/available`)
+            console.log('loadAvailableRooms called');
+            fetch(`/nhanvien/quanlydatphong/rooms/available?t=${Date.now()}`)
                 .then(response => response.json())
                 .then(rooms => {
+                    console.log('Rooms loaded:', rooms);
                     const roomSelect = document.getElementById('roomSelect');
+                    console.log('roomSelect element:', roomSelect);
                     if (roomSelect) {
-                        roomSelect.innerHTML = '<option value="">Chọn phòng</option>';
+                        roomSelect.innerHTML = '';
+                        console.log('Creating checkboxes for rooms');
                         rooms.forEach(room => {
-                            const option = document.createElement('option');
-                            option.value = room.id;
-                            option.textContent = `${room.soPhong} - ${room.roomType?.tenLoaiPhong || 'N/A'} - ${room.giaCoBan || 0} VND`;
-                            roomSelect.appendChild(option);
+                            const roomItem = document.createElement('div');
+                            roomItem.style.cssText = 'margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb;';
+                            
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `room_${room.id}`;
+                            checkbox.value = room.id;
+                            checkbox.className = 'room-checkbox';
+                            checkbox.style.marginRight = '8px';
+                            
+                            const label = document.createElement('label');
+                            label.htmlFor = `room_${room.id}`;
+                            label.textContent = `${room.soPhong} - ${room.roomType?.tenLoaiPhong || 'N/A'} - ${room.giaCoBan || 0} VND`;
+                            label.style.cursor = 'pointer';
+                            
+                            roomItem.appendChild(checkbox);
+                            roomItem.appendChild(label);
+                            roomSelect.appendChild(roomItem);
+                            
+                            // Add event listener to update summary
+                            checkbox.addEventListener('change', updateSelectedRoomsSummary);
                         });
                     }
                 })
@@ -860,11 +934,26 @@
                 });
         }
 
+        // Hàm cập nhật tóm tắt phòng đã chọn
+        function updateSelectedRoomsSummary() {
+            const checkboxes = document.querySelectorAll('.room-checkbox:checked');
+            const selectedCount = checkboxes.length;
+            const summaryElement = document.getElementById('selectedRoomsCount');
+            
+            if (selectedCount === 0) {
+                summaryElement.textContent = 'Chưa chọn phòng nào';
+                summaryElement.style.color = '#666';
+            } else {
+                summaryElement.textContent = `Đã chọn ${selectedCount} phòng`;
+                summaryElement.style.color = '#059669';
+            }
+        }
+
         // Hàm thêm đặt phòng cho khách hàng
         function addCustomerBooking() {
             // Validate form
             const requiredFields = ['customerHo', 'customerTen', 'customerEmail', 'customerPhone',
-                'customerIdCard', 'customerAddress', 'roomSelect',
+                'customerIdCard', 'customerAddress',
                 'checkInDate', 'checkOutDate', 'adultCount', 'childCount'];
 
             for (let field of requiredFields) {
@@ -874,6 +963,13 @@
                     element.focus();
                     return;
                 }
+            }
+
+            // Validate room selection
+            const selectedRooms = document.querySelectorAll('.room-checkbox:checked');
+            if (selectedRooms.length === 0) {
+                alert('Vui lòng chọn ít nhất một phòng!');
+                return;
             }
 
             // Validate dates
@@ -893,6 +989,8 @@
             }
 
             // Prepare data
+            const selectedRoomIds = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => parseInt(cb.value));
+            
             const bookingData = {
                 customer: {
                     ho: document.getElementById('customerHo').value,
@@ -902,7 +1000,7 @@
                     soCmndCccd: document.getElementById('customerIdCard').value,
                     diaChi: document.getElementById('customerAddress').value
                 },
-                roomId: document.getElementById('roomSelect').value,
+                roomIds: selectedRoomIds,
                 ngayNhanPhong: document.getElementById('checkInDate').value,
                 ngayTraPhong: document.getElementById('checkOutDate').value,
                 soNguoiLon: parseInt(document.getElementById('adultCount').value),
@@ -1052,18 +1150,18 @@
         function renderServiceEditList() {
             const container = document.getElementById('serviceEditList');
             let html = '<table style="width:100%;border-collapse:collapse;">';
-            html += '<thead><tr><th></th><th>Tên dịch vụ</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th></tr></thead><tbody>';
+            html += '<thead><tr><th style="width:40px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;"></th><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên dịch vụ</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Đơn giá</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Thành tiền</th></tr></thead><tbody>';
             allServices.forEach(sv => {
                 const used = usedServices.find(u => u.serviceId === sv.id);
                 const checked = used ? 'checked' : '';
                 const soLuong = used ? used.soLuong : 1;
                 const thanhTien = used && used.donGia && used.soLuong ? (used.donGia * used.soLuong) : 0;
                 html += `<tr>
-                    <td><input type='checkbox' class='service-checkbox' data-id='${sv.id}' ${checked} onchange='onServiceCheckboxChange(this)'></td>
-                    <td>${sv.tenDichVu}</td>
-                    <td>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
-                    <td><input type='number' min='1' class='service-qty' data-id='${sv.id}' value='${soLuong}' ${checked ? '' : 'disabled'} style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
-                    <td id='service-tt-${sv.id}'>${thanhTien ? new Intl.NumberFormat('vi-VN').format(thanhTien) : ''}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='checkbox' class='service-checkbox' data-id='${sv.id}' ${checked} onchange='onServiceCheckboxChange(this)'></td>
+                    <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${sv.tenDichVu}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' class='service-qty' data-id='${sv.id}' value='${soLuong}' ${checked ? '' : 'disabled'} style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
+                    <td id='service-tt-${sv.id}' style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${thanhTien ? new Intl.NumberFormat('vi-VN').format(thanhTien) : ''}</td>
                 </tr>`;
             });
             html += '</tbody></table>';

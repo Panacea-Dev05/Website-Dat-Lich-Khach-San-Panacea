@@ -302,7 +302,7 @@
                     <td th:text="${kh.ten}"></td>
                     <td th:text="${kh.email}"></td>
                     <td th:text="${kh.soDienThoai}"></td>
-                    <td th:text="${#dates.format(kh.ngaySinh, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#temporals.format(kh.ngaySinh, 'yyyy-MM-dd')}"></td>
                     <td th:text="${kh.gioiTinh}"></td>
                     <td th:text="${kh.quocTich}"></td>
                     <td th:text="${kh.diaChi}"></td>

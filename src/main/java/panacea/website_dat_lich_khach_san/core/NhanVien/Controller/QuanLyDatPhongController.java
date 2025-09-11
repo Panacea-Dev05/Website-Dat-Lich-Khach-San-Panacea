@@ -64,12 +64,29 @@ public class QuanLyDatPhongController {
     @ResponseBody
     public Map<String, Object> confirmBooking(@RequestBody Map<String, Object> payload) {
         Long bookingId = Long.valueOf(payload.get("bookingId").toString());
-        Long roomId = Long.valueOf(payload.get("roomId").toString());
-        boolean result = quanLyDatPhongService.confirmBookingAndAssignRoom(bookingId, roomId);
-        if (result) {
-            return Map.of("success", true, "message", "Đã xác nhận và gán phòng thành công. Email đã được gửi cho khách hàng.");
+        
+        // Xử lý cả roomId đơn lẻ và roomIds array để tương thích ngược
+        if (payload.containsKey("roomIds")) {
+            @SuppressWarnings("unchecked")
+            java.util.List<String> roomIdStrings = (java.util.List<String>) payload.get("roomIds");
+            java.util.List<Long> roomIds = roomIdStrings.stream()
+                .map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+            boolean result = quanLyDatPhongService.confirmBookingAndAssignMultipleRooms(bookingId, roomIds);
+            if (result) {
+                return Map.of("success", true, "message", "Đã xác nhận và gán " + roomIds.size() + " phòng thành công. Email đã được gửi cho khách hàng.");
+            } else {
+                return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+            }
         } else {
-            return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+            // Tương thích ngược với roomId đơn lẻ
+            Long roomId = Long.valueOf(payload.get("roomId").toString());
+            boolean result = quanLyDatPhongService.confirmBookingAndAssignRoom(bookingId, roomId);
+            if (result) {
+                return Map.of("success", true, "message", "Đã xác nhận và gán phòng thành công. Email đã được gửi cho khách hàng.");
+            } else {
+                return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+            }
         }
     }
     
@@ -96,10 +113,13 @@ public class QuanLyDatPhongController {
     
     @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId") Long bookingId) {
-        // Lấy booking để biết loại phòng khách đã chọn
-        Booking booking = quanLyDatPhongService.getBookingById(bookingId).orElse(null);
-        Integer roomTypeId = (booking != null && booking.getRoomType() != null) ? booking.getRoomType().getId() : null;
+    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId", required = false) Long bookingId) {
+        // Lấy booking để biết loại phòng khách đã chọn (nếu có)
+        Integer roomTypeId = null;
+        if (bookingId != null) {
+            Booking booking = quanLyDatPhongService.getBookingById(bookingId).orElse(null);
+            roomTypeId = (booking != null && booking.getRoomType() != null) ? booking.getRoomType().getId() : null;
+        }
         List<Room> rooms = quanLyDatPhongService.getAvailableRooms(roomTypeId);
         List<Map<String, Object>> result = new java.util.ArrayList<>();
         for (Room room : rooms) {
@@ -154,7 +174,11 @@ public class QuanLyDatPhongController {
     @ResponseBody
     public ResponseEntity<?> updateBookingServices(@PathVariable Long bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> services) {
         boolean success = quanLyDatPhongService.updateBookingServices(bookingId, services);
-        return ResponseEntity.ok(java.util.Map.of("success", success));
+        if (success) {
+            return ResponseEntity.ok(java.util.Map.of("success", true));
+        } else {
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ!"));
+        }
     }
 
     @GetMapping("/history")
@@ -164,4 +188,4 @@ public class QuanLyDatPhongController {
         model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
         return "NhanVien/BookingHistory";
     }
-} 
+}

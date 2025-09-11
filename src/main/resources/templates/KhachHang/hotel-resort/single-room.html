@@ -455,12 +455,81 @@
                             <div class="form-group">
                                 <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
                             </div>
+                            <div class="form-group">
+                                <input type="text" name="soCmndCccd" class="form-control booking-now-input custom-input-separated" placeholder="ID Card Number (CMND/CCCD)" required />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="diaChi" class="form-control booking-now-input custom-input-separated" placeholder="Address" required />
+                            </div>
+                            <div class="form-group">
+                                <input type="date" name="ngaySinh" class="form-control booking-now-input custom-input-separated" placeholder="Date of Birth" />
+                            </div>
+                            <div class="form-group">
+                                <select name="gioiTinh" class="form-control booking-now-input custom-input-separated">
+                                    <option value="">Select Gender</option>
+                                    <option value="NAM">Male</option>
+                                    <option value="NU">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="quocTich" class="form-control booking-now-input custom-input-separated" placeholder="Nationality" />
+                            </div>
 
                             <div class="form-group">
                                 <select name="soGiuong" id="soGiuong" class="form-control booking-now-input custom-input-separated" required>
                                     <option value="1">1 bed</option>
                                     <option value="2">2 beds</option>
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="color: #fff; font-weight: 600; margin-bottom: 8px; display: block;">Chọn phòng:</label>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="radio" id="singleRoomType" name="roomSelection" value="single" checked onchange="toggleRoomSelection()">
+                                    <label for="singleRoomType" style="color: #fff; margin-left: 5px;">Chỉ phòng này</label>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <input type="radio" id="multipleRoomTypes" name="roomSelection" value="multiple" onchange="toggleRoomSelection()">
+                                    <label for="multipleRoomTypes" style="color: #fff; margin-left: 5px;">Combo nhiều loại phòng</label>
+                                </div>
+                                
+                                <!-- Single room type selection -->
+                                <div id="singleRoomSection">
+                                    <select name="soPhong" id="soPhong" class="form-control booking-now-input custom-input-separated" required onchange="updateTotalPrice()">
+                                        <option value="1">1 phòng</option>
+                                        <option value="2">2 phòng</option>
+                                        <option value="3">3 phòng</option>
+                                        <option value="4">4 phòng</option>
+                                        <option value="5">5 phòng</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Multiple room types selection -->
+                                <div id="multipleRoomSection" style="display: none;">
+                                    <div id="roomTypeSelections">
+                                        <div class="room-type-item" style="background: rgba(255,255,255,0.1); padding: 15px; margin-bottom: 10px; border-radius: 8px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                                <label style="color: #fff; font-weight: 600;">Loại phòng:</label>
+                                                <button type="button" onclick="removeRoomType(this)" style="background: #ff4757; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Xóa</button>
+                                            </div>
+                                            <select class="room-type-select form-control booking-now-input custom-input-separated" onchange="updateMultiRoomPrice()" required>
+                                                <option value="">Chọn loại phòng</option>
+                                                <option value="single" data-price="1500000">Phòng giường đơn - 1,500,000 VNĐ</option>
+                                                <option value="double" data-price="2000000">Phòng giường đôi - 2,000,000 VNĐ</option>
+                                                <option value="suite" data-price="3000000">Phòng suite - 3,000,000 VNĐ</option>
+                                            </select>
+                                            <div style="margin-top: 10px;">
+                                                <label style="color: #fff; margin-right: 10px;">Số lượng:</label>
+                                                <select class="room-quantity-select form-control booking-now-input custom-input-separated" style="width: 80px; display: inline-block;" onchange="updateMultiRoomPrice()">
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addRoomType()" style="background: #2ed573; color: white; border: none; border-radius: 4px; padding: 10px 15px; cursor: pointer; margin-top: 10px;">+ Thêm loại phòng</button>
+                                </div>
                             </div>
 
                             <!-- ... giữ nguyên các div, class, style ... -->
@@ -531,40 +600,34 @@
                                          value="Increase Value">+</div>
                                 </div>
                             </div>
-                            <div>
-                                <div class="ak-height-50 ak-height-lg-30"></div>
-                                <h5 class="ak-white-color">Extra Services</h5>
-                                <div class="ak-height-25 ak-height-lg-20"></div>
-                                <div class="row row-cols-1">
-                                    <div class="col">
-                                        <label class="cbox-cursor">
-                                            <input type="checkbox" name="dichVu" value="Bar Service" />&nbsp;Bar
-                                            Service
-                                        </label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="cbox-cursor">
-                                            <input type="checkbox" name="dichVu" value="Business Center" />&nbsp;Business
-                                            Center
-                                        </label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="cbox-cursor">
-                                            <input type="checkbox" name="dichVu" value="Safety and Security" />&nbsp;Safety
-                                            and Security
-                                        </label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="cbox-cursor">
-                                            <input type="checkbox" name="dichVu" value="Fine Dining Restaurants" />&nbsp;Fine
-                                            Dining Restaurants
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="ak-height-50 ak-height-lg-30"></div>
+                                
+                                <!-- Special Requests Section -->
+                                <div class="form-group">
+                                    <h5 class="ak-white-color">Yêu cầu đặc biệt</h5>
+                                    <div class="ak-height-15 ak-height-lg-10"></div>
+                                    <textarea name="yeuCauDacBiet" class="form-control booking-now-input custom-input-separated" 
+                                              rows="3" placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy, view hồ bơi..."
+                                              style="resize: vertical; min-height: 80px;"></textarea>
+                                    <small class="text-muted" style="color: #ccc !important;">Chúng tôi sẽ cố gắng đáp ứng yêu cầu của bạn tùy theo tình trạng phòng trống</small>
                                 </div>
-                                <div class="ak-height-50 ak-height-lg-30"></div>
+                                <div class="ak-height-30 ak-height-lg-20"></div>
+                                
+                                <!-- Chọn loại giá -->
+                                <div class="form-group">
+                                    <label class="form-label" style="color: #333; font-weight: 600; margin-bottom: 10px;">Loại giá:</label>
+                                    <select name="loaiGia" id="priceType" class="form-control booking-now-input custom-input-separated" onchange="updatePrice()">
+                                        <option value="giaNgay" selected>Theo ngày</option>
+                                        <option value="giaGio">Theo giờ</option>
+                                        <option value="giaQuaDem">Qua đêm</option>
+                                    </select>
+                                </div>
+                                <div class="ak-height-20 ak-height-lg-10"></div>
+                                
                                 <div class="total">
-                                    <p class="text-total">Total Price:</p>
-                                    <h4 class="price">$99.0</h4>
+                                    <p class="text-total">Giá phòng:</p>
+                                    <h4 class="price" id="roomPrice" th:text="${#numbers.formatDecimal(room.giaNgay, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h4>
                                 </div>
                                 <div class="ak-height-35 ak-height-lg-20"></div>
                                 <div class="ak-center">
@@ -911,14 +974,79 @@
             const ngayNhan = bookingForm.querySelector('input[name="ngayNhanPhong"]').value;
             const ngayTra = bookingForm.querySelector('input[name="ngayTraPhong"]').value;
             const soNguoiLon = parseInt(bookingForm.querySelector('input[name="soNguoiLon"]').value, 10) || 0;
+            const soTreEm = parseInt(bookingForm.querySelector('input[name="soTreEm"]').value, 10) || 0;
             const today = new Date();
             today.setHours(0,0,0,0);
             const nhanDate = new Date(ngayNhan);
             const traDate = new Date(ngayTra);
+            
             if (soNguoiLon < 1) {
                 alert('Phải có ít nhất 1 người lớn!');
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
                 return;
+            }
+            
+            // Kiểm tra logic số giường vs số người
+            const soGiuong = parseInt(bookingForm.querySelector('select[name="soGiuong"]').value, 10) || 1;
+            
+            // Gợi ý phòng phù hợp cho 3 người trở lên
+            if (tongSoKhach === 3) {
+                const roomSuggestion = `Bạn đặt cho 3 khách nhưng đang chọn phòng giường đơn.\n\n` +
+                                     `Để thoải mái hơn, chúng tôi khuyến nghị:\n` +
+                                     `• 1 phòng giường đôi + 1 phòng giường đơn\n` +
+                                     `• Hoặc 2 phòng giường đơn\n\n` +
+                                     `Bạn có muốn chuyển sang chế độ chọn combo phòng không?`;
+                
+                if (confirm(roomSuggestion)) {
+                    // Tự động chuyển sang chế độ combo và set combo mặc định
+                    document.getElementById('multipleRoomTypes').checked = true;
+                    toggleRoomSelection();
+                    setDefaultComboFor3Guests();
+                    alert('Đã chuyển sang chế độ combo phòng với gợi ý phù hợp cho 3 khách.');
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+                    return;
+                } else {
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+                    return;
+                }
+            }
+            
+            // Cảnh báo nếu 2 người lớn nhưng chọn 1 giường
+            if (soNguoiLon >= 2 && soGiuong === 1 && tongSoKhach === 2) {
+                const bedWarning = `Bạn đặt cho ${soNguoiLon} người lớn nhưng chỉ chọn 1 giường.\n\n` +
+                                 `Điều này có thể không thoải mái cho khách.\n` +
+                                 `Bạn có muốn chọn 2 giường thay vào không?`;
+                
+                if (confirm(bedWarning)) {
+                    // Tự động chuyển sang 2 giường
+                    bookingForm.querySelector('select[name="soGiuong"]').value = '2';
+                    alert('Đã chuyển sang 2 giường cho bạn. Vui lòng kiểm tra lại thông tin.');
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+                    return;
+                }
+            }
+            
+            // Kiểm tra sức chứa phòng và tự động cập nhật số phòng
+            const tongSoKhach = soNguoiLon + soTreEm;
+            const sucChuaToiDa = 2; // Sức chứa tối đa mỗi phòng
+            const soPhongHienTai = parseInt(bookingForm.querySelector('select[name="soPhong"]').value, 10) || 1;
+            
+            if (tongSoKhach > sucChuaToiDa) {
+                const soPhongCanThiet = Math.ceil(tongSoKhach / sucChuaToiDa);
+                
+                if (soPhongHienTai < soPhongCanThiet) {
+                    const confirmMessage = `Bạn đặt cho ${tongSoKhach} khách nhưng mỗi phòng chỉ chứa tối đa ${sucChuaToiDa} người.\n\n` +
+                                          `Hệ thống khuyến nghị ${soPhongCanThiet} phòng.\n` +
+                                          `Bạn có muốn tự động cập nhật số phòng không?`;
+                    
+                    if (confirm(confirmMessage)) {
+                        bookingForm.querySelector('select[name="soPhong"]').value = soPhongCanThiet;
+                        updateTotalPrice(); // Cập nhật giá tổng
+                        alert(`Đã cập nhật thành ${soPhongCanThiet} phòng. Vui lòng kiểm tra lại thông tin.`);
+                        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+                        return;
+                    }
+                }
             }
             if (nhanDate < today) {
                 alert('Ngày nhận phòng phải từ hôm nay trở đi!');
@@ -944,6 +1072,43 @@
             });
             // Đảm bảo gửi đúng danh sách dịch vụ
             data.dichVu = dichVuChecked;
+            
+            // Kiểm tra loại booking: single hoặc multiple
+            const isMultipleRooms = document.getElementById('multipleRoomTypes').checked;
+            
+            if (isMultipleRooms) {
+                // Xử lý dữ liệu combo phòng
+                data.roomSelection = 'multiple';
+                data.multiRoomTypes = [];
+                
+                const roomTypeItems = document.querySelectorAll('.room-type-item');
+                roomTypeItems.forEach(item => {
+                    const roomTypeSelect = item.querySelector('.room-type-select');
+                    const quantitySelect = item.querySelector('.room-quantity-select');
+                    
+                    if (roomTypeSelect.value && quantitySelect.value) {
+                        const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+                        const price = parseInt(selectedOption.getAttribute('data-price')) || 0;
+                        const quantity = parseInt(quantitySelect.value) || 1;
+                        
+                        data.multiRoomTypes.push({
+                            roomType: roomTypeSelect.value,
+                            quantity: quantity,
+                            price: price
+                        });
+                    }
+                });
+                
+                // Kiểm tra có ít nhất 1 loại phòng được chọn
+                if (data.multiRoomTypes.length === 0) {
+                    alert('Vui lòng chọn ít nhất một loại phòng!');
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = oldText; }
+                    return;
+                }
+            } else {
+                // Xử lý dữ liệu single room
+                data.roomSelection = 'single';
+            }
             try {
                 const res = await fetch(bookingForm.action, {
                     method: 'POST',
@@ -1047,6 +1212,208 @@
     }
     function closeLoginModal() {
         document.getElementById('loginModal').style.display = 'none';
+    }
+    
+    // Dữ liệu giá từ server
+    const roomPrices = {
+        giaGio: /*[[${room.giaGio}]]*/ 0,
+        giaNgay: /*[[${room.giaNgay}]]*/ 0,
+        giaQuaDem: /*[[${room.giaQuaDem}]]*/ 0
+    };
+    
+    function updatePrice() {
+        const priceType = document.getElementById('priceType').value;
+        const priceElement = document.getElementById('roomPrice');
+        const price = roomPrices[priceType] || 0;
+        
+        // Format số theo định dạng Việt Nam
+        const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+        priceElement.textContent = formattedPrice + ' VNĐ';
+        
+        // Cập nhật tổng giá khi thay đổi loại giá
+        updateTotalPrice();
+    }
+    
+    function updateTotalPrice() {
+        const isSingleRoom = document.getElementById('singleRoomType').checked;
+        
+        if (isSingleRoom) {
+            // Logic cũ cho chế độ phòng đơn
+            const priceType = document.getElementById('priceType').value;
+            const soPhong = parseInt(document.getElementById('soPhong').value, 10) || 1;
+            const pricePerRoom = roomPrices[priceType] || 0;
+            const totalPrice = pricePerRoom * soPhong;
+            
+            const priceElement = document.getElementById('roomPrice');
+            const formattedPrice = new Intl.NumberFormat('vi-VN').format(totalPrice);
+            
+            if (soPhong > 1) {
+                priceElement.innerHTML = `${new Intl.NumberFormat('vi-VN').format(pricePerRoom)} VNĐ x ${soPhong} phòng = <strong>${formattedPrice} VNĐ</strong>`;
+            } else {
+                priceElement.textContent = formattedPrice + ' VNĐ';
+            }
+        } else {
+            // Logic mới cho chế độ combo nhiều loại phòng
+            updateMultiRoomPrice();
+        }
+    }
+    
+    // Hàm chuyển đổi giữa chế độ chọn phòng đơn và combo
+    function toggleRoomSelection() {
+        const singleRoomSection = document.getElementById('singleRoomSection');
+        const multipleRoomSection = document.getElementById('multipleRoomSection');
+        const isSingleRoom = document.getElementById('singleRoomType').checked;
+        
+        if (isSingleRoom) {
+            singleRoomSection.style.display = 'block';
+            multipleRoomSection.style.display = 'none';
+            // Reset required cho single room
+            document.getElementById('soPhong').required = true;
+            // Remove required cho multiple rooms
+            const roomTypeSelects = document.querySelectorAll('.room-type-select');
+            roomTypeSelects.forEach(select => select.required = false);
+        } else {
+            singleRoomSection.style.display = 'none';
+            multipleRoomSection.style.display = 'block';
+            // Remove required cho single room
+            document.getElementById('soPhong').required = false;
+            // Set required cho multiple rooms
+            const roomTypeSelects = document.querySelectorAll('.room-type-select');
+            roomTypeSelects.forEach(select => select.required = true);
+        }
+        
+        updateTotalPrice();
+    }
+    
+    // Hàm thêm loại phòng mới
+    function addRoomType() {
+        const roomTypeSelections = document.getElementById('roomTypeSelections');
+        const newRoomTypeItem = document.createElement('div');
+        newRoomTypeItem.className = 'room-type-item';
+        newRoomTypeItem.style.cssText = 'background: rgba(255,255,255,0.1); padding: 15px; margin-bottom: 10px; border-radius: 8px;';
+        
+        newRoomTypeItem.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="color: #fff; font-weight: 600;">Loại phòng:</label>
+                <button type="button" onclick="removeRoomType(this)" style="background: #ff4757; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Xóa</button>
+            </div>
+            <select class="room-type-select form-control booking-now-input custom-input-separated" onchange="updateMultiRoomPrice()" required>
+                <option value="">Chọn loại phòng</option>
+                <option value="single" data-price="1500000">Phòng giường đơn - 1,500,000 VNĐ</option>
+                <option value="double" data-price="2000000">Phòng giường đôi - 2,000,000 VNĐ</option>
+                <option value="suite" data-price="3000000">Phòng suite - 3,000,000 VNĐ</option>
+            </select>
+            <div style="margin-top: 10px;">
+                <label style="color: #fff; margin-right: 10px;">Số lượng:</label>
+                <select class="room-quantity-select form-control booking-now-input custom-input-separated" style="width: 80px; display: inline-block;" onchange="updateMultiRoomPrice()">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+        `;
+        
+        roomTypeSelections.appendChild(newRoomTypeItem);
+    }
+    
+    // Hàm xóa loại phòng
+    function removeRoomType(button) {
+        const roomTypeItem = button.closest('.room-type-item');
+        const roomTypeSelections = document.getElementById('roomTypeSelections');
+        
+        // Không cho phép xóa nếu chỉ còn 1 item
+        if (roomTypeSelections.children.length > 1) {
+            roomTypeItem.remove();
+            updateMultiRoomPrice();
+        } else {
+            alert('Phải có ít nhất 1 loại phòng!');
+        }
+    }
+    
+    // Hàm cập nhật giá cho combo nhiều loại phòng
+    function updateMultiRoomPrice() {
+        const roomTypeItems = document.querySelectorAll('.room-type-item');
+        let totalPrice = 0;
+        
+        roomTypeItems.forEach(item => {
+            const roomTypeSelect = item.querySelector('.room-type-select');
+            const quantitySelect = item.querySelector('.room-quantity-select');
+            
+            if (roomTypeSelect.value && quantitySelect.value) {
+                const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+                const price = parseInt(selectedOption.getAttribute('data-price')) || 0;
+                const quantity = parseInt(quantitySelect.value) || 0;
+                totalPrice += price * quantity;
+            }
+        });
+        
+        // Cập nhật hiển thị giá
+        const priceElement = document.getElementById('roomPrice');
+        if (priceElement) {
+            priceElement.innerHTML = `<strong>${new Intl.NumberFormat('vi-VN').format(totalPrice)} VNĐ</strong>`;
+        }
+    }
+    
+    // Hàm set combo mặc định cho 3 khách
+    function setDefaultComboFor3Guests() {
+        // Clear existing selections
+        const roomTypeSelections = document.getElementById('roomTypeSelections');
+        roomTypeSelections.innerHTML = '';
+        
+        // Add double room
+        const doubleRoomItem = document.createElement('div');
+        doubleRoomItem.className = 'room-type-item';
+        doubleRoomItem.style.cssText = 'background: rgba(255,255,255,0.1); padding: 15px; margin-bottom: 10px; border-radius: 8px;';
+        doubleRoomItem.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="color: #fff; font-weight: 600;">Loại phòng:</label>
+                <button type="button" onclick="removeRoomType(this)" style="background: #ff4757; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Xóa</button>
+            </div>
+            <select class="room-type-select form-control booking-now-input custom-input-separated" onchange="updateMultiRoomPrice()" required>
+                <option value="">Chọn loại phòng</option>
+                <option value="single" data-price="1500000">Phòng giường đơn - 1,500,000 VNĐ</option>
+                <option value="double" data-price="2000000" selected>Phòng giường đôi - 2,000,000 VNĐ</option>
+                <option value="suite" data-price="3000000">Phòng suite - 3,000,000 VNĐ</option>
+            </select>
+            <div style="margin-top: 10px;">
+                <label style="color: #fff; margin-right: 10px;">Số lượng:</label>
+                <select class="room-quantity-select form-control booking-now-input custom-input-separated" style="width: 80px; display: inline-block;" onchange="updateMultiRoomPrice()">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+        `;
+        
+        // Add single room
+        const singleRoomItem = document.createElement('div');
+        singleRoomItem.className = 'room-type-item';
+        singleRoomItem.style.cssText = 'background: rgba(255,255,255,0.1); padding: 15px; margin-bottom: 10px; border-radius: 8px;';
+        singleRoomItem.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="color: #fff; font-weight: 600;">Loại phòng:</label>
+                <button type="button" onclick="removeRoomType(this)" style="background: #ff4757; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Xóa</button>
+            </div>
+            <select class="room-type-select form-control booking-now-input custom-input-separated" onchange="updateMultiRoomPrice()" required>
+                <option value="">Chọn loại phòng</option>
+                <option value="single" data-price="1500000" selected>Phòng giường đơn - 1,500,000 VNĐ</option>
+                <option value="double" data-price="2000000">Phòng giường đôi - 2,000,000 VNĐ</option>
+                <option value="suite" data-price="3000000">Phòng suite - 3,000,000 VNĐ</option>
+            </select>
+            <div style="margin-top: 10px;">
+                <label style="color: #fff; margin-right: 10px;">Số lượng:</label>
+                <select class="room-quantity-select form-control booking-now-input custom-input-separated" style="width: 80px; display: inline-block;" onchange="updateMultiRoomPrice()">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+        `;
+        
+        roomTypeSelections.appendChild(doubleRoomItem);
+        roomTypeSelections.appendChild(singleRoomItem);
+        
+        updateMultiRoomPrice();
     }
 </script>
 </body>

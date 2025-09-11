@@ -89,6 +89,7 @@ public class AdminBookingService {
             booking.setTongThanhToan(bookingDTO.getTongThanhToan());
             booking.setTrangThaiDatPhong(bookingDTO.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.fromString(bookingDTO.getTrangThaiDatPhong()) : null);
             booking.setGhiChuKhachHang(bookingDTO.getGhiChuKhachHang());
+            booking.setYeuCauDacBiet(bookingDTO.getYeuCauDacBiet());
             Booking savedBooking = bookingRepository.save(booking);
             return convertToDTO(savedBooking);
         }
@@ -114,6 +115,7 @@ public class AdminBookingService {
         dto.setTongThanhToan(booking.getTongThanhToan());
         dto.setTrangThaiDatPhong(booking.getTrangThaiDatPhong() != null ? booking.getTrangThaiDatPhong().name() : null);
         dto.setGhiChuKhachHang(booking.getGhiChuKhachHang());
+        dto.setYeuCauDacBiet(booking.getYeuCauDacBiet());
         dto.setCreatedDate(booking.getCreatedDate());
         // Set roomNumber and roomTypeName from BookingDetail if available
         java.util.List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
@@ -229,4 +231,4 @@ public class AdminBookingService {
             this.payments = payments;
         }
     }
-} 
+}

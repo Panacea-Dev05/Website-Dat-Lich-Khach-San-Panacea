@@ -56,7 +56,8 @@
                          data-ngaytra=${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')},
                          data-tongtien=${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')},
                          data-trangthai=${booking.trangThaiDatPhong},
-                         data-nhanvienta=${booking.tenNhanVienTao}" class="booking-row" style="cursor:pointer;">
+                         data-nhanvienta=${booking.tenNhanVienTao},
+                         data-yeucaudacbiet=${booking.yeuCauDacBiet}" class="booking-row" style="cursor:pointer;">
               <td th:text="${stat.count}">1</td>
               <td th:text="${booking.maDatPhong}">BK001</td>
               <td th:text="${booking.customerName != null ? booking.customerName : 'Không rõ'}">
@@ -170,6 +171,7 @@
                 <div><b>Tổng tiền:</b> ${row.getAttribute('data-tongtien') || ''} VNĐ</div>
                 <div><b>Trạng thái:</b> ${row.getAttribute('data-trangthai') || ''}</div>
                 <div><b>Nhân viên tạo:</b> ${row.getAttribute('data-nhanvienta') || ''}</div>
+                <div><b>Yêu cầu đặc biệt:</b> ${row.getAttribute('data-yeucaudacbiet') || 'Không có'}</div>
               </div>
             </div>
             ${servicesHtml}

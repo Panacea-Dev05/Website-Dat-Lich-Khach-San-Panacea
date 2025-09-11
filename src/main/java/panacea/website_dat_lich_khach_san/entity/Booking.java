@@ -77,6 +77,9 @@ public class Booking {
     @Column(name = "ghi_chu_khach_hang", length = 500)
     private String ghiChuKhachHang;
 
+    @Column(name = "yeu_cau_dac_biet", length = 1000)
+    private String yeuCauDacBiet;
+
     @Column(name = "ghi_chu_noi_bo", length = 500)
     private String ghiChuNoiBo;
 

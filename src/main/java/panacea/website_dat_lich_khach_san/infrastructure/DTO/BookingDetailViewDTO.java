@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.infrastructure.DTO;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -38,7 +39,11 @@ public class BookingDetailViewDTO {
     // Thông tin khách sạn
     private String hotelName;
     
-    // Thông tin phòng
+    // Thông tin phòng - cập nhật để hỗ trợ nhiều phòng
+    private List<String> roomNumbers;
+    private List<String> roomTypeNames;
+    
+    // Giữ lại để tương thích ngược
     private String roomNumber;
     private String roomTypeName;
 
@@ -68,12 +73,30 @@ public class BookingDetailViewDTO {
             dto.setCustomerEmail(booking.getKhachHang().getEmail());
             dto.setCustomerPhone(booking.getKhachHang().getSoDienThoai());
         }
-        // Set room info from BookingDetail
-        if (details != null && !details.isEmpty() && details.get(0).getRoom() != null) {
-            Room room = details.get(0).getRoom();
-            dto.setRoomNumber(room.getSoPhong());
-            if (room.getRoomType() != null) {
-                dto.setRoomTypeName(room.getRoomType().getTenLoaiPhong());
+        // Set room info from BookingDetail - hỗ trợ nhiều phòng
+        if (details != null && !details.isEmpty()) {
+            List<String> roomNumbers = new ArrayList<>();
+            List<String> roomTypeNames = new ArrayList<>();
+            
+            for (BookingDetail detail : details) {
+                if (detail.getRoom() != null) {
+                    Room room = detail.getRoom();
+                    roomNumbers.add(room.getSoPhong());
+                    if (room.getRoomType() != null) {
+                        roomTypeNames.add(room.getRoomType().getTenLoaiPhong());
+                    } else {
+                        roomTypeNames.add("Không xác định");
+                    }
+                }
+            }
+            
+            dto.setRoomNumbers(roomNumbers);
+            dto.setRoomTypeNames(roomTypeNames);
+            
+            // Giữ lại để tương thích ngược - lấy phòng đầu tiên
+            if (!roomNumbers.isEmpty()) {
+                dto.setRoomNumber(roomNumbers.get(0));
+                dto.setRoomTypeName(roomTypeNames.get(0));
             }
         }
         // Set tiền cọc
@@ -87,4 +110,4 @@ public class BookingDetailViewDTO {
         dto.setServiceUsages(serviceUsages);
         return dto;
     }
-} 
+}

@@ -6,6 +6,7 @@ import java.util.List;
 
 import lombok.Data;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 
 @Data
 public class RoomTypeDTO {
@@ -47,4 +48,18 @@ public class RoomTypeDTO {
         dto.setLastModifiedDate(roomType.getLastModifiedDate());
         return dto;
     }
-} 
+    
+    public static RoomTypeDTO fromEntityWithPricing(RoomType roomType, List<RoomPricing> pricings) {
+        RoomTypeDTO dto = fromEntity(roomType);
+        
+        if (pricings != null && !pricings.isEmpty()) {
+            // Lấy giá đầu tiên (có thể cải thiện logic này để lấy giá hiện tại)
+            RoomPricing pricing = pricings.get(0);
+            dto.setGiaGio(pricing.getGiaGio());
+            dto.setGiaNgay(pricing.getGiaNgay());
+            dto.setGiaQuaDem(pricing.getGiaQuaDem());
+        }
+        
+        return dto;
+    }
+}
