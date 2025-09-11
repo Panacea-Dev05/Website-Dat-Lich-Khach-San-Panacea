@@ -99,8 +99,13 @@ public class KhachHangService {
                 return customerRepository.save(c);
             });
 
+            // Get hotel (assuming single hotel model)
+            Hotel hotel = hotelRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
+
             Booking booking = new Booking();
             booking.setKhachHang(customer);
+            booking.setHotel(hotel);
             booking.setNgayNhanPhong(dto.getNgayNhanPhong());
             booking.setNgayTraPhong(dto.getNgayTraPhong());
             booking.setSoNguoiLon(dto.getSoNguoiLon());
@@ -427,9 +432,14 @@ public class KhachHangService {
                 return customerRepository.save(c);
             });
             
+            // Get hotel (assuming single hotel model)
+            Hotel hotel = hotelRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
+
             // Tạo booking chính cho combo
             Booking mainBooking = new Booking();
             mainBooking.setKhachHang(customer);
+            mainBooking.setHotel(hotel);
             mainBooking.setNgayNhanPhong(dto.getNgayNhanPhong());
             mainBooking.setNgayTraPhong(dto.getNgayTraPhong());
             mainBooking.setSoNguoiLon(dto.getSoNguoiLon());

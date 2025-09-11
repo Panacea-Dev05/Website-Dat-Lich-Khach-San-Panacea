@@ -38,6 +38,10 @@ public class Booking {
     @JoinColumn(name = "loai_phong_id")
     private RoomType roomType;
 
+    @ManyToOne
+    @JoinColumn(name = "khach_san_id", nullable = false)
+    private Hotel hotel;
+
     @Column(name = "ngay_nhan_phong", nullable = false)
     private LocalDate ngayNhanPhong;
 

@@ -8,6 +8,7 @@ import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.repository.*;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
@@ -66,6 +67,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private CancellationService cancellationServiceBean;
+    
+    @Autowired
+    private HotelRepository hotelRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -371,9 +375,14 @@ public class QuanLyDatPhongService {
                 rooms.add(room);
             }
             
+            // Get hotel (assuming single hotel model)
+            Hotel hotel = hotelRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
+
             // Create booking
             Booking booking = new Booking();
             booking.setKhachHang(customer);
+            booking.setHotel(hotel);
             Object ngayNhanPhongObj = requestData.get("ngayNhanPhong");
             if (ngayNhanPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayNhanPhong trong requestData");
             booking.setNgayNhanPhong(LocalDate.parse(ngayNhanPhongObj.toString()));
