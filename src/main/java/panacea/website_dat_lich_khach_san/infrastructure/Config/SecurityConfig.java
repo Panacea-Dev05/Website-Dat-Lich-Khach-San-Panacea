@@ -118,18 +118,82 @@ public class SecurityConfig {
             }
 
             // 3. Nếu chưa có, tạo mới customer
-            Customer newCustomer = new Customer();
-            newCustomer.setEmail(email);
-            newCustomer.setHo(name != null ? name.split(" ")[0] : "");
-            newCustomer.setTen(name != null && name.split(" ").length > 1 ? name.substring(name.indexOf(" ") + 1) : "");
-            newCustomer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
-            newCustomer.setLoaiKhachHang("CA_NHAN");
-            newCustomer.setMatKhauHash(""); // Không cần mật khẩu cho Google login
-            // Sinh mã khách hàng tự động
-            newCustomer.setMaKhachHang(generateCustomerCode());
-            // Log giá trị trạng thái để debug
-            System.out.println("[DEBUG] TrangThai insert: " + newCustomer.getTrangThai() + " - DB value: " + newCustomer.getTrangThai().getValue());
-            customerRepository.save(newCustomer);
+            try {
+                Customer newCustomer = new Customer();
+                
+                // Validate email
+                if (email == null || email.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Email không được để trống");
+                }
+                newCustomer.setEmail(email.trim());
+                
+                // Xử lý tên an toàn hơn với validation
+                if (name != null && !name.trim().isEmpty()) {
+                    String[] nameParts = name.trim().split("\\s+");
+                    String ho = nameParts[0].length() > 50 ? nameParts[0].substring(0, 50) : nameParts[0];
+                    newCustomer.setHo(ho);
+                    
+                    if (nameParts.length > 1) {
+                        String ten = String.join(" ", java.util.Arrays.copyOfRange(nameParts, 1, nameParts.length));
+                        ten = ten.length() > 50 ? ten.substring(0, 50) : ten;
+                        newCustomer.setTen(ten);
+                    } else {
+                        newCustomer.setTen("User"); // Tên mặc định
+                    }
+                } else {
+                    newCustomer.setHo("Google");
+                    newCustomer.setTen("User");
+                }
+                
+                // Validate required fields
+                if (newCustomer.getHo() == null || newCustomer.getHo().trim().isEmpty()) {
+                    newCustomer.setHo("Google");
+                }
+                if (newCustomer.getTen() == null || newCustomer.getTen().trim().isEmpty()) {
+                    newCustomer.setTen("User");
+                }
+                
+                // Set other required fields
+                newCustomer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
+                newCustomer.setLoaiKhachHang(LoaiKhachHang.CA_NHAN.getDbValue()); // Sử dụng enum value "Cá nhân"
+                newCustomer.setMatKhauHash("GOOGLE_OAUTH"); // Đánh dấu tài khoản Google OAuth
+                newCustomer.setDiemTichLuy(0); // Đảm bảo điểm tích lũy được set
+                
+                // Sinh mã khách hàng tự động với retry logic
+                String customerCode = generateUniqueCustomerCode();
+                newCustomer.setMaKhachHang(customerCode);
+                
+                // Set UUID và timestamps (sẽ được set trong @PrePersist nhưng đảm bảo)
+                newCustomer.setUuidId(java.util.UUID.randomUUID());
+                long currentTime = System.currentTimeMillis();
+                newCustomer.setCreatedDate(currentTime);
+                newCustomer.setLastModifiedDate(currentTime);
+                
+                // Log chi tiết để debug
+                System.out.println("[DEBUG] Creating new Google customer:");
+                System.out.println("[DEBUG] Email: " + email);
+                System.out.println("[DEBUG] Ho: '" + newCustomer.getHo() + "' (length: " + newCustomer.getHo().length() + ")");
+                System.out.println("[DEBUG] Ten: '" + newCustomer.getTen() + "' (length: " + newCustomer.getTen().length() + ")");
+                System.out.println("[DEBUG] MaKhachHang: '" + newCustomer.getMaKhachHang() + "' (length: " + newCustomer.getMaKhachHang().length() + ")");
+                System.out.println("[DEBUG] TrangThai: " + newCustomer.getTrangThai() + " - DB value: " + newCustomer.getTrangThai().getValue());
+                System.out.println("[DEBUG] DiemTichLuy: " + newCustomer.getDiemTichLuy());
+                System.out.println("[DEBUG] MatKhauHash: " + newCustomer.getMatKhauHash());
+                
+                // Validate before save
+                validateCustomerBeforeSave(newCustomer);
+                
+                Customer savedCustomer = customerRepository.save(newCustomer);
+                System.out.println("[DEBUG] Customer saved successfully with ID: " + savedCustomer.getId());
+                
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to create Google OAuth customer: " + e.getMessage());
+                System.err.println("[ERROR] Exception type: " + e.getClass().getSimpleName());
+                if (e.getCause() != null) {
+                    System.err.println("[ERROR] Root cause: " + e.getCause().getMessage());
+                }
+                e.printStackTrace();
+                throw new RuntimeException("Failed to create customer account: " + e.getMessage(), e);
+            }
 
             return new DefaultOAuth2User(
                     List.of(new SimpleGrantedAuthority("ROLE_KHACHHANG")),
@@ -139,8 +203,59 @@ public class SecurityConfig {
         };
     }
 
-    // Thêm hàm sinh mã khách hàng tự động
-    private String generateCustomerCode() {
-        return "KH" + System.currentTimeMillis();
+    // Thêm hàm sinh mã khách hàng tự động với retry logic
+    private String generateUniqueCustomerCode() {
+        int maxRetries = 5;
+        for (int i = 0; i < maxRetries; i++) {
+            String code = "KH" + System.currentTimeMillis() + (i > 0 ? "_" + i : "");
+            if (!customerRepository.existsByMaKhachHang(code)) {
+                return code;
+            }
+            try {
+                Thread.sleep(1); // Wait 1ms to ensure different timestamp
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        throw new RuntimeException("Unable to generate unique customer code after " + maxRetries + " attempts");
+    }
+    
+    // Validate customer before save
+    private void validateCustomerBeforeSave(Customer customer) {
+        if (customer.getEmail() == null || customer.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (customer.getHo() == null || customer.getHo().trim().isEmpty()) {
+            throw new IllegalArgumentException("Ho (first name) is required");
+        }
+        if (customer.getTen() == null || customer.getTen().trim().isEmpty()) {
+            throw new IllegalArgumentException("Ten (last name) is required");
+        }
+        if (customer.getMaKhachHang() == null || customer.getMaKhachHang().trim().isEmpty()) {
+            throw new IllegalArgumentException("MaKhachHang (customer code) is required");
+        }
+        if (customer.getMatKhauHash() == null || customer.getMatKhauHash().trim().isEmpty()) {
+            throw new IllegalArgumentException("MatKhauHash (password hash) is required");
+        }
+        if (customer.getTrangThai() == null) {
+            throw new IllegalArgumentException("TrangThai (status) is required");
+        }
+        
+        // Check length constraints
+        if (customer.getMaKhachHang().length() > 20) {
+            throw new IllegalArgumentException("MaKhachHang too long (max 20 characters)");
+        }
+        if (customer.getHo().length() > 50) {
+            throw new IllegalArgumentException("Ho too long (max 50 characters)");
+        }
+        if (customer.getTen().length() > 50) {
+            throw new IllegalArgumentException("Ten too long (max 50 characters)");
+        }
+        if (customer.getEmail().length() > 100) {
+            throw new IllegalArgumentException("Email too long (max 100 characters)");
+        }
+        if (customer.getMatKhauHash().length() > 255) {
+            throw new IllegalArgumentException("MatKhauHash too long (max 255 characters)");
+        }
     }
 }
