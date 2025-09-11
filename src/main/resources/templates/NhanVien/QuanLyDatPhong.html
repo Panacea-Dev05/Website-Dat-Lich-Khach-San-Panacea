@@ -10,11 +10,27 @@
     <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         :root {
-            --color-bg: #f9fafb;
-            --color-text: #1f2937;
-            --color-accent: #10b981;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-dark: #1e40af;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --color-bg: var(--gray-50);
+            --color-text: var(--gray-800);
+            --color-accent: var(--success-color);
             --color-accent-dark: #059669;
-            --color-border: #d1d5db;
+            --color-border: var(--gray-300);
             --color-table-head: #d1fae5;
             --color-head-text: #065f46;
             --color-hover: #a7f3d0;
@@ -23,8 +39,8 @@
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            background: var(--color-bg);
-            color: var(--color-text);
+            background: #f8fafc;
+            color: #1e293b;
         }
 
         header {
@@ -337,7 +353,7 @@
                             <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}"></td>
                             <td th:text="${booking.soNguoiLon + ' người lớn, ' + booking.soTreEm + ' trẻ em'}"></td>
                             <td th:text="${booking.tienCoc != null ? #numbers.formatDecimal(booking.tienCoc, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}"></td>
-                            <td th:text="${booking.tongThanhToan != null && booking.tienCoc != null && booking.daTraCoc && booking.loaiThue == 'ngay' ? #numbers.formatDecimal(booking.tongThanhToan - booking.tienCoc, 0, 'COMMA', 0, 'POINT') + ' VND' : (booking.tongThanhToan != null ? #numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND')}"></td>
+                            <td th:text="${booking.tongThanhToan != null ? #numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}"></td>
                             <td>
                                 <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
                                        booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
@@ -476,10 +492,23 @@
                     <h3 style="color: #374151; margin-bottom: 0.5rem;">Thông tin đặt phòng</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Hạng phòng:</label>
+                            <select id="roomTypeSelect" onchange="loadRoomsByType()" 
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 10px;">
+                                <option value="">Chọn hạng phòng</option>
+                            </select>
+                            <div id="roomTypePricing" style="margin-bottom: 10px; padding: 8px; background: #f9fafb; border-radius: 6px; display: none;">
+                                <div style="font-size: 12px; color: #374151; font-weight: 500; margin-bottom: 4px;">Giá phòng:</div>
+                                <div style="display: flex; gap: 10px; font-size: 11px;">
+                                    <span id="pricePerDay">Ngày: 0 VND</span>
+                                    <span id="pricePerHour">Giờ: 0 VND</span>
+                                    <span id="priceOvernight">Qua đêm: 0 VND</span>
+                                </div>
+                            </div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng (có thể chọn nhiều):</label>
                             <div id="roomSelect" class="room-selection-container" 
                                 style="width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px; background: white;">
-                                <div class="room-loading">Đang tải danh sách phòng...</div>
+                                <div class="room-loading">Vui lòng chọn hạng phòng trước</div>
                             </div>
                             <div class="selected-rooms-summary" style="margin-top: 8px; font-size: 14px; color: #666;">
                                 <span id="selectedRoomsCount">Chưa chọn phòng nào</span>
@@ -497,6 +526,28 @@
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
                         </div>
                         <div>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Loại đặt phòng:</label>
+                            <select id="bookingType" onchange="toggleHourInput(); calculatePrice();" 
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                <option value="">Chọn loại đặt phòng</option>
+                                <option value="DAY">Theo ngày</option>
+                                <option value="HOUR">Theo giờ</option>
+                                <option value="OVERNIGHT">Qua đêm</option>
+                            </select>
+                        </div>
+                        <div id="hourInputContainer" style="display: none;">
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số giờ thuê:</label>
+                            <input type="number" id="hourCount" min="1" max="24" value="1" onchange="calculatePrice()"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <small style="color: #666; font-size: 12px;">Tối thiểu 1 giờ, tối đa 24 giờ</small>
+                        </div>
+                        <div id="dayInputContainer" style="display: none;">
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số ngày thuê:</label>
+                            <input type="number" id="dayCount" min="1" max="30" value="1" onchange="calculatePrice()"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <small style="color: #666; font-size: 12px;">Tối thiểu 1 ngày, tối đa 30 ngày</small>
+                        </div>
+                        <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số người lớn:</label>
                             <input type="number" id="adultCount" min="1" value="1"
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
@@ -507,6 +558,12 @@
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Hiển thị tổng giá tiền -->
+                <div id="totalPriceSection" style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px; display: none;">
+                    <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">Tổng giá tiền</h4>
+                    <div id="totalPrice" style="font-size: 18px; font-weight: bold; color: #0369a1;">0 VND</div>
                 </div>
             </div>
             
@@ -669,19 +726,38 @@
                     const isComboBooking = booking.maDatPhong && booking.maDatPhong.startsWith('COMBO');
                     
                     let content = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                        <div>
-                            <p><strong>Mã đặt phòng:</strong> ${booking.maDatPhong}</p>
-                            ${isComboBooking ? '<p><strong>Loại:</strong> <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">COMBO PHÒNG</span></p>' : ''}
-                            <p><strong>Khách hàng:</strong> ${booking.customerName || booking.khachHang}</p>
-                            <p><strong>Ngày nhận phòng:</strong> ${booking.ngayNhanPhong || booking.ngayNhan}</p>
-                            <p><strong>Ngày trả phòng:</strong> ${booking.ngayTraPhong || booking.ngayTra}</p>
+                    <!-- Thông tin booking -->
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="margin: 0 0 1rem 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem;">📋 Thông tin đặt phòng</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <p style="margin: 0.5rem 0;"><strong>Mã đặt phòng:</strong> ${booking.maDatPhong}</p>
+                                ${isComboBooking ? '<p style="margin: 0.5rem 0;"><strong>Loại:</strong> <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">COMBO PHÒNG</span></p>' : ''}
+                                <p style="margin: 0.5rem 0;"><strong>Ngày nhận phòng:</strong> ${booking.ngayNhanPhong || booking.ngayNhan}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Ngày trả phòng:</strong> ${booking.ngayTraPhong || booking.ngayTra}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0.5rem 0;"><strong>Số người lớn:</strong> ${booking.soNguoiLon}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Số trẻ em:</strong> ${booking.soTreEm}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Tổng thanh toán:</strong> ${new Intl.NumberFormat('vi-VN').format(booking.tongThanhToan)} VND</p>
+                                <p style="margin: 0.5rem 0;"><strong>Trạng thái:</strong> ${booking.trangThaiDatPhong || booking.trangThai}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p><strong>Số người lớn:</strong> ${booking.soNguoiLon}</p>
-                            <p><strong>Số trẻ em:</strong> ${booking.soTreEm}</p>
-                            <p><strong>Tổng thanh toán:</strong> ${new Intl.NumberFormat('vi-VN').format(booking.tongThanhToan)} VND</p>
-                            <p><strong>Trạng thái:</strong> ${booking.trangThaiDatPhong || booking.trangThai}</p>
+                    </div>
+                    
+                    <!-- Thông tin khách hàng -->
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="margin: 0 0 1rem 0; color: #1565c0; border-bottom: 2px solid #bbdefb; padding-bottom: 0.5rem;">👤 Thông tin khách hàng</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <p style="margin: 0.5rem 0;"><strong>Họ tên:</strong> ${booking.customerName || booking.khachHang}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Email:</strong> ${booking.customerEmail || 'Chưa có thông tin'}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Số điện thoại:</strong> ${booking.customerPhone || 'Chưa có thông tin'}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0.5rem 0;"><strong>CMND/CCCD:</strong> ${booking.customerCmndCccd || 'Chưa có thông tin'}</p>
+                                <p style="margin: 0.5rem 0;"><strong>Địa chỉ:</strong> ${booking.customerAddress || 'Chưa có thông tin'}</p>
+                            </div>
                         </div>
                     </div>`;
                     
@@ -878,7 +954,7 @@
                 console.log('Setting modal display to block');
                 modal.style.display = 'block';
                 console.log('Modal display style:', modal.style.display);
-                loadAvailableRooms(); // Luôn load phòng khi mở modal
+                loadAvailableRoomTypes(); // Load hạng phòng khi mở modal
             } else {
                 console.error('Modal not found');
                 // Try to find all modals
@@ -910,7 +986,103 @@
             }
         }
 
-        // Hàm load phòng có sẵn
+        // Hàm load hạng phòng có sẵn
+        function loadAvailableRoomTypes() {
+            console.log('loadAvailableRoomTypes called');
+            fetch(`/nhanvien/quanlydatphong/room-types/available?t=${Date.now()}`)
+                .then(response => response.json())
+                .then(roomTypes => {
+                    console.log('Room types loaded:', roomTypes);
+                    const roomTypeSelect = document.getElementById('roomTypeSelect');
+                    if (roomTypeSelect) {
+                        roomTypeSelect.innerHTML = '<option value="">Chọn hạng phòng</option>';
+                        roomTypes.forEach(roomType => {
+                            const option = document.createElement('option');
+                            option.value = roomType.id;
+                            option.textContent = `${roomType.tenLoaiPhong} (${roomType.availableRooms} phòng trống)`;
+                            option.dataset.giaTheoNgay = roomType.giaTheoNgay;
+                            option.dataset.giaTheoGio = roomType.giaTheoGio;
+                            option.dataset.giaQuaDem = roomType.giaQuaDem;
+                            roomTypeSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading room types:', error);
+                });
+        }
+        
+        // Hàm load phòng theo hạng phòng
+        function loadRoomsByType() {
+            const roomTypeSelect = document.getElementById('roomTypeSelect');
+            const roomTypePricing = document.getElementById('roomTypePricing');
+            const roomSelect = document.getElementById('roomSelect');
+            
+            if (!roomTypeSelect.value) {
+                roomSelect.innerHTML = '<div class="room-loading">Vui lòng chọn hạng phòng trước</div>';
+                roomTypePricing.style.display = 'none';
+                updateSelectedRoomsCount();
+                return;
+            }
+            
+            // Hiển thị giá phòng
+            const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.giaTheoNgay) {
+                const formatter = new Intl.NumberFormat('vi-VN');
+                document.getElementById('pricePerDay').textContent = `Ngày: ${formatter.format(selectedOption.dataset.giaTheoNgay)} VND`;
+                document.getElementById('pricePerHour').textContent = `Giờ: ${formatter.format(selectedOption.dataset.giaTheoGio)} VND`;
+                document.getElementById('priceOvernight').textContent = `Qua đêm: ${formatter.format(selectedOption.dataset.giaQuaDem)} VND`;
+                roomTypePricing.style.display = 'block';
+            }
+            
+            // Load phòng theo loại
+            roomSelect.innerHTML = '<div class="room-loading">Đang tải danh sách phòng...</div>';
+            
+            fetch(`/nhanvien/quanlydatphong/rooms/available?roomTypeId=${roomTypeSelect.value}&t=${Date.now()}`)
+                .then(response => response.json())
+                .then(rooms => {
+                    console.log('Rooms loaded for type:', rooms);
+                    if (roomSelect) {
+                        roomSelect.innerHTML = '';
+                        if (rooms.length === 0) {
+                            roomSelect.innerHTML = '<div class="room-loading">Không có phòng trống cho hạng phòng này</div>';
+                            return;
+                        }
+                        
+                        rooms.forEach(room => {
+                            const roomItem = document.createElement('div');
+                            roomItem.style.cssText = 'margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb;';
+                            
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `room_${room.id}`;
+                            checkbox.value = room.id;
+                            checkbox.className = 'room-checkbox';
+                            checkbox.style.marginRight = '8px';
+                            checkbox.addEventListener('change', function() {
+                                updateSelectedRoomsCount();
+                                calculatePrice();
+                            });
+                            
+                            const label = document.createElement('label');
+                            label.htmlFor = `room_${room.id}`;
+                            label.textContent = `Phòng ${room.soPhong} - ${room.roomType}`;
+                            label.style.cursor = 'pointer';
+                            
+                            roomItem.appendChild(checkbox);
+                            roomItem.appendChild(label);
+                            roomSelect.appendChild(roomItem);
+                        });
+                        updateSelectedRoomsCount();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading rooms:', error);
+                    roomSelect.innerHTML = '<div class="room-loading">Lỗi khi tải danh sách phòng</div>';
+                });
+        }
+
+        // Hàm load phòng có sẵn (giữ lại cho tương thích)
         function loadAvailableRooms() {
             console.log('loadAvailableRooms called');
             fetch(`/nhanvien/quanlydatphong/rooms/available?t=${Date.now()}`)
@@ -935,7 +1107,8 @@
                             
                             const label = document.createElement('label');
                             label.htmlFor = `room_${room.id}`;
-                            label.textContent = `${room.soPhong} - ${room.roomType?.tenLoaiPhong || 'N/A'} - ${room.giaCoBan || 0} VND`;
+                            const price = room.giaCoBan ? new Intl.NumberFormat('vi-VN').format(room.giaCoBan) : '0';
+                            label.textContent = `${room.soPhong} - ${room.roomType || 'N/A'} - ${price} VND`;
                             label.style.cursor = 'pointer';
                             
                             roomItem.appendChild(checkbox);
@@ -967,19 +1140,132 @@
                 summaryElement.style.color = '#059669';
             }
         }
+        
+        // Alias cho tương thích
+        function updateSelectedRoomsCount() {
+            updateSelectedRoomsSummary();
+            calculatePrice();
+        }
+        
+        // Hàm hiển thị/ẩn trường nhập số giờ/ngày
+        function toggleHourInput() {
+            const bookingType = document.getElementById('bookingType').value;
+            const hourInputContainer = document.getElementById('hourInputContainer');
+            const dayInputContainer = document.getElementById('dayInputContainer');
+            
+            // Ẩn tất cả các container trước
+            hourInputContainer.style.display = 'none';
+            dayInputContainer.style.display = 'none';
+            
+            // Hiển thị container phù hợp
+            if (bookingType === 'HOUR') {
+                hourInputContainer.style.display = 'block';
+            } else if (bookingType === 'DAY') {
+                dayInputContainer.style.display = 'block';
+                // Tự động tính số ngày khi chuyển sang loại đặt theo ngày
+                updateDayCount();
+            }
+        }
+        
+        // Hàm tự động cập nhật số ngày thuê dựa trên ngày nhận và trả phòng
+        function updateDayCount() {
+            const checkInDate = new Date(document.getElementById('checkInDate').value);
+            const checkOutDate = new Date(document.getElementById('checkOutDate').value);
+            const dayCountElement = document.getElementById('dayCount');
+            
+            if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                const actualDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                dayCountElement.value = actualDays;
+            } else {
+                dayCountElement.value = 1;
+            }
+        }
+        
+        // Hàm tính giá theo loại đặt phòng
+        function calculatePrice() {
+            const bookingType = document.getElementById('bookingType').value;
+            const roomTypeSelect = document.getElementById('roomTypeSelect');
+            const checkboxes = document.querySelectorAll('.room-checkbox:checked');
+            const totalPriceSection = document.getElementById('totalPriceSection');
+            const totalPriceElement = document.getElementById('totalPrice');
+            
+            if (!bookingType || !roomTypeSelect.value || checkboxes.length === 0) {
+                totalPriceSection.style.display = 'none';
+                return;
+            }
+            
+            const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+            let pricePerRoom = 0;
+            
+            // Lấy giá theo loại đặt phòng
+            switch(bookingType) {
+                case 'DAY':
+                    pricePerRoom = parseInt(selectedOption.dataset.giaTheoNgay) || 0;
+                    // Tính số ngày thực tế từ ngày nhận và ngày trả
+                    const checkInDate = new Date(document.getElementById('checkInDate').value);
+                    const checkOutDate = new Date(document.getElementById('checkOutDate').value);
+                    let actualDays = 1;
+                    if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                        const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                        actualDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        // Tự động cập nhật trường số ngày thuê
+                        document.getElementById('dayCount').value = actualDays;
+                    }
+                    pricePerRoom = pricePerRoom * actualDays;
+                    break;
+                case 'HOUR':
+                    pricePerRoom = parseInt(selectedOption.dataset.giaTheoGio) || 0;
+                    // Nhân với số giờ nếu là booking theo giờ
+                    const hourCount = parseInt(document.getElementById('hourCount').value) || 1;
+                    pricePerRoom = pricePerRoom * hourCount;
+                    break;
+                case 'OVERNIGHT':
+                    pricePerRoom = parseInt(selectedOption.dataset.giaQuaDem) || 0;
+                    break;
+                default:
+                    pricePerRoom = 0;
+            }
+            
+            const totalPrice = pricePerRoom * checkboxes.length;
+            const formatter = new Intl.NumberFormat('vi-VN');
+            totalPriceElement.textContent = `${formatter.format(totalPrice)} VND`;
+            totalPriceSection.style.display = 'block';
+        }
 
         // Hàm thêm đặt phòng cho khách hàng
         function addCustomerBooking() {
             // Validate form
             const requiredFields = ['customerHo', 'customerTen', 'customerEmail', 'customerPhone',
                 'customerIdCard', 'customerAddress',
-                'checkInDate', 'checkOutDate', 'adultCount', 'childCount'];
+                'checkInDate', 'checkOutDate', 'adultCount', 'childCount', 'bookingType'];
 
             for (let field of requiredFields) {
                 const element = document.getElementById(field);
                 if (!element.value.trim()) {
                     alert('Vui lòng điền đầy đủ thông tin!');
                     element.focus();
+                    return;
+                }
+            }
+
+            // Validate số giờ nếu là booking theo giờ
+            const bookingType = document.getElementById('bookingType').value;
+            if (bookingType === 'HOUR') {
+                const hourCount = document.getElementById('hourCount').value;
+                if (!hourCount || parseInt(hourCount) < 1 || parseInt(hourCount) > 24) {
+                    alert('Vui lòng nhập số giờ hợp lệ (từ 1 đến 24 giờ)!');
+                    document.getElementById('hourCount').focus();
+                    return;
+                }
+            }
+
+            // Validate số ngày nếu là booking theo ngày
+            if (bookingType === 'DAY') {
+                const dayCount = document.getElementById('dayCount').value;
+                if (!dayCount || parseInt(dayCount) < 1 || parseInt(dayCount) > 30) {
+                    alert('Vui lòng nhập số ngày hợp lệ (từ 1 đến 30 ngày)!');
+                    document.getElementById('dayCount').focus();
                     return;
                 }
             }
@@ -1024,8 +1310,19 @@
                 ngayTraPhong: document.getElementById('checkOutDate').value,
                 soNguoiLon: parseInt(document.getElementById('adultCount').value),
                 soTreEm: parseInt(document.getElementById('childCount').value),
+                bookingType: document.getElementById('bookingType').value,
                 isWalkIn: true
             };
+            
+            // Thêm số giờ nếu là booking theo giờ
+            if (document.getElementById('bookingType').value === 'HOUR') {
+                bookingData.hourCount = parseInt(document.getElementById('hourCount').value) || 1;
+            }
+            
+            // Thêm số ngày nếu là booking theo ngày
+            if (document.getElementById('bookingType').value === 'DAY') {
+                bookingData.dayCount = parseInt(document.getElementById('dayCount').value) || 1;
+            }
 
             // Send request
             fetch('/nhanvien/quanlydatphong/add-customer', {
@@ -1295,6 +1592,27 @@
                 }
             });
         });
+        
+        // Thêm event listeners cho ngày nhận và ngày trả để tự động tính lại giá
+        // Thêm event listener cho các trường ngày trong form đặt phòng
+         document.getElementById('checkInDate').addEventListener('change', function() {
+             updateDayCount();
+             calculatePrice();
+         });
+         document.getElementById('checkOutDate').addEventListener('change', function() {
+             updateDayCount();
+             calculatePrice();
+         });
+        
+        // Giữ lại event listener cho các trường ngày cũ (nếu có)
+        const ngayNhanPhongElement = document.getElementById('ngayNhanPhong');
+        const ngayTraPhongElement = document.getElementById('ngayTraPhong');
+        if (ngayNhanPhongElement) {
+            ngayNhanPhongElement.addEventListener('change', calculatePrice);
+        }
+        if (ngayTraPhongElement) {
+            ngayTraPhongElement.addEventListener('change', calculatePrice);
+        }
     </script>
 
 </body>

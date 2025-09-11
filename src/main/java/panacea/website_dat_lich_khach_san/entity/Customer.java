@@ -62,7 +62,7 @@ public class Customer {
     @Column(name = "diem_tich_luy")
     private Integer diemTichLuy = 0;
 
-    @Column(name = "mat_khau_hash", length = 255, nullable = false)
+    @Column(name = "mat_khau_hash", length = 255, nullable = true)
     private String matKhauHash;
 
     @Convert(converter = TrangThaiCustomerConverter.class)

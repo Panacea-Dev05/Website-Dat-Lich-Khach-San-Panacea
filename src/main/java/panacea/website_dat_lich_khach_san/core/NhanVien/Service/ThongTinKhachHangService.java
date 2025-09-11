@@ -42,9 +42,8 @@ public class ThongTinKhachHangService {
         if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
-        if (dto.getMatKhauHash() == null || dto.getMatKhauHash().trim().isEmpty()) {
-            throw new IllegalArgumentException("Mật khẩu không được để trống");
-        }
+        // Mật khẩu không bắt buộc khi nhân viên đăng ký cho khách hàng
+        // Khách hàng sẽ tự tạo mật khẩu sau khi nhận được thông tin tài khoản
 
         // Kiểm tra email đã tồn tại chưa
         if (customerRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -60,7 +59,9 @@ public class ThongTinKhachHangService {
         customer.setGioiTinh(dto.getGioiTinh() != null ? Customer.GioiTinh.fromString(dto.getGioiTinh()) : null);
         customer.setQuocTich(dto.getQuocTich() != null ? dto.getQuocTich().trim() : null);
         customer.setDiaChi(dto.getDiaChi() != null ? dto.getDiaChi().trim() : null);
-        customer.setMatKhauHash(dto.getMatKhauHash().trim());
+        // Set mật khẩu mặc định cho tài khoản được tạo bởi nhân viên
+        customer.setMatKhauHash(dto.getMatKhauHash() != null && !dto.getMatKhauHash().trim().isEmpty() 
+            ? dto.getMatKhauHash().trim() : "TEMP_PASSWORD_" + System.currentTimeMillis());
         customer.setMaKhachHang("KH" + System.currentTimeMillis());
         customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
         customerRepository.save(customer);
@@ -123,7 +124,10 @@ public class ThongTinKhachHangService {
         c.setGioiTinh(dto.getGioiTinh() != null ? Customer.GioiTinh.fromString(dto.getGioiTinh()) : null);
         c.setQuocTich(dto.getQuocTich() != null ? dto.getQuocTich().trim() : null);
         c.setDiaChi(dto.getDiaChi() != null ? dto.getDiaChi().trim() : null);
-        c.setMatKhauHash(dto.getMatKhauHash().trim());
+        // Chỉ cập nhật mật khẩu nếu có giá trị mới
+        if (dto.getMatKhauHash() != null && !dto.getMatKhauHash().trim().isEmpty()) {
+            c.setMatKhauHash(dto.getMatKhauHash().trim());
+        }
         customerRepository.save(c);
     }
-} 
+}

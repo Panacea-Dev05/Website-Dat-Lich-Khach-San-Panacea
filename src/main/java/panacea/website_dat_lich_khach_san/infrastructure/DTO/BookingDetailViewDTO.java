@@ -35,6 +35,8 @@ public class BookingDetailViewDTO {
     private String customerName;
     private String customerEmail;
     private String customerPhone;
+    private String customerAddress;
+    private String customerCmndCccd;
     
     // Thông tin khách sạn
     private String hotelName;
@@ -72,6 +74,8 @@ public class BookingDetailViewDTO {
             dto.setCustomerName(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
             dto.setCustomerEmail(booking.getKhachHang().getEmail());
             dto.setCustomerPhone(booking.getKhachHang().getSoDienThoai());
+            dto.setCustomerAddress(booking.getKhachHang().getDiaChi());
+            dto.setCustomerCmndCccd(booking.getKhachHang().getSoCmndCccd());
         }
         // Set room info from BookingDetail - hỗ trợ nhiều phòng
         if (details != null && !details.isEmpty()) {
@@ -103,9 +107,8 @@ public class BookingDetailViewDTO {
         dto.setTienCoc(booking.getTienDatCoc());
         // Set đã trả cọc nếu có logic (ví dụ: booking.getTrangThaiThanhToan() == THANH_CONG)
         dto.setDaTraCoc(booking.getTrangThaiThanhToan() != null && booking.getTrangThaiThanhToan().name().contains("THANH_CONG"));
-        // Set loại thuê nếu có (chỉ set nếu booking có phương thức getLoaiThue)
-        // Bỏ qua nếu không có để tránh lỗi biên dịch
-        // if (booking.getLoaiThue() != null) dto.setLoaiThue(booking.getLoaiThue());
+        // Set loại thuê - mặc định là "ngay" cho tất cả booking
+        dto.setLoaiThue("ngay");
         // Set danh sách dịch vụ đã sử dụng
         dto.setServiceUsages(serviceUsages);
         return dto;

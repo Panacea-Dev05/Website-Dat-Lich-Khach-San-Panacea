@@ -42,6 +42,12 @@
                             <li><a th:href="@{/admin/staff}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/staff') ? 'active' : ''}">
                                           <span class="material-icons">badge</span> Quản lý nhân viên</a></li>
+                            <li><a th:href="@{/admin/inventory}"
+                                          th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/inventory') ? 'active' : ''}">
+                                          <span class="material-icons">warehouse</span> Quản lý kho</a></li>
+                            <li><a th:href="@{/admin/supply-requests}"
+                                          th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/supply-requests') ? 'active' : ''}">
+                                          <span class="material-icons">inventory</span> Quản lý yêu cầu bổ sung</a></li>
                             <li><a th:href="@{/admin/reports}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/reports') ? 'active' : ''}">
                                           <span class="material-icons">bar_chart</span> Báo cáo & Thống kê</a></li>

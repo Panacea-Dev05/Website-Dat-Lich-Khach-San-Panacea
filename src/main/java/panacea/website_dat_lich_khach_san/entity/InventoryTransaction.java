@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -48,6 +51,10 @@ public class InventoryTransaction {
 
     @Column(name = "ly_do", length = 200)
     private String lyDo;
+
+    @Convert(converter = panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDichJpaConverter.class)
+    @Column(name = "loai_giao_dich", length = 50)
+    private LoaiGiaoDich loaiGiaoDich;
 
     @Column(name = "nhan_vien_id")
     private Integer nhanVienId;

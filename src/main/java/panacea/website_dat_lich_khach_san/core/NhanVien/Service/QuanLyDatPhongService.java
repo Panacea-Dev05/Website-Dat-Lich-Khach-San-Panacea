@@ -8,7 +8,9 @@ import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.repository.*;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
@@ -66,6 +68,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private CancellationService cancellationServiceBean;
+
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -398,6 +403,19 @@ public class QuanLyDatPhongService {
             if (soTreEmObj == null) throw new IllegalArgumentException("Thiếu trường soTreEm trong requestData");
             booking.setSoTreEm(Byte.valueOf(soTreEmObj.toString()));
             
+            // Xử lý loại đặt phòng
+            Object bookingTypeObj = requestData.get("bookingType");
+            if (bookingTypeObj != null) {
+                try {
+                    Booking.BookingType bookingType = Booking.BookingType.fromString(bookingTypeObj.toString());
+                    booking.setBookingType(bookingType);
+                } catch (IllegalArgumentException e) {
+                    booking.setBookingType(Booking.BookingType.DAY); // Default
+                }
+            } else {
+                booking.setBookingType(Booking.BookingType.DAY); // Default
+            }
+            
             // Xử lý số giường
             Object soGiuongObj = requestData.get("soGiuong");
             if (soGiuongObj != null) {
@@ -405,6 +423,26 @@ public class QuanLyDatPhongService {
                 String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
                 ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số giường: " + soGiuongObj.toString();
                 booking.setGhiChuNoiBo(ghiChu);
+            }
+            
+            // Xử lý số giờ cho booking theo giờ
+            if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                Object hourCountObj = requestData.get("hourCount");
+                if (hourCountObj != null) {
+                    String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                    ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số giờ thuê: " + hourCountObj.toString();
+                    booking.setGhiChuNoiBo(ghiChu);
+                }
+            }
+            
+            // Xử lý số ngày cho booking theo ngày
+            if (booking.getBookingType() == Booking.BookingType.DAY) {
+                Object dayCountObj = requestData.get("dayCount");
+                if (dayCountObj != null) {
+                    String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                    ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số ngày thuê: " + dayCountObj.toString();
+                    booking.setGhiChuNoiBo(ghiChu);
+                }
             }
             
             // Lấy isWalkIn từ requestData
@@ -432,11 +470,81 @@ public class QuanLyDatPhongService {
                 LocalDate.parse(ngayNhanPhongObj.toString()),
                 LocalDate.parse(ngayTraPhongObj.toString())
             );
+            // Lấy số giờ từ requestData nếu là booking theo giờ
+            int hourCount = 1; // Mặc định 1 giờ
+            if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                Object hourCountObj = requestData.get("hourCount");
+                if (hourCountObj != null) {
+                    try {
+                        hourCount = Integer.parseInt(hourCountObj.toString());
+                        if (hourCount < 1) hourCount = 1;
+                        if (hourCount > 24) hourCount = 24;
+                    } catch (NumberFormatException e) {
+                        hourCount = 1;
+                    }
+                }
+            }
+            
+            // Tính số ngày thực tế từ ngày nhận và ngày trả
+            int actualDays = (int) days;
+            if (actualDays < 1) actualDays = 1; // Tối thiểu 1 ngày
+            
+            // Lấy số ngày từ requestData nếu là booking theo ngày (chỉ để lưu vào ghi chú)
+            int dayCount = actualDays; // Sử dụng số ngày thực tế
+            if (booking.getBookingType() == Booking.BookingType.DAY) {
+                Object dayCountObj = requestData.get("dayCount");
+                if (dayCountObj != null) {
+                    try {
+                        int inputDayCount = Integer.parseInt(dayCountObj.toString());
+                        // Chỉ lưu vào ghi chú, không dùng để tính giá
+                        if (inputDayCount != actualDays) {
+                            String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                            ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số ngày yêu cầu: " + inputDayCount + ", Số ngày thực tế: " + actualDays;
+                            booking.setGhiChuNoiBo(ghiChu);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid input
+                    }
+                }
+            }
+            
+            // Tính giá theo loại đặt phòng và RoomPricing
             BigDecimal tongThanhToan = BigDecimal.ZERO;
             for (Room room : rooms) {
-                tongThanhToan = tongThanhToan.add(room.getGiaCoBan().multiply(BigDecimal.valueOf(days)));
+                BigDecimal giaPhong = BigDecimal.ZERO;
+                
+                // Lấy giá từ RoomPricing theo loại đặt phòng
+                RoomPricing roomPricing = getRoomPricingByRoomTypeId(room.getRoomType().getId()).orElse(null);
+                if (roomPricing != null) {
+                    switch (booking.getBookingType()) {
+                        case DAY:
+                            giaPhong = roomPricing.getGiaNgay().multiply(BigDecimal.valueOf(dayCount));
+                            break;
+                        case HOUR:
+                            giaPhong = roomPricing.getGiaGio().multiply(BigDecimal.valueOf(hourCount));
+                            break;
+                        case OVERNIGHT:
+                            giaPhong = roomPricing.getGiaQuaDem();
+                            break;
+                        default:
+                            giaPhong = roomPricing.getGiaNgay();
+                    }
+                } else {
+                    // Fallback to basic price if no RoomPricing found
+                    giaPhong = room.getGiaCoBan();
+                    if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                        giaPhong = giaPhong.multiply(BigDecimal.valueOf(hourCount));
+                    } else if (booking.getBookingType() == Booking.BookingType.DAY) {
+                        giaPhong = giaPhong.multiply(BigDecimal.valueOf(dayCount));
+                    }
+                }
+                
+                // Tính tổng tiền (giá đã được nhân với số ngày/giờ ở trên)
+                tongThanhToan = tongThanhToan.add(giaPhong);
             }
+            
             booking.setTongThanhToan(tongThanhToan);
+            booking.setTongTienPhong(tongThanhToan);
             
             bookingRepository.save(booking);
             
@@ -1146,5 +1254,11 @@ public class QuanLyDatPhongService {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public java.util.Optional<panacea.website_dat_lich_khach_san.entity.RoomPricing> getRoomPricingByRoomTypeId(Integer roomTypeId) {
+        return roomPricingRepository.findAll().stream()
+            .filter(pricing -> pricing.getRoomType() != null && pricing.getRoomType().getId().equals(roomTypeId))
+            .findFirst();
     }
 }

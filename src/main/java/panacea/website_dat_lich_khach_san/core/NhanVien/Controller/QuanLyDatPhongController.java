@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyDatPhongService;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -27,17 +29,20 @@ public class QuanLyDatPhongController {
     private final QuanLyDatPhongService quanLyDatPhongService;
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
+    private final RoomTypeRepository roomTypeRepository;
     private final ObjectMapper objectMapper;
     private final BookingHistoryRepository bookingHistoryRepository;
     
     public QuanLyDatPhongController(QuanLyDatPhongService quanLyDatPhongService, 
                                    HotelRepository hotelRepository, 
                                    RoomRepository roomRepository,
+                                   RoomTypeRepository roomTypeRepository,
                                    ObjectMapper objectMapper,
                                    BookingHistoryRepository bookingHistoryRepository) {
         this.quanLyDatPhongService = quanLyDatPhongService;
         this.hotelRepository = hotelRepository;
         this.roomRepository = roomRepository;
+        this.roomTypeRepository = roomTypeRepository;
         this.objectMapper = objectMapper;
         this.bookingHistoryRepository = bookingHistoryRepository;
     }
@@ -115,21 +120,69 @@ public class QuanLyDatPhongController {
         return hotelRepository.findAll();
     }
     
+    @GetMapping("/room-types/available")
+    @ResponseBody
+    public List<Map<String, Object>> getAvailableRoomTypes() {
+        List<RoomType> roomTypes = roomTypeRepository.findAll();
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        
+        for (RoomType roomType : roomTypes) {
+            // Đếm số phòng trống theo loại
+            long availableCount = roomRepository.countByRoomTypeIdAndTrangThai(roomType.getId(), panacea.website_dat_lich_khach_san.entity.Room.TrangThaiPhong.SAN_SANG);
+            
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", roomType.getId());
+            map.put("tenLoaiPhong", roomType.getTenLoaiPhong());
+            map.put("availableRooms", availableCount);
+            
+            // Lấy thông tin giá từ RoomPricing
+            java.math.BigDecimal giaGio = java.math.BigDecimal.ZERO;
+            java.math.BigDecimal giaNgay = java.math.BigDecimal.ZERO;
+            java.math.BigDecimal giaQuaDem = java.math.BigDecimal.ZERO;
+            
+            // Tìm pricing cho room type này
+            java.util.Optional<panacea.website_dat_lich_khach_san.entity.RoomPricing> pricing = 
+                quanLyDatPhongService.getRoomPricingByRoomTypeId(roomType.getId());
+            
+            if (pricing.isPresent()) {
+                giaGio = pricing.get().getGiaGio() != null ? pricing.get().getGiaGio() : java.math.BigDecimal.ZERO;
+                giaNgay = pricing.get().getGiaNgay() != null ? pricing.get().getGiaNgay() : java.math.BigDecimal.ZERO;
+                giaQuaDem = pricing.get().getGiaQuaDem() != null ? pricing.get().getGiaQuaDem() : java.math.BigDecimal.ZERO;
+            }
+            
+            map.put("giaTheoGio", giaGio);
+            map.put("giaTheoNgay", giaNgay);
+            map.put("giaQuaDem", giaQuaDem);
+            result.add(map);
+        }
+        return result;
+    }
+    
     @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId", required = false) Integer bookingId) {
+    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId", required = false) Integer bookingId,
+                                                        @RequestParam(value = "roomTypeId", required = false) Integer roomTypeId) {
         // Lấy booking để biết loại phòng khách đã chọn (nếu có)
-        Integer roomTypeId = null;
-        if (bookingId != null) {
+        if (bookingId != null && roomTypeId == null) {
             Booking booking = quanLyDatPhongService.getBookingById(bookingId).orElse(null);
             roomTypeId = (booking != null && booking.getRoomType() != null) ? booking.getRoomType().getId() : null;
         }
-        List<Room> rooms = quanLyDatPhongService.getAvailableRooms(roomTypeId);
+        
+        List<Room> rooms;
+        if (roomTypeId != null) {
+            // Lấy phòng theo loại phòng cụ thể
+            rooms = roomRepository.findByRoomTypeIdAndTrangThai(roomTypeId, panacea.website_dat_lich_khach_san.entity.Room.TrangThaiPhong.SAN_SANG);
+        } else {
+            // Lấy tất cả phòng trống
+            rooms = quanLyDatPhongService.getAvailableRooms(null);
+        }
+        
         List<Map<String, Object>> result = new java.util.ArrayList<>();
         for (Room room : rooms) {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("id", room.getId());
             map.put("soPhong", room.getSoPhong());
+            map.put("giaCoBan", room.getGiaCoBan() != null ? room.getGiaCoBan() : java.math.BigDecimal.ZERO);
             if (room.getRoomType() != null) {
                 map.put("roomType", room.getRoomType().getTenLoaiPhong());
             }
