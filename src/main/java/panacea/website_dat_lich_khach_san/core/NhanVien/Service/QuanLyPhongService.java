@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomCreateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeCreateDTO;
@@ -19,6 +20,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFo
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +38,9 @@ public class QuanLyPhongService {
     
     @Autowired
     private RoomPricingRepositoty roomPricingRepository;
+    
+    @Autowired
+    private HotelRepository hotelRepository;
     
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -72,6 +77,10 @@ public class QuanLyPhongService {
         RoomType roomType = roomTypeRepository.findById(roomCreateDTO.getRoomTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomCreateDTO.getRoomTypeId()));
         
+        // Get hotel (assuming single hotel model)
+        Hotel hotel = hotelRepository.findAll().stream().findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách sạn"));
+        
         // Check if room number already exists in the hotel
         Optional<Room> existingRoom = roomRepository.findAll().stream().filter(r -> r.getSoPhong().equals(roomCreateDTO.getSoPhong())).findFirst();
         if (existingRoom.isPresent()) {
@@ -85,6 +94,7 @@ public class QuanLyPhongService {
         room.setGiaCoBan(roomCreateDTO.getGiaCoBan());
         room.setGhiChu(roomCreateDTO.getGhiChu());
         room.setRoomType(roomType);
+        room.setHotel(hotel);
         
         // Set trang thai
         if (roomCreateDTO.getTrangThai() != null) {

@@ -103,6 +103,7 @@ public class WebsiteDatLichKhachSanApplication {
         room.setViewPhong(viewPhong);
         room.setGiaCoBan(giaCoBan);
         room.setRoomType(roomType);
+        room.setHotel(hotel);
         room.setTrangThai(Room.TrangThaiPhong.SAN_SANG);
         roomRepository.save(room);
     }
