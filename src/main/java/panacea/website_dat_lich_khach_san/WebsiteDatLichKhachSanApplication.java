@@ -25,7 +25,6 @@ public class WebsiteDatLichKhachSanApplication {
                                     RoomTypeRepository roomTypeRepository, 
                                     RoomRepository roomRepository) {
         return args -> {
-            // Tạo dữ liệu mẫu nếu chưa có
             if (hotelRepository.count() == 0) {
                 createSampleData(hotelRepository, roomTypeRepository, roomRepository);
             }
@@ -35,7 +34,11 @@ public class WebsiteDatLichKhachSanApplication {
     private void createSampleData(HotelRepository hotelRepository, 
                                 RoomTypeRepository roomTypeRepository, 
                                 RoomRepository roomRepository) {
-        
+
+
+
+
+
         // Tạo khách sạn mẫu
         Hotel hotel = new Hotel();
         hotel.setMaKhachSan("KS001");
