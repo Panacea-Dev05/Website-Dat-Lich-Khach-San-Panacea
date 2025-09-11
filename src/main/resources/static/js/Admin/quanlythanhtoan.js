@@ -46,6 +46,72 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAddPayment.parentNode.insertBefore(filterContainer, btnAddPayment.nextSibling);
   }
   
+  // Xử lý nút tạo hoàn tiền
+  const btnCreateRefund = document.getElementById('btnCreateRefund');
+  const refundModal = document.getElementById('refundModal');
+  const closeRefundModal = document.getElementById('closeRefundModal');
+  const cancelRefundBtn = document.getElementById('cancelRefundBtn');
+  const refundForm = document.getElementById('refundForm');
+  
+  if (btnCreateRefund) {
+    btnCreateRefund.addEventListener('click', () => {
+      refundModal.style.display = 'flex';
+      refundForm.reset();
+    });
+  }
+  
+  if (closeRefundModal) {
+    closeRefundModal.addEventListener('click', () => {
+      refundModal.style.display = 'none';
+    });
+  }
+  
+  if (cancelRefundBtn) {
+    cancelRefundBtn.addEventListener('click', () => {
+      refundModal.style.display = 'none';
+    });
+  }
+  
+  // Xử lý submit form hoàn tiền
+  if (refundForm) {
+    refundForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(refundForm);
+      const refundData = {
+        bookingId: formData.get('refundBookingId'),
+        refundAmount: formData.get('refundAmount'),
+        reason: formData.get('refundReason') || 'Hoàn tiền do hủy đặt phòng'
+      };
+      
+      try {
+        const response = await fetch('/admin/payments/refund', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(refundData)
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result) {
+            alert('Tạo hoàn tiền thành công!');
+            refundModal.style.display = 'none';
+            location.reload(); // Reload để cập nhật danh sách
+          } else {
+            alert('Không thể tạo hoàn tiền. Vui lòng kiểm tra lại thông tin.');
+          }
+        } else {
+          alert('Lỗi khi tạo hoàn tiền.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Lỗi kết nối. Vui lòng thử lại.');
+      }
+    });
+  }
+
   // Xử lý tìm kiếm và lọc
   function filterTable() {
     const searchTerm = searchInput.value.toLowerCase();

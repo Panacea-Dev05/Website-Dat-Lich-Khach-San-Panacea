@@ -8,8 +8,8 @@ import lombok.Data;
 
 @Data
 public class PaymentDTO {
-    private Long id;
-    private Long bookingId;
+    private Integer id;
+    private Integer bookingId;
     private String hinhThucThanhToan;
     private BigDecimal soTien;
     private LocalDateTime thoiGianThanhToan;

@@ -22,7 +22,7 @@ public class CancellationController {
      * GET /api/cancellation/info/{bookingId}
      */
     @GetMapping("/info/{bookingId}")
-    public ResponseEntity<?> getCancellationInfo(@PathVariable Long bookingId) {
+    public ResponseEntity<?> getCancellationInfo(@PathVariable Integer bookingId) {
         try {
             CancellationInfoDTO info = cancellationService.getCancellationInfo(bookingId);
             return ResponseEntity.ok(info);
@@ -62,7 +62,7 @@ public class CancellationController {
      */
     @PostMapping("/cancel/{bookingId}")
     public ResponseEntity<?> cancelBookingById(
-            @PathVariable Long bookingId,
+            @PathVariable Integer bookingId,
             @RequestParam(required = false) String reason,
             @RequestParam(required = false) String customerEmail) {
         try {

@@ -21,8 +21,13 @@ public class AdminPaymentService {
 
     // 1. Tạo thanh toán (transaction cho booking)
     public Payment createPayment(Integer bookingId, BigDecimal soTien, String phuongThuc, String noiDung) {
-        Booking booking = bookingRepository.findById(Long.valueOf(bookingId)).orElse(null);
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return null;
+        
+        // Kiểm tra booking đã bị hủy chưa
+        if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+            return null; // Không cho phép thanh toán cho booking đã hủy
+        }
         Payment payment = new Payment();
         payment.setMaThanhToan("PAY" + UUID.randomUUID().toString().substring(0, 8));
         payment.setBooking(booking);
@@ -59,7 +64,7 @@ public class AdminPaymentService {
         return createPayment(bookingId, soTien, "CASH", "Thanh toán tại quầy");
     }
 
-    // 5. Hoàn tiền (refund)
+    // 5. Hoàn tiền (refund) - cập nhật payment hiện có
     public Payment refundPayment(Integer paymentId, BigDecimal soTien) {
         Optional<Payment> opt = paymentRepository.findById(paymentId);
         if (opt.isEmpty()) return null;
@@ -68,6 +73,33 @@ public class AdminPaymentService {
         payment.setSoTien(soTien.negate());
         payment.setNoiDung("Refund");
         return paymentRepository.save(payment);
+    }
+    
+    // 5b. Tạo payment hoàn tiền cho booking đã hủy
+    public Payment createRefundPayment(Integer bookingId, BigDecimal refundAmount, String reason) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking == null) return null;
+        
+        // Chỉ cho phép hoàn tiền cho booking đã hủy
+        if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) {
+            return null;
+        }
+        
+        // Kiểm tra số tiền hoàn lại hợp lệ
+        if (refundAmount == null || refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            return null;
+        }
+        
+        Payment refundPayment = new Payment();
+        refundPayment.setMaThanhToan("REFUND" + UUID.randomUUID().toString().substring(0, 8));
+        refundPayment.setBooking(booking);
+        refundPayment.setSoTien(refundAmount.negate()); // Số âm để biểu thị hoàn tiền
+        refundPayment.setPhuongThuc("REFUND");
+        refundPayment.setNoiDung(reason != null ? reason : "Hoàn tiền do hủy đặt phòng");
+        refundPayment.setTrangThai(Payment.TrangThaiPayment.HOAN_TIEN);
+        refundPayment.setNgayThanhToan(LocalDateTime.now());
+        
+        return paymentRepository.save(refundPayment);
     }
 
     // 6. Xem lịch sử thanh toán theo booking/customer

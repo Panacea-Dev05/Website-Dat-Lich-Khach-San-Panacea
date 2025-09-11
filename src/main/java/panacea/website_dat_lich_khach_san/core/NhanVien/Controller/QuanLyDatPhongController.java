@@ -63,43 +63,47 @@ public class QuanLyDatPhongController {
     @PostMapping("/confirm")
     @ResponseBody
     public Map<String, Object> confirmBooking(@RequestBody Map<String, Object> payload) {
-        Long bookingId = Long.valueOf(payload.get("bookingId").toString());
+        Integer bookingId = Integer.valueOf(payload.get("bookingId").toString());
         
         // Xử lý cả roomId đơn lẻ và roomIds array để tương thích ngược
-        if (payload.containsKey("roomIds")) {
-            @SuppressWarnings("unchecked")
-            java.util.List<String> roomIdStrings = (java.util.List<String>) payload.get("roomIds");
-            java.util.List<Long> roomIds = roomIdStrings.stream()
-                .map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-            boolean result = quanLyDatPhongService.confirmBookingAndAssignMultipleRooms(bookingId, roomIds);
-            if (result) {
-                return Map.of("success", true, "message", "Đã xác nhận và gán " + roomIds.size() + " phòng thành công. Email đã được gửi cho khách hàng.");
+        try {
+            if (payload.containsKey("roomIds")) {
+                @SuppressWarnings("unchecked")
+                java.util.List<String> roomIdStrings = (java.util.List<String>) payload.get("roomIds");
+                java.util.List<Long> roomIds = roomIdStrings.stream()
+                    .map(Long::valueOf)
+                    .collect(java.util.stream.Collectors.toList());
+                boolean result = quanLyDatPhongService.confirmBookingAndAssignMultipleRooms(bookingId, roomIds);
+                if (result) {
+                    return Map.of("success", true, "message", "Đã xác nhận và gán " + roomIds.size() + " phòng thành công. Email đã được gửi cho khách hàng.");
+                } else {
+                    return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+                }
             } else {
-                return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+                // Tương thích ngược với roomId đơn lẻ
+                Long roomId = Long.valueOf(payload.get("roomId").toString());
+                boolean result = quanLyDatPhongService.confirmBookingAndAssignRoom(bookingId, roomId);
+                if (result) {
+                    return Map.of("success", true, "message", "Đã xác nhận và gán phòng thành công. Email đã được gửi cho khách hàng.");
+                } else {
+                    return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
+                }
             }
-        } else {
-            // Tương thích ngược với roomId đơn lẻ
-            Long roomId = Long.valueOf(payload.get("roomId").toString());
-            boolean result = quanLyDatPhongService.confirmBookingAndAssignRoom(bookingId, roomId);
-            if (result) {
-                return Map.of("success", true, "message", "Đã xác nhận và gán phòng thành công. Email đã được gửi cho khách hàng.");
-            } else {
-                return Map.of("success", false, "message", "Có lỗi xảy ra khi xác nhận đặt phòng!");
-            }
+        } catch (RuntimeException e) {
+            return Map.of("success", false, "message", e.getMessage());
         }
     }
     
     @PostMapping("/cancel/{bookingId}")
     @ResponseBody
-    public String cancelBooking(@PathVariable Long bookingId) {
+    public String cancelBooking(@PathVariable Integer bookingId) {
         boolean success = quanLyDatPhongService.cancelBooking(bookingId);
         return success ? "success" : "error";
     }
     
     @GetMapping("/detail/{bookingId}")
     @ResponseBody
-    public Object getBookingDetail(@PathVariable Long bookingId) {
+    public Object getBookingDetail(@PathVariable Integer bookingId) {
         BookingDetailViewDTO dto = quanLyDatPhongService.getBookingDetailViewDTOById(bookingId);
         if (dto == null) return new java.util.HashMap<>();
         return dto;
@@ -113,7 +117,7 @@ public class QuanLyDatPhongController {
     
     @GetMapping("/rooms/available")
     @ResponseBody
-    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId", required = false) Long bookingId) {
+    public List<Map<String, Object>> getAvailableRooms(@RequestParam(value = "bookingId", required = false) Integer bookingId) {
         // Lấy booking để biết loại phòng khách đã chọn (nếu có)
         Integer roomTypeId = null;
         if (bookingId != null) {
@@ -148,14 +152,14 @@ public class QuanLyDatPhongController {
 
     @PostMapping("/checkout/{bookingId}")
     @ResponseBody
-    public Map<String, Object> checkoutBooking(@PathVariable Long bookingId) {
+    public Map<String, Object> checkoutBooking(@PathVariable Integer bookingId) {
         boolean result = quanLyDatPhongService.checkoutBooking(bookingId);
         return java.util.Map.of("success", result);
     }
 
     @PostMapping("/checkin/{bookingId}")
     @ResponseBody
-    public Map<String, Object> checkInBooking(@PathVariable Long bookingId, @RequestBody Map<String, Object> payload) {
+    public Map<String, Object> checkInBooking(@PathVariable Integer bookingId, @RequestBody Map<String, Object> payload) {
         String soCmndCccd = (String) payload.getOrDefault("soCmndCccd", null);
         String ngayCapCmndStr = (String) payload.getOrDefault("ngayCapCmnd", null);
         String noiCapCmnd = (String) payload.getOrDefault("noiCapCmnd", null);
@@ -172,7 +176,7 @@ public class QuanLyDatPhongController {
 
     @PostMapping("/update-services/{bookingId}")
     @ResponseBody
-    public ResponseEntity<?> updateBookingServices(@PathVariable Long bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> services) {
+    public ResponseEntity<?> updateBookingServices(@PathVariable Integer bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> services) {
         boolean success = quanLyDatPhongService.updateBookingServices(bookingId, services);
         if (success) {
             return ResponseEntity.ok(java.util.Map.of("success", true));

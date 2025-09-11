@@ -623,6 +623,13 @@
         // Hàm hủy booking
         function cancelBooking(bookingId) {
             if (confirm('Bạn có chắc chắn muốn hủy đặt phòng này?')) {
+                const cancelBtn = document.getElementById('modal-cancel-btn');
+                if (cancelBtn) {
+                    cancelBtn.disabled = true;
+                    const oldText = cancelBtn.innerHTML;
+                    cancelBtn.innerHTML = 'Đang hủy...';
+                }
+                
                 fetch(`/nhanvien/quanlydatphong/cancel/${bookingId}`, {
                     method: 'POST',
                     headers: {
@@ -633,6 +640,7 @@
                     .then(result => {
                         if (result === 'success') {
                             alert('Đã hủy đặt phòng thành công! Email thông báo đã được gửi cho khách hàng.');
+                            closeModal(); // Đóng modal trước khi reload
                             location.reload();
                         } else {
                             alert('Có lỗi xảy ra khi hủy đặt phòng!');
@@ -641,6 +649,12 @@
                     .catch(error => {
                         console.error('Error:', error);
                         alert('Có lỗi xảy ra khi hủy đặt phòng!');
+                    })
+                    .finally(() => {
+                        if (cancelBtn) {
+                            cancelBtn.disabled = false;
+                            cancelBtn.innerHTML = oldText;
+                        }
                     });
             }
         }
@@ -787,6 +801,11 @@
                                 confirmBtn.disabled = false;
                                 confirmBtn.innerHTML = oldText;
                             }
+                        };
+                        
+                        // Gán sự kiện cho nút hủy
+                        document.getElementById('modal-cancel-btn').onclick = function () {
+                            cancelBooking(bookingId);
                         };
                     } else if (booking.trangThaiDatPhong === 'DA_XAC_NHAN') {
                         // Hiện nút check-in
@@ -1227,7 +1246,8 @@
                 if (data.success) {
                     alert('Cập nhật dịch vụ thành công!');
                     closeServiceEditModal();
-                    viewBookingDetail(currentServiceEditBookingId);
+                    // Refresh toàn bộ trang để cập nhật danh sách booking
+                    location.reload();
                 } else {
                     alert('Có lỗi khi cập nhật dịch vụ!');
                 }
