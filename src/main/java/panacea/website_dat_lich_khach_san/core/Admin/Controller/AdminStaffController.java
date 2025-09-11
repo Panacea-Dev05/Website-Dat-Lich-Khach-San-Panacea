@@ -1,6 +1,8 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.StaffDTO;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin/staff")
@@ -30,20 +33,49 @@ public class AdminStaffController {
     
     @GetMapping("/{id}")
     @ResponseBody
-    public StaffDTO getStaff(@PathVariable Integer id) {
-        return adminStaffService.getStaffById(id);
+    public ResponseEntity<?> getStaff(@PathVariable Integer id) {
+        try {
+            StaffDTO staffDTO = adminStaffService.getStaffById(id);
+            if (staffDTO == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Không tìm thấy nhân viên với ID: " + id));
+            }
+            return ResponseEntity.ok(staffDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Lỗi khi tải thông tin nhân viên: " + e.getMessage()));
+        }
     }
     
     @PostMapping
     @ResponseBody
-    public StaffDTO createStaff(@RequestBody StaffDTO staffDTO) {
-        return adminStaffService.createStaff(staffDTO);
+    public ResponseEntity<?> createStaff(@RequestBody StaffDTO staffDTO) {
+        try {
+            StaffDTO created = adminStaffService.createStaff(staffDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Lỗi khi tạo nhân viên: " + ex.getMessage()));
+        }
     }
     
     @PutMapping("/{id}")
     @ResponseBody
-    public StaffDTO updateStaff(@PathVariable Integer id, @RequestBody StaffDTO staffDTO) {
-        return adminStaffService.updateStaff(id, staffDTO);
+    public ResponseEntity<?> updateStaff(@PathVariable Integer id, @RequestBody StaffDTO staffDTO) {
+        try {
+            StaffDTO updated = adminStaffService.updateStaff(id, staffDTO);
+            if (updated == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Không tìm thấy nhân viên"));
+            }
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Lỗi khi cập nhật nhân viên: " + ex.getMessage()));
+        }
     }
     
     @DeleteMapping("/{id}")
@@ -51,4 +83,4 @@ public class AdminStaffController {
     public boolean deleteStaff(@PathVariable Integer id) {
         return adminStaffService.deleteStaff(id);
     }
-} 
+}

@@ -183,7 +183,13 @@ public class KhachHangService {
             BigDecimal tongTienPhong = unitPrice.multiply(BigDecimal.valueOf(bookingQuantity)).multiply(BigDecimal.valueOf(soPhong));
             BigDecimal tienDatCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
             booking.setTongTienPhong(tongTienPhong);
-            booking.setTongThanhToan(tongTienPhong); // Nếu chưa có dịch vụ/phí khác
+            
+            // Đảm bảo tong_thanh_toan không null và có giá trị hợp lệ
+            BigDecimal tongThanhToan = tongTienPhong;
+            if (tongThanhToan == null || tongThanhToan.compareTo(BigDecimal.ZERO) < 0) {
+                tongThanhToan = BigDecimal.ZERO;
+            }
+            booking.setTongThanhToan(tongThanhToan); // Nếu chưa có dịch vụ/phí khác
             booking.setTienDatCoc(tienDatCoc);
             // TODO: set thêm các trường khác nếu cần
 
@@ -478,7 +484,14 @@ public class KhachHangService {
             
             // Set thông tin tổng cho booking chính
             mainBooking.setTongTienPhong(tongTienCombo);
-            mainBooking.setTongThanhToan(tongTienCombo);
+            
+            // Đảm bảo tong_thanh_toan không null và có giá trị hợp lệ
+            BigDecimal tongThanhToan = tongTienCombo;
+            if (tongThanhToan == null || tongThanhToan.compareTo(BigDecimal.ZERO) < 0) {
+                tongThanhToan = BigDecimal.ZERO;
+            }
+            mainBooking.setTongThanhToan(tongThanhToan);
+            
             BigDecimal tienDatCoc = tongTienCombo.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
             mainBooking.setTienDatCoc(tienDatCoc);
             

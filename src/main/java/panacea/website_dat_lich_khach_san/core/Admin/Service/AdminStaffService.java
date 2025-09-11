@@ -28,12 +28,47 @@ public class AdminStaffService {
     }
     
     public StaffDTO getStaffById(Integer id) {
+        if (id == null) {
+            return null;
+        }
         Optional<Staff> staff = staffRepository.findById(id);
         return staff.map(this::convertToDTO).orElse(null);
     }
     
     public StaffDTO createStaff(StaffDTO staffDTO) {
+        // Validate bắt buộc
+        if (staffDTO == null) {
+            throw new IllegalArgumentException("Dữ liệu nhân viên không hợp lệ");
+        }
+        if (staffDTO.getMaNhanVien() == null || staffDTO.getMaNhanVien().isBlank()) {
+            throw new IllegalArgumentException("Mã nhân viên không được để trống");
+        }
+        if (staffDTO.getEmail() == null || staffDTO.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email không được để trống");
+        }
+        if (staffDTO.getChucVu() == null || staffDTO.getChucVu().isBlank()) {
+            throw new IllegalArgumentException("Chức vụ không được để trống");
+        }
+        // Check trùng email
+        if (staffRepository.findByEmail(staffDTO.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email đã tồn tại");
+        }
+        // Check trùng mã nhân viên
+        boolean duplicateMa = staffRepository.findAll().stream()
+            .anyMatch(s -> staffDTO.getMaNhanVien().equalsIgnoreCase(s.getMaNhanVien()));
+        if (duplicateMa) {
+            throw new IllegalArgumentException("Mã nhân viên đã tồn tại");
+        }
         Staff staff = convertToEntity(staffDTO);
+        // Đảm bảo trường mặc định
+        if (staff.getTrangThai() == null) {
+            staff.setTrangThai(Staff.TrangThaiStaff.HOAT_DONG);
+        }
+        if (staff.getHoTen() == null || staff.getHoTen().isBlank()) {
+            String ho = staffDTO.getHo() != null ? staffDTO.getHo() : "";
+            String ten = staffDTO.getTen() != null ? staffDTO.getTen() : "";
+            staff.setHoTen((ho + " " + ten).trim());
+        }
         Staff savedStaff = staffRepository.save(staff);
         return convertToDTO(savedStaff);
     }
@@ -42,12 +77,38 @@ public class AdminStaffService {
         Optional<Staff> existingStaff = staffRepository.findById(id);
         if (existingStaff.isPresent()) {
             Staff staff = existingStaff.get();
+            // Validate cơ bản
+            if (staffDTO.getMaNhanVien() == null || staffDTO.getMaNhanVien().isBlank()) {
+                throw new IllegalArgumentException("Mã nhân viên không được để trống");
+            }
+            if (staffDTO.getEmail() == null || staffDTO.getEmail().isBlank()) {
+                throw new IllegalArgumentException("Email không được để trống");
+            }
+            if (staffDTO.getChucVu() == null || staffDTO.getChucVu().isBlank()) {
+                throw new IllegalArgumentException("Chức vụ không được để trống");
+            }
+            // Check trùng email với người khác
+            staffRepository.findByEmail(staffDTO.getEmail()).ifPresent(other -> {
+                if (!other.getId().equals(staff.getId())) {
+                    throw new IllegalArgumentException("Email đã tồn tại");
+                }
+            });
+            // Check trùng mã nhân viên với người khác
+            boolean duplicateMa = staffRepository.findAll().stream()
+                .anyMatch(s -> !s.getId().equals(staff.getId()) && staffDTO.getMaNhanVien().equalsIgnoreCase(s.getMaNhanVien()));
+            if (duplicateMa) {
+                throw new IllegalArgumentException("Mã nhân viên đã tồn tại");
+            }
             staff.setMaNhanVien(staffDTO.getMaNhanVien());
-            staff.setHoTen(staffDTO.getHo() + " " + staffDTO.getTen());
+            String ho = staffDTO.getHo() != null ? staffDTO.getHo() : "";
+            String ten = staffDTO.getTen() != null ? staffDTO.getTen() : "";
+            staff.setHoTen((ho + " " + ten).trim());
             staff.setEmail(staffDTO.getEmail());
             staff.setSoDienThoai(staffDTO.getSoDienThoai());
             staff.setChucVu(staffDTO.getChucVu());
-            staff.setTrangThai(Staff.TrangThaiStaff.valueOf(staffDTO.getTrangThai()));
+            if (staffDTO.getTrangThai() != null && !staffDTO.getTrangThai().isBlank()) {
+                staff.setTrangThai(Staff.TrangThaiStaff.valueOf(staffDTO.getTrangThai()));
+            }
             Staff savedStaff = staffRepository.save(staff);
             return convertToDTO(savedStaff);
         }
@@ -89,13 +150,14 @@ public class AdminStaffService {
         StaffDTO dto = new StaffDTO();
         dto.setId(staff.getId());
         dto.setMaNhanVien(staff.getMaNhanVien());
-        String[] nameParts = staff.getHoTen().split(" ", 2);
+        String hoTen = staff.getHoTen() != null ? staff.getHoTen() : "";
+        String[] nameParts = hoTen.split(" ", 2);
         dto.setHo(nameParts.length > 0 ? nameParts[0] : "");
         dto.setTen(nameParts.length > 1 ? nameParts[1] : "");
         dto.setEmail(staff.getEmail());
         dto.setSoDienThoai(staff.getSoDienThoai());
         dto.setChucVu(staff.getChucVu());
-        dto.setTrangThai(staff.getTrangThai().name());
+        dto.setTrangThai(staff.getTrangThai() != null ? staff.getTrangThai().name() : null);
         dto.setUuidId(staff.getUuidId());
         dto.setCreatedDate(staff.getCreatedDate());
         dto.setLastModifiedDate(staff.getLastModifiedDate());
@@ -105,11 +167,17 @@ public class AdminStaffService {
     private Staff convertToEntity(StaffDTO dto) {
         Staff staff = new Staff();
         staff.setMaNhanVien(dto.getMaNhanVien());
-        staff.setHoTen(dto.getHo() + " " + dto.getTen());
+        String ho = dto.getHo() != null ? dto.getHo() : "";
+        String ten = dto.getTen() != null ? dto.getTen() : "";
+        staff.setHoTen((ho + " " + ten).trim());
         staff.setEmail(dto.getEmail());
         staff.setSoDienThoai(dto.getSoDienThoai());
         staff.setChucVu(dto.getChucVu());
-        staff.setTrangThai(Staff.TrangThaiStaff.valueOf(dto.getTrangThai()));
+        if (dto.getTrangThai() != null && !dto.getTrangThai().isBlank()) {
+            staff.setTrangThai(Staff.TrangThaiStaff.valueOf(dto.getTrangThai()));
+        } else {
+            staff.setTrangThai(Staff.TrangThaiStaff.HOAT_DONG);
+        }
         return staff;
     }
-} 
+}
