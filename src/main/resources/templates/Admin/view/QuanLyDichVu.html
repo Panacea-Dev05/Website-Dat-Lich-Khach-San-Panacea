@@ -543,6 +543,23 @@
                   }
                 });
                 
+                // If no status is set, default to "Hoạt động"
+                var hasStatus = false;
+                statusOptions.forEach(function(opt) {
+                  var radio = opt.querySelector('input[type="radio"]');
+                  if(radio && radio.checked) {
+                    hasStatus = true;
+                  }
+                });
+                if (!hasStatus) {
+                  var defaultRadio = document.getElementById('trangThaiHoatDong');
+                  var defaultOption = document.querySelector('label[for="trangThaiHoatDong"]');
+                  if(defaultRadio && defaultOption) {
+                    defaultRadio.checked = true;
+                    defaultOption.classList.add('active');
+                  }
+                }
+                
                 console.log('Form filled successfully');
               } else {
                 console.error('No data received');
