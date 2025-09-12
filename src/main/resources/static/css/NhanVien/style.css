@@ -27,6 +27,21 @@ button {
   background: none;
   font-family: inherit;
 }
+/* Header Styles */
+header {
+  grid-area: header;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

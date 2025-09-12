@@ -12,6 +12,7 @@ import panacea.website_dat_lich_khach_san.entity.SupplyRequest;
 import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCau;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.core.NhanVien.DTO.SupplyRequestDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -176,8 +177,7 @@ public class SupplyRequestController {
         Map<String, Object> response = new HashMap<>();
         try {
             TrangThaiYeuCau trangThai = TrangThaiYeuCau.valueOf(status.toUpperCase());
-            List<SupplyRequest> requests = supplyRequestService.getRequestsByStatus(trangThai);
-            
+            List<SupplyRequestDTO> requests = supplyRequestService.getRequestsByStatusDTO(trangThai);
             response.put("success", true);
             response.put("requests", requests);
             return ResponseEntity.ok(response);
@@ -204,7 +204,7 @@ public class SupplyRequestController {
                 return ResponseEntity.badRequest().body(response);
             }
             
-            List<SupplyRequest> requests = supplyRequestService.getRequestsByStaff(staff.get().getId());
+            List<SupplyRequestDTO> requests = supplyRequestService.getRequestsByStaffDTO(staff.get().getId());
             response.put("success", true);
             response.put("requests", requests);
             return ResponseEntity.ok(response);

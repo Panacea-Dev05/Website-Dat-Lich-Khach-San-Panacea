@@ -3,6 +3,7 @@ package panacea.website_dat_lich_khach_san.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
 import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Room;
@@ -20,7 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class CancellationService {
 
     @Autowired
@@ -38,6 +38,7 @@ public class CancellationService {
     /**
      * Lấy thông tin hủy đặt phòng
      */
+    @Transactional(readOnly = true)
     public CancellationInfoDTO getCancellationInfo(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isEmpty()) {
@@ -72,6 +73,7 @@ public class CancellationService {
     /**
      * Thực hiện hủy đặt phòng
      */
+    @Transactional
     public CancellationResponseDTO cancelBooking(CancellationRequestDTO request) {
         Optional<Booking> bookingOpt = bookingRepository.findById(request.getBookingId());
         if (bookingOpt.isEmpty()) {
@@ -119,14 +121,6 @@ public class CancellationService {
             }
         }
 
-        // Gửi email thông báo
-        try {
-            sendCancellationEmail(booking, calculation);
-        } catch (Exception e) {
-            // Log lỗi nhưng không throw exception để không ảnh hưởng đến việc hủy
-            System.err.println("Lỗi gửi email hủy đặt phòng: " + e.getMessage());
-        }
-
         // Tạo response
         CancellationResponseDTO response = new CancellationResponseDTO();
         response.setSuccess(true);
@@ -136,6 +130,9 @@ public class CancellationService {
         response.setCancellationFee(calculation.getCancellationFee());
         response.setRefundAmount(calculation.getRefundAmount());
         response.setCancellationDate(LocalDateTime.now());
+        
+        // Gửi email async sau khi transaction hoàn thành
+        sendCancellationEmailAsync(booking.getId(), calculation);
         
         return response;
     }
@@ -189,6 +186,22 @@ public class CancellationService {
         }
         
         return calculation;
+    }
+
+    /**
+     * Gửi email thông báo hủy đặt phòng async
+     */
+    @Async
+    public void sendCancellationEmailAsync(Integer bookingId, CancellationCalculation calculation) {
+        try {
+            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
+            if (bookingOpt.isPresent()) {
+                sendCancellationEmail(bookingOpt.get(), calculation);
+            }
+        } catch (Exception e) {
+            // Log lỗi nhưng không throw exception
+            System.err.println("Lỗi gửi email hủy đặt phòng: " + e.getMessage());
+        }
     }
 
     /**

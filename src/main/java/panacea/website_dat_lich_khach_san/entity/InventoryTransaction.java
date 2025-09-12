@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -77,14 +78,17 @@ public class InventoryTransaction {
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vat_pham_id", insertable = false, updatable = false)
+    @JsonIgnore
     private InventoryManagement inventoryItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nhan_vien_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "phong_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Room room;
 
     @PrePersist

@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
@@ -14,6 +15,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import java.math.BigDecimal;
 
 @SpringBootApplication
+@EnableAsync
 public class WebsiteDatLichKhachSanApplication {
 
     public static void main(String[] args) {
