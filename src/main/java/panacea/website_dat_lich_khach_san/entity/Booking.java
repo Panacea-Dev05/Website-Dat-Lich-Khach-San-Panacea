@@ -54,6 +54,10 @@ public class Booking {
     @Column(name = "so_tre_em")
     private Byte soTreEm = 0;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "booking_type", length = 20)
+    private BookingType bookingType = BookingType.DAY;
+
     @Column(name = "tong_tien_phong", precision = 15, scale = 2)
     private BigDecimal tongTienPhong;
 
@@ -243,5 +247,29 @@ public class Booking {
     @PreUpdate
     public void preUpdate() {
         this.lastModifiedDate = System.currentTimeMillis();
+    }
+
+    // Enum cho loại đặt phòng
+    public enum BookingType {
+        DAY("Theo ngày"),
+        HOUR("Theo giờ"),
+        OVERNIGHT("Qua đêm");
+
+        private final String label;
+        BookingType(String label) {
+            this.label = label;
+        }
+        public String getLabel() {
+            return label;
+        }
+        public static BookingType fromString(String input) {
+            if (input == null) return null;
+            for (BookingType bt : BookingType.values()) {
+                if (bt.name().equalsIgnoreCase(input) || bt.label.equalsIgnoreCase(input)) {
+                    return bt;
+                }
+            }
+            throw new IllegalArgumentException("Giá trị không hợp lệ cho BookingType: " + input);
+        }
     }
 }

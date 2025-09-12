@@ -31,11 +31,12 @@ public class ThanhToanService {
         return paymentRepository.findAll();
     }
     
-    // Lấy danh sách booking đang hoạt động (chưa thanh toán hoặc thanh toán một phần)
+    // Lấy danh sách booking đang hoạt động (chưa thanh toán hoặc thanh toán một phần và chưa bị hủy)
     public List<Booking> getActiveBookings() {
         return bookingRepository.findAll().stream()
-            .filter(b -> b.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.CHUA_THANH_TOAN || 
-                        b.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_COC)
+            .filter(b -> (b.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.CHUA_THANH_TOAN || 
+                         b.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_COC) &&
+                         b.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) // Loại bỏ booking đã hủy
             .collect(java.util.stream.Collectors.toList());
     }
     
@@ -48,12 +49,17 @@ public class ThanhToanService {
     public Payment createCashPayment(Integer bookingId, BigDecimal soTien, String phuongThuc, String noiDung, String maGiaoDich) {
         try {
             // Kiểm tra booking có tồn tại không
-            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId.longValue());
+            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
             if (!bookingOpt.isPresent()) {
                 return null;
             }
             
             Booking booking = bookingOpt.get();
+            
+            // Kiểm tra booking đã bị hủy chưa
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                return null; // Không cho phép thanh toán cho booking đã hủy
+            }
             
             // Kiểm tra phương thức thanh toán hợp lệ cho nhân viên
             if (!"CASH".equals(phuongThuc) && !"CHUYEN_KHOAN".equals(phuongThuc)) {
@@ -142,7 +148,7 @@ public class ThanhToanService {
     // Tính tổng tiền cần thanh toán: Tổng tiền phòng + dịch vụ - 50% tiền phòng (tiền cọc đã trả)
     public BigDecimal calculateTotalPaymentAmount(Integer bookingId) {
         try {
-            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId.longValue());
+            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
             if (!bookingOpt.isPresent()) {
                 return BigDecimal.ZERO;
             }

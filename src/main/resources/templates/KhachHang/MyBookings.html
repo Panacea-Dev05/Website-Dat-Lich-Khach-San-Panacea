@@ -341,7 +341,8 @@
                 <div class="form-group">
                     <label for="email">Email đặt phòng:</label>
                     <input type="email" id="email" name="email" th:value="${customerEmail}" 
-                           placeholder="Nhập email bạn đã sử dụng để đặt phòng" required>
+                           placeholder="Nhập email bạn đã sử dụng để đặt phòng" required
+                           data-user-email th:attr="data-user-email=${customerEmail}">
                 </div>
                 <button type="submit" class="btn btn-primary">
                     <span class="material-icons">search</span>
@@ -497,10 +498,20 @@
         }
         
         function cancelBooking(bookingId) {
+            console.log('Bắt đầu hủy booking với ID:', bookingId);
+            
             // Lấy thông tin hủy trước khi hiển thị modal xác nhận
             fetch(`/api/cancellation/info/${bookingId}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Dữ liệu hủy đặt phòng:', data);
+                    
                     if (!data.canCancel) {
                         alert('Không thể hủy đặt phòng: ' + data.cancellationReason);
                         return;
@@ -509,8 +520,8 @@
                     showConfirmCancelModal(bookingId, data);
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi tải thông tin hủy đặt phòng!');
+                    console.error('Lỗi khi tải thông tin hủy:', error);
+                    alert('Có lỗi xảy ra khi tải thông tin hủy đặt phòng: ' + error.message);
                 });
         }
         
@@ -563,12 +574,24 @@
         }
         
         function confirmCancelBooking(bookingId) {
+            console.log('Xác nhận hủy booking với ID:', bookingId);
+            
             const reason = document.getElementById('cancellationReason').value.trim();
+            
+            // Lấy email khách hàng từ input field
+            const userEmail = document.getElementById('email')?.value || 
+                             document.querySelector('[data-user-email]')?.getAttribute('data-user-email') || 
+                             null;
+            
+            console.log('Email khách hàng:', userEmail);
             
             const requestData = {
                 bookingId: bookingId,
-                cancellationReason: reason || 'Khách hàng yêu cầu hủy'
+                cancellationReason: reason || 'Khách hàng yêu cầu hủy',
+                customerEmail: userEmail
             };
+            
+            console.log('Dữ liệu gửi đi:', requestData);
             
             fetch('/api/cancellation/cancel', {
                 method: 'POST',
@@ -577,8 +600,16 @@
                 },
                 body: JSON.stringify(requestData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status cho cancel:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Kết quả hủy đặt phòng:', data);
+                
                 if (data.success) {
                     closeConfirmCancelModal();
                     alert('✅ Đặt phòng đã được hủy thành công!\n\n' +
@@ -590,8 +621,8 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('❌ Có lỗi xảy ra khi hủy đặt phòng!');
+                console.error('Lỗi khi hủy đặt phòng:', error);
+                alert('❌ Có lỗi xảy ra khi hủy đặt phòng: ' + error.message);
             });
         }
         

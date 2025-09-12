@@ -36,5 +36,11 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     
     @Query("SELECT COUNT(r) FROM Room r WHERE r.roomType.id = :roomTypeId")
     long countByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
+    
+    @Query("SELECT COUNT(r) FROM Room r WHERE r.roomType.id = :roomTypeId AND r.trangThai = :trangThai")
+    long countByRoomTypeIdAndTrangThai(@Param("roomTypeId") Integer roomTypeId, @Param("trangThai") Room.TrangThaiPhong trangThai);
+    
+    @Query("SELECT r FROM Room r WHERE r.roomType.id = :roomTypeId AND r.trangThai = :trangThai")
+    List<Room> findByRoomTypeIdAndTrangThai(@Param("roomTypeId") Integer roomTypeId, @Param("trangThai") Room.TrangThaiPhong trangThai);
 
-} 
+}

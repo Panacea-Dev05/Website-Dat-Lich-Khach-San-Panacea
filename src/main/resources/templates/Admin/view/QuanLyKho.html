@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kho - Admin</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlykho.css}">
+</head>
+
+<body>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Quản lý kho</h1>
+            <p>Quản lý tồn kho, giao dịch và báo cáo kho</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Tổng vật phẩm</h3>
+                <div class="number" th:text="${totalItems ?: 0}">0</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Sắp hết hàng</h3>
+                <div class="number" th:text="${lowStockItems ?: 0}">0</div>
+            </div>
+            <div class="stat-card danger">
+                <h3>Hết hàng</h3>
+                <div class="number" th:text="${outOfStockItems ?: 0}">0</div>
+            </div>
+            <div class="stat-card success">
+                <h3>Giá trị tồn kho</h3>
+                <div class="number" th:text="${#numbers.formatDecimal(totalValue ?: 0, 0, 'COMMA', 0, 'POINT')}">0</div>
+            </div>
+        </div>
+
+        <!-- Tạo/Cập nhật vật phẩm -->
+        <div class="section">
+            <h2><span class="material-icons">inventory</span> Tạo / Cập nhật vật phẩm</h2>
+            <form id="itemForm">
+                <div>
+                    <label>Tên vật phẩm *</label>
+                    <input type="text" name="tenVatPham" required />
+                </div>
+                <div>
+                    <label>Mã vật phẩm *</label>
+                    <input type="text" name="maVatPham" required />
+                </div>
+                <div>
+                    <label>Loại vật phẩm</label>
+                    <select name="loaiVatPham">
+                        <option value="">Chọn loại vật phẩm</option>
+                        <option value="Cleaning">Vệ sinh</option>
+                        <option value="Maintenance">Bảo trì</option>
+                        <option value="Food">Thực phẩm</option>
+                        <option value="Amenities">Tiện nghi</option>
+                        <option value="Office">Văn phòng</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Số lượng tồn</label>
+                    <input type="number" name="soLuongTon" min="0" value="0" />
+                </div>
+                <div>
+                    <label>Số lượng tối thiểu</label>
+                    <input type="number" name="soLuongToiThieu" min="0" value="0" />
+                </div>
+                <div>
+                    <label>Giá nhập (VND)</label>
+                    <input type="number" name="giaNhap" min="0" value="0" />
+                </div>
+                <div>
+                    <label>Đơn vị tính</label>
+                    <input type="text" name="donViTinh" placeholder="VD: cái, hộp, kg" />
+                </div>
+                <div>
+                    <label>Vị trí kho</label>
+                    <input type="text" name="viTriKho" placeholder="VD: A1-B2" />
+                </div>
+                <div>
+                    <label>Nhà cung cấp</label>
+                    <input type="text" name="nhaCungCap" />
+                </div>
+                <div>
+                    <label>Hạn sử dụng</label>
+                    <input type="date" name="hanSuDung" />
+                </div>
+                <div>
+                    <label>Trạng thái</label>
+                    <select name="trangThai">
+                        <option value="ACTIVE">Hoạt động</option>
+                        <option value="INACTIVE">Ngừng hoạt động</option>
+                        <option value="EXPIRED">Hết hạn</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; text-align: right;">
+                    <button type="button" class="btn" onclick="resetForm()"
+                        style="background: var(--gray-500); margin-right: 1rem;">
+                        <span class="material-icons">refresh</span>Làm mới
+                    </button>
+                    <button type="submit" class="btn success">
+                        <span class="material-icons">save</span>Lưu vật phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Giao dịch kho -->
+        <div class="section">
+            <h2><span class="material-icons">compare_arrows</span> Giao dịch kho</h2>
+            <form id="transactionForm">
+                <div>
+                    <label>Vật phẩm *</label>
+                    <select name="vatPhamId" required>
+                        <option value="">Chọn vật phẩm...</option>
+                        <option th:each="vp : ${items}" th:value="${vp.id}" th:text="${vp.tenVatPham}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label>Loại giao dịch *</label>
+                    <select name="loaiGiaoDich" required>
+                        <option value="">Chọn loại giao dịch...</option>
+                        <option value="NHAP_KHO">Nhập kho</option>
+                        <option value="XUAT_KHO">Xuất kho</option>
+                        <option value="KIEM_KE">Kiểm kê</option>
+                        <option value="HUY_BO">Hủy bỏ</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Số lượng *</label>
+                    <input type="number" name="soLuong" min="1" required />
+                </div>
+                <div>
+                    <label>Giá trị (VND)</label>
+                    <input type="number" name="giaTri" min="0" />
+                </div>
+                <div>
+                    <label>Ngày giao dịch</label>
+                    <input type="date" name="ngayGiaoDich" />
+                </div>
+                <div>
+                    <label>Lý do</label>
+                    <textarea name="lyDo" rows="3" placeholder="Mô tả lý do giao dịch..."></textarea>
+                </div>
+                <div style="grid-column: span 2; text-align: right;">
+                    <button type="submit" class="btn warning">
+                        <span class="material-icons">add_circle</span>Thực hiện giao dịch
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tìm kiếm và danh sách vật phẩm -->
+        <div class="section">
+            <h2><span class="material-icons">search</span> Danh sách vật phẩm</h2>
+            
+            <div class="search-bar">
+                <div>
+                    <label>Tìm kiếm</label>
+                    <input type="text" id="searchInput" placeholder="Tìm theo tên, mã vật phẩm..." />
+                </div>
+                <div>
+                    <label>Loại vật phẩm</label>
+                    <select id="categoryFilter">
+                        <option value="">Tất cả loại</option>
+                        <option value="Cleaning">Vệ sinh</option>
+                        <option value="Maintenance">Bảo trì</option>
+                        <option value="Food">Thực phẩm</option>
+                        <option value="Amenities">Tiện nghi</option>
+                        <option value="Office">Văn phòng</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Trạng thái</label>
+                    <select id="statusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="ACTIVE">Hoạt động</option>
+                        <option value="INACTIVE">Ngừng hoạt động</option>
+                        <option value="EXPIRED">Hết hạn</option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="searchItems()" class="btn" style="margin-top: 1.5rem;">
+                        <span class="material-icons">search</span>Tìm kiếm
+                    </button>
+                    <button onclick="resetSearch()" class="btn" style="background: var(--gray-500); margin-top: 1.5rem;">
+                        <span class="material-icons">refresh</span>Làm mới
+                    </button>
+                </div>
+            </div>
+            
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Tên vật phẩm</th>
+                        <th>Loại</th>
+                        <th>Tồn kho</th>
+                        <th>Tối thiểu</th>
+                        <th>Giá nhập</th>
+                        <th>Đơn vị</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td th:text="${item.maVatPham}"></td>
+                        <td th:text="${item.tenVatPham}"></td>
+                        <td th:text="${item.loaiVatPham}"></td>
+                        <td th:text="${item.soLuongTon}" 
+                            th:class="${item.soLuongTon <= item.soLuongToiThieu ? 'text-danger' : ''}"></td>
+                        <td th:text="${item.soLuongToiThieu}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}"></td>
+                        <td th:text="${item.donViTinh}"></td>
+                        <td>
+                            <span th:class="'badge ' + ${item.trangThai == 'ACTIVE' ? 'success' : (item.trangThai == 'EXPIRED' ? 'danger' : 'warning')}"
+                                  th:text="${item.trangThai == 'ACTIVE' ? 'Hoạt động' : (item.trangThai == 'EXPIRED' ? 'Hết hạn' : 'Ngừng')}"></span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" 
+                                        th:onclick="'editItem(' + ${item.id} + ')'">
+                                    <span class="material-icons" style="font-size: 1rem;">edit</span>
+                                </button>
+                                <button class="btn danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" 
+                                        th:onclick="'deleteItem(' + ${item.id} + ')'">
+                                    <span class="material-icons" style="font-size: 1rem;">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <div class="pagination-info">
+                    Hiển thị <span th:text="${items?.size() ?: 0}">0</span> vật phẩm
+                </div>
+                <div class="pagination-controls">
+                    <label>Hiển thị:</label>
+                    <select id="pageSize" onchange="changePageSize()">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>mục/trang</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lịch sử giao dịch -->
+        <div class="section">
+            <h2><span class="material-icons">history</span> Lịch sử giao dịch kho</h2>
+            
+            <div class="actions-bar">
+                <div class="action-buttons">
+                    <button class="btn" onclick="exportTransactions()">
+                        <span class="material-icons">download</span>Xuất Excel
+                    </button>
+                    <button class="btn success" onclick="generateReport()">
+                        <span class="material-icons">assessment</span>Tạo báo cáo
+                    </button>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Vật phẩm</th>
+                        <th>Loại giao dịch</th>
+                        <th>Số lượng</th>
+                        <th>Giá trị</th>
+                        <th>Người thực hiện</th>
+                        <th>Lý do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="tran : ${transactions}">
+                        <td th:text="${tran.ngayGiaoDich != null ? #temporals.format(tran.ngayGiaoDich, 'dd/MM/yyyy') : 'N/A'}"></td>
+                        <td th:text="${tran.inventoryItem != null ? tran.inventoryItem.tenVatPham : 'N/A'}"></td>
+                        <td>
+                            <span th:class="'badge ' + ${tran.loaiGiaoDich != null && tran.loaiGiaoDich.name() == 'NHAP_KHO' ? 'success' : (tran.loaiGiaoDich != null && tran.loaiGiaoDich.name() == 'XUAT_KHO' ? 'warning' : 'secondary')}"
+                                  th:text="${tran.loaiGiaoDich != null ? tran.loaiGiaoDich.value : 'N/A'}"></span>
+                        </td>
+                        <td th:text="${tran.soLuong}"></td>
+                        <td th:text="${tran.giaTri != null ? #numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT') : 'N/A'}"></td>
+                        <td th:text="${tran.nguoiThucHien ?: 'Admin'}"></td>
+                        <td th:text="${tran.lyDo ?: ''}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/Admin/quanlykho.js}"></script>
+</body>
+
+</html>

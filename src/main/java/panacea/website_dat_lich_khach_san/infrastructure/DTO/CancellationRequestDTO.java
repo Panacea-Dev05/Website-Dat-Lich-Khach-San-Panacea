@@ -4,30 +4,30 @@ package panacea.website_dat_lich_khach_san.infrastructure.DTO;
  * DTO để nhận request hủy đặt phòng
  */
 public class CancellationRequestDTO {
-    private Long bookingId;
+    private Integer bookingId;
     private String cancellationReason;
     private String customerEmail; // Để xác thực quyền hủy
 
     // Constructors
     public CancellationRequestDTO() {}
 
-    public CancellationRequestDTO(Long bookingId, String cancellationReason) {
+    public CancellationRequestDTO(Integer bookingId, String cancellationReason) {
         this.bookingId = bookingId;
         this.cancellationReason = cancellationReason;
     }
 
-    public CancellationRequestDTO(Long bookingId, String cancellationReason, String customerEmail) {
+    public CancellationRequestDTO(Integer bookingId, String cancellationReason, String customerEmail) {
         this.bookingId = bookingId;
         this.cancellationReason = cancellationReason;
         this.customerEmail = customerEmail;
     }
 
     // Getters and setters
-    public Long getBookingId() {
+    public Integer getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(Long bookingId) {
+    public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
     }
 

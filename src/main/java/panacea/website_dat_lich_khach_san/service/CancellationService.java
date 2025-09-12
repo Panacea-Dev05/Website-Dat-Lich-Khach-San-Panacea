@@ -38,7 +38,7 @@ public class CancellationService {
     /**
      * Lấy thông tin hủy đặt phòng
      */
-    public CancellationInfoDTO getCancellationInfo(Long bookingId) {
+    public CancellationInfoDTO getCancellationInfo(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isEmpty()) {
             throw new RuntimeException("Không tìm thấy đặt phòng với ID: " + bookingId);
@@ -55,7 +55,7 @@ public class CancellationService {
         CancellationCalculation calculation = calculateCancellation(booking);
         
         CancellationInfoDTO info = new CancellationInfoDTO();
-        info.setBookingId(booking.getId().longValue());
+        info.setBookingId(booking.getId());
         info.setMaDatPhong(booking.getMaDatPhong());
         info.setCancellationPolicy(booking.getCancellationPolicy());
         info.setPolicyDescription(booking.getCancellationPolicy().getDescription());
@@ -81,7 +81,7 @@ public class CancellationService {
         Booking booking = bookingOpt.get();
         
         // Kiểm tra quyền hủy (nếu có email)
-        if (request.getCustomerEmail() != null && 
+        if (request.getCustomerEmail() != null && !request.getCustomerEmail().trim().isEmpty() && 
             !request.getCustomerEmail().equals(booking.getKhachHang().getEmail())) {
             throw new RuntimeException("Bạn không có quyền hủy đặt phòng này");
         }
@@ -131,7 +131,7 @@ public class CancellationService {
         CancellationResponseDTO response = new CancellationResponseDTO();
         response.setSuccess(true);
         response.setMessage("Hủy đặt phòng thành công");
-        response.setBookingId(booking.getId().longValue());
+        response.setBookingId(booking.getId());
         response.setMaDatPhong(booking.getMaDatPhong());
         response.setCancellationFee(calculation.getCancellationFee());
         response.setRefundAmount(calculation.getRefundAmount());

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * DTO để trả về thông tin hủy đặt phòng
  */
 public class CancellationInfoDTO {
-    private Long bookingId;
+    private Integer bookingId;
     private String maDatPhong;
     private CancellationPolicy cancellationPolicy;
     private String policyDescription;
@@ -23,11 +23,11 @@ public class CancellationInfoDTO {
     public CancellationInfoDTO() {}
 
     // Getters and setters
-    public Long getBookingId() {
+    public Integer getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(Long bookingId) {
+    public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
     }
 

@@ -9,4 +9,9 @@ import java.util.Optional;
 @Repository
 public interface StaffRepository extends JpaRepository<Staff, Integer> {
     Optional<Staff> findByEmail(String email);
+    
+    // Alias method for authentication - uses email as account identifier
+    default Optional<Staff> findByTaiKhoan(String taiKhoan) {
+        return findByEmail(taiKhoan);
+    }
 }

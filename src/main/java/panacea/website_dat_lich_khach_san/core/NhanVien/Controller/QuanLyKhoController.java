@@ -1,23 +1,368 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
+import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
+import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
 
 @Controller
 @RequestMapping("/nhanvien/quanlykho")
+@PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
 public class QuanLyKhoController {
     private final QuanLyKhoService quanLyKhoService;
+    
     public QuanLyKhoController(QuanLyKhoService quanLyKhoService) {
         this.quanLyKhoService = quanLyKhoService;
     }
+    
     @GetMapping("")
-    public String view(Model model) {
-        model.addAttribute("staffName", quanLyKhoService.getStaffName());
-        model.addAttribute("items", quanLyKhoService.getAllItems());
-        model.addAttribute("transactions", quanLyKhoService.getAllTransactions());
-        return "NhanVien/QuanLyKho";
+    public String view(Model model, Authentication authentication) {
+        try {
+            // Verify user authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login";
+            }
+            
+            String staffName = authentication.getName();
+            model.addAttribute("staffName", staffName);
+            model.addAttribute("items", quanLyKhoService.getAllItems());
+            model.addAttribute("transactions", quanLyKhoService.getAllTransactions());
+            model.addAttribute("vatPhams", quanLyKhoService.getAllItems());
+            model.addAttribute("loaiGiaoDichList", Arrays.asList(LoaiGiaoDich.values()));
+            
+            // Add status list for items
+            List<String> trangThaiList = Arrays.asList("Hoạt động", "Tạm ngưng", "Hết hàng");
+            model.addAttribute("trangThaiList", trangThaiList);
+            
+            return "NhanVien/QuanLyKho";
+        } catch (Exception e) {
+            // Log the error
+            System.err.println("Error in QuanLyKho view: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Add error message to model
+            model.addAttribute("error", "Có lỗi xảy ra khi tải dữ liệu: " + e.getMessage());
+            model.addAttribute("items", new java.util.ArrayList<>());
+            model.addAttribute("transactions", new java.util.ArrayList<>());
+            model.addAttribute("vatPhams", new java.util.ArrayList<>());
+            model.addAttribute("loaiGiaoDichList", Arrays.asList(LoaiGiaoDich.values()));
+            model.addAttribute("trangThaiList", Arrays.asList("Hoạt động", "Tạm ngưng", "Hết hàng"));
+            
+            return "NhanVien/QuanLyKho";
+        }
     }
-} 
+    
+    // API endpoints cho CRUD operations
+    
+    @GetMapping("/api/items")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAllItems() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<InventoryManagement> items = quanLyKhoService.getAllItems();
+            response.put("success", true);
+            response.put("items", items);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tải danh sách vật phẩm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PostMapping("/api/items")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> createItem(@RequestBody InventoryManagement item, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify user authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            InventoryManagement savedItem = quanLyKhoService.saveItem(item);
+            response.put("success", true);
+            response.put("message", "Thêm vật phẩm thành công");
+            response.put("data", savedItem);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi thêm vật phẩm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PutMapping("/api/items/{id}")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> updateItem(@PathVariable Integer id, @RequestBody InventoryManagement item, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify user authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            item.setId(id);
+            InventoryManagement updatedItem = quanLyKhoService.updateItem(item);
+            response.put("success", true);
+            response.put("message", "Cập nhật vật phẩm thành công");
+            response.put("data", updatedItem);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi cập nhật vật phẩm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @DeleteMapping("/api/items/{id}")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> deleteItem(@PathVariable Integer id, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify user authentication and admin role
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            boolean hasAdminRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (!hasAdminRole) {
+                response.put("success", false);
+                response.put("message", "Chỉ admin mới có quyền xóa vật phẩm");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            quanLyKhoService.deleteItem(id);
+            response.put("success", true);
+            response.put("message", "Xóa vật phẩm thành công");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi xóa vật phẩm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PostMapping("/api/transactions")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody InventoryTransaction transaction, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify user authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Validate input
+            try {
+                quanLyKhoService.validateTransaction(transaction);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Set transaction creator (using staff ID)
+            // Note: This assumes authentication.getName() returns staff ID as string
+            // You may need to adjust this based on your authentication setup
+            try {
+                Integer staffId = Integer.parseInt(authentication.getName());
+                transaction.setNhanVienId(staffId);
+            } catch (NumberFormatException e) {
+                // If authentication.getName() is not a number, you might need to
+                // look up the staff ID from the database using the username
+                // For now, setting a default or throwing an error
+                throw new RuntimeException("Cannot determine staff ID from authentication");
+            }
+            
+            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction);
+            response.put("success", true);
+            response.put("message", "Thêm giao dịch thành công");
+            response.put("data", savedTransaction);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi thêm giao dịch: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/search")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> searchItems(@RequestParam(required = false) String keyword,
+                                                          @RequestParam(required = false) String loaiVatPham) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<InventoryManagement> items = quanLyKhoService.searchItems(keyword, loaiVatPham);
+            response.put("success", true);
+            response.put("data", items);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tìm kiếm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/reports/inventory")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getInventoryReport(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            Map<String, Object> report = quanLyKhoService.generateInventoryReport();
+            response.put("success", true);
+            response.put("data", report);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo báo cáo tồn kho: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/reports/transactions")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getTransactionReport(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            Map<String, Object> report = quanLyKhoService.generateTransactionReport(startDate, endDate);
+            response.put("success", true);
+            response.put("data", report);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo báo cáo giao dịch: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/reports/expiry")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getExpiryReport(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            Map<String, Object> report = quanLyKhoService.generateExpiryReport();
+            response.put("success", true);
+            response.put("data", report);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo báo cáo hết hạn: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/reports/value")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getValueReport(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            Map<String, Object> report = quanLyKhoService.generateValueReport();
+            response.put("success", true);
+            response.put("data", report);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo báo cáo giá trị: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping("/api/reports/summary")
+    @ResponseBody
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getSummaryStats(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            Map<String, Object> summary = quanLyKhoService.generateSummaryStats();
+            response.put("success", true);
+            response.put("data", summary);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo thống kê tổng hợp: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+}

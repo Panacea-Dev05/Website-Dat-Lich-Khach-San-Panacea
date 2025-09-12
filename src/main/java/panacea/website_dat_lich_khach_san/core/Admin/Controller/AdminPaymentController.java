@@ -64,11 +64,16 @@ public class AdminPaymentController {
             List<PaymentDTO> payments = paymentRepository.findAll().stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
-            List<BookingDTO> bookings = adminBookingService.getAllBookings();
+            List<BookingDTO> bookings = adminBookingService.getPayableBookings(); // Chỉ lấy booking có thể thanh toán (loại bỏ booking đã hủy)
+            
+            // Lấy danh sách booking đã hủy để tạo hoàn tiền
+            List<BookingDTO> cancelledBookings = adminBookingService.getCancelledBookings();
+            
             List<String> paymentMethods = Arrays.asList("Cash", "Credit Card", "Debit Card", "Bank Transfer", "E-wallet");
             List<String> paymentStatuses = Arrays.asList("Pending", "Completed", "Failed", "Refunded");
             model.addAttribute("payments", payments);
             model.addAttribute("bookings", bookings);
+            model.addAttribute("cancelledBookings", cancelledBookings);
             model.addAttribute("paymentMethods", paymentMethods);
             model.addAttribute("paymentStatuses", paymentStatuses);
             return "Admin/view/QuanLyThanhToan";
@@ -104,6 +109,15 @@ public class AdminPaymentController {
     @PostMapping
     @ResponseBody
     public PaymentDTO createPayment(@RequestBody PaymentDTO dto) {
+        // Kiểm tra booking có hợp lệ không (không bị hủy)
+        List<BookingDTO> payableBookings = adminBookingService.getPayableBookings();
+        boolean isBookingValid = payableBookings.stream()
+            .anyMatch(b -> b.getId().equals(dto.getBookingId()));
+        
+        if (!isBookingValid) {
+            return null; // Booking đã bị hủy hoặc không hợp lệ
+        }
+        
         Payment payment = adminPaymentService.createPayment(
             dto.getBookingId() != null ? dto.getBookingId().intValue() : null,
             dto.getSoTien() != null ? dto.getSoTien() : dto.getAmount(),
@@ -131,12 +145,31 @@ public class AdminPaymentController {
         paymentRepository.save(payment);
         return convertToDTO(payment);
     }
+    
+    // API: Tạo payment hoàn tiền cho booking đã hủy
+    @PostMapping("/refund")
+    @ResponseBody
+    public PaymentDTO createRefundPayment(@RequestBody java.util.Map<String, Object> request) {
+        try {
+            Integer bookingId = Integer.valueOf(request.get("bookingId").toString());
+            java.math.BigDecimal refundAmount = new java.math.BigDecimal(request.get("refundAmount").toString());
+            String reason = request.get("reason") != null ? request.get("reason").toString() : "Hoàn tiền do hủy đặt phòng";
+            
+            Payment refundPayment = adminPaymentService.createRefundPayment(bookingId, refundAmount, reason);
+            if (refundPayment == null) return null;
+            
+            return convertToDTO(refundPayment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private PaymentDTO convertToDTO(Payment payment) {
         PaymentDTO dto = new PaymentDTO();
-        dto.setId(payment.getId() != null ? payment.getId().longValue() : null);
+        dto.setId(payment.getId());
         dto.setBookingId(payment.getBooking() != null && payment.getBooking().getId() != null
-            ? payment.getBooking().getId().longValue()
+            ? payment.getBooking().getId()
             : null);
 
         // Sửa tên trường để khớp với HTML

@@ -73,7 +73,23 @@ public class AdminBookingService {
                 .collect(Collectors.toList());
     }
     
-    public BookingDTO getBookingById(Long id) {
+    // Lấy danh sách booking có thể thanh toán (loại bỏ booking đã hủy)
+    public List<BookingDTO> getPayableBookings() {
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) // Loại bỏ booking đã hủy
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    // Lấy danh sách booking đã hủy để tạo hoàn tiền
+    public List<BookingDTO> getCancelledBookings() {
+        return bookingRepository.findByTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HUY)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public BookingDTO getBookingById(Integer id) {
         Optional<Booking> booking = bookingRepository.findById(id);
         return booking.map(this::convertToDTO).orElse(null);
     }
@@ -84,7 +100,7 @@ public class AdminBookingService {
         return convertToDTO(savedBooking);
     }
     
-    public BookingDTO updateBooking(Long id, BookingDTO bookingDTO) {
+    public BookingDTO updateBooking(Integer id, BookingDTO bookingDTO) {
         Optional<Booking> existingBooking = bookingRepository.findById(id);
         if (existingBooking.isPresent()) {
             Booking booking = existingBooking.get();
@@ -100,7 +116,7 @@ public class AdminBookingService {
         return null;
     }
     
-    public boolean deleteBooking(Long id) {
+    public boolean deleteBooking(Integer id) {
         if (bookingRepository.existsById(id)) {
             bookingRepository.deleteById(id);
             return true;
@@ -154,7 +170,7 @@ public class AdminBookingService {
     }
     
     // Xác nhận booking
-    public BookingDTO confirmBooking(Long bookingId) {
+    public BookingDTO confirmBooking(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
         Booking booking = opt.get();
@@ -164,7 +180,7 @@ public class AdminBookingService {
     }
     
     // Check-in
-    public BookingDTO checkIn(Long bookingId) {
+    public BookingDTO checkIn(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
         Booking booking = opt.get();
@@ -174,7 +190,7 @@ public class AdminBookingService {
     }
     
     // Check-out
-    public BookingDTO checkOut(Long bookingId) {
+    public BookingDTO checkOut(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
         Booking booking = opt.get();
@@ -184,7 +200,7 @@ public class AdminBookingService {
     }
     
     // Áp dụng promotion
-    public BookingDTO applyPromotion(Long bookingId, String promoCode) {
+    public BookingDTO applyPromotion(Integer bookingId, String promoCode) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
         Booking booking = opt.get();
@@ -213,7 +229,7 @@ public class AdminBookingService {
     }
     
     // Xem chi tiết booking đầy đủ (phòng, dịch vụ, thanh toán)
-    public BookingFullDetail getBookingFullDetail(Long id) {
+    public BookingFullDetail getBookingFullDetail(Integer id) {
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
         if (bookingOpt.isEmpty()) return null;
         Booking booking = bookingOpt.get();

@@ -9,7 +9,9 @@ import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.repository.*;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
@@ -71,6 +73,9 @@ public class QuanLyDatPhongService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    @Autowired
+    private RoomPricingRepositoty roomPricingRepository;
+
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
@@ -79,11 +84,11 @@ public class QuanLyDatPhongService {
         return bookingRepository.findAll();
     }
     
-    public Optional<Booking> getBookingById(Long id) {
+    public Optional<Booking> getBookingById(Integer id) {
         return bookingRepository.findById(id);
     }
     
-    public boolean confirmBooking(Long bookingId) {
+    public boolean confirmBooking(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isPresent()) {
             Booking booking = bookingOpt.get();
@@ -99,7 +104,7 @@ public class QuanLyDatPhongService {
         return false;
     }
     
-    public boolean cancelBooking(Long bookingId) {
+    public boolean cancelBooking(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isPresent()) {
             Booking booking = bookingOpt.get();
@@ -107,7 +112,7 @@ public class QuanLyDatPhongService {
             // Lấy thông tin hủy đặt phòng
             CancellationInfoDTO cancellationInfo;
             try {
-                cancellationInfo = cancellationServiceBean.getCancellationInfo(booking.getId().longValue());
+                cancellationInfo = cancellationServiceBean.getCancellationInfo(booking.getId());
             } catch (RuntimeException e) {
                 logger.warn("Không thể hủy booking {} - {}", booking.getMaDatPhong(), e.getMessage());
                 return false;
@@ -121,7 +126,7 @@ public class QuanLyDatPhongService {
             
             // Thực hiện hủy đặt phòng
             CancellationRequestDTO request = new CancellationRequestDTO();
-            request.setBookingId(booking.getId().longValue());
+            request.setBookingId(booking.getId());
             request.setCancellationReason("Hủy bởi nhân viên");
             
             try {
@@ -366,35 +371,61 @@ public class QuanLyDatPhongService {
             @SuppressWarnings("unchecked")
             List<Integer> roomIds = (List<Integer>) roomIdsObj;
             if (roomIds.isEmpty()) throw new IllegalArgumentException("Danh sách phòng không được để trống");
-            
-            // Validate all rooms exist
+
+// Get dates first for validation
+            Object ngayNhanPhongObj = requestData.get("ngayNhanPhong");
+            if (ngayNhanPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayNhanPhong trong requestData");
+            LocalDate checkInDate = LocalDate.parse(ngayNhanPhongObj.toString());
+
+            Object ngayTraPhongObj = requestData.get("ngayTraPhong");
+            if (ngayTraPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayTraPhong trong requestData");
+            LocalDate checkOutDate = LocalDate.parse(ngayTraPhongObj.toString());
+
+// Validate all rooms exist and are available
             List<Room> rooms = new ArrayList<>();
             for (Integer roomId : roomIds) {
                 Room room = roomRepository.findById(roomId)
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với ID: " + roomId));
+
+                if (isRoomBookedInPeriod(roomId, checkInDate, checkOutDate)) {
+                    throw new RuntimeException("Phòng " + room.getSoPhong() + " đã được đặt trong khoảng thời gian từ "
+                            + checkInDate + " đến " + checkOutDate + ". Vui lòng chọn phòng khác hoặc thời gian khác.");
+                }
+
                 rooms.add(room);
             }
-            
-            // Get hotel (assuming single hotel model)
+
+// Get hotel (assuming single hotel model)
             Hotel hotel = hotelRepository.findAll().stream().findFirst()
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
 
-            // Create booking
+// Create booking
             Booking booking = new Booking();
             booking.setKhachHang(customer);
             booking.setHotel(hotel);
-            Object ngayNhanPhongObj = requestData.get("ngayNhanPhong");
-            if (ngayNhanPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayNhanPhong trong requestData");
-            booking.setNgayNhanPhong(LocalDate.parse(ngayNhanPhongObj.toString()));
-            Object ngayTraPhongObj = requestData.get("ngayTraPhong");
-            if (ngayTraPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayTraPhong trong requestData");
-            booking.setNgayTraPhong(LocalDate.parse(ngayTraPhongObj.toString()));
+            booking.setNgayNhanPhong(checkInDate);
+            booking.setNgayTraPhong(checkOutDate);
+
             Object soNguoiLonObj = requestData.get("soNguoiLon");
             if (soNguoiLonObj == null) throw new IllegalArgumentException("Thiếu trường soNguoiLon trong requestData");
             booking.setSoNguoiLon(Byte.valueOf(soNguoiLonObj.toString()));
+
             Object soTreEmObj = requestData.get("soTreEm");
             if (soTreEmObj == null) throw new IllegalArgumentException("Thiếu trường soTreEm trong requestData");
             booking.setSoTreEm(Byte.valueOf(soTreEmObj.toString()));
+            
+            // Xử lý loại đặt phòng
+            Object bookingTypeObj = requestData.get("bookingType");
+            if (bookingTypeObj != null) {
+                try {
+                    Booking.BookingType bookingType = Booking.BookingType.fromString(bookingTypeObj.toString());
+                    booking.setBookingType(bookingType);
+                } catch (IllegalArgumentException e) {
+                    booking.setBookingType(Booking.BookingType.DAY); // Default
+                }
+            } else {
+                booking.setBookingType(Booking.BookingType.DAY); // Default
+            }
             
             // Xử lý số giường
             Object soGiuongObj = requestData.get("soGiuong");
@@ -403,6 +434,26 @@ public class QuanLyDatPhongService {
                 String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
                 ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số giường: " + soGiuongObj.toString();
                 booking.setGhiChuNoiBo(ghiChu);
+            }
+            
+            // Xử lý số giờ cho booking theo giờ
+            if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                Object hourCountObj = requestData.get("hourCount");
+                if (hourCountObj != null) {
+                    String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                    ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số giờ thuê: " + hourCountObj.toString();
+                    booking.setGhiChuNoiBo(ghiChu);
+                }
+            }
+            
+            // Xử lý số ngày cho booking theo ngày
+            if (booking.getBookingType() == Booking.BookingType.DAY) {
+                Object dayCountObj = requestData.get("dayCount");
+                if (dayCountObj != null) {
+                    String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                    ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số ngày thuê: " + dayCountObj.toString();
+                    booking.setGhiChuNoiBo(ghiChu);
+                }
             }
             
             // Lấy isWalkIn từ requestData
@@ -430,11 +481,81 @@ public class QuanLyDatPhongService {
                 LocalDate.parse(ngayNhanPhongObj.toString()),
                 LocalDate.parse(ngayTraPhongObj.toString())
             );
+            // Lấy số giờ từ requestData nếu là booking theo giờ
+            int hourCount = 1; // Mặc định 1 giờ
+            if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                Object hourCountObj = requestData.get("hourCount");
+                if (hourCountObj != null) {
+                    try {
+                        hourCount = Integer.parseInt(hourCountObj.toString());
+                        if (hourCount < 1) hourCount = 1;
+                        if (hourCount > 24) hourCount = 24;
+                    } catch (NumberFormatException e) {
+                        hourCount = 1;
+                    }
+                }
+            }
+            
+            // Tính số ngày thực tế từ ngày nhận và ngày trả
+            int actualDays = (int) days;
+            if (actualDays < 1) actualDays = 1; // Tối thiểu 1 ngày
+            
+            // Lấy số ngày từ requestData nếu là booking theo ngày (chỉ để lưu vào ghi chú)
+            int dayCount = actualDays; // Sử dụng số ngày thực tế
+            if (booking.getBookingType() == Booking.BookingType.DAY) {
+                Object dayCountObj = requestData.get("dayCount");
+                if (dayCountObj != null) {
+                    try {
+                        int inputDayCount = Integer.parseInt(dayCountObj.toString());
+                        // Chỉ lưu vào ghi chú, không dùng để tính giá
+                        if (inputDayCount != actualDays) {
+                            String ghiChu = booking.getGhiChuNoiBo() != null ? booking.getGhiChuNoiBo() : "";
+                            ghiChu += (ghiChu.isEmpty() ? "" : "; ") + "Số ngày yêu cầu: " + inputDayCount + ", Số ngày thực tế: " + actualDays;
+                            booking.setGhiChuNoiBo(ghiChu);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid input
+                    }
+                }
+            }
+            
+            // Tính giá theo loại đặt phòng và RoomPricing
             BigDecimal tongThanhToan = BigDecimal.ZERO;
             for (Room room : rooms) {
-                tongThanhToan = tongThanhToan.add(room.getGiaCoBan().multiply(BigDecimal.valueOf(days)));
+                BigDecimal giaPhong = BigDecimal.ZERO;
+                
+                // Lấy giá từ RoomPricing theo loại đặt phòng
+                RoomPricing roomPricing = getRoomPricingByRoomTypeId(room.getRoomType().getId()).orElse(null);
+                if (roomPricing != null) {
+                    switch (booking.getBookingType()) {
+                        case DAY:
+                            giaPhong = roomPricing.getGiaNgay().multiply(BigDecimal.valueOf(dayCount));
+                            break;
+                        case HOUR:
+                            giaPhong = roomPricing.getGiaGio().multiply(BigDecimal.valueOf(hourCount));
+                            break;
+                        case OVERNIGHT:
+                            giaPhong = roomPricing.getGiaQuaDem();
+                            break;
+                        default:
+                            giaPhong = roomPricing.getGiaNgay();
+                    }
+                } else {
+                    // Fallback to basic price if no RoomPricing found
+                    giaPhong = room.getGiaCoBan();
+                    if (booking.getBookingType() == Booking.BookingType.HOUR) {
+                        giaPhong = giaPhong.multiply(BigDecimal.valueOf(hourCount));
+                    } else if (booking.getBookingType() == Booking.BookingType.DAY) {
+                        giaPhong = giaPhong.multiply(BigDecimal.valueOf(dayCount));
+                    }
+                }
+                
+                // Tính tổng tiền (giá đã được nhân với số ngày/giờ ở trên)
+                tongThanhToan = tongThanhToan.add(giaPhong);
             }
+            
             booking.setTongThanhToan(tongThanhToan);
+            booking.setTongTienPhong(tongThanhToan);
             
             bookingRepository.save(booking);
             
@@ -470,7 +591,7 @@ public class QuanLyDatPhongService {
         }
     }
 
-    public boolean confirmBookingAndAssignMultipleRooms(Long bookingId, java.util.List<Long> roomIds) {
+    public boolean confirmBookingAndAssignMultipleRooms(Integer bookingId, java.util.List<Long> roomIds) {
         logger.info("[CONFIRM_MULTIPLE] Bắt đầu xác nhận bookingId={}, roomIds={}", bookingId, roomIds);
         try {
             Booking booking = bookingRepository.findById(bookingId).orElse(null);
@@ -522,29 +643,41 @@ public class QuanLyDatPhongService {
                 }
                 
                 String emailBody = String.format(
-                    "Xin chào %s!\n\n" +
-                    "Chúng tôi rất vui mừng thông báo rằng đặt phòng của bạn đã được xác nhận thành công.\n\n" +
-                    "Thông tin đặt phòng:\n" +
-                    "Mã đặt phòng: %s\n" +
-                    "Khách sạn: %s\n" +
-                    "%s" +
-                    "Ngày nhận phòng: %s\n" +
-                    "Ngày trả phòng: %s\n" +
-                    "Số người lớn: %d\n" +
-                    "Số trẻ em: %d\n" +
-                    "Tổng thanh toán: %s VND\n\n" +
-                    "Cảm ơn bạn đã chọn khách sạn của chúng tôi!\n\n" +
-                    "Trân trọng,\n" +
-                    "Đội ngũ Panacea Hotel",
+                    "<html><body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>" +
+                    "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>" +
+                    "<h2 style='color: #2c5aa0; text-align: center; margin-bottom: 30px;'>🏨 Xác nhận đặt phòng thành công</h2>" +
+                    "<p style='font-size: 16px; margin-bottom: 20px;'>Xin chào <strong>%s</strong>!</p>" +
+                    "<p style='margin-bottom: 20px;'>Chúng tôi rất vui mừng thông báo rằng đặt phòng của bạn đã được <strong style='color: #28a745;'>xác nhận thành công</strong>.</p>" +
+                    "<div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>" +
+                    "<h3 style='color: #2c5aa0; margin-top: 0;'>📋 Thông tin đặt phòng:</h3>" +
+                    "<table style='width: 100%%; border-collapse: collapse;'>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold; width: 40%%;'>🏷️ Mã đặt phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>🏨 Khách sạn:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>🏠 Phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày nhận phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày trả phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>👥 Số người lớn:</td><td style='padding: 8px 0;'>%d người</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>👶 Số trẻ em:</td><td style='padding: 8px 0;'>%d trẻ</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold; color: #dc3545;'>💰 Tổng thanh toán:</td><td style='padding: 8px 0; color: #dc3545; font-weight: bold; font-size: 18px;'>%s VND</td></tr>" +
+                    "</table></div>" +
+                    "<div style='background-color: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2c5aa0; margin: 20px 0;'>" +
+                    "<p style='margin: 0; font-weight: bold;'>📝 Lưu ý quan trọng:</p>" +
+                    "<p style='margin: 5px 0 0 0;'>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>" +
+                    "</div>" +
+                    "<p style='margin-top: 30px; text-align: center; color: #666;'>Cảm ơn bạn đã chọn khách sạn của chúng tôi! 🙏</p>" +
+                    "<div style='text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;'>" +
+                    "<p style='margin: 0; font-weight: bold; color: #2c5aa0;'>Trân trọng,</p>" +
+                    "<p style='margin: 5px 0 0 0; color: #666;'>Đội ngũ Panacea Hotel</p>" +
+                    "</div></div></body></html>",
                     customer.getHo() + " " + customer.getTen(),
                     booking.getMaDatPhong(),
                     "Panacea Hotel",
-                    roomInfo.toString(),
+                    roomInfo.toString().replaceAll("\n", "<br>"),
                     booking.getNgayNhanPhong(),
                     booking.getNgayTraPhong(),
                     booking.getSoNguoiLon(),
                     booking.getSoTreEm(),
-                    booking.getTongTienPhong()
+                    String.format("%,.0f", booking.getTongTienPhong().doubleValue())
                 );
                 
                 try {
@@ -567,7 +700,7 @@ public class QuanLyDatPhongService {
         }
     }
     
-    public boolean confirmBookingAndAssignRoom(Long bookingId, Long roomId) {
+    public boolean confirmBookingAndAssignRoom(Integer bookingId, Long roomId) {
         logger.info("[CONFIRM] Bắt đầu xác nhận bookingId={}, roomId={}", bookingId, roomId);
         try {
             Booking booking = bookingRepository.findById(bookingId).orElse(null);
@@ -605,35 +738,53 @@ public class QuanLyDatPhongService {
             Customer customer = booking.getKhachHang();
             if (customer != null && customer.getEmail() != null) {
                 String emailBody = String.format(
-                    "Xin chào %s!\n\n" +
-                    "Chúng tôi rất vui mừng thông báo rằng đặt phòng của bạn đã được xác nhận thành công.\n\n" +
-                    "Thông tin đặt phòng:\n" +
-                    "Mã đặt phòng: %s\n" +
-                    "Khách sạn: %s\n" +
-                    "Phòng: %s\n" +
-                    "Ngày nhận phòng: %s\n" +
-                    "Ngày trả phòng: %s\n" +
-                    "Số người lớn: %d\n" +
-                    "Số trẻ em: %d\n" +
-                    "Tổng thanh toán: %s VND\n\n" +
-                    "Vui lòng đến khách sạn đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.\n\n" +
-                    "Trân trọng,\n" +
-                    "Đội ngũ Panacea Hotel",
+                    "<html><body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>" +
+                    "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>" +
+                    "<h2 style='color: #2c5aa0; text-align: center; margin-bottom: 30px;'>🏨 Xác nhận đặt phòng thành công</h2>" +
+                    "<p style='font-size: 16px; margin-bottom: 20px;'>Xin chào <strong>%s</strong>!</p>" +
+                    "<p style='margin-bottom: 20px;'>Chúng tôi rất vui mừng thông báo rằng đặt phòng của bạn đã được <strong style='color: #28a745;'>xác nhận thành công</strong>.</p>" +
+                    "<div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>" +
+                    "<h3 style='color: #2c5aa0; margin-top: 0;'>📋 Thông tin đặt phòng:</h3>" +
+                    "<table style='width: 100%%; border-collapse: collapse;'>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold; width: 40%%;'>🏷️ Mã đặt phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>🏨 Khách sạn:</td><td style='padding: 8px 0;'>Panacea Hotel</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>🏠 Phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày nhận phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày trả phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>👥 Số người lớn:</td><td style='padding: 8px 0;'>%d người</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold;'>👶 Số trẻ em:</td><td style='padding: 8px 0;'>%d trẻ</td></tr>" +
+                    "<tr><td style='padding: 8px 0; font-weight: bold; color: #dc3545;'>💰 Tổng thanh toán:</td><td style='padding: 8px 0; color: #dc3545; font-weight: bold; font-size: 18px;'>%s VND</td></tr>" +
+                    "</table></div>" +
+                    "<div style='background-color: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2c5aa0; margin: 20px 0;'>" +
+                    "<p style='margin: 0; font-weight: bold;'>📝 Lưu ý quan trọng:</p>" +
+                    "<p style='margin: 5px 0 0 0;'>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>" +
+                    "</div>" +
+                    "<p style='margin-top: 30px; text-align: center; color: #666;'>Cảm ơn bạn đã chọn khách sạn của chúng tôi! 🙏</p>" +
+                    "<div style='text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;'>" +
+                    "<p style='margin: 0; font-weight: bold; color: #2c5aa0;'>Trân trọng,</p>" +
+                    "<p style='margin: 5px 0 0 0; color: #666;'>Đội ngũ Panacea Hotel</p>" +
+                    "</div></div></body></html>",
                     customer.getHo() + " " + customer.getTen(),
                     booking.getMaDatPhong(),
-                    null, // Removed booking.getHotel().getTenKhachSan()
                     room.getSoPhong(),
                     booking.getNgayNhanPhong(),
                     booking.getNgayTraPhong(),
                     booking.getSoNguoiLon(),
                     booking.getSoTreEm(),
-                    booking.getTongThanhToan() != null ? booking.getTongThanhToan().toString() : "0"
+                    booking.getTongThanhToan() != null ? String.format("%,.0f", booking.getTongThanhToan().doubleValue()) : "0"
                 );
-                SimpleMailMessage message = new SimpleMailMessage();
-                message.setTo(customer.getEmail());
-                message.setSubject("Xác nhận đặt phòng khách sạn");
-                message.setText(emailBody);
-                mailSender.send(message);
+                
+                try {
+                    sendEmail(customer.getEmail(), "Xác nhận đặt phòng khách sạn", emailBody);
+                } catch (MessagingException e) {
+                    logger.error("[CONFIRM] Lỗi khi gửi email HTML: {}", e.getMessage());
+                    // Fallback to simple text email
+                    SimpleMailMessage message = new SimpleMailMessage();
+                    message.setTo(customer.getEmail());
+                    message.setSubject("Xác nhận đặt phòng khách sạn");
+                    message.setText("Đặt phòng " + booking.getMaDatPhong() + " đã được xác nhận thành công!");
+                    mailSender.send(message);
+                }
                 logger.info("[CONFIRM] Đã gửi email xác nhận cho khách hàng: {}", customer.getEmail());
             } else {
                 logger.warn("[CONFIRM] Không gửi được email xác nhận vì thiếu thông tin khách hàng hoặc email");
@@ -646,7 +797,7 @@ public class QuanLyDatPhongService {
         }
     }
 
-    public boolean checkoutBooking(Long bookingId) {
+    public boolean checkoutBooking(Integer bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return false;
         if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_NHAN_PHONG
@@ -709,7 +860,7 @@ public class QuanLyDatPhongService {
      * @param soPhongCanThiet Số phòng cần thiết
      * @return true nếu thành công, false nếu thất bại
      */
-    public boolean assignMultipleRooms(Long bookingId, int soPhongCanThiet) {
+    public boolean assignMultipleRooms(Integer bookingId, int soPhongCanThiet) {
         logger.info("[ASSIGN_MULTIPLE] Bắt đầu phân bổ {} phòng cho bookingId={}", soPhongCanThiet, bookingId);
         
         try {
@@ -734,7 +885,8 @@ public class QuanLyDatPhongService {
 
             if (availableRooms.size() < soPhongCanThiet) {
                 logger.warn("[ASSIGN_MULTIPLE] Chỉ có {} phòng trống, cần {}", availableRooms.size(), soPhongCanThiet);
-                return false;
+                throw new RuntimeException(String.format("Không đủ phòng trống! Hiện tại chỉ có %d phòng trống trong khoảng thời gian này, nhưng cần %d phòng. Vui lòng chọn ngày khác hoặc giảm số lượng khách.", 
+                    availableRooms.size(), soPhongCanThiet));
             }
 
             // Gán từng phòng cho booking
@@ -927,7 +1079,7 @@ public class QuanLyDatPhongService {
     }
 
     // Trả về chi tiết booking kèm danh sách dịch vụ đã sử dụng
-    public BookingDetailViewDTO getBookingDetailViewDTOById(Long bookingId) {
+    public BookingDetailViewDTO getBookingDetailViewDTOById(Integer bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return null;
         List<BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());
@@ -969,7 +1121,7 @@ public class QuanLyDatPhongService {
         return BookingDetailViewDTO.fromEntity(booking, details, serviceUsages);
     }
 
-    public boolean checkInBooking(Long bookingId, String soCmndCccd, LocalDate ngayCapCmnd, String noiCapCmnd, Byte soNguoiLonThucTe, Byte soTreEmThucTe, String ghiChuCheckIn) {
+    public boolean checkInBooking(Integer bookingId, String soCmndCccd, LocalDate ngayCapCmnd, String noiCapCmnd, Byte soNguoiLonThucTe, Byte soTreEmThucTe, String ghiChuCheckIn) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return false;
         if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_XAC_NHAN) return false;
@@ -1072,7 +1224,7 @@ public class QuanLyDatPhongService {
     }
 
     // Cập nhật lại danh sách dịch vụ đã sử dụng cho booking
-    public boolean updateBookingServices(Long bookingId, java.util.List<java.util.Map<String, Object>> services) {
+    public boolean updateBookingServices(Integer bookingId, java.util.List<java.util.Map<String, Object>> services) {
         try {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
@@ -1113,5 +1265,11 @@ public class QuanLyDatPhongService {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public java.util.Optional<panacea.website_dat_lich_khach_san.entity.RoomPricing> getRoomPricingByRoomTypeId(Integer roomTypeId) {
+        return roomPricingRepository.findAll().stream()
+            .filter(pricing -> pricing.getRoomType() != null && pricing.getRoomType().getId().equals(roomTypeId))
+            .findFirst();
     }
 }

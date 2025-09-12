@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class CancellationResponseDTO {
     private boolean success;
     private String message;
-    private Long bookingId;
+    private Integer bookingId;
     private String maDatPhong;
     private BigDecimal cancellationFee;
     private BigDecimal refundAmount;
@@ -41,11 +41,11 @@ public class CancellationResponseDTO {
         this.message = message;
     }
 
-    public Long getBookingId() {
+    public Integer getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(Long bookingId) {
+    public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
     }
 

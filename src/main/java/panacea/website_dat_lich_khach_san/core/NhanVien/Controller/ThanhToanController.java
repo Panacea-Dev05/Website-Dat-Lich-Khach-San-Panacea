@@ -93,9 +93,18 @@ public class ThanhToanController {
             String noiDung = request.get("noiDung") != null ? request.get("noiDung").toString() : "";
             String maGiaoDich = request.get("maGiaoDich") != null ? request.get("maGiaoDich").toString() : "";
             
+            // Kiểm tra booking có tồn tại và trạng thái
+            List<Booking> activeBookings = thanhToanService.getActiveBookings();
+            boolean isBookingValid = activeBookings.stream()
+                .anyMatch(b -> b.getId().equals(bookingId));
+            
+            if (!isBookingValid) {
+                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Booking đã bị hủy hoặc không hợp lệ để thanh toán"));
+            }
+            
             Payment payment = thanhToanService.createCashPayment(bookingId, soTien, phuongThuc, noiDung, maGiaoDich);
             if (payment == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không thể tạo thanh toán"));
+                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không thể tạo thanh toán. Booking có thể đã bị hủy."));
             }
             
             // Convert to DTO to avoid circular reference
@@ -162,9 +171,9 @@ public class ThanhToanController {
     }
     
     // Helper method to convert Payment entity to PaymentDTO
-     private PaymentDTO convertToDTO(Payment payment) {
-         PaymentDTO dto = new PaymentDTO();
-         dto.setId(payment.getId() != null ? payment.getId().longValue() : null);
+    private PaymentDTO convertToDTO(Payment payment) {
+        PaymentDTO dto = new PaymentDTO();
+        dto.setId(payment.getId());
          dto.setSoTien(payment.getSoTien());
          dto.setAmount(payment.getSoTien());
          dto.setHinhThucThanhToan(payment.getPhuongThuc());
@@ -180,8 +189,8 @@ public class ThanhToanController {
          dto.setCreatedDate(payment.getCreatedDate());
          
          if (payment.getBooking() != null) {
-             dto.setBookingId(payment.getBooking().getId() != null ? payment.getBooking().getId().longValue() : null);
-         }
+            dto.setBookingId(payment.getBooking().getId());
+        }
          return dto;
      }
 }

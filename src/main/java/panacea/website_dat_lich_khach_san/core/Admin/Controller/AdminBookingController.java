@@ -45,7 +45,7 @@ public class AdminBookingController {
     
     @GetMapping("/{id}")
     @ResponseBody
-    public BookingDTO getBooking(@PathVariable Long id) {
+    public BookingDTO getBooking(@PathVariable Integer id) {
         return adminBookingService.getBookingById(id);
     }
     
@@ -57,13 +57,13 @@ public class AdminBookingController {
     
     @PutMapping("/{id}")
     @ResponseBody
-    public BookingDTO updateBooking(@PathVariable Long id, @RequestBody BookingDTO bookingDTO) {
+    public BookingDTO updateBooking(@PathVariable Integer id, @RequestBody BookingDTO bookingDTO) {
         return adminBookingService.updateBooking(id, bookingDTO);
     }
     
     @DeleteMapping("/{id}")
     @ResponseBody
-    public boolean deleteBooking(@PathVariable Long id) {
+    public boolean deleteBooking(@PathVariable Integer id) {
         return adminBookingService.deleteBooking(id);
     }
-} 
+}

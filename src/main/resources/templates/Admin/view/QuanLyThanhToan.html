@@ -29,6 +29,7 @@
       <h1>Quản lý thanh toán</h1>
       <section class="content-section" id="contentSection">
         <button class="btn" id="btnAddPayment">Thêm thanh toán mới</button>
+        <button class="btn" id="btnCreateRefund" style="background:#f59e0b; margin-left: 12px;">Tạo hoàn tiền</button>
         <table aria-label="Danh sách thanh toán" id="paymentTable">
           <thead>
             <tr>
@@ -159,6 +160,34 @@
               <button type="button" class="btn" id="printInvoiceBtn">In hóa đơn</button>
               <button type="button" class="btn" id="closeViewBtn" style="background:#ef4444; margin-left: 12px;">Đóng</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Modal tạo hoàn tiền (ẩn mặc định) -->
+        <div class="modal-overlay" id="refundModal" style="display:none;">
+          <div class="modal-content">
+            <button type="button" class="modal-close" id="closeRefundModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <form id="refundForm">
+              <h2 style="color:#064e3b; margin-bottom:1rem;">Tạo hoàn tiền cho booking đã hủy</h2>
+
+              <label for="refundBookingId">Booking đã hủy</label>
+              <select id="refundBookingId" name="refundBookingId" required>
+                <option value="" disabled selected>Chọn booking đã hủy</option>
+                <option th:each="booking : ${cancelledBookings}" th:value="${booking.id}"
+                  th:text="${booking.maDatPhong + ' - ' + booking.customerName + ' (Hủy: ' + #temporals.format(booking.ngayHuy, 'dd/MM/yyyy') + ')'}"></option>
+              </select>
+
+              <label for="refundAmount">Số tiền hoàn (VNĐ)</label>
+              <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" placeholder="Nhập số tiền hoàn" />
+
+              <label for="refundReason">Lý do hoàn tiền</label>
+              <textarea id="refundReason" name="refundReason" rows="3" placeholder="Hoàn tiền do hủy đặt phòng theo chính sách"></textarea>
+
+              <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
+                <button type="submit" class="btn" id="submitRefundBtn">Tạo hoàn tiền</button>
+                <button type="button" class="btn" id="cancelRefundBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+              </div>
+            </form>
           </div>
         </div>
       </section>

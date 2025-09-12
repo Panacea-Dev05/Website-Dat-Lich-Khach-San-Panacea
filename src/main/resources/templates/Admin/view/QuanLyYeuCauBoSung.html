@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản Lý Yêu Cầu Bổ Sung - Panacea Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/Admin/adminslidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/Admin/quanlyyeucaubosung.css}">
+</head>
+
+<body>
+    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Quản lý yêu cầu bổ sung</h1>
+            <p>Quản lý các yêu cầu bổ sung vật phẩm kho</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Tổng yêu cầu</h3>
+                <div class="number" th:text="${allRequests.size()}">0</div>
+            </div>
+            <div class="stat-card pending">
+                <h3>Chờ duyệt</h3>
+                <div class="number" th:text="${pendingRequests.size()}">0</div>
+            </div>
+            <div class="stat-card approved">
+                <h3>Đã duyệt</h3>
+                <div class="number" th:text="${approvedRequests.size()}">0</div>
+            </div>
+            <div class="stat-card rejected">
+                <h3>Từ chối</h3>
+                <div class="number" th:text="${rejectedRequests.size()}">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Hoàn thành</h3>
+                <div class="number" th:text="${completedRequests.size()}">0</div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+            <div class="filter-tabs">
+                <div class="tab active" data-status="all" onclick="filterRequests('all')">Tất cả</div>
+                <div class="tab" data-status="CHO_DUYET" onclick="filterRequests('CHO_DUYET')">Chờ duyệt</div>
+                <div class="tab" data-status="DA_DUYET" onclick="filterRequests('DA_DUYET')">Đã duyệt</div>
+                <div class="tab" data-status="TU_CHOI" onclick="filterRequests('TU_CHOI')">Từ chối</div>
+                <div class="tab" data-status="HOAN_THANH" onclick="filterRequests('HOAN_THANH')">Hoàn thành</div>
+            </div>
+        </div>
+
+            <!-- Bảng yêu cầu -->
+            <div class="requests-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Vật phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Nhân viên yêu cầu</th>
+                            <th>Mức độ ưu tiên</th>
+                            <th>Ngày yêu cầu</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <tr th:each="request, stat : ${allRequests}" th:attr="data-status=${request.trangThai}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${request.vatPham?.tenVatPham ?: 'N/A'}">Khăn tắm</td>
+                            <td th:text="${request.soLuongYeuCau}">10</td>
+                            <td th:text="${request.nhanVien?.ho + ' ' + request.nhanVien?.ten ?: 'N/A'}">Nguyễn Văn A</td>
+                            <td>
+                                <span th:class="'priority-badge priority-' + ${request.mucDoUuTien?.toLowerCase()?.replace(' ', '-')}"
+                                      th:text="${request.mucDoUuTien}">Cao</span>
+                            </td>
+                            <td th:text="${#temporals.format(request.ngayYeuCau, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
+                            <td>
+                                <span th:class="'status-badge status-' + ${request.trangThai != null && request.trangThai.name() == 'CHO_DUYET' ? 'pending' : 
+                                                              request.trangThai != null && request.trangThai.name() == 'DA_DUYET' ? 'approved' : 
+                                                              request.trangThai != null && request.trangThai.name() == 'TU_CHOI' ? 'rejected' : 'completed'}"
+                                      th:text="${request.trangThai != null ? request.trangThai.value : 'N/A'}">Chờ duyệt</span>
+                            </td>
+                            <td>
+                                <button class="action-btn btn-view" th:onclick="'viewRequest(' + ${request.id} + ')'" title="Xem chi tiết">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                                <button th:if="${request.trangThai.name() == 'CHO_DUYET'}" 
+                                        class="action-btn btn-approve" 
+                                        th:onclick="'approveRequest(' + ${request.id} + ')'" 
+                                        title="Phê duyệt">
+                                    <span class="material-icons">check</span>
+                                </button>
+                                <button th:if="${request.trangThai.name() == 'CHO_DUYET'}" 
+                                        class="action-btn btn-reject" 
+                                        th:onclick="'rejectRequest(' + ${request.id} + ')'" 
+                                        title="Từ chối">
+                                    <span class="material-icons">close</span>
+                                </button>
+                                <button th:if="${request.trangThai.name() == 'DA_DUYET'}" 
+                                        class="action-btn btn-complete" 
+                                        th:onclick="'markAsCompleted(' + ${request.id} + ')'" 
+                                        title="Đánh dấu hoàn thành">
+                                    <span class="material-icons">done_all</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal phê duyệt -->
+    <div id="approveModal" class="modal">
+        <div class="modal-content">
+            <h3>Phê duyệt yêu cầu</h3>
+            <div class="form-group">
+                <label for="approveNote">Ghi chú (tùy chọn):</label>
+                <textarea id="approveNote" placeholder="Nhập ghi chú..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('approveModal')">Hủy</button>
+                <button class="btn btn-primary" onclick="confirmApprove()">Phê duyệt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal từ chối -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <h3>Từ chối yêu cầu</h3>
+            <div class="form-group">
+                <label for="rejectReason">Lý do từ chối <span style="color: red;">*</span>:</label>
+                <textarea id="rejectReason" placeholder="Nhập lý do từ chối..." required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('rejectModal')">Hủy</button>
+                <button class="btn btn-primary" onclick="confirmReject()">Từ chối</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal xem chi tiết -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <h3>Chi tiết yêu cầu</h3>
+            <div id="requestDetails"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('viewModal')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/Admin/quanlyyeucaubosung.js}"></script>
+</body>
+
+</html>
