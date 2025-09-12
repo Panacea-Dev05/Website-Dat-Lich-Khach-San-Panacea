@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiDuyet;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -74,6 +75,19 @@ public class InventoryTransaction {
 
     @Column(name = "created_date")
     private Long createdDate;
+
+    @Convert(converter = panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiDuyetJpaConverter.class)
+    @Column(name = "trang_thai_duyet", length = 20)
+    private TrangThaiDuyet trangThaiDuyet = TrangThaiDuyet.CHO_DUYET;
+
+    @Column(name = "admin_duyet_id")
+    private Integer adminDuyetId;
+
+    @Column(name = "ngay_duyet")
+    private LocalDateTime ngayDuyet;
+
+    @Column(name = "ghi_chu_duyet", length = 500)
+    private String ghiChuDuyet;
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)

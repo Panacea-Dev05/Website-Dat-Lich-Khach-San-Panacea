@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
 import panacea.website_dat_lich_khach_san.repository.InventoryTransactionRepository;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiDuyet;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -24,6 +27,8 @@ public class QuanLyKhoService {
     private InventoryManagementRepository inventoryManagementRepository;
     @Autowired
     private InventoryTransactionRepository inventoryTransactionRepository;
+    @Autowired
+    private HotelRepository hotelRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -54,6 +59,17 @@ public class QuanLyKhoService {
     // CRUD operations cho InventoryManagement
     public InventoryManagement saveItem(InventoryManagement item) {
         validateItem(item);
+        
+        // Set hotel_id nếu chưa có
+        if (item.getKhachSanId() == null) {
+            Hotel firstHotel = hotelRepository.findAll().stream().findFirst().orElse(null);
+            if (firstHotel != null) {
+                item.setKhachSanId(firstHotel.getId());
+            } else {
+                throw new RuntimeException("Không tìm thấy khách sạn nào trong hệ thống");
+            }
+        }
+        
         return inventoryManagementRepository.save(item);
     }
     
@@ -77,16 +93,18 @@ public class QuanLyKhoService {
     public InventoryTransaction saveTransaction(InventoryTransaction transaction) {
         validateTransaction(transaction);
         
-        // Cập nhật số lượng tồn kho
-        Optional<InventoryManagement> itemOpt = inventoryManagementRepository.findById(transaction.getVatPhamId());
-        if (itemOpt.isPresent()) {
-            InventoryManagement item = itemOpt.get();
-            Short newQuantity = (short) (item.getSoLuongTon() + transaction.getSoLuong());
-            if (newQuantity < 0) {
-                throw new RuntimeException("Số lượng tồn kho không đủ");
-            }
-            item.setSoLuongTon(newQuantity);
-            inventoryManagementRepository.save(item);
+        // Thiết lập trạng thái phê duyệt cho phiếu nhập kho
+        if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+            // Phiếu nhập kho cần phê duyệt từ Admin
+            transaction.setTrangThaiDuyet(TrangThaiDuyet.CHO_DUYET);
+        } else if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.XUAT_KHO) {
+            // Phiếu xuất kho được duyệt tự động
+            transaction.setTrangThaiDuyet(TrangThaiDuyet.DA_DUYET);
+        }
+        
+        // Chỉ cập nhật tồn kho nếu giao dịch đã được duyệt
+        if (transaction.getTrangThaiDuyet() == TrangThaiDuyet.DA_DUYET) {
+            updateInventoryStock(transaction);
         }
         
         if (transaction.getNgayGiaoDich() == null) {
@@ -94,6 +112,31 @@ public class QuanLyKhoService {
         }
         
         return inventoryTransactionRepository.save(transaction);
+    }
+    
+    private void updateInventoryStock(InventoryTransaction transaction) {
+        Optional<InventoryManagement> itemOpt = inventoryManagementRepository.findById(transaction.getVatPhamId());
+        if (itemOpt.isPresent()) {
+            InventoryManagement item = itemOpt.get();
+            Short currentStock = item.getSoLuongTon() != null ? item.getSoLuongTon() : 0;
+            Short transactionQuantity = transaction.getSoLuong();
+            
+            // Xử lý loại giao dịch
+            if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+                // Nhập kho: cộng vào tồn kho
+                item.setSoLuongTon((short) (currentStock + transactionQuantity));
+            } else if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.XUAT_KHO) {
+                // Xuất kho: trừ khỏi tồn kho
+                Short newQuantity = (short) (currentStock - transactionQuantity);
+                if (newQuantity < 0) {
+                    throw new RuntimeException("Số lượng tồn kho không đủ để xuất");
+                }
+                item.setSoLuongTon(newQuantity);
+            }
+            // Các loại giao dịch khác (KIEM_KE, HUY_BO) không thay đổi tồn kho
+            
+            inventoryManagementRepository.save(item);
+        }
     }
     
     public List<InventoryManagement> searchItems(String keyword, String loaiVatPham) {
@@ -144,6 +187,75 @@ public class QuanLyKhoService {
         if (itemOpt.isEmpty()) {
             throw new RuntimeException("Không tìm thấy vật phẩm với ID: " + transaction.getVatPhamId());
         }
+    }
+    
+    // Phê duyệt phiếu nhập kho (chỉ Admin)
+    public InventoryTransaction approveTransaction(Integer transactionId, Integer adminId, String ghiChu) {
+        Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
+        if (transactionOpt.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+        }
+        
+        InventoryTransaction transaction = transactionOpt.get();
+        
+        if (transaction.getTrangThaiDuyet() != TrangThaiDuyet.CHO_DUYET) {
+            throw new RuntimeException("Giao dịch này đã được xử lý trước đó");
+        }
+        
+        // Cập nhật trạng thái phê duyệt
+        transaction.setTrangThaiDuyet(TrangThaiDuyet.DA_DUYET);
+        transaction.setAdminDuyetId(adminId);
+        transaction.setNgayDuyet(LocalDateTime.now());
+        transaction.setGhiChuDuyet(ghiChu);
+        
+        // Cập nhật tồn kho sau khi phê duyệt
+        if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+            updateInventoryStock(transaction);
+        }
+        
+        return inventoryTransactionRepository.save(transaction);
+    }
+    
+    // Từ chối phiếu nhập kho (chỉ Admin)
+    public InventoryTransaction rejectTransaction(Integer transactionId, Integer adminId, String ghiChu) {
+        Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
+        if (transactionOpt.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+        }
+        
+        InventoryTransaction transaction = transactionOpt.get();
+        
+        if (transaction.getTrangThaiDuyet() != TrangThaiDuyet.CHO_DUYET) {
+            throw new RuntimeException("Giao dịch này đã được xử lý trước đó");
+        }
+        
+        // Cập nhật trạng thái từ chối
+        transaction.setTrangThaiDuyet(TrangThaiDuyet.TU_CHOI);
+        transaction.setAdminDuyetId(adminId);
+        transaction.setNgayDuyet(LocalDateTime.now());
+        transaction.setGhiChuDuyet(ghiChu);
+        
+        return inventoryTransactionRepository.save(transaction);
+    }
+    
+    // Kiểm tra quyền chỉnh sửa/xóa giao dịch
+    public void validateTransactionEdit(Integer transactionId) {
+        Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
+        if (transactionOpt.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+        }
+        
+        InventoryTransaction transaction = transactionOpt.get();
+        
+        // Không cho phép sửa/xóa giao dịch đã được lưu
+        throw new RuntimeException("Không được phép chỉnh sửa hoặc xóa phiếu nhập/xuất sau khi đã lưu");
+    }
+    
+    // Lấy danh sách giao dịch chờ duyệt
+    public List<InventoryTransaction> getPendingTransactions() {
+        return inventoryTransactionRepository.findAll().stream()
+            .filter(t -> t.getTrangThaiDuyet() == TrangThaiDuyet.CHO_DUYET)
+            .collect(Collectors.toList());
     }
     
     // Report generation methods

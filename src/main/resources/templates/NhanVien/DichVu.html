@@ -197,6 +197,25 @@
             z-index: 20;
         }
 
+        .stock-info {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background-color: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .stock-label {
+            font-weight: 500;
+            color: #2e7d32;
+        }
+
+        .stock-value {
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
         @media (max-width: 900px) {
             .sidebar {
                 width: 70px;
@@ -243,87 +262,7 @@
                 </table>
             </div>
 
-            <!-- Đặt dịch vụ cho booking -->
-<!--            <div class="section service-booking-section" style="display: none;">-->
-<!--                <div class="success-message" id="successMessage">-->
-<!--                    Dịch vụ đã được thêm thành công!-->
-<!--                </div>-->
 
-<!--                <div class="section-header">-->
-<!--                    <h2><span class="material-icons">add_shopping_cart</span> Đặt dịch vụ trong booking</h2>-->
-<!--                    <p class="section-description">Thêm dịch vụ cho booking đã có sẵn trong hệ thống</p>-->
-<!--                </div>-->
-
-<!--                <form id="serviceBookingForm" class="service-booking-form"-->
-<!--                    th:action="@{/nhanvien/dichvu/add-service-to-booking}" method="post">-->
-<!--                    <div class="form-grid">-->
-<!--                        <div class="form-group">-->
-<!--                            <label for="bookingId" class="form-label">-->
-<!--                                <span class="material-icons">book_online</span>-->
-<!--                                Booking ID-->
-<!--                            </label>-->
-<!--                            <select id="bookingId" name="bookingId" class="form-control" required>-->
-<!--                                <option value="" disabled selected>Chọn mã booking...</option>-->
-<!--                                <option th:each="bk : ${bookings}" th:value="${bk.id}"-->
-<!--                                    th:text="|Booking #${bk.id} - ${bk.khachHang?.ho} ${bk.khachHang?.ten}|"></option>-->
-<!--                            </select>-->
-<!--                            <div class="form-feedback"></div>-->
-<!--                        </div>-->
-
-<!--                        <div class="form-group">-->
-<!--                            <label for="dichVuId" class="form-label">-->
-<!--                                <span class="material-icons">room_service</span>-->
-<!--                                Dịch vụ-->
-<!--                            </label>-->
-<!--                            <select id="dichVuId" name="dichVuId" class="form-control" required>-->
-<!--                                <option value="" disabled selected>Chọn dịch vụ...</option>-->
-<!--                                <option th:each="dv : ${dichVus}" th:value="${dv.id}" th:data-price="${dv.donGia}"-->
-<!--                                    th:text="|${dv.tenDichVu} - ${#numbers.formatDecimal(dv.donGia, 0, 'COMMA', 0, 'POINT')} VNĐ|">-->
-<!--                                </option>-->
-<!--                            </select>-->
-<!--                            <div class="form-feedback"></div>-->
-<!--                        </div>-->
-
-<!--                        <div class="form-group">-->
-<!--                            <label for="soLuong" class="form-label">-->
-<!--                                <span class="material-icons">format_list_numbered</span>-->
-<!--                                Số lượng-->
-<!--                            </label>-->
-<!--                            <input type="number" id="soLuong" name="soLuong" class="form-control" min="1" max="100"-->
-<!--                                value="1" required>-->
-<!--                            <div class="form-feedback"></div>-->
-<!--                        </div>-->
-
-<!--                        <div class="form-group">-->
-<!--                            <label for="thoiGianSuDung" class="form-label">-->
-<!--                                <span class="material-icons">schedule</span>-->
-<!--                                Thời gian sử dụng-->
-<!--                            </label>-->
-<!--                            <input type="datetime-local" id="thoiGianSuDung" name="thoiGianSuDung" class="form-control"-->
-<!--                                required>-->
-<!--                            <div class="form-feedback"></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <div class="price-preview">-->
-<!--                        <div class="price-info">-->
-<!--                            <span class="price-label">Tổng tiền dự kiến:</span>-->
-<!--                            <span id="totalPrice" class="price-value">0 VNĐ</span>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <div class="form-actions">-->
-<!--                        <button type="reset" class="btn btn-secondary">-->
-<!--                            <span class="material-icons">refresh</span>-->
-<!--                            Làm mới-->
-<!--                        </button>-->
-<!--                        <button type="submit" class="btn btn-primary">-->
-<!--                            <span class="material-icons">add_circle</span>-->
-<!--                            Thêm dịch vụ-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
 
             <!-- Danh sách dịch vụ đã đặt -->
             <div class="section service-list-section">
@@ -433,204 +372,6 @@
         </main>
     </div>
     <script>
-        // Service booking form validation
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('serviceBookingForm');
-            const bookingIdInput = document.getElementById('bookingId');
-            const serviceIdInput = document.getElementById('dichVuId');
-            const quantityInput = document.getElementById('soLuong');
-            const usageTimeInput = document.getElementById('thoiGianSuDung');
-            const submitBtn = document.querySelector('.btn-primary');
-
-            // Real-time validation
-            bookingIdInput.addEventListener('change', validateBookingId);
-            quantityInput.addEventListener('input', validateQuantity);
-            usageTimeInput.addEventListener('input', validateUsageTime);
-            serviceIdInput.addEventListener('change', validateServiceId);
-
-            // Form submission
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                if (validateForm()) {
-                    submitBtn.classList.add('loading');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="material-icons">hourglass_empty</span> Đang xử lý...';
-
-                    // Submit form after validation
-                    setTimeout(() => {
-                        showSuccessMessage('Dịch vụ đã được thêm thành công!');
-                        resetForm();
-                        submitBtn.classList.remove('loading');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<span class="material-icons">add</span> Thêm dịch vụ';
-                        // form.submit(); // Uncomment for actual submission
-                    }, 1500);
-                } else {
-                    showErrorMessage('Vui lòng kiểm tra lại thông tin đã nhập!');
-                }
-            });
-
-            function validateBookingId() {
-                const value = bookingIdInput.value.trim();
-                const feedback = bookingIdInput.nextElementSibling;
-
-                if (!value) {
-                    showError(bookingIdInput, feedback, 'Vui lòng chọn booking');
-                    return false;
-                } else {
-                    showSuccess(bookingIdInput, feedback, 'Booking đã được chọn');
-                    return true;
-                }
-            }
-
-            function validateServiceId() {
-                const value = serviceIdInput.value;
-                const feedback = serviceIdInput.nextElementSibling;
-
-                if (!value) {
-                    showError(serviceIdInput, feedback, 'Vui lòng chọn dịch vụ');
-                    return false;
-                } else {
-                    showSuccess(serviceIdInput, feedback, 'Dịch vụ đã được chọn');
-                    updatePricePreview();
-                    return true;
-                }
-            }
-
-            function validateQuantity() {
-                const value = parseInt(quantityInput.value);
-                const feedback = quantityInput.nextElementSibling;
-
-                if (!quantityInput.value.trim()) {
-                    showError(quantityInput, feedback, 'Vui lòng nhập số lượng');
-                    return false;
-                } else if (isNaN(value) || value <= 0) {
-                    showError(quantityInput, feedback, 'Số lượng phải là số dương');
-                    return false;
-                } else if (value > 100) {
-                    showError(quantityInput, feedback, 'Số lượng không được vượt quá 100');
-                    return false;
-                } else {
-                    showSuccess(quantityInput, feedback, 'Số lượng hợp lệ');
-                    updatePricePreview();
-                    return true;
-                }
-            }
-
-            function validateUsageTime() {
-                const value = usageTimeInput.value;
-                const feedback = usageTimeInput.nextElementSibling;
-                const now = new Date();
-                const selectedTime = new Date(value);
-
-                if (!value) {
-                    showError(usageTimeInput, feedback, 'Vui lòng chọn thời gian sử dụng');
-                    return false;
-                } else if (selectedTime < now) {
-                    showError(usageTimeInput, feedback, 'Thời gian sử dụng phải sau thời điểm hiện tại');
-                    return false;
-                } else {
-                    showSuccess(usageTimeInput, feedback, 'Thời gian hợp lệ');
-                    return true;
-                }
-            }
-
-            function showError(input, feedback, message) {
-                input.classList.remove('valid');
-                input.classList.add('invalid', 'shake');
-                feedback.textContent = message;
-                feedback.className = 'form-feedback error';
-                setTimeout(() => input.classList.remove('shake'), 500);
-            }
-
-            function showSuccess(input, feedback, message) {
-                input.classList.remove('invalid');
-                input.classList.add('valid');
-                feedback.textContent = message;
-                feedback.className = 'form-feedback success';
-            }
-
-            function validateForm() {
-                const isBookingIdValid = validateBookingId();
-                const isServiceIdValid = validateServiceId();
-                const isQuantityValid = validateQuantity();
-                const isUsageTimeValid = validateUsageTime();
-
-                return isBookingIdValid && isServiceIdValid && isQuantityValid && isUsageTimeValid;
-            }
-
-            function updatePricePreview() {
-                const serviceSelect = serviceIdInput;
-                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-                const quantity = parseInt(quantityInput.value) || 0;
-                const priceValue = document.getElementById('totalPrice');
-
-                if (selectedOption && selectedOption.dataset.price && quantity > 0) {
-                    const price = parseFloat(selectedOption.dataset.price) * quantity;
-                    priceValue.textContent = price.toLocaleString('vi-VN') + ' VNĐ';
-                } else {
-                    priceValue.textContent = '0 VNĐ';
-                }
-            }
-
-            // Show success message
-            function showSuccessMessage(message = 'Dịch vụ đã được thêm thành công!') {
-                const successMessage = document.getElementById('successMessage');
-                if (successMessage) {
-                    successMessage.textContent = message;
-                    successMessage.style.display = 'block';
-                    successMessage.classList.add('show');
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                        successMessage.classList.remove('show');
-                    }, 4000);
-                }
-            }
-
-            // Show error message
-            function showErrorMessage(message) {
-                // Remove existing error message
-                const existingError = document.querySelector('.error-message');
-                if (existingError) {
-                    existingError.remove();
-                }
-
-                // Create new error message
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.innerHTML = `
-                    <i class="material-icons">error</i>
-                    <span>${message}</span>
-                    <button type="button" class="close-btn" onclick="this.parentElement.remove()">
-                        <i class="material-icons">close</i>
-                    </button>
-                `;
-
-                // Insert before the form
-                const form = document.getElementById('serviceBookingForm');
-                form.parentNode.insertBefore(errorDiv, form);
-
-                // Auto remove after 5 seconds
-                setTimeout(() => {
-                    if (errorDiv.parentNode) {
-                        errorDiv.remove();
-                    }
-                }, 5000);
-            }
-
-            // Reset form function
-            window.resetForm = function () {
-                form.reset();
-                document.querySelectorAll('.form-feedback').forEach(feedback => {
-                    feedback.textContent = '';
-                    feedback.className = 'form-feedback';
-                });
-                document.querySelectorAll('.form-control').forEach(input => {
-                    input.classList.remove('valid', 'invalid');
-                });
-                updatePricePreview();
-            };
-        });
 
 
 
@@ -777,6 +518,92 @@
             document.body.appendChild(form);
             form.submit();
         }
+
+        // Load inventory items
+        function loadInventoryItems() {
+            fetch('/nhanvien/dichvu/inventory/all')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('inventoryItemId');
+                    // Clear existing options except the first one
+                    while (select.children.length > 1) {
+                        select.removeChild(select.lastChild);
+                    }
+                    
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.tenVatPham} (Tồn: ${item.soLuongTon} ${item.donViTinh})`;
+                        option.setAttribute('data-stock', item.soLuongTon);
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading inventory items:', error);
+                });
+        }
+
+        // Handle inventory selection change
+        document.getElementById('inventoryItemId').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const stockInfo = document.getElementById('stockInfo');
+            const stockQuantity = document.getElementById('stockQuantity');
+            
+            if (selectedOption.value && selectedOption.hasAttribute('data-stock')) {
+                const stock = selectedOption.getAttribute('data-stock');
+                stockQuantity.textContent = stock;
+                stockInfo.style.display = 'block';
+                
+                // Update max quantity for input
+                const quantityInput = document.getElementById('soLuong');
+                quantityInput.setAttribute('max', stock);
+            } else {
+                stockInfo.style.display = 'none';
+                document.getElementById('soLuong').removeAttribute('max');
+            }
+        });
+
+        // Validate stock before form submission
+        document.getElementById('serviceBookingForm').addEventListener('submit', function(e) {
+            const inventorySelect = document.getElementById('inventoryItemId');
+            const quantityInput = document.getElementById('soLuong');
+            
+            if (inventorySelect.value) {
+                const selectedOption = inventorySelect.options[inventorySelect.selectedIndex];
+                const stock = parseInt(selectedOption.getAttribute('data-stock'));
+                const requestedQuantity = parseInt(quantityInput.value);
+                
+                if (requestedQuantity > stock) {
+                    e.preventDefault();
+                    showErrorMessage(`Không đủ tồn kho! Chỉ còn ${stock} sản phẩm.`);
+                    return false;
+                }
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set default datetime to current time
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            document.getElementById('thoiGianSuDung').value = localDateTime;
+
+            // Initialize price preview
+            updatePricePreview();
+            
+            // Load inventory items
+            loadInventoryItems();
+
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                const successMsg = document.getElementById('successMessage');
+                if (successMsg && successMsg.style.display !== 'none') {
+                    successMsg.style.display = 'none';
+                }
+            }, 5000);
+        });
     </script>
 </body>
 

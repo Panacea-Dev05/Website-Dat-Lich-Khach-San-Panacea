@@ -349,19 +349,127 @@ public class QuanLyKhoController {
     public ResponseEntity<Map<String, Object>> getSummaryStats(Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Verify user authentication
             if (authentication == null || !authentication.isAuthenticated()) {
                 response.put("success", false);
                 response.put("message", "Unauthorized access");
                 return ResponseEntity.status(401).body(response);
             }
             
-            Map<String, Object> summary = quanLyKhoService.generateSummaryStats();
+            Map<String, Object> stats = quanLyKhoService.generateSummaryStats();
             response.put("success", true);
-            response.put("data", summary);
+            response.put("data", stats);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Lỗi khi tạo thống kê tổng hợp: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API phê duyệt phiếu nhập kho (chỉ Admin)
+    @PostMapping("/api/transactions/{id}/approve")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> approveTransaction(@PathVariable Integer id, 
+                                                                 @RequestBody Map<String, String> request,
+                                                                 Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            boolean hasAdminRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (!hasAdminRole) {
+                response.put("success", false);
+                response.put("message", "Chỉ admin mới có quyền phê duyệt phiếu nhập kho");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            // Get admin ID (assuming it's stored in authentication name)
+            Integer adminId = Integer.parseInt(authentication.getName());
+            String ghiChu = request.get("ghiChu");
+            
+            InventoryTransaction approvedTransaction = quanLyKhoService.approveTransaction(id, adminId, ghiChu);
+            response.put("success", true);
+            response.put("message", "Phê duyệt phiếu nhập kho thành công");
+            response.put("data", approvedTransaction);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi phê duyệt: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API từ chối phiếu nhập kho (chỉ Admin)
+    @PostMapping("/api/transactions/{id}/reject")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> rejectTransaction(@PathVariable Integer id, 
+                                                               @RequestBody Map<String, String> request,
+                                                               Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            boolean hasAdminRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (!hasAdminRole) {
+                response.put("success", false);
+                response.put("message", "Chỉ admin mới có quyền từ chối phiếu nhập kho");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            // Get admin ID (assuming it's stored in authentication name)
+            Integer adminId = Integer.parseInt(authentication.getName());
+            String ghiChu = request.get("ghiChu");
+            
+            InventoryTransaction rejectedTransaction = quanLyKhoService.rejectTransaction(id, adminId, ghiChu);
+            response.put("success", true);
+            response.put("message", "Từ chối phiếu nhập kho thành công");
+            response.put("data", rejectedTransaction);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi từ chối: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy danh sách giao dịch chờ duyệt (chỉ Admin)
+    @GetMapping("/api/transactions/pending")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getPendingTransactions(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            List<InventoryTransaction> pendingTransactions = quanLyKhoService.getPendingTransactions();
+            response.put("success", true);
+            response.put("data", pendingTransactions);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy danh sách giao dịch chờ duyệt: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

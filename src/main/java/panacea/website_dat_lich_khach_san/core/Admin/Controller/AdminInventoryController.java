@@ -37,7 +37,7 @@ public class AdminInventoryController {
                 .filter(item -> item.getSoLuongTon() == 0)
                 .count();
             double totalValue = items.stream()
-                .mapToDouble(item -> item.getSoLuongTon() * item.getGiaNhap().doubleValue())
+                .mapToDouble(item -> item.getSoLuongTon() * (item.getGiaNhap() != null ? item.getGiaNhap().doubleValue() : 0))
                 .sum();
             
             model.addAttribute("items", items);
@@ -59,6 +59,15 @@ public class AdminInventoryController {
     public ResponseEntity<Map<String, Object>> createItem(@RequestBody InventoryManagement item) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             InventoryManagement savedItem = quanLyKhoService.saveItem(item);
             response.put("success", true);
             response.put("message", "Tạo vật phẩm thành công");
@@ -76,6 +85,15 @@ public class AdminInventoryController {
     public ResponseEntity<Map<String, Object>> updateItem(@PathVariable Integer id, @RequestBody InventoryManagement item) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             item.setId(id);
             InventoryManagement updatedItem = quanLyKhoService.updateItem(item);
             response.put("success", true);

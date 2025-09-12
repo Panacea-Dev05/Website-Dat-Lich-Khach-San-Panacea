@@ -7,7 +7,8 @@ public enum LoaiGiaoDich {
     NHAP_KHO("Nhập kho"),
     XUAT_KHO("Xuất kho"),
     DIEU_CHINH("Điều chỉnh"),
-    KIEM_KE("Kiểm kê");
+    KIEM_KE("Kiểm kê"),
+    HUY_BO("Hủy bỏ");
 
     private final String value;
 

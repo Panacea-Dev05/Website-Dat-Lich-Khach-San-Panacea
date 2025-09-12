@@ -18,86 +18,91 @@ document.addEventListener("DOMContentLoaded", () => {
   const staffTableBody = document.getElementById('staffTableBody');
 
   // Hiển thị form thêm nhân viên
-  btnAddStaff.addEventListener('click', () => {
-    resetForm();
-    formTitle.textContent = 'Thêm nhân viên mới';
-    staffForm.style.display = 'grid';
-  });
+  if (btnAddStaff) {
+    btnAddStaff.addEventListener('click', () => {
+      resetForm();
+      formTitle.textContent = 'Thêm nhân viên mới';
+      staffForm.style.display = 'grid';
+    });
+  }
 
   // Hủy thêm/sửa nhân viên
-  cancelBtn.addEventListener('click', () => {
-    staffForm.style.display = 'none';
-  });
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      staffForm.style.display = 'none';
+    });
+  }
 
   // Xử lý submit form
-  staffForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const staffId = document.getElementById('staffId').value;
-    const staffData = {
-      maNhanVien: document.getElementById('maNhanVien').value,
-      ho: document.getElementById('ho').value,
-      ten: document.getElementById('ten').value,
-      email: document.getElementById('email').value,
-      soDienThoai: document.getElementById('soDienThoai').value,
-      chucVu: document.getElementById('chucVu').value,
-      trangThai: document.getElementById('trangThai').value
-    };
-    
-    try {
-      let response;
-      let staff;
+  if (staffForm) {
+    staffForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
       
-      if (staffId) {
-        // Cập nhật nhân viên
-        response = await fetch(`/admin/staff/${staffId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(staffData)
-        });
+      const staffId = document.getElementById('staffId').value;
+      const staffData = {
+        maNhanVien: document.getElementById('maNhanVien').value,
+        ho: document.getElementById('ho').value,
+        ten: document.getElementById('ten').value,
+        email: document.getElementById('email').value,
+        soDienThoai: document.getElementById('soDienThoai').value,
+        chucVu: document.getElementById('chucVu').value,
+        trangThai: document.getElementById('trangThai').value
+      };
+      
+      try {
+        let response;
+        let staff;
         
-        staff = await response.json();
-        updateStaffRow(staff);
-      } else {
-        // Thêm nhân viên mới
-        response = await fetch('/admin/staff', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(staffData)
-        });
+        if (staffId) {
+          // Cập nhật nhân viên
+          response = await fetch(`/admin/staff/${staffId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(staffData)
+          });
+          
+          staff = await response.json();
+          updateStaffRow(staff);
+        } else {
+          // Thêm nhân viên mới
+          response = await fetch('/admin/staff', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(staffData)
+          });
+          
+          staff = await response.json();
+          addStaffRow(staff);
+        }
         
-        staff = await response.json();
-        addStaffRow(staff);
+        staffForm.style.display = 'none';
+        showNotification(staffId ? 'Cập nhật nhân viên thành công' : 'Thêm nhân viên thành công');
+      } catch (error) {
+        console.error('Lỗi:', error);
+        showNotification('Có lỗi xảy ra', 'error');
       }
-      
-      staffForm.style.display = 'none';
-      showNotification(staffId ? 'Cập nhật nhân viên thành công' : 'Thêm nhân viên thành công');
-    } catch (error) {
-      console.error('Lỗi:', error);
-      showNotification('Đã xảy ra lỗi, vui lòng thử lại', 'error');
-    }
-  });
+    });
+  }
 });
 
 // Hàm reset form
 function resetForm() {
-  document.getElementById('staffId').value = '';
-  document.getElementById('maNhanVien').value = '';
-  document.getElementById('ho').value = '';
-  document.getElementById('ten').value = '';
-  document.getElementById('email').value = '';
-  document.getElementById('soDienThoai').value = '';
-  document.getElementById('chucVu').selectedIndex = 0;
-  document.getElementById('trangThai').selectedIndex = 0;
+  const form = document.getElementById('staffForm');
+  if (form) {
+    form.reset();
+    document.getElementById('staffId').value = '';
+  }
 }
 
 // Hàm thêm hàng nhân viên mới vào bảng
 function addStaffRow(staff) {
   const staffTableBody = document.getElementById('staffTableBody');
+  if (!staffTableBody) return;
+  
   const rows = staffTableBody.querySelectorAll('tr');
   const newRow = document.createElement('tr');
   
@@ -132,6 +137,8 @@ function addStaffRow(staff) {
 // Hàm cập nhật hàng nhân viên trong bảng
 function updateStaffRow(staff) {
   const staffTableBody = document.getElementById('staffTableBody');
+  if (!staffTableBody) return;
+  
   const rows = staffTableBody.querySelectorAll('tr');
   
   for (let i = 0; i < rows.length; i++) {

@@ -1,519 +1,518 @@
 // Global variables
 let currentEditingItemId = null;
 
-// Form handling
-document.getElementById('itemForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (!validateItemForm()) {
-        return;
-    }
-    
-    const formData = new FormData(this);
-    const itemData = {
-        tenVatPham: formData.get('tenVatPham'),
-        maVatPham: formData.get('maVatPham'),
-        loaiVatPham: formData.get('loaiVatPham'),
-        soLuongTon: parseInt(formData.get('soLuongTon')) || 0,
-        soLuongToiThieu: parseInt(formData.get('soLuongToiThieu')) || 0,
-        giaNhap: parseFloat(formData.get('giaNhap')) || 0,
-        donViTinh: formData.get('donViTinh'),
-        viTriKho: formData.get('viTriKho'),
-        nhaCungCap: formData.get('nhaCungCap'),
-        hanSuDung: formData.get('hanSuDung') || null,
-        trangThai: formData.get('trangThai')
-    };
-    
-    if (currentEditingItemId) {
-        updateItem(currentEditingItemId, itemData);
-    } else {
-        createItem(itemData);
-    }
-});
+// Debug log to confirm script is loaded
+console.log("QuanLyKho.js loaded successfully");
 
-// Validation function
-function validateItemForm() {
-    const tenVatPham = document.querySelector('input[name="tenVatPham"]').value.trim();
-    const maVatPham = document.querySelector('input[name="maVatPham"]').value.trim();
-    
-    if (!tenVatPham) {
-        showNotification('Vui lòng nhập tên vật phẩm', 'error');
-        return false;
-    }
-    
-    if (!maVatPham) {
-        showNotification('Vui lòng nhập mã vật phẩm', 'error');
-        return false;
-    }
-    
-    return true;
+// Make functions globally available
+window.openCreateItemModal = function () {
+  console.log("openCreateItemModal called");
+  document.getElementById("createItemModal").style.display = "block";
+  document.body.style.overflow = "hidden";
+  resetCreateForm();
+};
+
+window.closeCreateItemModal = function () {
+  document.getElementById("createItemModal").style.display = "none";
+  document.body.style.overflow = "auto";
+};
+
+window.closeUpdateItemModal = function () {
+  document.getElementById("updateItemModal").style.display = "none";
+  document.body.style.overflow = "auto";
+};
+
+function openUpdateItemModal(itemId) {
+  document.getElementById("updateItemModal").style.display = "block";
+  document.body.style.overflow = "hidden";
+  loadItemForEdit(itemId);
 }
 
-// Create item function
+// Close modal when clicking outside
+window.onclick = function (event) {
+  const createModal = document.getElementById("createItemModal");
+  const updateModal = document.getElementById("updateItemModal");
+
+  if (event.target === createModal) {
+    closeCreateItemModal();
+  }
+  if (event.target === updateModal) {
+    closeUpdateItemModal();
+  }
+};
+
+// Form reset functions
+function resetCreateForm() {
+  const form = document.getElementById("createItemForm");
+  if (form) {
+    form.reset();
+  }
+}
+
+function resetUpdateForm() {
+  const form = document.getElementById("updateItemForm");
+  if (form) {
+    form.reset();
+  }
+}
+
+// Validation functions
+function validateCreateForm() {
+  const tenVatPham = document
+    .querySelector('#createItemForm input[name="tenVatPham"]')
+    .value.trim();
+  const maVatPham = document
+    .querySelector('#createItemForm input[name="maVatPham"]')
+    .value.trim();
+  const loaiVatPham = document.querySelector(
+    '#createItemForm select[name="loaiVatPham"]'
+  ).value;
+
+  if (!tenVatPham) {
+    showNotification("Vui lòng nhập tên vật phẩm", "error");
+    return false;
+  }
+
+  if (!maVatPham) {
+    showNotification("Vui lòng nhập mã vật phẩm", "error");
+    return false;
+  }
+
+  if (!loaiVatPham) {
+    showNotification("Vui lòng chọn loại vật phẩm", "error");
+    return false;
+  }
+
+  return true;
+}
+
+function validateUpdateForm() {
+  const tenVatPham = document
+    .querySelector('#updateItemForm input[name="tenVatPham"]')
+    .value.trim();
+  const maVatPham = document
+    .querySelector('#updateItemForm input[name="maVatPham"]')
+    .value.trim();
+  const loaiVatPham = document.querySelector(
+    '#updateItemForm select[name="loaiVatPham"]'
+  ).value;
+
+  if (!tenVatPham) {
+    showNotification("Vui lòng nhập tên vật phẩm", "error");
+    return false;
+  }
+
+  if (!maVatPham) {
+    showNotification("Vui lòng nhập mã vật phẩm", "error");
+    return false;
+  }
+
+  if (!loaiVatPham) {
+    showNotification("Vui lòng chọn loại vật phẩm", "error");
+    return false;
+  }
+
+  return true;
+}
+
+// CRUD operations
 function createItem(itemData) {
-    fetch('/admin/inventory/items', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(itemData)
+  fetch("/admin/inventory/items", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(itemData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        showNotification("Thêm vật phẩm thành công!", "success");
+        closeCreateItemModal();
+        location.reload();
+      } else {
+        showNotification(
+          data.message || "Có lỗi xảy ra khi thêm vật phẩm",
+          "error"
+        );
+      }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Tạo vật phẩm thành công!', 'success');
-            resetForm();
-            location.reload(); // Reload to show new item
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra khi tạo vật phẩm', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi tạo vật phẩm', 'error');
+    .catch((error) => {
+      console.error("Error creating item:", error);
+      showNotification("Có lỗi xảy ra khi thêm vật phẩm", "error");
     });
 }
 
-// Update item function
-function updateItem(id, itemData) {
-    fetch(`/admin/inventory/items/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(itemData)
+function loadItemForEdit(itemId) {
+  currentEditingItemId = itemId;
+
+  fetch(`/admin/inventory/items/${itemId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success && data.data) {
+        const item = data.data;
+
+        document.querySelector(
+          '#updateItemForm input[name="tenVatPham"]'
+        ).value = item.tenVatPham || "";
+        document.querySelector(
+          '#updateItemForm input[name="maVatPham"]'
+        ).value = item.maVatPham || "";
+        document.querySelector(
+          '#updateItemForm select[name="loaiVatPham"]'
+        ).value = item.loaiVatPham || "";
+        document.querySelector(
+          '#updateItemForm input[name="soLuongTon"]'
+        ).value = item.soLuongTon || 0;
+        document.querySelector(
+          '#updateItemForm input[name="soLuongToiThieu"]'
+        ).value = item.soLuongToiThieu || 0;
+        document.querySelector('#updateItemForm input[name="giaNhap"]').value =
+          item.giaNhap || 0;
+        document.querySelector(
+          '#updateItemForm input[name="donViTinh"]'
+        ).value = item.donViTinh || "";
+        document.querySelector('#updateItemForm input[name="viTriKho"]').value =
+          item.viTriKho || "";
+        document.querySelector(
+          '#updateItemForm input[name="nhaCungCap"]'
+        ).value = item.nhaCungCap || "";
+        document.querySelector(
+          '#updateItemForm input[name="hanSuDung"]'
+        ).value = item.hanSuDung || "";
+        document.querySelector(
+          '#updateItemForm select[name="trangThai"]'
+        ).value = item.trangThai || "HOAT_DONG";
+      } else {
+        showNotification("Không thể tải thông tin vật phẩm", "error");
+      }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Cập nhật vật phẩm thành công!', 'success');
-            resetForm();
-            currentEditingItemId = null;
-            location.reload(); // Reload to show updated item
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra khi cập nhật vật phẩm', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi cập nhật vật phẩm', 'error');
+    .catch((error) => {
+      console.error("Error loading item:", error);
+      showNotification("Có lỗi xảy ra khi tải thông tin vật phẩm", "error");
     });
 }
 
-document.getElementById('transactionForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (!validateTransactionForm()) {
-        return;
-    }
-    
-    const formData = new FormData(this);
-    const transactionData = {
-        vatPhamId: parseInt(formData.get('vatPham')),
-        loaiGiaoDich: formData.get('loaiGiaoDich'),
-        soLuong: parseInt(formData.get('soLuong')),
-        giaTriGiaoDich: parseFloat(formData.get('giaTriGiaoDich')) || 0,
-        ngayGiaoDich: formData.get('ngayGiaoDich'),
-        lyDo: formData.get('lyDo') || ''
-    };
-    
-    createTransaction(transactionData);
-});
-
-// Validation function for transaction form
-function validateTransactionForm() {
-    const vatPham = document.querySelector('select[name="vatPham"]').value;
-    const loaiGiaoDich = document.querySelector('select[name="loaiGiaoDich"]').value;
-    const soLuong = document.querySelector('input[name="soLuong"]').value;
-    
-    if (!vatPham) {
-        showNotification('Vui lòng chọn vật phẩm', 'error');
-        return false;
-    }
-    
-    if (!loaiGiaoDich) {
-        showNotification('Vui lòng chọn loại giao dịch', 'error');
-        return false;
-    }
-    
-    if (!soLuong || parseInt(soLuong) <= 0) {
-        showNotification('Vui lòng nhập số lượng hợp lệ', 'error');
-        return false;
-    }
-    
-    return true;
-}
-
-// Create transaction function
-function createTransaction(transactionData) {
-    fetch('/admin/inventory/transactions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(transactionData)
+function updateItem(itemId, itemData) {
+  fetch(`/admin/inventory/items/${itemId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(itemData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        showNotification("Cập nhật vật phẩm thành công!", "success");
+        closeUpdateItemModal();
+        location.reload();
+      } else {
+        showNotification(
+          data.message || "Có lỗi xảy ra khi cập nhật vật phẩm",
+          "error"
+        );
+      }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Tạo giao dịch thành công!', 'success');
-            document.getElementById('transactionForm').reset();
-            
-            // Reset date to today
-            const today = new Date().toISOString().split('T')[0];
-            const transactionDateInput = document.querySelector('input[name="ngayGiaoDich"]');
-            if (transactionDateInput) {
-                transactionDateInput.value = today;
-            }
-            
-            location.reload(); // Reload to show updated inventory and transaction history
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra khi tạo giao dịch', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi tạo giao dịch', 'error');
+    .catch((error) => {
+      console.error("Error updating item:", error);
+      showNotification("Có lỗi xảy ra khi cập nhật vật phẩm", "error");
     });
 }
 
 // Search and filter functions
 function searchItems() {
-    const searchTerm = document.querySelector('input[name="search"]').value.trim();
-    const typeFilter = document.querySelector('select[name="typeFilter"]').value;
-    const statusFilter = document.querySelector('select[name="statusFilter"]').value;
-    
-    // Build query parameters
-    const params = new URLSearchParams();
-    if (searchTerm) params.append('search', searchTerm);
-    if (typeFilter) params.append('type', typeFilter);
-    if (statusFilter) params.append('status', statusFilter);
-    
-    // Redirect to filtered page
-    window.location.href = `/admin/inventory?${params.toString()}`;
+  const searchValue = document.getElementById("searchInput").value.trim();
+  const typeFilter = document.getElementById("categoryFilter").value;
+  const statusFilter = document.getElementById("statusFilter").value;
+
+  const params = new URLSearchParams();
+  if (searchValue) params.append("search", searchValue);
+  if (typeFilter) params.append("type", typeFilter);
+  if (statusFilter) params.append("status", statusFilter);
+
+  window.location.href = `/admin/inventory?${params.toString()}`;
 }
 
 function filterByType() {
-    searchItems(); // Use the unified search function
+  searchItems();
 }
 
 function filterByStatus() {
-    searchItems(); // Use the unified search function
+  searchItems();
 }
 
 function resetSearch() {
-    const searchInput = document.querySelector('input[name="search"]');
-    const typeFilter = document.querySelector('select[name="typeFilter"]');
-    const statusFilter = document.querySelector('select[name="statusFilter"]');
-    
-    if (searchInput) searchInput.value = '';
-    if (typeFilter) typeFilter.value = '';
-    if (statusFilter) statusFilter.value = '';
-    
-    searchItems();
+  document.getElementById("searchInput").value = "";
+  document.getElementById("categoryFilter").value = "";
+  document.getElementById("statusFilter").value = "";
+  window.location.href = "/admin/inventory";
 }
 
 function resetForm() {
-    document.getElementById('itemForm').reset();
-    currentEditingItemId = null;
-    
-    // Reset form title
-    const formTitle = document.querySelector('#itemForm h3');
-    if (formTitle) {
-        formTitle.textContent = 'Tạo vật phẩm mới';
-    }
-    
-    // Reset submit button text
-    const submitBtn = document.querySelector('#itemForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.textContent = 'Tạo vật phẩm';
-    }
+  const form = document.getElementById("itemForm");
+  if (form) {
+    form.reset();
+  }
+
+  const formTitle = document.querySelector(".form-title");
+  if (formTitle) {
+    formTitle.textContent = "Thêm vật phẩm mới";
+  }
+
+  const submitBtn = document.querySelector('#itemForm button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.textContent = "Thêm vật phẩm";
+  }
 }
 
 function changePageSize() {
-    const pageSize = document.getElementById('pageSize').value;
-    console.log('Changing page size to:', pageSize);
-    // Implement pagination
+  const pageSize = document.querySelector('select[name="pageSize"]').value;
+  const url = new URL(window.location);
+  url.searchParams.set("size", pageSize);
+  window.location.href = url.toString();
 }
 
-// Item actions
 function editItem(id) {
-    fetch(`/admin/inventory/items/${id}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.item) {
-            populateFormForEdit(data.item);
-            currentEditingItemId = id;
-            
-            // Scroll to form
-            document.getElementById('itemForm').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            showNotification('Không thể tải thông tin vật phẩm', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi tải thông tin vật phẩm', 'error');
-    });
+  openUpdateItemModal(id);
 }
 
 function deleteItem(id) {
-    if (!confirm('Bạn có chắc chắn muốn xóa vật phẩm này?')) {
-        return;
-    }
-    
-    fetch(`/admin/inventory/items/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+  if (!confirm("Bạn có chắc chắn muốn xóa vật phẩm này?")) {
+    return;
+  }
+
+  fetch(`/admin/inventory/items/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        showNotification("Xóa vật phẩm thành công!", "success");
+        location.reload();
+      } else {
+        showNotification(
+          data.message || "Có lỗi xảy ra khi xóa vật phẩm",
+          "error"
+        );
+      }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Xóa vật phẩm thành công!', 'success');
-            location.reload(); // Reload to remove deleted item
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra khi xóa vật phẩm', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi xóa vật phẩm', 'error');
+    .catch((error) => {
+      console.error("Error deleting item:", error);
+      showNotification("Có lỗi xảy ra khi xóa vật phẩm", "error");
     });
 }
 
-// Populate form for editing
-function populateFormForEdit(item) {
-    document.querySelector('input[name="tenVatPham"]').value = item.tenVatPham || '';
-    document.querySelector('input[name="maVatPham"]').value = item.maVatPham || '';
-    document.querySelector('select[name="loaiVatPham"]').value = item.loaiVatPham || '';
-    document.querySelector('input[name="soLuongTon"]').value = item.soLuongTon || 0;
-    document.querySelector('input[name="soLuongToiThieu"]').value = item.soLuongToiThieu || 0;
-    document.querySelector('input[name="giaNhap"]').value = item.giaNhap || 0;
-    document.querySelector('input[name="donViTinh"]').value = item.donViTinh || '';
-    document.querySelector('input[name="viTriKho"]').value = item.viTriKho || '';
-    document.querySelector('input[name="nhaCungCap"]').value = item.nhaCungCap || '';
-    document.querySelector('input[name="hanSuDung"]').value = item.hanSuDung || '';
-    document.querySelector('select[name="trangThai"]').value = item.trangThai || 'Hoạt động';
-    
-    // Change form title
-    const formTitle = document.querySelector('#itemForm h3');
-    if (formTitle) {
-        formTitle.textContent = 'Cập nhật vật phẩm';
-    }
-    
-    // Change submit button text
-    const submitBtn = document.querySelector('#itemForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.textContent = 'Cập nhật';
-    }
-}
+// Notification system
+function showNotification(message, type = "info") {
+  const existingNotifications = document.querySelectorAll(".notification");
+  existingNotifications.forEach((notification) => notification.remove());
 
-// Report functions
-function exportToExcel() {
-    // Get current filters
-    const searchTerm = document.querySelector('input[name="search"]')?.value || '';
-    const typeFilter = document.querySelector('select[name="typeFilter"]')?.value || '';
-    const statusFilter = document.querySelector('select[name="statusFilter"]')?.value || '';
-    
-    // Build query parameters
-    const params = new URLSearchParams();
-    if (searchTerm) params.append('search', searchTerm);
-    if (typeFilter) params.append('type', typeFilter);
-    if (statusFilter) params.append('status', statusFilter);
-    
-    // Create download link
-    const exportUrl = `/admin/inventory/export/excel?${params.toString()}`;
-    
-    // Show loading notification
-    showNotification('Đang xuất file Excel...', 'info');
-    
-    // Create temporary link and trigger download
-    const link = document.createElement('a');
-    link.href = exportUrl;
-    link.download = `inventory_${new Date().toISOString().split('T')[0]}.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Show success notification after a delay
-    setTimeout(() => {
-        showNotification('Xuất file Excel thành công!', 'success');
-    }, 1000);
-}
-
-function generateReport() {
-    // Get date range if available
-    const startDate = document.querySelector('input[name="startDate"]')?.value;
-    const endDate = document.querySelector('input[name="endDate"]')?.value;
-    
-    // Build query parameters
-    const params = new URLSearchParams();
-    if (startDate) params.append('startDate', startDate);
-    if (endDate) params.append('endDate', endDate);
-    
-    // Show loading notification
-    showNotification('Đang tạo báo cáo...', 'info');
-    
-    fetch(`/admin/inventory/reports/generate?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.blob();
-        }
-        throw new Error('Không thể tạo báo cáo');
-    })
-    .then(blob => {
-        // Create download link for PDF report
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `inventory_report_${new Date().toISOString().split('T')[0]}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        showNotification('Tạo báo cáo thành công!', 'success');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Có lỗi xảy ra khi tạo báo cáo', 'error');
-    });
-}
-
-// Notification function
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
+  const notification = document.createElement("div");
+  notification.className = `notification notification-${type}`;
+  notification.innerHTML = `
         <span>${message}</span>
-        <button onclick="this.parentElement.remove()">&times;</button>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
     `;
-    
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-        z-index: 10000;
-        max-width: 300px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    `;
-    
-    // Set background color based on type
-    switch(type) {
-        case 'success':
-            notification.style.backgroundColor = '#28a745';
-            break;
-        case 'error':
-            notification.style.backgroundColor = '#dc3545';
-            break;
-        case 'warning':
-            notification.style.backgroundColor = '#ffc107';
-            notification.style.color = '#212529';
-            break;
-        case 'info':
-        default:
-            notification.style.backgroundColor = '#17a2b8';
-            break;
+
+  const styles = {
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    padding: "15px 20px",
+    borderRadius: "5px",
+    color: "white",
+    fontWeight: "bold",
+    zIndex: "10000",
+    minWidth: "300px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  };
+
+  Object.assign(notification.style, styles);
+
+  switch (type) {
+    case "success":
+      notification.style.backgroundColor = "#28a745";
+      break;
+    case "error":
+      notification.style.backgroundColor = "#dc3545";
+      break;
+    case "warning":
+      notification.style.backgroundColor = "#ffc107";
+      notification.style.color = "#212529";
+      break;
+    case "info":
+    default:
+      notification.style.backgroundColor = "#17a2b8";
+      break;
+  }
+
+  const closeBtn = notification.querySelector(".notification-close");
+  if (closeBtn) {
+    closeBtn.style.background = "none";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "inherit";
+    closeBtn.style.fontSize = "18px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.marginLeft = "10px";
+  }
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
     }
-    
-    // Style the close button
-    const closeBtn = notification.querySelector('button');
-    closeBtn.style.cssText = `
-        background: none;
-        border: none;
-        color: inherit;
-        font-size: 18px;
-        cursor: pointer;
-        margin-left: 10px;
-        padding: 0;
-        line-height: 1;
-    `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.remove();
-        }
-    }, 5000);
+  }, 5000);
 }
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-    // Set current date for transaction form
-    const today = new Date().toISOString().split('T')[0];
-    const transactionDateInput = document.querySelector('input[name="ngayGiaoDich"]');
-    if (transactionDateInput) {
-        transactionDateInput.value = today;
-    }
-    
-    // Search input event listener
-    const searchInput = document.querySelector('input[name="search"]');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                searchItems();
-            }
+// DOM Content Loaded event listener
+document.addEventListener("DOMContentLoaded", function () {
+  const createForm = document.getElementById("createItemForm");
+  if (createForm) {
+    createForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (!validateCreateForm()) {
+        return;
+      }
+
+      const formData = new FormData(this);
+      const itemData = {
+        tenVatPham: formData.get("tenVatPham"),
+        maVatPham: formData.get("maVatPham"),
+        loaiVatPham: formData.get("loaiVatPham"),
+        soLuongTon: parseInt(formData.get("soLuongTon")) || 0,
+        soLuongToiThieu: parseInt(formData.get("soLuongToiThieu")) || 0,
+        giaNhap: parseFloat(formData.get("giaNhap")) || 0,
+        donViTinh: formData.get("donViTinh"),
+        viTriKho: formData.get("viTriKho"),
+        nhaCungCap: formData.get("nhaCungCap"),
+        hanSuDung: formData.get("hanSuDung") || null,
+        trangThai: formData.get("trangThai"),
+      };
+
+      createItem(itemData);
+    });
+  }
+
+  const updateForm = document.getElementById("updateItemForm");
+  if (updateForm) {
+    updateForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (!validateUpdateForm()) {
+        return;
+      }
+
+      const formData = new FormData(this);
+      const itemData = {
+        tenVatPham: formData.get("tenVatPham"),
+        maVatPham: formData.get("maVatPham"),
+        loaiVatPham: formData.get("loaiVatPham"),
+        soLuongTon: parseInt(formData.get("soLuongTon")) || 0,
+        soLuongToiThieu: parseInt(formData.get("soLuongToiThieu")) || 0,
+        giaNhap: parseFloat(formData.get("giaNhap")) || 0,
+        donViTinh: formData.get("donViTinh"),
+        viTriKho: formData.get("viTriKho"),
+        nhaCungCap: formData.get("nhaCungCap"),
+        hanSuDung: formData.get("hanSuDung") || null,
+        trangThai: formData.get("trangThai"),
+      };
+
+      updateItem(currentEditingItemId, itemData);
+    });
+  }
+
+  const transactionForm = document.getElementById("transactionForm");
+  if (transactionForm) {
+    transactionForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const transactionData = {
+        vatPhamId: formData.get("vatPhamId"),
+        loaiGiaoDich: formData.get("loaiGiaoDich"),
+        soLuong: parseInt(formData.get("soLuong")),
+        giaTri: parseFloat(formData.get("giaTri")),
+        ngayGiaoDich: formData.get("ngayGiaoDich"),
+        lyDo: formData.get("lyDo"),
+      };
+
+      fetch("/admin/inventory/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            showNotification("Ghi nhận giao dịch thành công!", "success");
+            this.reset();
+            location.reload();
+          } else {
+            showNotification(
+              data.message || "Có lỗi xảy ra khi ghi nhận giao dịch",
+              "error"
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating transaction:", error);
+          showNotification("Có lỗi xảy ra khi ghi nhận giao dịch", "error");
         });
-    }
-    
-    // Filter select event listeners
-    const typeFilter = document.querySelector('select[name="typeFilter"]');
-    if (typeFilter) {
-        typeFilter.addEventListener('change', filterByType);
-    }
-    
-    const statusFilter = document.querySelector('select[name="statusFilter"]');
-    if (statusFilter) {
-        statusFilter.addEventListener('change', filterByStatus);
-    }
-    
-    // Search button event listener
-    const searchBtn = document.querySelector('.search-bar button');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            searchItems();
-        });
-    }
-    
-    // Reset search button event listener
-    const resetBtn = document.querySelector('.reset-search-btn');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            resetSearch();
-        });
-    }
+    });
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+  const transactionDateInput = document.querySelector(
+    'input[name="ngayGiaoDich"]'
+  );
+  if (transactionDateInput) {
+    transactionDateInput.value = today;
+  }
+
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchItems();
+      }
+    });
+  }
+
+  const typeFilter = document.getElementById("categoryFilter");
+  if (typeFilter) {
+    typeFilter.addEventListener("change", filterByType);
+  }
+
+  const statusFilter = document.getElementById("statusFilter");
+  if (statusFilter) {
+    statusFilter.addEventListener("change", filterByStatus);
+  }
+
+  const searchBtn = document.querySelector(".search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      searchItems();
+    });
+  }
+
+  const resetBtn = document.querySelector(".reset-search-btn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      resetSearch();
+    });
+  }
 });

@@ -41,73 +41,12 @@
         </div>
 
         <div class="section">
-            <h2><span class="material-icons">inventory</span> Tạo / Cập nhật vật phẩm</h2>
-            <form id="itemForm">
-                <div>
-                    <label>Tên vật phẩm *</label>
-                    <input type="text" name="tenVatPham" required />
-                </div>
-                <div>
-                    <label>Mã vật phẩm *</label>
-                    <input type="text" name="maVatPham" required />
-                </div>
-                <div>
-                    <label>Loại vật phẩm</label>
-                    <select name="loaiVatPham">
-                        <option value="">Chọn loại vật phẩm</option>
-                        <option value="Cleaning">Vệ sinh</option>
-                        <option value="Maintenance">Bảo trì</option>
-                        <option value="Food">Thực phẩm</option>
-                        <option value="Amenities">Tiện nghi</option>
-                        <option value="Office">Văn phòng</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Số lượng tồn</label>
-                    <input type="number" name="soLuongTon" min="0" value="0" />
-                </div>
-                <div>
-                    <label>Số lượng tối thiểu</label>
-                    <input type="number" name="soLuongToiThieu" min="0" value="0" />
-                </div>
-                <div>
-                    <label>Giá nhập (VND)</label>
-                    <input type="number" name="giaNhap" min="0" value="0" />
-                </div>
-                <div>
-                    <label>Đơn vị tính</label>
-                    <input type="text" name="donViTinh" placeholder="VD: cái, hộp, kg" />
-                </div>
-                <div>
-                    <label>Vị trí kho</label>
-                    <input type="text" name="viTriKho" placeholder="VD: A1-B2" />
-                </div>
-                <div>
-                    <label>Nhà cung cấp</label>
-                    <input type="text" name="nhaCungCap" />
-                </div>
-                <div>
-                    <label>Hạn sử dụng</label>
-                    <input type="date" name="hanSuDung" />
-                </div>
-                <div>
-                    <label>Trạng thái</label>
-                    <select name="trangThai">
-                        <option value="Hoạt động">Hoạt động</option>
-                        <option value="Ngừng hoạt động">Ngừng hoạt động</option>
-                        <option value="Hết hạn">Hết hạn</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; text-align: right;">
-                    <button type="button" class="btn" onclick="resetForm()"
-                            style="background: var(--gray-500); margin-right: 1rem;">
-                        <span class="material-icons">refresh</span>Làm mới
-                    </button>
-                    <button type="submit" class="btn success">
-                        <span class="material-icons">save</span>Lưu vật phẩm
-                    </button>
-                </div>
-            </form>
+            <h2><span class="material-icons">inventory</span> Quản lý vật phẩm</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button class="btn success" onclick="openCreateItemModal()">
+                    <span class="material-icons">add</span>Thêm vật phẩm mới
+                </button>
+            </div>
         </div>
 
         <div class="section">
@@ -299,7 +238,7 @@
                     <td
                             th:text="${tran.giaTri != null ? #numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT') : 'N/A'}">
                     </td>
-                    <td th:text="${tran.nguoiThucHien ?: 'Admin'}"></td>
+                    <td th:text="${tran.staff != null ? tran.staff.hoTen : 'Admin'}"></td>
                     <td th:text="${tran.lyDo ?: ''}"></td>
                 </tr>
                 </tbody>
@@ -308,7 +247,184 @@
     </div>
 </div>
 
-<script th:src="@{/js/Admin/quanlykho.js}"></script>
+<!-- Modal tạo vật phẩm mới -->
+<div id="createItemModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><span class="material-icons">add</span> Thêm vật phẩm mới</h3>
+            <span class="close" onclick="closeCreateItemModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="createItemForm">
+                <div class="form-grid">
+                    <div>
+                        <label>Tên vật phẩm *</label>
+                        <input type="text" name="tenVatPham" required />
+                    </div>
+                    <div>
+                        <label>Mã vật phẩm *</label>
+                        <input type="text" name="maVatPham" required />
+                    </div>
+                    <div>
+                        <label>Loại vật phẩm</label>
+                        <select name="loaiVatPham">
+                            <option value="">Chọn loại vật phẩm</option>
+                            <option value="Cleaning">Vệ sinh</option>
+                            <option value="Maintenance">Bảo trì</option>
+                            <option value="Food">Thực phẩm</option>
+                            <option value="Amenities">Tiện nghi</option>
+                            <option value="Office">Văn phòng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Số lượng tồn</label>
+                        <input type="number" name="soLuongTon" min="0" value="0" />
+                    </div>
+                    <div>
+                        <label>Số lượng tối thiểu</label>
+                        <input type="number" name="soLuongToiThieu" min="0" value="0" />
+                    </div>
+                    <div>
+                        <label>Giá nhập (VND)</label>
+                        <input type="number" name="giaNhap" min="0" value="0" />
+                    </div>
+                    <div>
+                        <label>Đơn vị tính</label>
+                        <input type="text" name="donViTinh" placeholder="VD: cái, hộp, kg" />
+                    </div>
+                    <div>
+                        <label>Vị trí kho</label>
+                        <input type="text" name="viTriKho" placeholder="VD: A1-B2" />
+                    </div>
+                    <div>
+                        <label>Nhà cung cấp</label>
+                        <input type="text" name="nhaCungCap" />
+                    </div>
+                    <div>
+                        <label>Hạn sử dụng</label>
+                        <input type="date" name="hanSuDung" />
+                    </div>
+                    <div>
+                        <label>Trạng thái</label>
+                        <select name="trangThai">
+                            <option value="Hoạt động">Hoạt động</option>
+                            <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                            <option value="Hết hạn">Hết hạn</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeCreateItemModal()" style="background: var(--gray-500);">
+                        <span class="material-icons">close</span>Hủy
+                    </button>
+                    <button type="submit" class="btn success">
+                        <span class="material-icons">save</span>Lưu vật phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cập nhật vật phẩm -->
+<div id="updateItemModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><span class="material-icons">edit</span> Cập nhật vật phẩm</h3>
+            <span class="close" onclick="closeUpdateItemModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="updateItemForm">
+                <input type="hidden" name="id" />
+                <div class="form-grid">
+                    <div>
+                        <label>Tên vật phẩm *</label>
+                        <input type="text" name="tenVatPham" required />
+                    </div>
+                    <div>
+                        <label>Mã vật phẩm *</label>
+                        <input type="text" name="maVatPham" required />
+                    </div>
+                    <div>
+                        <label>Loại vật phẩm</label>
+                        <select name="loaiVatPham">
+                            <option value="">Chọn loại vật phẩm</option>
+                            <option value="Cleaning">Vệ sinh</option>
+                            <option value="Maintenance">Bảo trì</option>
+                            <option value="Food">Thực phẩm</option>
+                            <option value="Amenities">Tiện nghi</option>
+                            <option value="Office">Văn phòng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Số lượng tồn</label>
+                        <input type="number" name="soLuongTon" min="0" />
+                    </div>
+                    <div>
+                        <label>Số lượng tối thiểu</label>
+                        <input type="number" name="soLuongToiThieu" min="0" />
+                    </div>
+                    <div>
+                        <label>Giá nhập (VND)</label>
+                        <input type="number" name="giaNhap" min="0" />
+                    </div>
+                    <div>
+                        <label>Đơn vị tính</label>
+                        <input type="text" name="donViTinh" placeholder="VD: cái, hộp, kg" />
+                    </div>
+                    <div>
+                        <label>Vị trí kho</label>
+                        <input type="text" name="viTriKho" placeholder="VD: A1-B2" />
+                    </div>
+                    <div>
+                        <label>Nhà cung cấp</label>
+                        <input type="text" name="nhaCungCap" />
+                    </div>
+                    <div>
+                        <label>Hạn sử dụng</label>
+                        <input type="date" name="hanSuDung" />
+                    </div>
+                    <div>
+                        <label>Trạng thái</label>
+                        <select name="trangThai">
+                            <option value="Hoạt động">Hoạt động</option>
+                            <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                            <option value="Hết hạn">Hết hạn</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeUpdateItemModal()" style="background: var(--gray-500);">
+                        <span class="material-icons">close</span>Hủy
+                    </button>
+                    <button type="submit" class="btn success">
+                        <span class="material-icons">save</span>Cập nhật vật phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fallback function definitions to prevent reference errors
+window.openCreateItemModal = window.openCreateItemModal || function() {
+    console.log('Fallback openCreateItemModal called');
+    document.getElementById('createItemModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeCreateItemModal = window.closeCreateItemModal || function() {
+    document.getElementById('createItemModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+};
+
+window.closeUpdateItemModal = window.closeUpdateItemModal || function() {
+    document.getElementById('updateItemModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+};
+</script>
+<script th:src="@{/js/Admin/quanlykho.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
 </body>
 
 </html>

@@ -1,21 +1,21 @@
-let currentRequestId = null;
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
 
-function filterRequests(status) {
-    const rows = document.querySelectorAll('#requestsTableBody tr');
-    const tabs = document.querySelectorAll('.tab');
-    
-    // Update active tab
-    tabs.forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Filter rows
-    rows.forEach(row => {
-        if (status === 'all' || row.getAttribute('data-status') === status) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    // Initialize page
+    loadSupplyRequests();
+});
+
+// Load supply requests
+function loadSupplyRequests() {
+    // This function would load supply requests from the server
+    console.log('Loading supply requests...');
 }
 
 function viewRequest(id) {
@@ -68,115 +68,67 @@ function viewRequest(id) {
             document.getElementById('viewModal').style.display = 'block';
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin yêu cầu');
+            console.error('Error loading request details:', error);
+            showNotification('Không thể tải thông tin yêu cầu', 'error');
         });
 }
 
+function closeViewModal() {
+    document.getElementById('viewModal').style.display = 'none';
+}
+
 function approveRequest(id) {
-    currentRequestId = id;
-    document.getElementById('approveModal').style.display = 'block';
-}
-
-function rejectRequest(id) {
-    currentRequestId = id;
-    document.getElementById('rejectModal').style.display = 'block';
-}
-
-function markAsCompleted(id) {
-    if (confirm('Bạn có chắc chắn muốn đánh dấu yêu cầu này là hoàn thành?')) {
-        fetch(`/admin/supply-requests/${id}/complete`, {
-            method: 'POST'
+    if (confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')) {
+        fetch(`/admin/supply-requests/${id}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Đã đánh dấu yêu cầu hoàn thành');
+                showNotification('Duyệt yêu cầu thành công', 'success');
                 location.reload();
             } else {
-                alert(data.message);
+                showNotification(data.message || 'Có lỗi xảy ra', 'error');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra');
+            console.error('Error approving request:', error);
+            showNotification('Có lỗi xảy ra khi duyệt yêu cầu', 'error');
         });
     }
 }
 
-function confirmApprove() {
-    const note = document.getElementById('approveNote').value;
-    
-    fetch(`/admin/supply-requests/${currentRequestId}/approve`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `ghiChu=${encodeURIComponent(note)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Đã phê duyệt yêu cầu');
-            location.reload();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra');
-    })
-    .finally(() => {
-        closeModal('approveModal');
-    });
-}
-
-function confirmReject() {
-    const reason = document.getElementById('rejectReason').value.trim();
-    
-    if (!reason) {
-        alert('Vui lòng nhập lý do từ chối');
-        return;
+function rejectRequest(id) {
+    const reason = prompt('Nhập lý do từ chối:');
+    if (reason) {
+        fetch(`/admin/supply-requests/${id}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lyDoTuChoi: reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Từ chối yêu cầu thành công', 'success');
+                location.reload();
+            } else {
+                showNotification(data.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error rejecting request:', error);
+            showNotification('Có lỗi xảy ra khi từ chối yêu cầu', 'error');
+        });
     }
-    
-    fetch(`/admin/supply-requests/${currentRequestId}/reject`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `lyDoTuChoi=${encodeURIComponent(reason)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Đã từ chối yêu cầu');
-            location.reload();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra');
-    })
-    .finally(() => {
-        closeModal('rejectModal');
-    });
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-    if (modalId === 'approveModal') {
-        document.getElementById('approveNote').value = '';
-    } else if (modalId === 'rejectModal') {
-        document.getElementById('rejectReason').value = '';
-    }
-    currentRequestId = null;
 }
 
 function getStatusText(status) {
-    switch (status) {
+    switch(status) {
         case 'CHO_DUYET': return 'Chờ duyệt';
         case 'DA_DUYET': return 'Đã duyệt';
         case 'TU_CHOI': return 'Từ chối';
@@ -185,27 +137,102 @@ function getStatusText(status) {
     }
 }
 
-function getPriorityClass(priority) {
-    switch (priority) {
-        case 'Khẩn cấp':
-            return 'priority-khẩn-cấp';
-        case 'Cao':
-            return 'priority-cao';
-        case 'Bình thường':
-            return 'priority-bình-thường';
-        case 'Thấp':
-            return 'priority-thấp';
-        default:
-            return 'priority-bình-thường';
-    }
+function searchRequests() {
+    const searchValue = document.querySelector('input[name="search"]').value.trim();
+    const statusFilter = document.querySelector('select[name="statusFilter"]').value;
+    const priorityFilter = document.querySelector('select[name="priorityFilter"]').value;
+    
+    const params = new URLSearchParams();
+    if (searchValue) params.append('search', searchValue);
+    if (statusFilter) params.append('status', statusFilter);
+    if (priorityFilter) params.append('priority', priorityFilter);
+    
+    window.location.href = `/admin/supply-requests?${params.toString()}`;
 }
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
+function filterByStatus() {
+    searchRequests();
+}
+
+function filterByPriority() {
+    searchRequests();
+}
+
+function resetSearch() {
+    document.querySelector('input[name="search"]').value = '';
+    document.querySelector('select[name="statusFilter"]').value = '';
+    document.querySelector('select[name="priorityFilter"]').value = '';
+    window.location.href = '/admin/supply-requests';
+}
+
+function changePageSize() {
+    const pageSize = document.querySelector('select[name="pageSize"]').value;
+    const url = new URL(window.location);
+    url.searchParams.set('size', pageSize);
+    window.location.href = url.toString();
+}
+
+function showNotification(message, type = 'info') {
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    const styles = {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        padding: '15px 20px',
+        borderRadius: '5px',
+        color: 'white',
+        fontWeight: 'bold',
+        zIndex: '10000',
+        minWidth: '300px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    };
+    
+    Object.assign(notification.style, styles);
+    
+    switch(type) {
+        case 'success':
+            notification.style.backgroundColor = '#28a745';
+            break;
+        case 'error':
+            notification.style.backgroundColor = '#dc3545';
+            break;
+        case 'warning':
+            notification.style.backgroundColor = '#ffc107';
+            notification.style.color = '#212529';
+            break;
+        case 'info':
+        default:
+            notification.style.backgroundColor = '#17a2b8';
+            break;
+    }
+    
+    const closeBtn = notification.querySelector('.notification-close');
+    if (closeBtn) {
+        closeBtn.style.background = 'none';
+        closeBtn.style.border = 'none';
+        closeBtn.style.color = 'inherit';
+        closeBtn.style.fontSize = '18px';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.marginLeft = '10px';
+    }
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
         }
-    });
+    }, 5000);
 }
