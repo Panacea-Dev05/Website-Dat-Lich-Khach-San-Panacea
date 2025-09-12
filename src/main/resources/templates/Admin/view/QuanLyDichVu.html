@@ -25,6 +25,16 @@
     <main role="main" tabindex="0">
       <h1>Quản lý dịch vụ</h1>
       <section class="content-section" id="contentSection">
+        <!-- Thông báo từ server -->
+        <div th:if="${error}" class="error-message" style="display: flex;">
+          <span class="material-icons">error</span>
+          <span th:text="${error}"></span>
+        </div>
+        <div th:if="${success}" class="success-message" style="display: flex;">
+          <span class="material-icons">check_circle</span>
+          <span th:text="${success}"></span>
+        </div>
+        
         <button class="btn" id="btnAddService" type="button" style="margin-bottom: 1rem;">
           <span class="material-icons">add</span> Thêm dịch vụ
         </button>
@@ -65,46 +75,128 @@
                 </tbody>
             </table>
       </section>
-      <!-- Modal form thêm dịch vụ (ẩn mặc định) -->
+      <!-- Modal form thêm/sửa dịch vụ (ẩn mặc định) -->
       <div class="modal" id="serviceModal" style="display:none;">
         <div class="modal-content">
           <span class="material-icons" id="closeServiceModal" style="position:absolute;top:16px;right:18px;cursor:pointer;">close</span>
           <h2 id="serviceModalTitle" style="margin-bottom:1.2rem; color:#064e3b;">Thêm dịch vụ mới</h2>
-          <form th:action="${editMode} ? @{'/admin/services/edit/' + ${serviceForm.id}} : @{/admin/services/add}" th:object="${serviceForm}" method="post" class="service-form">
-            <div class="form-group">
-                <label for="maDichVu">Mã dịch vụ</label>
-                <input type="text" id="maDichVu" th:field="*{maDichVu}" required maxlength="20" />
+          
+          <!-- Thông báo lỗi -->
+          <div id="errorMessage" class="error-message" style="display: none;">
+            <span class="material-icons">error</span>
+            <span id="errorText"></span>
+          </div>
+          
+          <!-- Thông báo thành công -->
+          <div id="successMessage" class="success-message" style="display: none;">
+            <span class="material-icons">check_circle</span>
+            <span id="successText"></span>
+          </div>
+          
+          <form th:action="${editMode} ? @{'/admin/services/edit/' + ${serviceForm.id}} : @{/admin/services/add}" th:object="${serviceForm}" method="post" class="service-form" id="serviceForm">
+            <div class="form-group half">
+                <label for="maDichVu">
+                  <span class="material-icons">tag</span>
+                  Mã dịch vụ <span class="required">*</span>
+                </label>
+                <input type="text" id="maDichVu" th:field="*{maDichVu}" required maxlength="20" 
+                       placeholder="VD: SV001" pattern="[A-Z0-9]+" 
+                       title="Mã dịch vụ chỉ chứa chữ hoa và số" />
+                <div class="field-hint">Tối đa 20 ký tự, chỉ chữ hoa và số</div>
             </div>
-            <div class="form-group">
-                <label for="tenDichVu">Tên dịch vụ</label>
-                <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required maxlength="100" />
-            </div>
-            <div class="form-group">
-                <label for="loaiDichVu">Loại dịch vụ</label>
-                <input type="text" id="loaiDichVu" th:field="*{loaiDichVu}" required maxlength="50" />
-            </div>
-            <div class="form-group">
-                <label for="moTa">Mô tả</label>
-                <textarea id="moTa" th:field="*{moTa}" rows="2" maxlength="255"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="donGia">Đơn giá</label>
-                <input type="number" id="donGia" th:field="*{donGia}" required min="0" step="1000" />
-            </div>
-            <div class="form-group">
-                <label for="donViTinh">Đơn vị tính</label>
-                <input type="text" id="donViTinh" th:field="*{donViTinh}" required maxlength="20" />
-            </div>
-            <div class="form-group">
-                <label for="trangThai">Trạng thái</label>
-                <select id="trangThai" th:field="*{trangThai}" required>
-                    <option value="Hoạt động">Hoạt động</option>
-                    <option value="Tạm ngưng">Tạm ngưng</option>
+            
+            <div class="form-group half">
+                <label for="loaiDichVu">
+                  <span class="material-icons">category</span>
+                  Loại dịch vụ <span class="required">*</span>
+                </label>
+                <select id="loaiDichVu" th:field="*{loaiDichVu}" required>
+                    <option value="">-- Chọn loại dịch vụ --</option>
+                    <option value="Ăn uống">Ăn uống</option>
+                    <option value="Giải trí">Giải trí</option>
+                    <option value="Spa & Massage">Spa & Massage</option>
+                    <option value="Thể thao">Thể thao</option>
+                    <option value="Vận chuyển">Vận chuyển</option>
+                    <option value="Khác">Khác</option>
                 </select>
             </div>
+            
+            <div class="form-group">
+                <label for="tenDichVu">
+                  <span class="material-icons">room_service</span>
+                  Tên dịch vụ <span class="required">*</span>
+                </label>
+                <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required maxlength="100" 
+                       placeholder="Nhập tên dịch vụ" />
+                <div class="field-hint">Tối đa 100 ký tự</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="moTa">
+                  <span class="material-icons">description</span>
+                  Mô tả dịch vụ
+                </label>
+                <textarea id="moTa" th:field="*{moTa}" rows="3" maxlength="500" 
+                          placeholder="Mô tả chi tiết về dịch vụ..."></textarea>
+                <div class="field-hint">Tối đa 500 ký tự</div>
+            </div>
+            
+            <div class="form-group half">
+                <label for="donGia">
+                  <span class="material-icons">attach_money</span>
+                  Đơn giá (VNĐ) <span class="required">*</span>
+                </label>
+                <input type="number" id="donGia" th:field="*{donGia}" required min="0" step="1000" 
+                       placeholder="0" />
+                <div class="field-hint">Nhập đơn giá bằng VNĐ</div>
+            </div>
+            
+            <div class="form-group half">
+                <label for="donViTinh">
+                  <span class="material-icons">straighten</span>
+                  Đơn vị tính <span class="required">*</span>
+                </label>
+                <select id="donViTinh" th:field="*{donViTinh}" required>
+                    <option value="">-- Chọn đơn vị --</option>
+                    <option value="Lần">Lần</option>
+                    <option value="Giờ">Giờ</option>
+                    <option value="Ngày">Ngày</option>
+                    <option value="Kg">Kg</option>
+                    <option value="Lượt">Lượt</option>
+                    <option value="Phòng">Phòng</option>
+                    <option value="Người">Người</option>
+                    <option value="Khác">Khác</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="trangThai">
+                  <span class="material-icons">toggle_on</span>
+                  Trạng thái <span class="required">*</span>
+                </label>
+                <div class="status-toggle">
+                    <input type="radio" id="trangThaiHoatDong" name="trangThai" value="Hoạt động" th:checked="${serviceForm.trangThai == 'Hoạt động'}" />
+                    <label for="trangThaiHoatDong" class="status-option active">
+                        <span class="material-icons">check_circle</span>
+                        Hoạt động
+                    </label>
+                    <input type="radio" id="trangThaiTamNgung" name="trangThai" value="Tạm ngưng" th:checked="${serviceForm.trangThai == 'Tạm ngưng'}" />
+                    <label for="trangThaiTamNgung" class="status-option">
+                        <span class="material-icons">pause_circle</span>
+                        Tạm ngưng
+                    </label>
+                </div>
+            </div>
+            
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Lưu</button>
-                <button type="button" class="btn btn-secondary" id="cancelServiceModal" style="margin-left: 12px;">Hủy</button>
+                <button type="button" class="btn btn-secondary" id="cancelServiceModal">
+                    <span class="material-icons">close</span>
+                    Hủy
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitService">
+                    <span class="material-icons">save</span>
+                    <span id="submitText">Lưu</span>
+                </button>
             </div>
           </form>
         </div>
@@ -116,31 +208,235 @@
           var modal = document.getElementById('serviceModal');
           var closeBtn = document.getElementById('closeServiceModal');
           var cancelBtn = document.getElementById('cancelServiceModal');
+          var form = document.getElementById('serviceForm');
+          var submitBtn = document.getElementById('submitService');
+          var submitText = document.getElementById('submitText');
+          
+          // Hiển thị modal
           if(btn && modal) {
             btn.onclick = function() {
+              resetForm();
               modal.style.display = 'flex';
               document.getElementById('serviceModalTitle').innerText = 'Thêm dịch vụ mới';
+              submitText.textContent = 'Lưu';
             }
           }
+          
+          // Đóng modal
           if(closeBtn && modal) {
-            closeBtn.onclick = function() { modal.style.display = 'none'; }
+            closeBtn.onclick = function() { closeModal(); }
           }
           if(cancelBtn && modal) {
-            cancelBtn.onclick = function() { modal.style.display = 'none'; }
+            cancelBtn.onclick = function() { closeModal(); }
           }
+          
           // Đóng modal khi click ra ngoài modal-content
           window.onclick = function(event) {
-            if(event.target === modal) { modal.style.display = 'none'; }
+            if(event.target === modal) { closeModal(); }
           }
+          
           // Nếu ở chế độ edit, tự động mở modal và đổi tiêu đề
           /*<![CDATA[*/
           var editMode = /*[[${editMode} ? 'true' : 'false']]*/ 'false';
           if(editMode === 'true' && modal) {
             modal.style.display = 'flex';
             document.getElementById('serviceModalTitle').innerText = 'Sửa dịch vụ';
+            submitText.textContent = 'Cập nhật';
           }
           /*]]>*/
+          
+          // Validation form
+          if(form) {
+            form.addEventListener('submit', function(e) {
+              if (!validateForm()) {
+                e.preventDefault();
+                return false;
+              }
+              
+              // Hiển thị loading
+              submitBtn.disabled = true;
+              submitText.textContent = 'Đang xử lý...';
+              
+              // Ẩn thông báo lỗi cũ
+              hideMessage('error');
+            });
+          }
+          
+          // Auto-format mã dịch vụ
+          var maDichVuInput = document.getElementById('maDichVu');
+          if(maDichVuInput) {
+            maDichVuInput.addEventListener('input', function() {
+              this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+          }
+          
+          // Auto-format đơn giá
+          var donGiaInput = document.getElementById('donGia');
+          if(donGiaInput) {
+            donGiaInput.addEventListener('input', function() {
+              var value = parseInt(this.value);
+              if (value < 0) this.value = 0;
+              if (value > 999999999) this.value = 999999999;
+            });
+          }
+          
+          // Real-time validation
+          var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+          inputs.forEach(function(input) {
+            input.addEventListener('blur', function() {
+              validateField(this);
+            });
+          });
+          
+          // Status toggle functionality
+          var statusOptions = document.querySelectorAll('.status-option');
+          statusOptions.forEach(function(option) {
+            option.addEventListener('click', function() {
+              statusOptions.forEach(function(opt) { opt.classList.remove('active'); });
+              this.classList.add('active');
+            });
+          });
         });
+        
+        function closeModal() {
+          var modal = document.getElementById('serviceModal');
+          var form = document.getElementById('serviceForm');
+          if(modal) {
+            modal.style.display = 'none';
+            resetForm();
+          }
+        }
+        
+        function resetForm() {
+          var form = document.getElementById('serviceForm');
+          var submitBtn = document.getElementById('submitService');
+          var submitText = document.getElementById('submitText');
+          
+          if(form) {
+            form.reset();
+            clearFieldErrors();
+            hideMessage('error');
+            hideMessage('success');
+          }
+          
+          if(submitBtn) {
+            submitBtn.disabled = false;
+            submitText.textContent = 'Lưu';
+          }
+          
+          // Reset status toggle
+          var statusOptions = document.querySelectorAll('.status-option');
+          statusOptions.forEach(function(opt) { opt.classList.remove('active'); });
+          if(statusOptions[0]) statusOptions[0].classList.add('active');
+        }
+        
+        function validateForm() {
+          var isValid = true;
+          var form = document.getElementById('serviceForm');
+          var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+          
+          clearFieldErrors();
+          
+          inputs.forEach(function(input) {
+            if (!validateField(input)) {
+              isValid = false;
+            }
+          });
+          
+          if (!isValid) {
+            showMessage('error', 'Vui lòng kiểm tra lại thông tin đã nhập');
+          }
+          
+          return isValid;
+        }
+        
+        function validateField(field) {
+          var isValid = true;
+          var errorMsg = '';
+          
+          // Remove existing error styling
+          field.classList.remove('error');
+          var errorDiv = field.parentNode.querySelector('.field-error');
+          if(errorDiv) errorDiv.remove();
+          
+          // Required field validation
+          if (field.hasAttribute('required') && !field.value.trim()) {
+            isValid = false;
+            errorMsg = 'Trường này là bắt buộc';
+          }
+          
+          // Specific field validations
+          if (field.id === 'maDichVu' && field.value) {
+            if (!/^[A-Z0-9]+$/.test(field.value)) {
+              isValid = false;
+              errorMsg = 'Mã dịch vụ chỉ chứa chữ hoa và số';
+            }
+            if (field.value.length < 3) {
+              isValid = false;
+              errorMsg = 'Mã dịch vụ phải có ít nhất 3 ký tự';
+            }
+          }
+          
+          if (field.id === 'donGia' && field.value) {
+            var price = parseFloat(field.value);
+            if (price < 0) {
+              isValid = false;
+              errorMsg = 'Đơn giá không được âm';
+            }
+            if (price > 999999999) {
+              isValid = false;
+              errorMsg = 'Đơn giá quá lớn';
+            }
+          }
+          
+          if (field.id === 'tenDichVu' && field.value) {
+            if (field.value.length < 3) {
+              isValid = false;
+              errorMsg = 'Tên dịch vụ phải có ít nhất 3 ký tự';
+            }
+          }
+          
+          // Show error if invalid
+          if (!isValid) {
+            field.classList.add('error');
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error';
+            errorDiv.textContent = errorMsg;
+            field.parentNode.appendChild(errorDiv);
+          }
+          
+          return isValid;
+        }
+        
+        function clearFieldErrors() {
+          var errorFields = document.querySelectorAll('.error');
+          errorFields.forEach(function(field) { field.classList.remove('error'); });
+          
+          var errorDivs = document.querySelectorAll('.field-error');
+          errorDivs.forEach(function(div) { div.remove(); });
+        }
+        
+        function showMessage(type, message) {
+          var messageDiv = document.getElementById(type + 'Message');
+          var textDiv = document.getElementById(type + 'Text');
+          
+          if(messageDiv && textDiv) {
+            textDiv.textContent = message;
+            messageDiv.style.display = 'flex';
+            
+            // Auto hide after 5 seconds
+            setTimeout(function() {
+              hideMessage(type);
+            }, 5000);
+          }
+        }
+        
+        function hideMessage(type) {
+          var messageDiv = document.getElementById(type + 'Message');
+          if(messageDiv) {
+            messageDiv.style.display = 'none';
+          }
+        }
       </script>
     </main>
       <footer>

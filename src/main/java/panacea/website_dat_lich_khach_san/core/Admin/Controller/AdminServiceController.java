@@ -22,6 +22,8 @@ public class AdminServiceController {
     @GetMapping
     public String listServices(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "5") int size,
+                               @RequestParam(required = false) String error,
+                               @RequestParam(required = false) String success,
                                Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ServiceDTO> servicePage = adminServiceService.getAllServicesPaged(pageable);
@@ -33,6 +35,15 @@ public class AdminServiceController {
         model.addAttribute("hasNext", servicePage.hasNext());
         model.addAttribute("hasPrevious", servicePage.hasPrevious());
         model.addAttribute("serviceForm", new ServiceDTO());
+        
+        // Thêm thông báo nếu có
+        if (error != null) {
+            model.addAttribute("error", error);
+        }
+        if (success != null) {
+            model.addAttribute("success", success);
+        }
+        
         return "Admin/view/QuanLyDichVu";
     }
 
@@ -45,8 +56,27 @@ public class AdminServiceController {
 
     // Xử lý thêm dịch vụ
     @PostMapping("/add")
-    public String addService(@ModelAttribute("serviceForm") ServiceDTO dto) {
-        adminServiceService.createService(dto);
+    public String addService(@ModelAttribute("serviceForm") ServiceDTO dto, Model model) {
+        try {
+            // Validation
+            if (dto.getMaDichVu() == null || dto.getMaDichVu().trim().isEmpty()) {
+                model.addAttribute("error", "Mã dịch vụ không được để trống");
+                return "redirect:/admin/services";
+            }
+            if (dto.getTenDichVu() == null || dto.getTenDichVu().trim().isEmpty()) {
+                model.addAttribute("error", "Tên dịch vụ không được để trống");
+                return "redirect:/admin/services";
+            }
+            if (dto.getDonGia() == null || dto.getDonGia().doubleValue() < 0) {
+                model.addAttribute("error", "Đơn giá không hợp lệ");
+                return "redirect:/admin/services";
+            }
+            
+            adminServiceService.createService(dto);
+            model.addAttribute("success", "Thêm dịch vụ thành công");
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/admin/services";
     }
 
@@ -74,8 +104,31 @@ public class AdminServiceController {
 
     // Xử lý sửa dịch vụ
     @PostMapping("/edit/{id}")
-    public String editService(@PathVariable Integer id, @ModelAttribute("serviceForm") ServiceDTO dto) {
-        adminServiceService.updateService(id, dto);
+    public String editService(@PathVariable Integer id, @ModelAttribute("serviceForm") ServiceDTO dto, Model model) {
+        try {
+            // Validation
+            if (dto.getMaDichVu() == null || dto.getMaDichVu().trim().isEmpty()) {
+                model.addAttribute("error", "Mã dịch vụ không được để trống");
+                return "redirect:/admin/services";
+            }
+            if (dto.getTenDichVu() == null || dto.getTenDichVu().trim().isEmpty()) {
+                model.addAttribute("error", "Tên dịch vụ không được để trống");
+                return "redirect:/admin/services";
+            }
+            if (dto.getDonGia() == null || dto.getDonGia().doubleValue() < 0) {
+                model.addAttribute("error", "Đơn giá không hợp lệ");
+                return "redirect:/admin/services";
+            }
+            
+            ServiceDTO updated = adminServiceService.updateService(id, dto);
+            if (updated != null) {
+                model.addAttribute("success", "Cập nhật dịch vụ thành công");
+            } else {
+                model.addAttribute("error", "Không tìm thấy dịch vụ để cập nhật");
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/admin/services";
     }
 
