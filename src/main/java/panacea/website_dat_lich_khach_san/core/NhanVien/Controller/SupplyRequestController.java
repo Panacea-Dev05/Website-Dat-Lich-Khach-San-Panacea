@@ -7,11 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.SupplyRequestService;
 import panacea.website_dat_lich_khach_san.entity.SupplyRequest;
 import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCau;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.core.NhanVien.DTO.SupplyRequestDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ public class SupplyRequestController {
     // Trang quản lý yêu cầu bổ sung
     @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     @GetMapping("/view")
+    @Transactional
     public String view(Model model, Authentication authentication) {
         String username = authentication.getName();
         Optional<Staff> staff = staffRepository.findByTaiKhoan(username);
@@ -89,6 +92,7 @@ public class SupplyRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/api/approve/{id}")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> approveRequest(@PathVariable Integer id, 
                                                              @RequestBody Map<String, String> requestBody,
                                                              Authentication authentication) {
@@ -121,6 +125,7 @@ public class SupplyRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/api/reject/{id}")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> rejectRequest(@PathVariable Integer id, 
                                                             @RequestBody Map<String, String> requestBody,
                                                             Authentication authentication) {
@@ -153,6 +158,7 @@ public class SupplyRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/api/complete/{id}")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> completeRequest(@PathVariable Integer id) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -172,12 +178,12 @@ public class SupplyRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/status/{status}")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> getRequestsByStatus(@PathVariable String status) {
         Map<String, Object> response = new HashMap<>();
         try {
             TrangThaiYeuCau trangThai = TrangThaiYeuCau.valueOf(status.toUpperCase());
-            List<SupplyRequest> requests = supplyRequestService.getRequestsByStatus(trangThai);
-            
+            List<SupplyRequestDTO> requests = supplyRequestService.getRequestsByStatusDTO(trangThai);
             response.put("success", true);
             response.put("requests", requests);
             return ResponseEntity.ok(response);
@@ -204,7 +210,7 @@ public class SupplyRequestController {
                 return ResponseEntity.badRequest().body(response);
             }
             
-            List<SupplyRequest> requests = supplyRequestService.getRequestsByStaff(staff.get().getId());
+            List<SupplyRequestDTO> requests = supplyRequestService.getRequestsByStaffDTO(staff.get().getId());
             response.put("success", true);
             response.put("requests", requests);
             return ResponseEntity.ok(response);

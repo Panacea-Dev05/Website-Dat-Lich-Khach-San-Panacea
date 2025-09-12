@@ -9,10 +9,12 @@ import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCau;
 import panacea.website_dat_lich_khach_san.repository.SupplyRequestRepository;
 import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.core.NhanVien.DTO.SupplyRequestDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SupplyRequestService {
@@ -107,7 +109,7 @@ public class SupplyRequestService {
     
     // Lấy tất cả yêu cầu
     public List<SupplyRequest> getAllRequests() {
-        return supplyRequestRepository.findAll();
+        return supplyRequestRepository.findAllWithStaffRequester();
     }
     
     // Lấy yêu cầu theo nhân viên
@@ -117,12 +119,12 @@ public class SupplyRequestService {
     
     // Lấy yêu cầu theo trạng thái
     public List<SupplyRequest> getRequestsByStatus(TrangThaiYeuCau status) {
-        return supplyRequestRepository.findByTrangThai(status);
+        return supplyRequestRepository.findByTrangThaiWithStaffRequester(status);
     }
     
     // Lấy yêu cầu chờ duyệt
     public List<SupplyRequest> getPendingRequests() {
-        return supplyRequestRepository.findByTrangThai(TrangThaiYeuCau.CHO_DUYET);
+        return supplyRequestRepository.findByTrangThaiWithStaffRequester(TrangThaiYeuCau.CHO_DUYET);
     }
     
     // Validation
@@ -142,5 +144,76 @@ public class SupplyRequestService {
         if (request.getLyDoYeuCau().length() > 500) {
             throw new RuntimeException("Lý do yêu cầu không được vượt quá 500 ký tự!");
         }
+    }
+    
+    // Chuyển đổi entity sang DTO
+    private SupplyRequestDTO convertToDTO(SupplyRequest request) {
+        SupplyRequestDTO dto = new SupplyRequestDTO();
+        dto.setId(request.getId());
+        dto.setVatPhamId(request.getVatPhamId());
+        dto.setSoLuongYeuCau(request.getSoLuongYeuCau());
+        dto.setLyDoYeuCau(request.getLyDoYeuCau());
+        dto.setNhanVienYeuCau(request.getNhanVienYeuCau());
+        dto.setTrangThai(request.getTrangThai());
+        dto.setAdminPheDuyet(request.getAdminPheDuyet());
+        dto.setNgayYeuCau(request.getNgayYeuCau());
+        dto.setNgayPheDuyet(request.getNgayPheDuyet());
+        dto.setGhiChuAdmin(request.getGhiChuAdmin());
+        dto.setMucDoUuTien(request.getMucDoUuTien());
+        dto.setUuidId(request.getUuidId());
+        dto.setCreatedDate(request.getCreatedDate());
+        dto.setLastModifiedDate(request.getLastModifiedDate());
+        
+        // Lấy thông tin vật phẩm
+        if (request.getVatPhamId() != null) {
+            Optional<InventoryManagement> item = inventoryRepository.findById(request.getVatPhamId());
+            if (item.isPresent()) {
+                dto.setTenVatPham(item.get().getTenVatPham());
+                dto.setSoLuongTon(item.get().getSoLuongTon() != null ? item.get().getSoLuongTon().intValue() : 0);
+            }
+        }
+        
+        // Lấy thông tin nhân viên yêu cầu
+        if (request.getNhanVienYeuCau() != null) {
+            Optional<Staff> staff = staffRepository.findById(request.getNhanVienYeuCau());
+            if (staff.isPresent()) {
+                dto.setTenNhanVienYeuCau(staff.get().getHoTen());
+            }
+        }
+        
+        // Lấy thông tin admin phê duyệt
+        if (request.getAdminPheDuyet() != null) {
+            Optional<Staff> admin = staffRepository.findById(request.getAdminPheDuyet());
+            if (admin.isPresent()) {
+                dto.setTenAdminPheDuyet(admin.get().getHoTen());
+            }
+        }
+        
+        return dto;
+    }
+    
+    // Các method trả về DTO
+    public List<SupplyRequestDTO> getAllRequestsDTO() {
+        return getAllRequests().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public List<SupplyRequestDTO> getRequestsByStaffDTO(Integer staffId) {
+        return getRequestsByStaff(staffId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public List<SupplyRequestDTO> getRequestsByStatusDTO(TrangThaiYeuCau status) {
+        return getRequestsByStatus(status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public List<SupplyRequestDTO> getPendingRequestsDTO() {
+        return getPendingRequests().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

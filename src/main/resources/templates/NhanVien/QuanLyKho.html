@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8" />
@@ -10,1048 +10,321 @@
     <link rel="stylesheet" th:href="@{/css/NhanVien/quanlykho.css}">
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/quanlykho.css">
 </head>
 
 <body>
-    <div class="app" id="app">
-        <header>
-            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
-                <span class="material-icons" aria-hidden="true">hotel</span>
-                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
-            </div>
-        </header>
+<div class="app" id="app">
+    <header>
+        <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+            <span class="material-icons" aria-hidden="true">hotel</span>
+            <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+        </div>
+    </header>
 
-        <div th:replace="~{NhanVien/sidebar :: sidebar}"></div>
+    <div th:replace="~{NhanVien/sidebar :: sidebar}"></div>
 
-        <main role="main" tabindex="0">
-            <h1>Quản lý kho</h1>
-            <!-- Error message display -->
-            <div th:if="${error}" class="error-message">
-                <span class="material-icons">error</span>
-                <span th:text="${error}"></span>
-            </div>
-            
-            <!-- Tạo vật phẩm mới - Chỉ Admin -->
-            <div class="form-container" sec:authorize="hasRole('ADMIN')">
-                <div class="card-header">
-                    <h2 class="card-title"><span class="material-icons">inventory</span> Tạo / Cập nhật vật phẩm</h2>
-                </div>
-                <form>
-                    <div><label>Tên vật phẩm</label><input type="text" /></div>
-                    <div><label>Mã vật phẩm</label><input type="text" /></div>
-                    <div><label>Loại vật phẩm</label><input type="text" /></div>
-                    <div><label>Số lượng tồn</label><input type="number" min="0" /></div>
-                    <div><label>Số lượng tối thiểu</label><input type="number" min="0" /></div>
-                    <div><label>Giá nhập (VND)</label><input type="number" min="0" /></div>
-                    <div><label>Đơn vị tính</label><input type="text" /></div>
-                    <div><label>Vị trí kho</label><input type="text" /></div>
-                    <div><label>Nhà cung cấp</label><input type="text" /></div>
-                    <div><label>Hạn sử dụng</label><input type="date" /></div>
-                    <div><label>Trạng thái</label><select name="trangThai">
-                            <option value="">Tất cả trạng thái</option>
-                            <option th:each="tt : ${trangThaiList}" th:value="${tt}" th:text="${tt}"></option>
-                        </select></div>
-                    <div style="grid-column: span 2; text-align: right;">
-                        <button class="btn"><span class="material-icons">save</span>Lưu</button>
-                    </div>
-                </form>
-            </div>
+    <main role="main" tabindex="0">
+        <h1>Quản lý kho</h1>
+        <div th:if="${error}" class="error-message">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
 
-            <!-- Giao dịch kho -->
-            <div class="form-container">
-                <div class="card-header">
-                    <h2 class="card-title"><span class="material-icons">compare_arrows</span> Giao dịch kho</h2>
-                </div>
-                <form>
-                    <div><label>Vật phẩm</label><select name="vatPhamId">
+
+
+        <div class="form-container">
+            <div class="card-header">
+                <h2 class="card-title"><span class="material-icons">compare_arrows</span> Giao dịch kho</h2>
+            </div>
+            <form id="transactionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Vật phẩm</label>
+                        <select name="vatPham.id" required>
                             <option disabled selected>Chọn vật phẩm...</option>
                             <option th:each="vp : ${vatPhams}" th:value="${vp.id}" th:text="${vp.tenVatPham}"></option>
-                        </select></div>
-                    <div><label>Loại giao dịch</label><select name="loaiGiaoDich">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Loại giao dịch</label>
+                        <select name="loaiGiaoDich" required>
                             <option disabled selected>Chọn loại giao dịch...</option>
                             <option th:each="lgd : ${loaiGiaoDichList}" th:value="${lgd.name()}" th:text="${lgd.value}">
                             </option>
-                        </select></div>
-                    <div><label>Số lượng</label><input type="number" min="1" /></div>
-                    <div><label>Giá trị</label><input type="number" /></div>
-                    <div><label>Ngày giao dịch</label><input type="date" /></div>
-                    <div><label>Số chứng từ</label><input type="text" /></div>
-                    <div style="grid-column: span 2;"><label>Lý do</label><textarea></textarea></div>
-                    <div style="grid-column: span 2; text-align: right;">
-                        <button class="btn"><span class="material-icons">add_circle</span>Thêm giao dịch</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Danh sách vật phẩm -->
-            <div class="table-container">
-                <div class="card-header">
-                    <h2 class="card-title"><span class="material-icons">inventory</span> Danh sách vật phẩm</h2>
-                </div>
-                
-                <!-- Tìm kiếm và lọc -->
-                <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <input type="text" id="searchKeyword" placeholder="Tìm kiếm theo tên hoặc mã vật phẩm..." 
-                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    <div>
-                        <select id="filterLoaiVatPham" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="">Tất cả loại vật phẩm</option>
-                            <option value="Amenities">Amenities</option>
-                            <option value="Cleaning">Cleaning</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Food">Food</option>
                         </select>
                     </div>
-                    <button onclick="searchItems()" class="btn" style="padding: 8px 16px;">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Số lượng</label>
+                        <input type="number" name="soLuong" min="1" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Giá trị</label>
+                        <input type="number" name="giaTriGiaoDich" min="0" step="0.01" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ngày giao dịch</label>
+                        <input type="date" name="ngayGiaoDich" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Số chứng từ</label>
+                        <input type="text" name="soChungTu" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea name="ghiChu" rows="3" placeholder="Nhập ghi chú (tùy chọn)..."></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" id="addTransactionBtn">
+                        <span class="material-icons">add</span>
+                        Tạo giao dịch
+                    </button>
+                    <div class="info-message">
+                        <span class="material-icons">info</span>
+                        Lưu ý: Phiếu nhập kho cần Admin phê duyệt. Phiếu xuất kho không thể sửa/xóa sau khi lưu.
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <div class="card-header">
+                <h2 class="card-title"><span class="material-icons">inventory</span> Danh sách vật phẩm</h2>
+            </div>
+
+            <div class="form-row" style="margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <input type="text" id="itemSearch" placeholder="Tìm kiếm theo tên hoặc mã vật phẩm...">
+                </div>
+                <div class="form-group">
+                    <select id="filterLoaiVatPham">
+                        <option value="">Tất cả loại vật phẩm</option>
+                        <option value="Amenities">Amenities</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Food">Food</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button onclick="searchItems()" class="btn btn-primary">
                         <span class="material-icons">search</span>Tìm kiếm
                     </button>
-                    <button onclick="resetSearch()" class="btn" style="padding: 8px 16px; background-color: #6c757d;">
+                    <button onclick="resetSearch()" class="btn btn-secondary">
                         <span class="material-icons">refresh</span>Làm mới
                     </button>
                 </div>
-                
-                <table id="itemsTable">
-                    <thead>
-                        <tr>
-                            <th>Mã</th>
-                            <th>Tên</th>
-                            <th>Loại</th>
-                            <th>Tồn kho</th>
-                            <th>Giá nhập</th>
-                            <th>Nhà cung cấp</th>
-                            <th>Hạn dùng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="item : ${items}">
-                            <td th:text="${item.maVatPham}"></td>
-                            <td th:text="${item.tenVatPham}"></td>
-                            <td th:text="${item.loaiVatPham}"></td>
-                            <td th:text="${item.soLuongTon}"></td>
-                            <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}">
-                            </td>
-                            <td th:text="${item.nhaCungCap}"></td>
-                            <td th:text="${item.hanSuDung != null ? #temporals.format(item.hanSuDung, 'yyyy-MM-dd') : 'N/A'}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <!-- Pagination -->
-                <div class="pagination-container">
-                    <div class="pagination-info">
-                        <span id="pagination-info">Hiển thị 1-10 của 0 kết quả</span>
-                    </div>
-                    <div class="pagination-controls">
-                        <button class="btn btn-secondary" id="prev-page" onclick="changePage(-1)" disabled>
-                            <i class="fas fa-chevron-left"></i> Trước
-                        </button>
-                        <span class="page-numbers" id="page-numbers"></span>
-                        <button class="btn btn-secondary" id="next-page" onclick="changePage(1)" disabled>
-                            Sau <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div class="page-size-selector">
-                        <label for="page-size">Hiển thị:</label>
-                        <select id="page-size" onchange="changePageSize()">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <span>mục/trang</span>
-                    </div>
-                </div>
             </div>
 
-            <!-- Lịch sử giao dịch -->
-            <div class="section">
-                <h2><span class="material-icons">history</span> Lịch sử giao dịch kho</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ngày</th>
-                            <th>Vật phẩm</th>
-                            <th>Loại</th>
-                            <th>Số lượng</th>
-                            <th>Giá trị</th>
-                            <th>Lý do</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="tran : ${transactions}">
-                            <td th:text="${tran.ngayGiaoDich != null ? #temporals.format(tran.ngayGiaoDich, 'yyyy-MM-dd') : 'N/A'}"></td>
-                            <td th:text="${tran.inventoryItem != null ? tran.inventoryItem.tenVatPham : 'N/A'}"></td>
-                            <td th:text="${tran.loaiGiaoDich != null ? tran.loaiGiaoDich.value : 'N/A'}"></td>
-                            <td th:text="${tran.soLuong}"></td>
-                            <td th:text="${tran.giaTri != null ? #numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT') : 'N/A'}">
-                            </td>
-                            <td th:text="${tran.lyDo != null ? tran.lyDo : 'N/A'}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <!-- Pagination for Transactions -->
-                <div class="pagination-container">
-                    <div class="pagination-info">
-                        <span id="transaction-pagination-info">Hiển thị 1-10 của 0 kết quả</span>
-                    </div>
-                    <div class="pagination-controls">
-                        <button class="btn btn-secondary" id="transaction-prev-page" onclick="changeTransactionPage(-1)" disabled>
-                            <i class="fas fa-chevron-left"></i> Trước
-                        </button>
-                        <span class="page-numbers" id="transaction-page-numbers"></span>
-                        <button class="btn btn-secondary" id="transaction-next-page" onclick="changeTransactionPage(1)" disabled>
-                            Sau <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div class="page-size-selector">
-                        <label for="transaction-page-size">Hiển thị:</label>
-                        <select id="transaction-page-size" onchange="changeTransactionPageSize()">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <span>mục/trang</span>
-                    </div>
+            <table class="table" id="itemTable">
+                <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Tên</th>
+                    <th>Loại</th>
+                    <th>Tồn kho</th>
+                    <th>Giá nhập</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Hạn dùng</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.maVatPham}"></td>
+                    <td th:text="${item.tenVatPham}"></td>
+                    <td th:text="${item.loaiVatPham}"></td>
+                    <td th:text="${item.soLuongTon}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}">
+                    </td>
+                    <td th:text="${item.nhaCungCap}"></td>
+                    <td th:text="${item.hanSuDung != null ? #temporals.format(item.hanSuDung, 'yyyy-MM-dd') : 'N/A'}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span id="pagination-info">Hiển thị 1-10 của 0 kết quả</span>
+                </div>
+                <div class="pagination-controls">
+                    <button class="btn btn-secondary" id="prev-page" onclick="changePage(-1)" disabled>
+                        <i class="fas fa-chevron-left"></i> Trước
+                    </button>
+                    <span class="page-numbers" id="page-numbers"></span>
+                    <button class="btn btn-secondary" id="next-page" onclick="changePage(1)" disabled>
+                        Sau <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="page-size-selector">
+                    <label for="page-size">Hiển thị:</label>
+                    <select id="page-size" onchange="changePageSize()">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>mục/trang</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="card-header">
+                <h2 class="card-title"><span class="material-icons">history</span> Lịch sử giao dịch kho</h2>
+            </div>
+            
+            <div class="form-row" style="margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <input type="text" id="transactionSearch" placeholder="Tìm kiếm giao dịch...">
                 </div>
             </div>
             
-            <!-- Reports Section -->
-            <div class="section">
-                <h2><i class="fas fa-chart-bar"></i> Báo cáo và Thống kê</h2>
-                
-                <div class="reports-container">
-                    <div class="report-filters">
-                        <div class="filter-group">
-                            <label for="report-type">Loại báo cáo:</label>
-                            <select id="report-type" onchange="updateReportType()">
-                                <option value="inventory">Tồn kho</option>
-                                <option value="transactions">Giao dịch</option>
-                                <option value="expiry">Hạn sử dụng</option>
-                                <option value="value">Giá trị kho</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="report-period">Thời gian:</label>
-                            <select id="report-period" onchange="updateReportPeriod()">
-                                <option value="today">Hôm nay</option>
-                                <option value="week">Tuần này</option>
-                                <option value="month">Tháng này</option>
-                                <option value="quarter">Quý này</option>
-                                <option value="year">Năm này</option>
-                                <option value="custom">Tùy chọn</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group" id="custom-date-range" style="display: none;">
-                            <label for="start-date">Từ ngày:</label>
-                            <input type="date" id="start-date">
-                            <label for="end-date">Đến ngày:</label>
-                            <input type="date" id="end-date">
-                        </div>
-                        
-                        <button class="btn btn-primary" onclick="generateReport()">
-                            <i class="fas fa-chart-line"></i> Tạo báo cáo
-                        </button>
-                        
-                        <button class="btn btn-secondary" onclick="exportReport()">
-                            <i class="fas fa-download"></i> Xuất Excel
-                        </button>
+            <table class="table" id="transactionTable">
+                <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Vật phẩm</th>
+                    <th>Loại</th>
+                    <th>Số lượng</th>
+                    <th>Giá trị</th>
+                    <th>Lý do</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tran : ${transactions}">
+                    <td th:text="${tran.ngayGiaoDich != null ? #temporals.format(tran.ngayGiaoDich, 'yyyy-MM-dd') : 'N/A'}"></td>
+                    <td th:text="${tran.inventoryItem != null ? tran.inventoryItem.tenVatPham : 'N/A'}"></td>
+                    <td th:text="${tran.loaiGiaoDich != null ? tran.loaiGiaoDich.value : 'N/A'}"></td>
+                    <td th:text="${tran.soLuong}"></td>
+                    <td th:text="${tran.giaTri != null ? #numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT') : 'N/A'}">
+                    </td>
+                    <td th:text="${tran.lyDo != null ? tran.lyDo : 'N/A'}"></td>
+                    <td>
+                                <span th:class="'badge ' + ${tran.trangThaiDuyet != null ? (tran.trangThaiDuyet.name() == 'CHO_DUYET' ? 'warning' : (tran.trangThaiDuyet.name() == 'DA_DUYET' ? 'success' : 'danger')) : 'secondary'}"
+                                      th:text="${tran.trangThaiDuyet != null ? tran.trangThaiDuyet.value : 'N/A'}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div id="transactionPagination" class="pagination-container">
+                <!-- Pagination sẽ được tạo bởi JavaScript -->
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><span class="material-icons">assessment</span> Báo cáo và Thống kê</h2>
+            </div>
+
+            <div class="reports-container">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="report-type">Loại báo cáo:</label>
+                        <select id="report-type" onchange="updateReportType()">
+                            <option value="inventory">Tồn kho</option>
+                            <option value="transactions">Giao dịch</option>
+                            <option value="expiry">Hạn sử dụng</option>
+                            <option value="value">Giá trị kho</option>
+                        </select>
                     </div>
-                    
-                    <div class="report-summary">
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="fas fa-boxes"></i>
-                            </div>
-                            <div class="summary-content">
-                                <h3 id="total-items">0</h3>
-                                <p>Tổng số vật phẩm</p>
-                            </div>
+
+                    <div class="form-group">
+                        <label for="report-period">Thời gian:</label>
+                        <select id="report-period" onchange="updateReportPeriod()">
+                            <option value="today">Hôm nay</option>
+                            <option value="week">Tuần này</option>
+                            <option value="month">Tháng này</option>
+                            <option value="quarter">Quý này</option>
+                            <option value="year">Năm này</option>
+                            <option value="custom">Tùy chọn</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="custom-date-range" style="display: none;">
+                        <label for="start-date">Từ ngày:</label>
+                        <input type="date" id="start-date">
+                        <label for="end-date">Đến ngày:</label>
+                        <input type="date" id="end-date">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateReport()">
+                        <span class="material-icons">assessment</span> Tạo báo cáo
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="exportReport()">
+                        <span class="material-icons">download</span> Xuất Excel
+                    </button>
+                </div>
+
+                <div class="report-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-boxes"></i>
                         </div>
-                        
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="fas fa-warehouse"></i>
-                            </div>
-                            <div class="summary-content">
-                                <h3 id="total-stock">0</h3>
-                                <p>Tổng tồn kho</p>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="summary-content">
-                                <h3 id="low-stock-items">0</h3>
-                                <p>Vật phẩm sắp hết</p>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card">
-                            <div class="summary-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="summary-content">
-                                <h3 id="expiring-items">0</h3>
-                                <p>Sắp hết hạn</p>
-                            </div>
+                        <div class="summary-content">
+                            <h3 id="total-items">0</h3>
+                            <p>Tổng số vật phẩm</p>
                         </div>
                     </div>
-                    
-                    <div class="report-content">
-                        <div class="chart-container">
-                            <canvas id="reportChart" width="400" height="200"></canvas>
+
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-warehouse"></i>
                         </div>
-                        
-                        <div class="report-table">
-                            <table id="reportTable">
-                                <thead>
-                                    <tr id="reportTableHeader">
-                                        <!-- Dynamic headers -->
-                                    </tr>
-                                </thead>
-                                <tbody id="reportTableBody">
-                                    <!-- Dynamic content -->
-                                </tbody>
-                            </table>
+                        <div class="summary-content">
+                            <h3 id="total-stock">0</h3>
+                            <p>Tổng tồn kho</p>
                         </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="low-stock-items">0</h3>
+                            <p>Vật phẩm sắp hết</p>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="expiring-items">0</h3>
+                            <p>Sắp hết hạn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-content">
+                    <div class="chart-container">
+                        <canvas id="reportChart" width="400" height="200"></canvas>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="reportTable" class="table">
+                            <thead>
+                            <tr id="reportTableHeader">
+                            </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    </div>
+</div>
 
-    <script>
-        // Validation cho form tạo/cập nhật vật phẩm
-        function validateItemForm() {
-            const tenVatPham = document.querySelector('input[name="tenVatPham"]').value.trim();
-            const maVatPham = document.querySelector('input[name="maVatPham"]').value.trim();
-            const soLuongTon = document.querySelector('input[name="soLuongTon"]').value;
-            const giaNhap = document.querySelector('input[name="giaNhap"]').value;
-            
-            if (!tenVatPham) {
-                showNotification('Vui lòng nhập tên vật phẩm', 'error');
-                return false;
-            }
-            
-            if (!maVatPham) {
-                showNotification('Vui lòng nhập mã vật phẩm', 'error');
-                return false;
-            }
-            
-            if (soLuongTon < 0) {
-                showNotification('Số lượng tồn không được âm', 'error');
-                return false;
-            }
-            
-            if (giaNhap < 0) {
-                showNotification('Giá nhập không được âm', 'error');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Validation cho form giao dịch kho
-        function validateTransactionForm() {
-            const vatPhamId = document.querySelector('select[name="vatPhamId"]').value;
-            const loaiGiaoDich = document.querySelector('select[name="loaiGiaoDich"]').value;
-            const soLuong = document.querySelector('input[type="number"][min="1"]').value;
-            
-            if (!vatPhamId) {
-                showNotification('Vui lòng chọn vật phẩm', 'error');
-                return false;
-            }
-            
-            if (!loaiGiaoDich) {
-                showNotification('Vui lòng chọn loại giao dịch', 'error');
-                return false;
-            }
-            
-            if (!soLuong || soLuong <= 0) {
-                showNotification('Vui lòng nhập số lượng hợp lệ', 'error');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Tìm kiếm vật phẩm
-        function searchItems() {
-            const keyword = document.getElementById('searchKeyword').value;
-            const loaiVatPham = document.getElementById('filterLoaiVatPham').value;
-            
-            showLoading(true);
-            
-            fetch(`/nhanvien/quanlykho/api/search?keyword=${encodeURIComponent(keyword)}&loaiVatPham=${encodeURIComponent(loaiVatPham)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        updateItemsTable(data.data);
-                        showNotification('Tìm kiếm thành công', 'success');
-                    } else {
-                        showNotification(data.message || 'Lỗi khi tìm kiếm', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Lỗi kết nối', 'error');
-                })
-                .finally(() => {
-                    showLoading(false);
-                });
-
-         // Report functions
-         function updateReportType() {
-             const reportType = document.getElementById('report-type').value;
-             generateReport();
-         }
-
-         function updateReportPeriod() {
-             const period = document.getElementById('report-period').value;
-             const customDateRange = document.getElementById('custom-date-range');
-             
-             if (period === 'custom') {
-                 customDateRange.style.display = 'flex';
-             } else {
-                 customDateRange.style.display = 'none';
-             }
-             
-             generateReport();
-         }
-
-         function updateReportSummary() {
-             // Calculate summary statistics
-             const totalItems = filteredItems.length;
-             const totalStock = filteredItems.reduce((sum, item) => {
-                 const stock = parseInt(item.soLuongTon) || 0;
-                 return sum + stock;
-             }, 0);
-             
-             const lowStockItems = filteredItems.filter(item => {
-                 const stock = parseInt(item.soLuongTon) || 0;
-                 return stock < 10; // Threshold for low stock
-             }).length;
-             
-             const expiringItems = filteredItems.filter(item => {
-                 if (!item.hanSuDung || item.hanSuDung === 'N/A') return false;
-                 const expiryDate = new Date(item.hanSuDung);
-                 const today = new Date();
-                 const daysUntilExpiry = (expiryDate - today) / (1000 * 60 * 60 * 24);
-                 return daysUntilExpiry <= 30 && daysUntilExpiry >= 0; // Expiring within 30 days
-             }).length;
-             
-             // Update summary cards
-             document.getElementById('total-items').textContent = totalItems;
-             document.getElementById('total-stock').textContent = totalStock.toLocaleString('vi-VN');
-             document.getElementById('low-stock-items').textContent = lowStockItems;
-             document.getElementById('expiring-items').textContent = expiringItems;
-         }
-
-         function generateReport() {
-             const reportType = document.getElementById('report-type').value;
-             const reportPeriod = document.getElementById('report-period').value;
-             
-             // Clear previous report
-             const tableHeader = document.getElementById('reportTableHeader');
-             const tableBody = document.getElementById('reportTableBody');
-             tableHeader.innerHTML = '';
-             tableBody.innerHTML = '';
-             
-             switch (reportType) {
-                 case 'inventory':
-                     generateInventoryReport();
-                     break;
-                 case 'transactions':
-                     generateTransactionReport();
-                     break;
-                 case 'expiry':
-                     generateExpiryReport();
-                     break;
-                 case 'value':
-                     generateValueReport();
-                     break;
-             }
-             
-             updateReportChart(reportType);
-         }
-
-         function generateInventoryReport() {
-             const tableHeader = document.getElementById('reportTableHeader');
-             const tableBody = document.getElementById('reportTableBody');
-             
-             tableHeader.innerHTML = `
-                 <th>Mã vật phẩm</th>
-                 <th>Tên vật phẩm</th>
-                 <th>Loại</th>
-                 <th>Tồn kho</th>
-                 <th>Trạng thái</th>
-             `;
-             
-             filteredItems.forEach(item => {
-                 const stock = parseInt(item.soLuongTon) || 0;
-                 let status = 'Bình thường';
-                 let statusClass = '';
-                 
-                 if (stock === 0) {
-                     status = 'Hết hàng';
-                     statusClass = 'text-danger';
-                 } else if (stock < 10) {
-                     status = 'Sắp hết';
-                     statusClass = 'text-warning';
-                 } else {
-                     statusClass = 'text-success';
-                 }
-                 
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                     <td>${item.maVatPham}</td>
-                     <td>${item.tenVatPham}</td>
-                     <td>${item.loaiVatPham}</td>
-                     <td>${stock.toLocaleString('vi-VN')}</td>
-                     <td class="${statusClass}">${status}</td>
-                 `;
-                 tableBody.appendChild(row);
-             });
-         }
-
-         function generateTransactionReport() {
-             const tableHeader = document.getElementById('reportTableHeader');
-             const tableBody = document.getElementById('reportTableBody');
-             
-             tableHeader.innerHTML = `
-                 <th>Ngày</th>
-                 <th>Vật phẩm</th>
-                 <th>Loại giao dịch</th>
-                 <th>Số lượng</th>
-                 <th>Giá trị</th>
-             `;
-             
-             filteredTransactions.slice(0, 20).forEach(transaction => {
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                     <td>${transaction.ngayGiaoDich}</td>
-                     <td>${transaction.tenVatPham}</td>
-                     <td>${transaction.loaiGiaoDich}</td>
-                     <td>${transaction.soLuong}</td>
-                     <td>${transaction.giaTriGiaoDich}</td>
-                 `;
-                 tableBody.appendChild(row);
-             });
-         }
-
-         function generateExpiryReport() {
-             const tableHeader = document.getElementById('reportTableHeader');
-             const tableBody = document.getElementById('reportTableBody');
-             
-             tableHeader.innerHTML = `
-                 <th>Mã vật phẩm</th>
-                 <th>Tên vật phẩm</th>
-                 <th>Hạn sử dụng</th>
-                 <th>Số ngày còn lại</th>
-                 <th>Trạng thái</th>
-             `;
-             
-             const today = new Date();
-             const itemsWithExpiry = filteredItems.filter(item => item.hanSuDung && item.hanSuDung !== 'N/A');
-             
-             itemsWithExpiry.forEach(item => {
-                 const expiryDate = new Date(item.hanSuDung);
-                 const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-                 
-                 let status = 'Bình thường';
-                 let statusClass = 'text-success';
-                 
-                 if (daysUntilExpiry < 0) {
-                     status = 'Đã hết hạn';
-                     statusClass = 'text-danger';
-                 } else if (daysUntilExpiry <= 7) {
-                     status = 'Sắp hết hạn';
-                     statusClass = 'text-danger';
-                 } else if (daysUntilExpiry <= 30) {
-                     status = 'Cần chú ý';
-                     statusClass = 'text-warning';
-                 }
-                 
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                     <td>${item.maVatPham}</td>
-                     <td>${item.tenVatPham}</td>
-                     <td>${item.hanSuDung}</td>
-                     <td>${daysUntilExpiry}</td>
-                     <td class="${statusClass}">${status}</td>
-                 `;
-                 tableBody.appendChild(row);
-             });
-         }
-
-         function generateValueReport() {
-             const tableHeader = document.getElementById('reportTableHeader');
-             const tableBody = document.getElementById('reportTableBody');
-             
-             tableHeader.innerHTML = `
-                 <th>Loại vật phẩm</th>
-                 <th>Số lượng</th>
-                 <th>Giá trị ước tính</th>
-                 <th>Tỷ lệ</th>
-             `;
-             
-             // Group by category
-             const categoryStats = {};
-             let totalValue = 0;
-             
-             filteredItems.forEach(item => {
-                 const category = item.loaiVatPham || 'Khác';
-                 const stock = parseInt(item.soLuongTon) || 0;
-                 const price = parseFloat(item.giaNhap) || 0;
-                 const value = stock * price;
-                 
-                 if (!categoryStats[category]) {
-                     categoryStats[category] = { quantity: 0, value: 0 };
-                 }
-                 
-                 categoryStats[category].quantity += stock;
-                 categoryStats[category].value += value;
-                 totalValue += value;
-             });
-             
-             Object.entries(categoryStats).forEach(([category, stats]) => {
-                 const percentage = totalValue > 0 ? ((stats.value / totalValue) * 100).toFixed(1) : 0;
-                 
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                     <td>${category}</td>
-                     <td>${stats.quantity.toLocaleString('vi-VN')}</td>
-                     <td>${stats.value.toLocaleString('vi-VN')} VNĐ</td>
-                     <td>${percentage}%</td>
-                 `;
-                 tableBody.appendChild(row);
-             });
-         }
-
-         function updateReportChart(reportType) {
-             // Simple chart implementation (you can integrate Chart.js for better charts)
-             const canvas = document.getElementById('reportChart');
-             const ctx = canvas.getContext('2d');
-             
-             // Clear canvas
-             ctx.clearRect(0, 0, canvas.width, canvas.height);
-             
-             // Draw simple bar chart
-             ctx.fillStyle = '#007bff';
-             ctx.font = '14px Arial';
-             ctx.fillText(`Biểu đồ ${reportType}`, 10, 20);
-             ctx.fillText('(Tích hợp Chart.js để có biểu đồ đẹp hơn)', 10, 40);
-             
-             // Draw sample bars
-             const barWidth = 40;
-             const barSpacing = 60;
-             const maxHeight = 100;
-             
-             for (let i = 0; i < 5; i++) {
-                 const height = Math.random() * maxHeight;
-                 const x = 50 + i * barSpacing;
-                 const y = canvas.height - height - 50;
-                 
-                 ctx.fillStyle = `hsl(${i * 60}, 70%, 50%)`;
-                 ctx.fillRect(x, y, barWidth, height);
-                 
-                 ctx.fillStyle = '#333';
-                 ctx.fillText(`Item ${i + 1}`, x, canvas.height - 30);
-             }
-         }
-
-         function exportReport() {
-             // Simple CSV export
-             const reportType = document.getElementById('report-type').value;
-             const table = document.getElementById('reportTable');
-             
-             let csv = '';
-             const rows = table.querySelectorAll('tr');
-             
-             rows.forEach(row => {
-                 const cols = row.querySelectorAll('th, td');
-                 const rowData = Array.from(cols).map(col => `"${col.textContent}"`).join(',');
-                 csv += rowData + '\n';
-             });
-             
-             // Download CSV
-             const blob = new Blob([csv], { type: 'text/csv' });
-             const url = window.URL.createObjectURL(blob);
-             const a = document.createElement('a');
-             a.href = url;
-             a.download = `bao-cao-${reportType}-${new Date().toISOString().split('T')[0]}.csv`;
-             a.click();
-             window.URL.revokeObjectURL(url);
-             
-             showNotification('Đã xuất báo cáo thành công!', 'success');
-         }
-
-         // Add CSS classes for status colors
-         const style = document.createElement('style');
-         style.textContent = `
-             .text-success { color: #28a745 !important; }
-             .text-warning { color: #ffc107 !important; }
-             .text-danger { color: #dc3545 !important; }
-         `;
-         document.head.appendChild(style);
-         
-         });
-
-         // Initialize reports on page load
-         document.addEventListener('DOMContentLoaded', function() {
-             setTimeout(() => {
-                 generateReport();
-             }, 1000);
-         });
-        }
-        
-        // Reset tìm kiếm
-        function resetSearch() {
-            document.getElementById('searchKeyword').value = '';
-            document.getElementById('filterLoaiVatPham').value = '';
-            location.reload();
-        }
-        
-        // Pagination variables
-        let currentPage = 1;
-        let pageSize = 10;
-        let totalItems = 0;
-        let filteredItems = [];
-        
-        let currentTransactionPage = 1;
-        let transactionPageSize = 10;
-        let totalTransactions = 0;
-        let filteredTransactions = [];
-
-        // Pagination functions for items
-        function changePage(direction) {
-            const totalPages = Math.ceil(filteredItems.length / pageSize);
-            const newPage = currentPage + direction;
-            
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                updateItemsTable();
-                updatePaginationControls();
-            }
-        }
-
-        function changePageSize() {
-            pageSize = parseInt(document.getElementById('page-size').value);
-            currentPage = 1;
-            updateItemsTable();
-            updatePaginationControls();
-        }
-
-        function goToPage(page) {
-            const totalPages = Math.ceil(filteredItems.length / pageSize);
-            if (page >= 1 && page <= totalPages) {
-                currentPage = page;
-                updateItemsTable();
-                updatePaginationControls();
-            }
-        }
-
-        function updatePaginationControls() {
-            const totalPages = Math.ceil(filteredItems.length / pageSize);
-            const startItem = (currentPage - 1) * pageSize + 1;
-            const endItem = Math.min(currentPage * pageSize, filteredItems.length);
-            
-            // Update pagination info
-            document.getElementById('pagination-info').textContent = 
-                `Hiển thị ${startItem}-${endItem} của ${filteredItems.length} kết quả`;
-            
-            // Update navigation buttons
-            document.getElementById('prev-page').disabled = currentPage === 1;
-            document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
-            
-            // Update page numbers
-            const pageNumbersContainer = document.getElementById('page-numbers');
-            pageNumbersContainer.innerHTML = '';
-            
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                const pageButton = document.createElement('span');
-                pageButton.className = `page-number ${i === currentPage ? 'active' : ''}`;
-                pageButton.textContent = i;
-                pageButton.onclick = () => goToPage(i);
-                pageNumbersContainer.appendChild(pageButton);
-            }
-        }
-
-        // Pagination functions for transactions
-        function changeTransactionPage(direction) {
-            const totalPages = Math.ceil(filteredTransactions.length / transactionPageSize);
-            const newPage = currentTransactionPage + direction;
-            
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentTransactionPage = newPage;
-                updateTransactionsTable();
-                updateTransactionPaginationControls();
-            }
-        }
-
-        function changeTransactionPageSize() {
-            transactionPageSize = parseInt(document.getElementById('transaction-page-size').value);
-            currentTransactionPage = 1;
-            updateTransactionsTable();
-            updateTransactionPaginationControls();
-        }
-
-        function goToTransactionPage(page) {
-            const totalPages = Math.ceil(filteredTransactions.length / transactionPageSize);
-            if (page >= 1 && page <= totalPages) {
-                currentTransactionPage = page;
-                updateTransactionsTable();
-                updateTransactionPaginationControls();
-            }
-        }
-
-        function updateTransactionPaginationControls() {
-            const totalPages = Math.ceil(filteredTransactions.length / transactionPageSize);
-            const startItem = (currentTransactionPage - 1) * transactionPageSize + 1;
-            const endItem = Math.min(currentTransactionPage * transactionPageSize, filteredTransactions.length);
-            
-            // Update pagination info
-            document.getElementById('transaction-pagination-info').textContent = 
-                `Hiển thị ${startItem}-${endItem} của ${filteredTransactions.length} kết quả`;
-            
-            // Update navigation buttons
-            document.getElementById('transaction-prev-page').disabled = currentTransactionPage === 1;
-            document.getElementById('transaction-next-page').disabled = currentTransactionPage === totalPages || totalPages === 0;
-            
-            // Update page numbers
-            const pageNumbersContainer = document.getElementById('transaction-page-numbers');
-            pageNumbersContainer.innerHTML = '';
-            
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentTransactionPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                const pageButton = document.createElement('span');
-                pageButton.className = `page-number ${i === currentTransactionPage ? 'active' : ''}`;
-                pageButton.textContent = i;
-                pageButton.onclick = () => goToTransactionPage(i);
-                pageNumbersContainer.appendChild(pageButton);
-            }
-        }
-
-        function updateTransactionsTable() {
-            const startIndex = (currentTransactionPage - 1) * transactionPageSize;
-            const endIndex = startIndex + transactionPageSize;
-            const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
-            
-            const tbody = document.querySelector('#transactions-table tbody');
-            if (tbody) {
-                tbody.innerHTML = '';
-                
-                pageTransactions.forEach(transaction => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${transaction.ngayGiaoDich || 'N/A'}</td>
-                        <td>${transaction.tenVatPham || 'N/A'}</td>
-                        <td>${transaction.loaiGiaoDich || 'N/A'}</td>
-                        <td>${transaction.soLuong || 0}</td>
-                        <td>${transaction.giaTriGiaoDich || 0}</td>
-                        <td>${transaction.lyDo || 'N/A'}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-            
-            updateTransactionPaginationControls();
-        }
-
-        // Cập nhật bảng vật phẩm
-        function updateItemsTable(items) {
-            if (items) {
-                // Update from search results
-                filteredItems = items;
-                currentPage = 1;
-            }
-            
-            const startIndex = (currentPage - 1) * pageSize;
-            const endIndex = startIndex + pageSize;
-            const pageItems = filteredItems.slice(startIndex, endIndex);
-            
-            const tbody = document.querySelector('#itemsTable tbody');
-            tbody.innerHTML = '';
-            
-            pageItems.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.maVatPham || ''}</td>
-                    <td>${item.tenVatPham}</td>
-                    <td>${item.loaiVatPham || ''}</td>
-                    <td>${item.soLuongTon || 0}</td>
-                    <td>${item.giaNhap ? item.giaNhap.toLocaleString('vi-VN') : ''}</td>
-                    <td>${item.nhaCungCap || ''}</td>
-                    <td>${item.hanSuDung ? new Date(item.hanSuDung).toLocaleDateString('vi-VN') : 'N/A'}</td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            updatePaginationControls();
-        }
-        
-        // Hiển thị thông báo
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 5px;
-                color: white;
-                font-weight: bold;
-                z-index: 1000;
-                max-width: 300px;
-                word-wrap: break-word;
-            `;
-            
-            switch(type) {
-                case 'success':
-                    notification.style.backgroundColor = '#28a745';
-                    break;
-                case 'error':
-                    notification.style.backgroundColor = '#dc3545';
-                    break;
-                default:
-                    notification.style.backgroundColor = '#17a2b8';
-            }
-            
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 3000);
-        }
-        
-        // Hiển thị loading
-        function showLoading(show) {
-            let loader = document.getElementById('loader');
-            if (show) {
-                if (!loader) {
-                    loader = document.createElement('div');
-                    loader.id = 'loader';
-                    loader.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0,0,0,0.5);
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        z-index: 9999;
-                    `;
-                    loader.innerHTML = '<div style="color: white; font-size: 18px;"><span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Đang tải...</div>';
-                    document.body.appendChild(loader);
-                }
-            } else {
-                if (loader) {
-                    document.body.removeChild(loader);
-                }
-            }
-        }
-        
-        // Thêm event listeners cho forms
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize filtered arrays with current data
-            const itemRows = document.querySelectorAll('#itemsTable tbody tr');
-            filteredItems = Array.from(itemRows).map(row => {
-                const cells = row.querySelectorAll('td');
-                return {
-                    maVatPham: cells[0]?.textContent || '',
-                    tenVatPham: cells[1]?.textContent || '',
-                    loaiVatPham: cells[2]?.textContent || '',
-                    soLuongTon: cells[3]?.textContent || '',
-                    giaNhap: cells[4]?.textContent || '',
-                    nhaCungCap: cells[5]?.textContent || '',
-                    hanSuDung: cells[6]?.textContent || '',
-                    element: row
-                };
-            });
-            
-            const transactionRows = document.querySelectorAll('.section:last-child table tbody tr');
-            filteredTransactions = Array.from(transactionRows).map(row => {
-                const cells = row.querySelectorAll('td');
-                return {
-                    ngayGiaoDich: cells[0]?.textContent || '',
-                    tenVatPham: cells[1]?.textContent || '',
-                    loaiGiaoDich: cells[2]?.textContent || '',
-                    soLuong: cells[3]?.textContent || '',
-                    giaTriGiaoDich: cells[4]?.textContent || '',
-                    lyDo: cells[5]?.textContent || '',
-                    element: row
-                };
-            });
-            
-            updateItemsTable();
-             updateTransactionsTable();
-             updateReportSummary();
-             
-             // Form vật phẩm
-             const itemForm = document.querySelector('.section:nth-child(2) form');
-            if (itemForm) {
-                itemForm.addEventListener('submit', function(e) {
-                    if (!validateItemForm()) {
-                        e.preventDefault();
-                    }
-                });
-            }
-            
-            // Form giao dịch
-            const transactionForm = document.querySelector('.section:nth-child(3) form');
-            if (transactionForm) {
-                transactionForm.addEventListener('submit', function(e) {
-                    if (!validateTransactionForm()) {
-                        e.preventDefault();
-                    }
-                });
-            }
-            
-            // Tìm kiếm khi nhấn Enter
-            document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchItems();
-                }
-            });
-            
-            // Tìm kiếm khi thay đổi filter
-            document.getElementById('filterLoaiVatPham').addEventListener('change', function() {
-                if (document.getElementById('searchKeyword').value || this.value) {
-                    searchItems();
-                }
-            });
-        });
-    </script>
-        </main>
-    </div>
+<script th:src="@{/js/NhanVien/quanlykho.js}"></script>
 </body>
 
 </html>

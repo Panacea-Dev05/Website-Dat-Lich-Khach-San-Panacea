@@ -25,7 +25,7 @@ public class ServiceDetail {
     @Column(name = "dat_phong_id", nullable = false)
     private Integer datPhongId;
 
-    @Column(name = "dich_vu_id", nullable = false)
+    @Column(name = "dich_vu_id")
     private Integer dichVuId;
 
     @Column(name = "so_luong")
@@ -46,6 +46,9 @@ public class ServiceDetail {
     @Column(name = "created_date")
     private Long createdDate;
 
+    @Column(name = "inventory_item_id")
+    private Integer inventoryItemId;
+
     // Relationships
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,6 +58,10 @@ public class ServiceDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dich_vu_id", insertable = false, updatable = false)
     private ServiceEntity service;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
+    private InventoryManagement inventoryItem;
 
     @PrePersist
     public void prePersist() {

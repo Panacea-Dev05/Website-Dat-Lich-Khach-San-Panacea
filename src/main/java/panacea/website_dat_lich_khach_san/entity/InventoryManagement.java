@@ -4,6 +4,7 @@ package panacea.website_dat_lich_khach_san.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,6 +46,9 @@ public class InventoryManagement {
     @Column(name = "gia_nhap", precision = 10, scale = 2)
     private BigDecimal giaNhap;
 
+    @Column(name = "gia_ban", precision = 10, scale = 2)
+    private BigDecimal giaBan;
+
     @Column(name = "nha_cung_cap", length = 100)
     private String nhaCungCap;
 
@@ -69,8 +73,16 @@ public class InventoryManagement {
     @Column(name = "last_modified_date")
     private Long lastModifiedDate;
 
+    @Column(name = "khach_san_id", nullable = false)
+    private Integer khachSanId;
+
     // Relationships
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
+    @JsonIgnore
+    private Hotel hotel;
     @OneToMany(mappedBy = "inventoryItem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<InventoryTransaction> transactions;
 
     @PrePersist

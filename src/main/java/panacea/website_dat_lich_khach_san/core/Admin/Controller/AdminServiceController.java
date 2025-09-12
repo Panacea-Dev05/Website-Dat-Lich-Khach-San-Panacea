@@ -143,7 +143,15 @@ public class AdminServiceController {
     @GetMapping("/{id}")
     @ResponseBody
     public ServiceDTO getService(@PathVariable Integer id) {
-        return adminServiceService.getServiceById(id);
+        System.out.println("Getting service with ID: " + id);
+        ServiceDTO service = adminServiceService.getServiceById(id);
+        if (service != null) {
+            System.out.println("Service found: " + service.getTenDichVu());
+            System.out.println("Service status: " + service.getTrangThai());
+        } else {
+            System.out.println("Service not found for ID: " + id);
+        }
+        return service;
     }
 
     // Xem chi tiết dịch vụ (HTML)

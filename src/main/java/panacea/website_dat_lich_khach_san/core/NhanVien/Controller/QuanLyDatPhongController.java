@@ -245,4 +245,50 @@ public class QuanLyDatPhongController {
         model.addAttribute("staffName", quanLyDatPhongService.getStaffName());
         return "NhanVien/BookingHistory";
     }
+
+    @GetMapping("/inventory/available")
+    @ResponseBody
+    public ResponseEntity<?> getAvailableInventoryItems() {
+        try {
+            java.util.List<java.util.Map<String, Object>> inventoryItems = quanLyDatPhongService.getAvailableInventoryItems();
+            return ResponseEntity.ok(inventoryItems);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(java.util.Map.of("error", "Có lỗi khi lấy danh sách vật phẩm tồn kho"));
+        }
+    }
+
+    @PostMapping("/update-services-and-inventory/{bookingId}")
+    @ResponseBody
+    public ResponseEntity<?> updateBookingServicesAndInventory(@PathVariable Integer bookingId, @RequestBody java.util.Map<String, Object> requestData) {
+        try {
+            @SuppressWarnings("unchecked")
+            java.util.List<java.util.Map<String, Object>> services = (java.util.List<java.util.Map<String, Object>>) requestData.get("services");
+            @SuppressWarnings("unchecked")
+            java.util.List<java.util.Map<String, Object>> inventoryItems = (java.util.List<java.util.Map<String, Object>>) requestData.get("inventoryItems");
+            
+            boolean success = quanLyDatPhongService.updateBookingServicesAndInventory(bookingId, services, inventoryItems);
+            if (success) {
+                return ResponseEntity.ok(java.util.Map.of("success", true));
+            } else {
+                return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ và vật phẩm!"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ và vật phẩm!"));
+        }
+    }
+
+    @PostMapping("/add-inventory/{bookingId}")
+    @ResponseBody
+    public ResponseEntity<?> addInventoryToBooking(@PathVariable Integer bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> inventoryItems) {
+        try {
+            boolean success = quanLyDatPhongService.addInventoryToBooking(bookingId, inventoryItems);
+            if (success) {
+                return ResponseEntity.ok(java.util.Map.of("success", true));
+            } else {
+                return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi thêm vật phẩm!"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi thêm vật phẩm!"));
+        }
+    }
 }

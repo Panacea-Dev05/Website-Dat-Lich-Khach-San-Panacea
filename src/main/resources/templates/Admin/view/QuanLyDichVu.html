@@ -507,16 +507,30 @@
           
           // Load service data via AJAX
           fetch('/admin/services/' + serviceId)
-            .then(response => response.json())
+            .then(response => {
+              console.log('Response status:', response.status);
+              if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+              }
+              return response.json();
+            })
             .then(data => {
+              console.log('Service data received:', data);
               if(data) {
                 // Fill form with service data
-                document.getElementById('maDichVu').value = data.maDichVu || '';
-                document.getElementById('tenDichVu').value = data.tenDichVu || '';
-                document.getElementById('loaiDichVu').value = data.loaiDichVu || '';
-                document.getElementById('moTa').value = data.moTa || '';
-                document.getElementById('donGia').value = data.donGia || '';
-                document.getElementById('donViTinh').value = data.donViTinh || '';
+                var maDichVuInput = document.getElementById('maDichVu');
+                var tenDichVuInput = document.getElementById('tenDichVu');
+                var loaiDichVuInput = document.getElementById('loaiDichVu');
+                var moTaInput = document.getElementById('moTa');
+                var donGiaInput = document.getElementById('donGia');
+                var donViTinhInput = document.getElementById('donViTinh');
+                
+                if(maDichVuInput) maDichVuInput.value = data.maDichVu || '';
+                if(tenDichVuInput) tenDichVuInput.value = data.tenDichVu || '';
+                if(loaiDichVuInput) loaiDichVuInput.value = data.loaiDichVu || '';
+                if(moTaInput) moTaInput.value = data.moTa || '';
+                if(donGiaInput) donGiaInput.value = data.donGia || '';
+                if(donViTinhInput) donViTinhInput.value = data.donViTinh || '';
                 
                 // Set status
                 var statusOptions = document.querySelectorAll('.status-option');
@@ -528,11 +542,16 @@
                     opt.classList.add('active');
                   }
                 });
+                
+                console.log('Form filled successfully');
+              } else {
+                console.error('No data received');
+                showMessage('error', 'Không có dữ liệu dịch vụ');
               }
             })
             .catch(error => {
               console.error('Error loading service data:', error);
-              showMessage('error', 'Không thể tải dữ liệu dịch vụ');
+              showMessage('error', 'Không thể tải dữ liệu dịch vụ: ' + error.message);
             });
         }
       </script>

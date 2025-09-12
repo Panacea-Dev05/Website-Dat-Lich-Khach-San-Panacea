@@ -3,16 +3,21 @@ package panacea.website_dat_lich_khach_san.core.Admin.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.repository.StaffRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/inventory")
@@ -21,6 +26,9 @@ public class AdminInventoryController {
 
     @Autowired
     private QuanLyKhoService quanLyKhoService;
+    
+    @Autowired
+    private StaffRepository staffRepository;
 
     @GetMapping
     public String inventoryManagement(Model model) {
@@ -37,7 +45,7 @@ public class AdminInventoryController {
                 .filter(item -> item.getSoLuongTon() == 0)
                 .count();
             double totalValue = items.stream()
-                .mapToDouble(item -> item.getSoLuongTon() * item.getGiaNhap().doubleValue())
+                .mapToDouble(item -> item.getSoLuongTon() * (item.getGiaNhap() != null ? item.getGiaNhap().doubleValue() : 0))
                 .sum();
             
             model.addAttribute("items", items);
@@ -59,6 +67,15 @@ public class AdminInventoryController {
     public ResponseEntity<Map<String, Object>> createItem(@RequestBody InventoryManagement item) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             InventoryManagement savedItem = quanLyKhoService.saveItem(item);
             response.put("success", true);
             response.put("message", "Tạo vật phẩm thành công");
@@ -76,6 +93,15 @@ public class AdminInventoryController {
     public ResponseEntity<Map<String, Object>> updateItem(@PathVariable Integer id, @RequestBody InventoryManagement item) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Validate input
+            try {
+                quanLyKhoService.validateItem(item);
+            } catch (RuntimeException e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             item.setId(id);
             InventoryManagement updatedItem = quanLyKhoService.updateItem(item);
             response.put("success", true);
@@ -127,12 +153,34 @@ public class AdminInventoryController {
 
     @PostMapping("/transactions")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody InventoryTransaction transaction) {
+    public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody InventoryTransaction transaction, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
-            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction);
+            // Set transaction creator (Admin ID)
+            if (authentication != null && authentication.isAuthenticated()) {
+                try {
+                    String username = authentication.getName();
+                    Optional<Staff> admin = staffRepository.findByTaiKhoan(username);
+                    
+                    if (admin.isEmpty()) {
+                        throw new RuntimeException("Cannot determine admin ID from authentication");
+                    }
+                    
+                    Integer adminId = admin.get().getId();
+                    transaction.setNhanVienId(adminId);
+                } catch (Exception e) {
+                    throw new RuntimeException("Cannot determine admin ID from authentication");
+                }
+            }
+            
+            // Admin always auto-approves their transactions
+            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction, true);
             response.put("success", true);
-            response.put("message", "Thực hiện giao dịch thành công");
+            if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+                response.put("message", "Thực hiện giao dịch thành công và đã được tự động phê duyệt");
+            } else {
+                response.put("message", "Thực hiện giao dịch thành công");
+            }
             response.put("data", savedTransaction);
             return ResponseEntity.ok(response);
         } catch (Exception e) {

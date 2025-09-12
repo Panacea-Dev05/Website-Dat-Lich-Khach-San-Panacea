@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCau;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCauJpaConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -65,14 +66,17 @@ public class SupplyRequest {
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vat_pham_id", insertable = false, updatable = false)
+    @JsonIgnore
     private InventoryManagement inventoryItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nhan_vien_yeu_cau", insertable = false, updatable = false)
+    @JsonIgnore
     private Staff staffRequester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_phe_duyet", insertable = false, updatable = false)
+    @JsonIgnore
     private Staff adminApprover;
 
     @PrePersist

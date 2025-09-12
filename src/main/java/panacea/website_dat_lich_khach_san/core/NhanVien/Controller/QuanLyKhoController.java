@@ -10,18 +10,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/nhanvien/quanlykho")
 @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
 public class QuanLyKhoController {
     private final QuanLyKhoService quanLyKhoService;
+    
+    @Autowired
+    private StaffRepository staffRepository;
     
     public QuanLyKhoController(QuanLyKhoService quanLyKhoService) {
         this.quanLyKhoService = quanLyKhoService;
@@ -207,21 +214,32 @@ public class QuanLyKhoController {
             }
             
             // Set transaction creator (using staff ID)
-            // Note: This assumes authentication.getName() returns staff ID as string
-            // You may need to adjust this based on your authentication setup
-            try {
-                Integer staffId = Integer.parseInt(authentication.getName());
-                transaction.setNhanVienId(staffId);
-            } catch (NumberFormatException e) {
-                // If authentication.getName() is not a number, you might need to
-                // look up the staff ID from the database using the username
-                // For now, setting a default or throwing an error
-                throw new RuntimeException("Cannot determine staff ID from authentication");
-            }
+            // Look up staff ID from username
+             try {
+                 String username = authentication.getName();
+                 Optional<Staff> staff = staffRepository.findByTaiKhoan(username);
+                 
+                 if (staff.isEmpty()) {
+                     throw new RuntimeException("Cannot determine staff ID from authentication");
+                 }
+                 
+                 Integer staffId = staff.get().getId();
+                 transaction.setNhanVienId(staffId);
+             } catch (Exception e) {
+                 throw new RuntimeException("Cannot determine staff ID from authentication: " + e.getMessage());
+             }
             
-            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction);
+            // Check if user is Admin
+            boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction, isAdmin);
             response.put("success", true);
-            response.put("message", "Thêm giao dịch thành công");
+            if (isAdmin && transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+                response.put("message", "Thêm giao dịch thành công và đã được tự động phê duyệt");
+            } else {
+                response.put("message", "Thêm giao dịch thành công");
+            }
             response.put("data", savedTransaction);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -349,19 +367,141 @@ public class QuanLyKhoController {
     public ResponseEntity<Map<String, Object>> getSummaryStats(Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // Verify user authentication
             if (authentication == null || !authentication.isAuthenticated()) {
                 response.put("success", false);
                 response.put("message", "Unauthorized access");
                 return ResponseEntity.status(401).body(response);
             }
             
-            Map<String, Object> summary = quanLyKhoService.generateSummaryStats();
+            Map<String, Object> stats = quanLyKhoService.generateSummaryStats();
             response.put("success", true);
-            response.put("data", summary);
+            response.put("data", stats);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Lỗi khi tạo thống kê tổng hợp: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API phê duyệt phiếu nhập kho (chỉ Admin)
+    @PostMapping("/api/transactions/{id}/approve")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> approveTransaction(@PathVariable Integer id, 
+                                                                 @RequestBody Map<String, String> request,
+                                                                 Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            boolean hasAdminRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (!hasAdminRole) {
+                response.put("success", false);
+                response.put("message", "Chỉ admin mới có quyền phê duyệt phiếu nhập kho");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            // Get admin ID from username
+             String username = authentication.getName();
+             Optional<Staff> admin = staffRepository.findByTaiKhoan(username);
+             
+             if (admin.isEmpty()) {
+                 throw new RuntimeException("Cannot determine admin ID from authentication");
+             }
+             
+             Integer adminId = admin.get().getId();
+            String ghiChu = request.get("ghiChu");
+            
+            InventoryTransaction approvedTransaction = quanLyKhoService.approveTransaction(id, adminId, ghiChu);
+            response.put("success", true);
+            response.put("message", "Phê duyệt phiếu nhập kho thành công");
+            response.put("data", approvedTransaction);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi phê duyệt: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API từ chối phiếu nhập kho (chỉ Admin)
+    @PostMapping("/api/transactions/{id}/reject")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> rejectTransaction(@PathVariable Integer id, 
+                                                               @RequestBody Map<String, String> request,
+                                                               Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            boolean hasAdminRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (!hasAdminRole) {
+                response.put("success", false);
+                response.put("message", "Chỉ admin mới có quyền từ chối phiếu nhập kho");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            // Get admin ID from username
+             String username = authentication.getName();
+             Optional<Staff> admin = staffRepository.findByTaiKhoan(username);
+             
+             if (admin.isEmpty()) {
+                 throw new RuntimeException("Cannot determine admin ID from authentication");
+             }
+             
+             Integer adminId = admin.get().getId();
+            String ghiChu = request.get("ghiChu");
+            
+            InventoryTransaction rejectedTransaction = quanLyKhoService.rejectTransaction(id, adminId, ghiChu);
+            response.put("success", true);
+            response.put("message", "Từ chối phiếu nhập kho thành công");
+            response.put("data", rejectedTransaction);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi từ chối: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy danh sách giao dịch chờ duyệt (chỉ Admin)
+    @GetMapping("/api/transactions/pending")
+    @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getPendingTransactions(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Verify admin authentication
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            List<InventoryTransaction> pendingTransactions = quanLyKhoService.getPendingTransactions();
+            response.put("success", true);
+            response.put("data", pendingTransactions);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy danh sách giao dịch chờ duyệt: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

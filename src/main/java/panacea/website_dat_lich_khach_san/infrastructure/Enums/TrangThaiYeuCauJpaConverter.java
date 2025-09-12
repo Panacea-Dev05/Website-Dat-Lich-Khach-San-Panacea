@@ -8,7 +8,7 @@ public class TrangThaiYeuCauJpaConverter implements AttributeConverter<TrangThai
     
     @Override
     public String convertToDatabaseColumn(TrangThaiYeuCau attribute) {
-        return attribute != null ? attribute.getValue() : null;
+        return attribute != null ? attribute.name() : null;
     }
     
     @Override
@@ -17,16 +17,16 @@ public class TrangThaiYeuCauJpaConverter implements AttributeConverter<TrangThai
             return null;
         }
         
-        for (TrangThaiYeuCau status : TrangThaiYeuCau.values()) {
-            if (status.getValue().equals(dbData)) {
-                return status;
-            }
-        }
-        
-        // Fallback for existing data that might use enum names
+        // Ưu tiên enum name trước (CHO_DUYET, DA_DUYET, etc.)
         try {
             return TrangThaiYeuCau.valueOf(dbData);
         } catch (IllegalArgumentException e) {
+            // Fallback cho dữ liệu cũ có thể sử dụng getValue()
+            for (TrangThaiYeuCau status : TrangThaiYeuCau.values()) {
+                if (status.getValue().equals(dbData)) {
+                    return status;
+                }
+            }
             throw new IllegalArgumentException("Unknown trang_thai_yeu_cau: " + dbData);
         }
     }

@@ -14,6 +14,7 @@ public class ServiceDetailDTO {
     private String roomNumber; // Thêm trường số phòng
     private Integer soLuong;
     private BigDecimal donGia;
+    private BigDecimal giaBan; // Thêm field giaBan để tương thích với giao diện
     private BigDecimal thanhTien;
     private String trangThai;
     private UUID uuidId;

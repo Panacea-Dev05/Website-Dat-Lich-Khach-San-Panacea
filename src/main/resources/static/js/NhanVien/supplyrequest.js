@@ -52,6 +52,9 @@ async function loadInventoryItems() {
 
 async function loadRequests() {
     try {
+        // Hiển thị loading state
+        showLoadingState(true);
+        
         const response = await fetch('/nhanvien/supply-request/api/my-requests');
         const data = await response.json();
         
@@ -59,43 +62,48 @@ async function loadRequests() {
             currentRequests = data.requests || [];
             updateStatistics();
             filterRequests();
+        } else {
+            showNotification('Lỗi khi tải dữ liệu: ' + (data.message || 'Không xác định'), 'error');
         }
     } catch (error) {
         console.error('Error loading requests:', error);
+        showNotification('Không thể kết nối đến server. Vui lòng thử lại!', 'error');
+    } finally {
+        showLoadingState(false);
     }
 }
 
 function updateStatistics() {
-    if (!isAdmin) return;
+    const totalCount = currentRequests.length;
+    const pendingCount = currentRequests.filter(r => r.trangThai === 'CHO_DUYET').length;
+    const approvedCount = currentRequests.filter(r => r.trangThai === 'DA_DUYET').length;
+    const rejectedCount = currentRequests.filter(r => r.trangThai === 'TU_CHOI').length;
+    const completedCount = currentRequests.filter(r => r.trangThai === 'DA_THUC_HIEN').length;
     
-    const stats = {
-        pending: 0,
-        approved: 0,
-        rejected: 0,
-        completed: 0
-    };
+    // Cập nhật với hiệu ứng animation
+    animateCounter('totalCount', totalCount);
+    animateCounter('pendingCount', pendingCount);
+    animateCounter('approvedCount', approvedCount);
+    animateCounter('rejectedCount', rejectedCount);
+    animateCounter('completedCount', completedCount);
+}
+
+function animateCounter(elementId, targetValue) {
+    const element = document.getElementById(elementId);
+    const currentValue = parseInt(element.textContent) || 0;
+    const increment = targetValue > currentValue ? 1 : -1;
+    const stepTime = Math.abs(Math.floor(200 / (targetValue - currentValue))) || 1;
     
-    currentRequests.forEach(request => {
-        switch (request.trangThai) {
-            case 'CHO_DUYET':
-                stats.pending++;
-                break;
-            case 'DA_DUYET':
-                stats.approved++;
-                break;
-            case 'TU_CHOI':
-                stats.rejected++;
-                break;
-            case 'DA_THUC_HIEN':
-                stats.completed++;
-                break;
-        }
-    });
-    
-    document.getElementById('pendingCount').textContent = stats.pending;
-    document.getElementById('approvedCount').textContent = stats.approved;
-    document.getElementById('rejectedCount').textContent = stats.rejected;
-    document.getElementById('completedCount').textContent = stats.completed;
+    if (currentValue !== targetValue) {
+        const timer = setInterval(() => {
+            const current = parseInt(element.textContent);
+            if (current !== targetValue) {
+                element.textContent = current + increment;
+            } else {
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
 }
 
 function filterRequests() {
@@ -146,9 +154,9 @@ function renderRequestsTable(requests) {
         return `
             <tr>
                 <td>#${request.id}</td>
-                <td>${request.inventoryItem?.tenVatPham || 'N/A'}</td>
+                <td>${request.tenVatPham || 'N/A'}</td>
                 <td>${request.soLuongYeuCau}</td>
-                <td>${request.staffRequester?.hoTen || 'N/A'}</td>
+                <td>${request.tenNhanVienYeuCau || 'N/A'}</td>
                 <td>${date}</td>
                 <td><span class="priority-badge ${priorityClass}">${request.mucDoUuTien}</span></td>
                 <td><span class="status-badge ${statusClass}">${getStatusText(request.trangThai)}</span></td>
@@ -242,7 +250,15 @@ async function handleCreateRequest(e) {
         lyDoYeuCau: document.getElementById('lyDoYeuCau').value
     };
     
+    // Validation
+    if (!formData.vatPhamId || !formData.soLuongYeuCau || !formData.lyDoYeuCau.trim()) {
+        showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'warning');
+        return;
+    }
+    
     try {
+        showLoadingState(true);
+        
         const response = await fetch('/nhanvien/supply-request/api/create', {
             method: 'POST',
             headers: {
@@ -254,15 +270,17 @@ async function handleCreateRequest(e) {
         const data = await response.json();
         
         if (data.success) {
-            alert('Yêu cầu đã được tạo thành công!');
+            showNotification('Yêu cầu đã được tạo thành công!', 'success');
             closeCreateModal();
             loadRequests();
         } else {
-            alert('Lỗi: ' + data.message);
+            showNotification('Lỗi: ' + data.message, 'error');
         }
     } catch (error) {
         console.error('Error creating request:', error);
-        alert('Có lỗi xảy ra khi tạo yêu cầu!');
+        showNotification('Không thể kết nối đến server. Vui lòng thử lại!', 'error');
+    } finally {
+        showLoadingState(false);
     }
 }
 
@@ -333,3 +351,155 @@ window.onclick = function(event) {
         closeActionModal();
     }
 }
+
+// Helper functions for better UX
+function showLoadingState(isLoading) {
+    const loadingElements = document.querySelectorAll('.btn, .tab');
+    loadingElements.forEach(element => {
+        if (isLoading) {
+            element.style.opacity = '0.6';
+            element.style.pointerEvents = 'none';
+        } else {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
+    });
+    
+    // Show/hide loading indicator on table
+    const tableContainer = document.querySelector('.table-container');
+    if (tableContainer) {
+        if (isLoading) {
+            tableContainer.style.opacity = '0.6';
+        } else {
+            tableContainer.style.opacity = '1';
+        }
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="material-icons">${getNotificationIcon(type)}</span>
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        max-width: 500px;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideInRight 0.3s ease-out;
+        background: ${getNotificationColor(type)};
+        border-left: 4px solid ${getNotificationBorderColor(type)};
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 5000);
+}
+
+function getNotificationIcon(type) {
+    switch (type) {
+        case 'success': return 'check_circle';
+        case 'error': return 'error';
+        case 'warning': return 'warning';
+        default: return 'info';
+    }
+}
+
+function getNotificationColor(type) {
+    switch (type) {
+        case 'success': return 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
+        case 'error': return 'linear-gradient(135deg, #fee2e2, #fecaca)';
+        case 'warning': return 'linear-gradient(135deg, #fef3c7, #fde68a)';
+        default: return 'linear-gradient(135deg, #dbeafe, #bfdbfe)';
+    }
+}
+
+function getNotificationBorderColor(type) {
+    switch (type) {
+        case 'success': return '#10b981';
+        case 'error': return '#ef4444';
+        case 'warning': return '#f59e0b';
+        default: return '#3b82f6';
+    }
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #374151;
+        font-weight: 500;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+        margin-left: auto;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    
+    .notification-close:hover {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .notification-message {
+        flex: 1;
+    }
+`;
+document.head.appendChild(style);

@@ -242,19 +242,46 @@
         .modal-content {
             background-color: white;
             margin: 5% auto;
-            padding: 2rem;
+            padding: 0;
             border-radius: 12px;
             width: 80%;
             max-width: 600px;
+            max-height: 80vh;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .modal-body {
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem 1.5rem 2rem;
+            border-top: 1px solid #e5e7eb;
+            flex-shrink: 0;
         }
 
         .close {
             color: #aaa;
-            float: right;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            line-height: 1;
         }
 
         .close:hover {
@@ -277,6 +304,12 @@
 
 <body>
     <div class="app-layout">
+<!--        <header>-->
+<!--            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">-->
+<!--                <span class="material-icons" aria-hidden="true">hotel</span>-->
+<!--                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>-->
+<!--            </div>-->
+<!--        </header>-->
         <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
         <main class="main-content">
             <!-- Danh sách tất cả booking -->
@@ -410,33 +443,41 @@
     <!-- Modal chi tiết booking -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2><span class="material-icons">info</span> Chi tiết đặt phòng</h2>
-            <div id="bookingDetailContent">
-                <!-- Nội dung sẽ được load động -->
+            <div class="modal-header">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2><span class="material-icons">info</span> Chi tiết đặt phòng</h2>
             </div>
-            <div id="bookingActionArea"
-                style="margin-top: 2rem; display: none; flex-direction: row; gap: 1rem; align-items: center;">
-                <label class="payment-checkbox">
-                    <input type="checkbox" id="modal-payment-confirmed">
-                    Đã thanh toán
-                </label>
-                <div style="font-weight: 500;">
-                    <label style="display: block; margin-bottom: 0.5rem;">Chọn phòng:</label>
-                    <div id="modal-room-select" class="room-selection-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
-                        <div style="color: #6b7280; text-align: center; padding: 1rem;">Đang tải danh sách phòng...</div>
+            <div class="modal-body">
+                <div id="bookingDetailContent">
+                    <!-- Nội dung sẽ được load động -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="bookingActionArea"
+                    style="display: none; flex-direction: row; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <label class="payment-checkbox">
+                        <input type="checkbox" id="modal-payment-confirmed">
+                        Đã thanh toán
+                    </label>
+                    <div style="font-weight: 500; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Chọn phòng:</label>
+                        <div id="modal-room-select" class="room-selection-container" style="max-height: 120px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+                            <div style="color: #6b7280; text-align: center; padding: 1rem;">Đang tải danh sách phòng...</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn" style="background: #10b981;" id="modal-confirm-btn">
+                            <span class="material-icons">check</span>Xác nhận
+                        </button>
+                        <button class="btn" style="background: #ef4444;" id="modal-cancel-btn">
+                            <span class="material-icons">cancel</span>Hủy
+                        </button>
+                        <button class="btn" style="background: #f59e42;" id="modal-checkout-btn"
+                            onclick="checkoutBooking(currentBookingId)">
+                            <span class="material-icons">logout</span>Xác nhận trả phòng & thanh toán
+                        </button>
                     </div>
                 </div>
-                <button class="btn" style="background: #10b981;" id="modal-confirm-btn">
-                    <span class="material-icons">check</span>Xác nhận
-                </button>
-                <button class="btn" style="background: #ef4444;" id="modal-cancel-btn">
-                    <span class="material-icons">cancel</span>Hủy
-                </button>
-                <button class="btn" style="background: #f59e42;" id="modal-checkout-btn"
-                    onclick="checkoutBooking(currentBookingId)">
-                    <span class="material-icons">logout</span>Xác nhận trả phòng & thanh toán
-                </button>
             </div>
         </div>
     </div>
@@ -644,6 +685,37 @@
         </div>
     </div>
 
+    <!-- Modal chọn vật phẩm tồn kho (trong modal chỉnh sửa dịch vụ) -->
+    <div id="inventoryModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close" onclick="closeInventoryModal()">&times;</span>
+            <h2><span class="material-icons">inventory</span> Chọn vật phẩm tồn kho</h2>
+            <div id="inventoryList" style="margin-top: 1rem; max-height: 400px; overflow-y: auto;"></div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                <button type="button" class="btn" style="background: #6b7280;" onclick="closeInventoryModal()">Hủy</button>
+                <button type="button" class="btn" style="background: #10b981;" onclick="addSelectedInventoryItems()">Thêm vào danh sách</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal thêm đồ riêng biệt -->
+    <div id="addInventoryModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeAddInventoryModal()">&times;</span>
+            <h2><span class="material-icons">add_shopping_cart</span> Thêm đồ cho booking</h2>
+            <form onsubmit="saveAddInventory(event)">
+                <div id="addInventoryList" style="margin-top: 1rem; max-height: 400px; overflow-y: auto;"></div>
+                <div style="margin-top: 1.5rem; font-weight: 500; text-align: right;">
+                    <strong>Tổng tiền: <span id="addInventoryTotalAmount">0</span> VND</strong>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" style="background: #6b7280;" onclick="closeAddInventoryModal()">Hủy</button>
+                    <button type="submit" class="btn" style="background: #10b981;">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Hàm xác nhận booking
         function confirmBooking(bookingId) {
@@ -786,9 +858,9 @@
                                 </tr></thead><tbody>`;
                         booking.serviceUsages.forEach(sv => {
                             content += `<tr>
-                                <td style='padding:8px;border-bottom:1px solid #eee;'>${sv.serviceName || 'Dịch vụ không xác định'}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;'>${sv.serviceName || 'Không xác định'}</td>
                                 <td style='padding:8px;border-bottom:1px solid #eee;text-align:center;'>${sv.soLuong}</td>
-                                <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.giaBan ? new Intl.NumberFormat('vi-VN').format(sv.giaBan) : ''}</td>
                                 <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.thanhTien ? new Intl.NumberFormat('vi-VN').format(sv.thanhTien) : ''}</td>
                             </tr>`;
                         });
@@ -797,10 +869,11 @@
                         content += `<p style='margin-top:1.5rem;color:#888;'>Chưa sử dụng dịch vụ nào.</p>`;
                     }
 
-                    // Nếu trạng thái là ĐÃ NHẬN PHÒNG (DA_NHAN_PHONG), cho phép chỉnh sửa dịch vụ
+                    // Nếu trạng thái là ĐÃ NHẬN PHÒNG (DA_NHAN_PHONG), cho phép chỉnh sửa dịch vụ và thêm đồ
                     if (booking.trangThaiDatPhong === 'DA_NHAN_PHONG') {
-                        content += `<div style='margin-top:2rem;'>
+                        content += `<div style='margin-top:2rem; display:flex; gap:1rem;'>
                             <button class='btn' style='background:#3b82f6;' onclick='openServiceEdit(${bookingId})'>Chỉnh sửa dịch vụ đã sử dụng</button>
+                            <button class='btn' style='background:#10b981;' onclick='openAddInventoryModal(${bookingId})'>+ Thêm đồ</button>
                         </div>`;
                     }
 
@@ -1471,18 +1544,49 @@
                 const used = usedServices.find(u => u.serviceId === sv.id);
                 const checked = used ? 'checked' : '';
                 const soLuong = used ? used.soLuong : 1;
-                const thanhTien = used && used.donGia && used.soLuong ? (used.donGia * used.soLuong) : 0;
+                const thanhTien = used && used.giaNhap && used.soLuong ? (used.giaNhap * used.soLuong) : 0;
                 html += `<tr>
                     <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='checkbox' class='service-checkbox' data-id='${sv.id}' ${checked} onchange='onServiceCheckboxChange(this)'></td>
                     <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${sv.tenDichVu}</td>
-                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${sv.donGia ? new Intl.NumberFormat('vi-VN').format(sv.donGia) : ''}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${sv.giaNhap ? new Intl.NumberFormat('vi-VN').format(sv.giaNhap) : ''}</td>
                     <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' class='service-qty' data-id='${sv.id}' value='${soLuong}' ${checked ? '' : 'disabled'} style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
                     <td id='service-tt-${sv.id}' style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${thanhTien ? new Intl.NumberFormat('vi-VN').format(thanhTien) : ''}</td>
                 </tr>`;
             });
             html += '</tbody></table>';
             container.innerHTML = html;
+            
             updateServiceTotalAmount();
+        }
+        
+        function renderInventoryEditList() {
+            const container = document.getElementById('inventoryEditList');
+            if (selectedInventoryItems.length === 0) {
+                container.innerHTML = '<p style="color:#666;font-style:italic;padding:10px;">Chưa có vật phẩm nào được chọn</p>';
+                return;
+            }
+            
+            let html = '<table style="width:100%;border-collapse:collapse;margin-top:10px;">';
+            html += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Đơn giá</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Thành tiền</th><th style="width:60px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Xóa</th></tr></thead><tbody>';
+            
+            selectedInventoryItems.forEach(item => {
+                const thanhTien = item.giaNhap * item.soLuong;
+                html += `<tr>
+                    <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${item.tenVatPham}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${new Intl.NumberFormat('vi-VN').format(item.giaNhap)}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' max='${item.soLuongTon}' value='${item.soLuong}' 
+                               onchange='updateInventoryQuantity(${item.inventoryId}, this.value)' 
+                               style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'>
+                    </td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${new Intl.NumberFormat('vi-VN').format(thanhTien)}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'>
+                        <button onclick='removeInventoryItem(${item.inventoryId})' style='background:#dc3545;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;'>Xóa</button>
+                    </td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
 
         function onServiceCheckboxChange(checkbox) {
@@ -1506,37 +1610,40 @@
         });
 
         function updateServiceTotalAmount() {
-            let total = 0;
+            let serviceTotal = 0;
             allServices.forEach(sv => {
                 const checkbox = document.querySelector(`.service-checkbox[data-id='${sv.id}']`);
                 const qtyInput = document.querySelector(`.service-qty[data-id='${sv.id}']`);
                 let tt = 0;
                 if (checkbox && checkbox.checked && qtyInput) {
-                    tt = sv.donGia * parseInt(qtyInput.value || 1);
-                    total += tt;
+                    tt = sv.giaBan * parseInt(qtyInput.value || 1);
+                    serviceTotal += tt;
                 }
                 const ttCell = document.getElementById(`service-tt-${sv.id}`);
                 if (ttCell) ttCell.textContent = tt ? new Intl.NumberFormat('vi-VN').format(tt) : '';
             });
-            document.getElementById('serviceTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(total);
+            
+            // Cập nhật hiển thị tổng tiền dịch vụ
+            document.getElementById('serviceTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(serviceTotal);
         }
 
         function saveServiceEdit(e) {
             e.preventDefault();
             // Lấy danh sách dịch vụ được tick và số lượng
-            const selected = [];
+            const selectedServices = [];
             allServices.forEach(sv => {
                 const checkbox = document.querySelector(`.service-checkbox[data-id='${sv.id}']`);
                 const qtyInput = document.querySelector(`.service-qty[data-id='${sv.id}']`);
                 if (checkbox && checkbox.checked && qtyInput) {
-                    selected.push({ serviceId: sv.id, soLuong: parseInt(qtyInput.value || 1) });
+                    selectedServices.push({ serviceId: sv.id, soLuong: parseInt(qtyInput.value || 1) });
                 }
             });
-            // Gửi lên backend
+            
+            // Gửi lên backend (chỉ dịch vụ)
             fetch(`/nhanvien/quanlydatphong/update-services/${currentServiceEditBookingId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(selected)
+                body: JSON.stringify(selectedServices)
             })
             .then(res => res.json())
             .then(data => {
@@ -1550,6 +1657,305 @@
                 }
             })
             .catch(() => alert('Có lỗi khi cập nhật dịch vụ!'));
+        }
+
+        // Biến lưu trữ danh sách vật phẩm tồn kho
+        let allInventoryItems = [];
+        let selectedInventoryItems = [];
+
+        // Hàm mở modal chọn vật phẩm tồn kho
+        function openInventoryModal() {
+            fetch('/nhanvien/quanlydatphong/inventory/available')
+                .then(res => res.json())
+                .then(items => {
+                    allInventoryItems = items;
+                    renderInventoryList();
+                    document.getElementById('inventoryModal').style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('Lỗi khi lấy danh sách vật phẩm:', err);
+                    alert('Có lỗi khi lấy danh sách vật phẩm tồn kho!');
+                });
+        }
+
+        // Hàm đóng modal chọn vật phẩm tồn kho
+        function closeInventoryModal() {
+            document.getElementById('inventoryModal').style.display = 'none';
+        }
+
+        // Hàm render danh sách vật phẩm tồn kho
+        function renderInventoryList() {
+            const container = document.getElementById('inventoryList');
+            let html = '<table style="width:100%;border-collapse:collapse;">';
+            html += '<thead><tr><th style="width:40px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;"></th><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Giá bán</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tồn kho</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th></tr></thead><tbody>';
+            allInventoryItems.forEach(item => {
+                html += `<tr>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='checkbox' class='inventory-checkbox' data-id='${item.id}' onchange='onInventoryCheckboxChange(this)'></td>
+                    <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${item.tenVatPham}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${item.giaBan ? new Intl.NumberFormat('vi-VN').format(item.giaBan) : ''}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'>${item.soLuongTon}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' max='${item.soLuongTon}' class='inventory-qty' data-id='${item.id}' value='1' disabled style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Hàm xử lý khi checkbox vật phẩm thay đổi
+        function onInventoryCheckboxChange(checkbox) {
+            const id = parseInt(checkbox.getAttribute('data-id'));
+            const qtyInput = document.querySelector(`.inventory-qty[data-id='${id}']`);
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                if (!qtyInput.value || qtyInput.value < 1) qtyInput.value = 1;
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.value = 1;
+            }
+        }
+
+        // Hàm thêm vật phẩm đã chọn vào danh sách
+        function addSelectedInventoryItems() {
+            const newItems = [];
+            allInventoryItems.forEach(item => {
+                const checkbox = document.querySelector(`.inventory-checkbox[data-id='${item.id}']`);
+                const qtyInput = document.querySelector(`.inventory-qty[data-id='${item.id}']`);
+                if (checkbox && checkbox.checked && qtyInput) {
+                    const qty = parseInt(qtyInput.value || 1);
+                    if (qty > 0 && qty <= item.soLuongTon) {
+                        newItems.push({
+                            id: item.id,
+                            tenVatPham: item.tenVatPham,
+                            giaBan: item.giaBan,
+                            soLuong: qty,
+                            soLuongTon: item.soLuongTon
+                        });
+                    }
+                }
+            });
+            
+            // Thêm vào danh sách đã chọn (không trùng lặp)
+            newItems.forEach(newItem => {
+                const existingIndex = selectedInventoryItems.findIndex(item => item.id === newItem.id);
+                if (existingIndex >= 0) {
+                    selectedInventoryItems[existingIndex].soLuong += newItem.soLuong;
+                } else {
+                    selectedInventoryItems.push(newItem);
+                }
+            });
+            
+            renderSelectedInventoryItems();
+            closeInventoryModal();
+        }
+
+        // Hàm render danh sách vật phẩm đã chọn
+        function renderSelectedInventoryItems() {
+            const container = document.getElementById('inventoryEditList');
+            if (selectedInventoryItems.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; font-style: italic;">Chưa có vật phẩm nào được chọn</p>';
+                updateInventoryTotalAmount();
+                return;
+            }
+            
+            let html = '<table style="width:100%;border-collapse:collapse;">';
+            html += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Giá bán</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Thành tiền</th><th style="width:60px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Xóa</th></tr></thead><tbody>';
+            selectedInventoryItems.forEach((item, index) => {
+                const thanhTien = item.giaBan * item.soLuong;
+                html += `<tr>
+                    <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${item.tenVatPham}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${item.giaBan ? new Intl.NumberFormat('vi-VN').format(item.giaBan) : ''}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' max='${item.soLuongTon}' value='${item.soLuong}' onchange='updateInventoryItemQuantity(${index}, this.value)' style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${new Intl.NumberFormat('vi-VN').format(thanhTien)}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><button type='button' onclick='removeInventoryItem(${index})' style='background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;'>Xóa</button></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            updateInventoryTotalAmount();
+        }
+
+        // Hàm cập nhật số lượng vật phẩm
+        function updateInventoryItemQuantity(index, newQty) {
+            const qty = parseInt(newQty);
+            if (qty > 0 && qty <= selectedInventoryItems[index].soLuongTon) {
+                selectedInventoryItems[index].soLuong = qty;
+                renderSelectedInventoryItems();
+            }
+        }
+
+        // Hàm xóa vật phẩm khỏi danh sách
+        function removeInventoryItem(index) {
+            selectedInventoryItems.splice(index, 1);
+            renderSelectedInventoryItems();
+        }
+
+        // Hàm cập nhật tổng tiền vật phẩm
+        function updateInventoryTotalAmount() {
+            let total = 0;
+            selectedInventoryItems.forEach(item => {
+                total += item.giaBan * item.soLuong;
+            });
+            document.getElementById('inventoryTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(total);
+        }
+
+        // ===== FUNCTIONS CHO MODAL THÊM ĐỒ RIÊNG BIỆT =====
+        let currentAddInventoryBookingId = null;
+        let addInventoryItems = [];
+        let selectedAddInventoryItems = [];
+
+        // Hàm mở modal thêm đồ riêng biệt
+        function openAddInventoryModal(bookingId) {
+            currentAddInventoryBookingId = bookingId;
+            selectedAddInventoryItems = [];
+            
+            fetch('/nhanvien/quanlydatphong/inventory/available')
+                .then(res => res.json())
+                .then(items => {
+                    addInventoryItems = items;
+                    renderAddInventoryList();
+                    document.getElementById('addInventoryModal').style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('Lỗi khi lấy danh sách vật phẩm:', err);
+                    alert('Có lỗi khi lấy danh sách vật phẩm tồn kho!');
+                });
+        }
+
+        // Hàm đóng modal thêm đồ riêng biệt
+        function closeAddInventoryModal() {
+            document.getElementById('addInventoryModal').style.display = 'none';
+        }
+
+        // Hàm render danh sách vật phẩm trong modal thêm đồ
+        function renderAddInventoryList() {
+            const container = document.getElementById('addInventoryList');
+            let html = '<table style="width:100%;border-collapse:collapse;">';
+            html += '<thead><tr><th style="width:40px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;"></th><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Giá bán</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tồn kho</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Thành tiền</th></tr></thead><tbody>';
+            
+            addInventoryItems.forEach(item => {
+                const isSelected = selectedAddInventoryItems.find(selected => selected.id === item.id);
+                const checked = isSelected ? 'checked' : '';
+                const soLuong = isSelected ? isSelected.soLuong : 1;
+                const thanhTien = isSelected ? (item.giaBan * soLuong) : 0;
+                
+                html += `<tr>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='checkbox' class='add-inventory-checkbox' data-id='${item.id}' ${checked} onchange='onAddInventoryCheckboxChange(this)'></td>
+                    <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${item.tenVatPham}</td>
+                    <td style='text-align:right;padding:8px;border-bottom:1px solid #eee;'>${item.giaBan ? new Intl.NumberFormat('vi-VN').format(item.giaBan) : ''}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'>${item.soLuongTon}</td>
+                    <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='number' min='1' max='${item.soLuongTon}' class='add-inventory-qty' data-id='${item.id}' value='${soLuong}' ${checked ? '' : 'disabled'} style='width:60px;padding:4px;border-radius:4px;border:1px solid #ccc;'></td>
+                    <td id='add-inventory-tt-${item.id}' style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${thanhTien ? new Intl.NumberFormat('vi-VN').format(thanhTien) : ''}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            updateAddInventoryTotalAmount();
+        }
+
+        // Hàm xử lý khi checkbox vật phẩm thay đổi
+        function onAddInventoryCheckboxChange(checkbox) {
+            const id = parseInt(checkbox.getAttribute('data-id'));
+            const qtyInput = document.querySelector(`.add-inventory-qty[data-id='${id}']`);
+            const item = addInventoryItems.find(item => item.id === id);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                if (!qtyInput.value || qtyInput.value < 1) qtyInput.value = 1;
+                
+                // Thêm vào danh sách đã chọn
+                const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
+                if (existingIndex === -1) {
+                    selectedAddInventoryItems.push({
+                        id: item.id,
+                        tenVatPham: item.tenVatPham,
+                        giaNhap: item.giaNhap,
+                        soLuongTon: item.soLuongTon,
+                        soLuong: parseInt(qtyInput.value)
+                    });
+                }
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.value = 1;
+                
+                // Xóa khỏi danh sách đã chọn
+                const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
+                if (existingIndex !== -1) {
+                    selectedAddInventoryItems.splice(existingIndex, 1);
+                }
+            }
+            updateAddInventoryTotalAmount();
+        }
+
+        // Event listener cho thay đổi số lượng
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('add-inventory-qty')) {
+                if (e.target.value < 1) e.target.value = 1;
+                
+                const id = parseInt(e.target.getAttribute('data-id'));
+                const newQty = parseInt(e.target.value);
+                
+                // Cập nhật số lượng trong danh sách đã chọn
+                const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
+                if (existingIndex !== -1) {
+                    selectedAddInventoryItems[existingIndex].soLuong = newQty;
+                }
+                
+                updateAddInventoryTotalAmount();
+            }
+        });
+
+        // Hàm cập nhật tổng tiền trong modal thêm đồ
+        function updateAddInventoryTotalAmount() {
+            let total = 0;
+            
+            addInventoryItems.forEach(item => {
+                const checkbox = document.querySelector(`.add-inventory-checkbox[data-id='${item.id}']`);
+                const qtyInput = document.querySelector(`.add-inventory-qty[data-id='${item.id}']`);
+                let tt = 0;
+                
+                if (checkbox && checkbox.checked && qtyInput) {
+                    tt = item.giaBan * parseInt(qtyInput.value || 1);
+                    total += tt;
+                }
+                
+                const ttCell = document.getElementById(`add-inventory-tt-${item.id}`);
+                if (ttCell) ttCell.textContent = tt ? new Intl.NumberFormat('vi-VN').format(tt) : '';
+            });
+            
+            document.getElementById('addInventoryTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(total);
+        }
+
+        // Hàm lưu thêm đồ
+        function saveAddInventory(e) {
+            e.preventDefault();
+            
+            if (selectedAddInventoryItems.length === 0) {
+                alert('Vui lòng chọn ít nhất một vật phẩm!');
+                return;
+            }
+            
+            const requestData = selectedAddInventoryItems.map(item => ({
+                inventoryId: item.id,
+                soLuong: item.soLuong
+            }));
+            
+            fetch(`/nhanvien/quanlydatphong/add-inventory/${currentAddInventoryBookingId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thêm đồ thành công!');
+                    closeAddInventoryModal();
+                    location.reload();
+                } else {
+                    alert('Có lỗi khi thêm đồ!');
+                }
+            })
+            .catch(() => alert('Có lỗi khi thêm đồ!'));
         }
 
         // Thêm event listener cho tất cả checkbox thanh toán

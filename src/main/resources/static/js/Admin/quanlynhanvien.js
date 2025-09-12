@@ -45,14 +45,20 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnAddStaff) {
     btnAddStaff.addEventListener('click', () => {
       resetForm();
+<<<<<<< HEAD
       if (formTitle) formTitle.textContent = 'Thêm nhân viên mới';
       openStaffForm();
+=======
+      formTitle.textContent = 'Thêm nhân viên mới';
+      staffForm.style.display = 'grid';
+>>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
     });
   }
 
   // Hủy thêm/sửa nhân viên
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
+<<<<<<< HEAD
       closeStaffForm();
     });
   }
@@ -73,6 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   
+=======
+      staffForm.style.display = 'none';
+    });
+  }
+>>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
 
   // Xử lý submit form
   if (staffForm) {
@@ -98,13 +109,25 @@ document.addEventListener("DOMContentLoaded", () => {
           // Cập nhật nhân viên
           response = await fetch(`/admin/staff/${staffId}`, {
             method: 'PUT',
+<<<<<<< HEAD
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
+=======
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(staffData)
+          });
+          
+          staff = await response.json();
+          updateStaffRow(staff);
+>>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
         } else {
           // Thêm nhân viên mới
           response = await fetch('/admin/staff', {
             method: 'POST',
+<<<<<<< HEAD
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
@@ -135,6 +158,23 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error('Lỗi:', error);
         showNotification(error.message || 'Đã xảy ra lỗi, vui lòng thử lại', 'error');
+=======
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(staffData)
+          });
+          
+          staff = await response.json();
+          addStaffRow(staff);
+        }
+        
+        staffForm.style.display = 'none';
+        showNotification(staffId ? 'Cập nhật nhân viên thành công' : 'Thêm nhân viên thành công');
+      } catch (error) {
+        console.error('Lỗi:', error);
+        showNotification('Có lỗi xảy ra', 'error');
+>>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
       }
     });
   }
@@ -142,19 +182,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Hàm reset form
 function resetForm() {
-  document.getElementById('staffId').value = '';
-  document.getElementById('maNhanVien').value = '';
-  document.getElementById('ho').value = '';
-  document.getElementById('ten').value = '';
-  document.getElementById('email').value = '';
-  document.getElementById('soDienThoai').value = '';
-  document.getElementById('chucVu').selectedIndex = 0;
-  document.getElementById('trangThai').selectedIndex = 0;
+  const form = document.getElementById('staffForm');
+  if (form) {
+    form.reset();
+    document.getElementById('staffId').value = '';
+  }
 }
 
 // Hàm thêm hàng nhân viên mới vào bảng
 function addStaffRow(staff) {
   const staffTableBody = document.getElementById('staffTableBody');
+  if (!staffTableBody) return;
+  
   const rows = staffTableBody.querySelectorAll('tr');
   const newRow = document.createElement('tr');
   
@@ -189,6 +228,8 @@ function addStaffRow(staff) {
 // Hàm cập nhật hàng nhân viên trong bảng
 function updateStaffRow(staff) {
   const staffTableBody = document.getElementById('staffTableBody');
+  if (!staffTableBody) return;
+  
   const rows = staffTableBody.querySelectorAll('tr');
   
   for (let i = 0; i < rows.length; i++) {

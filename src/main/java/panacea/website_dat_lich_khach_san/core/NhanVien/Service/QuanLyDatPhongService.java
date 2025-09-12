@@ -39,6 +39,8 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationInfoDTO
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationRequestDTO;
 import panacea.website_dat_lich_khach_san.service.CancellationService;
 import panacea.website_dat_lich_khach_san.repository.ServiceRepository;
+import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
+import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 
 @Service
 public class QuanLyDatPhongService {
@@ -75,6 +77,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private RoomPricingRepositoty roomPricingRepository;
+
+    @Autowired
+    private InventoryManagementRepository inventoryManagementRepository;
 
     public String getStaffName() {
         return "Nguyễn Văn A";
@@ -1091,12 +1096,19 @@ public class QuanLyDatPhongService {
             dto.setBookingId(sd.getDatPhongId());
             dto.setServiceId(sd.getDichVuId());
             
-            // Lấy tên dịch vụ từ ServiceRepository
-            String serviceName = "Dịch vụ không xác định";
+            // Lấy tên dịch vụ hoặc tên vật phẩm
+            String serviceName = "Không xác định";
             if (sd.getDichVuId() != null) {
+                // Đây là dịch vụ
                 var service = serviceRepository.findById(sd.getDichVuId());
                 if (service.isPresent()) {
                     serviceName = service.get().getTenDichVu();
+                }
+            } else if (sd.getInventoryItemId() != null) {
+                // Đây là vật phẩm tồn kho
+                var inventory = inventoryManagementRepository.findById(sd.getInventoryItemId());
+                if (inventory.isPresent()) {
+                    serviceName = inventory.get().getTenVatPham();
                 }
             }
             dto.setServiceName(serviceName);
@@ -1110,6 +1122,7 @@ public class QuanLyDatPhongService {
             
             dto.setSoLuong(sd.getSoLuong() != null ? sd.getSoLuong().intValue() : null);
             dto.setDonGia(sd.getDonGiaThucTe());
+            dto.setGiaBan(sd.getDonGiaThucTe()); // Set giaBan để hiển thị trên giao diện
             if (sd.getDonGiaThucTe() != null && sd.getSoLuong() != null) {
                 dto.setThanhTien(sd.getDonGiaThucTe().multiply(new java.math.BigDecimal(sd.getSoLuong())));
             }
@@ -1271,5 +1284,173 @@ public class QuanLyDatPhongService {
         return roomPricingRepository.findAll().stream()
             .filter(pricing -> pricing.getRoomType() != null && pricing.getRoomType().getId().equals(roomTypeId))
             .findFirst();
+    }
+
+    public java.util.List<java.util.Map<String, Object>> getAvailableInventoryItems() {
+        try {
+            java.util.List<InventoryManagement> inventoryItems = inventoryManagementRepository.findAll();
+            return inventoryItems.stream()
+                .filter(item -> item .getSoLuongTon() != null && item.getSoLuongTon() > 0)
+                .map(item -> {
+                    java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                    itemMap.put("id", item.getId());
+                    itemMap.put("tenVatPham", item.getTenVatPham());
+                    itemMap.put("soLuongTon", item.getSoLuongTon());
+                    itemMap.put("giaBan", item.getGiaBan());
+                    itemMap.put("donViTinh", item.getDonViTinh());
+                    return itemMap;
+                })
+                .collect(java.util.stream.Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    public boolean updateBookingServicesAndInventory(Integer bookingId, java.util.List<java.util.Map<String, Object>> services, java.util.List<java.util.Map<String, Object>> inventoryItems) {
+        try {
+            var bookingOpt = bookingRepository.findById(bookingId);
+            if (bookingOpt.isEmpty()) return false;
+            var booking = bookingOpt.get();
+            
+            // Xóa toàn bộ ServiceDetail cũ
+            var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
+            serviceDetailRepository.deleteAll(oldDetails);
+            
+            // Thêm lại các ServiceDetail mới
+            java.math.BigDecimal tongTienDichVu = java.math.BigDecimal.ZERO;
+            if (services != null) {
+                for (var s : services) {
+                    Integer serviceId = (Integer) (s.get("serviceId") instanceof Integer ? s.get("serviceId") : Integer.parseInt(s.get("serviceId").toString()));
+                    Integer soLuong = (Integer) (s.get("soLuong") instanceof Integer ? s.get("soLuong") : Integer.parseInt(s.get("soLuong").toString()));
+                    if (soLuong == null || soLuong < 1) continue;
+                    var serviceOpt = serviceRepository.findById(serviceId);
+                    if (serviceOpt.isEmpty()) continue;
+                    var service = serviceOpt.get();
+                    var detail = new panacea.website_dat_lich_khach_san.entity.ServiceDetail();
+                    detail.setDatPhongId(booking.getId());
+                    detail.setDichVuId(serviceId);
+                    detail.setSoLuong(soLuong.shortValue());
+                    detail.setDonGiaThucTe(service.getDonGia());
+                    detail.setGhiChu(null);
+                    serviceDetailRepository.save(detail);
+                    if (service.getDonGia() != null) {
+                        tongTienDichVu = tongTienDichVu.add(service.getDonGia().multiply(new java.math.BigDecimal(soLuong)));
+                    }
+                }
+            }
+            
+            // Xử lý vật phẩm tồn kho - thêm vào ServiceDetail với inventoryItemId
+            java.math.BigDecimal tongTienVatPham = java.math.BigDecimal.ZERO;
+            if (inventoryItems != null) {
+                for (var item : inventoryItems) {
+                    Integer inventoryId = (Integer) (item.get("inventoryId") instanceof Integer ? item.get("inventoryId") : Integer.parseInt(item.get("inventoryId").toString()));
+                    Integer soLuong = (Integer) (item.get("soLuong") instanceof Integer ? item.get("soLuong") : Integer.parseInt(item.get("soLuong").toString()));
+                    if (soLuong == null || soLuong < 1) continue;
+                    
+                    var inventoryOpt = inventoryManagementRepository.findById(inventoryId);
+                    if (inventoryOpt.isEmpty()) continue;
+                    var inventory = inventoryOpt.get();
+                    
+                    // Kiểm tra tồn kho
+                    if (inventory.getSoLuongTon() < soLuong) continue;
+                    
+                    // Kiểm tra giá bán
+                    if (inventory.getGiaBan() == null) {
+                        logger.warn("Vật phẩm {} (ID: {}) chưa có giá bán", inventory.getTenVatPham(), inventoryId);
+                        continue;
+                    }
+                    
+                    var detail = new panacea.website_dat_lich_khach_san.entity.ServiceDetail();
+                    detail.setDatPhongId(booking.getId());
+                    detail.setDichVuId(null); // Không phải dịch vụ
+                    detail.setInventoryItemId(inventoryId); // Lưu ID vật phẩm tồn kho
+                    detail.setSoLuong(soLuong.shortValue());
+                    detail.setDonGiaThucTe(inventory.getGiaBan());
+                    detail.setGhiChu("Vật phẩm: " + inventory.getTenVatPham());
+                    serviceDetailRepository.save(detail);
+                    
+                    tongTienVatPham = tongTienVatPham.add(inventory.getGiaBan().multiply(new java.math.BigDecimal(soLuong)));
+                    
+                    // Cập nhật tồn kho
+                    inventory.setSoLuongTon((short)(inventory.getSoLuongTon() - soLuong));
+                    inventoryManagementRepository.save(inventory);
+                }
+            }
+            
+            // Cập nhật tổng tiền dịch vụ và tổng thanh toán booking
+            java.math.BigDecimal tongTienDichVuVaVatPham = tongTienDichVu.add(tongTienVatPham);
+            booking.setTongTienDichVu(tongTienDichVuVaVatPham);
+            if (booking.getTongTienPhong() != null) {
+                booking.setTongThanhToan(booking.getTongTienPhong().add(tongTienDichVuVaVatPham));
+            } else {
+                booking.setTongThanhToan(tongTienDichVuVaVatPham);
+            }
+            bookingRepository.save(booking);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Thêm vật phẩm riêng biệt vào booking
+    public boolean addInventoryToBooking(Integer bookingId, java.util.List<java.util.Map<String, Object>> inventoryItems) {
+        try {
+            var bookingOpt = bookingRepository.findById(bookingId);
+            if (bookingOpt.isEmpty()) return false;
+            var booking = bookingOpt.get();
+            
+            java.math.BigDecimal tongTienVatPham = java.math.BigDecimal.ZERO;
+            
+            // Thêm các vật phẩm mới
+            if (inventoryItems != null) {
+                for (var item : inventoryItems) {
+                    Integer inventoryId = (Integer) (item.get("inventoryId") instanceof Integer ? item.get("inventoryId") : Integer.parseInt(item.get("inventoryId").toString()));
+                    Integer soLuong = (Integer) (item.get("soLuong") instanceof Integer ? item.get("soLuong") : Integer.parseInt(item.get("soLuong").toString()));
+                    if (soLuong == null || soLuong < 1) continue;
+                    
+                    var inventoryOpt = inventoryManagementRepository.findById(inventoryId);
+                    if (inventoryOpt.isEmpty()) continue;
+                    var inventory = inventoryOpt.get();
+                    
+                    // Kiểm tra tồn kho
+                    if (inventory.getSoLuongTon() < soLuong) continue;
+                    
+                    var detail = new panacea.website_dat_lich_khach_san.entity.ServiceDetail();
+                    detail.setDatPhongId(booking.getId());
+                    detail.setDichVuId(null); // Không phải dịch vụ
+                    detail.setInventoryItemId(inventoryId); // Lưu ID vật phẩm tồn kho
+                    detail.setSoLuong(soLuong.shortValue());
+                    detail.setDonGiaThucTe(inventory.getGiaNhap());
+                    detail.setGhiChu("Vật phẩm: " + inventory.getTenVatPham());
+                    serviceDetailRepository.save(detail);
+                    
+                    if (inventory.getGiaNhap() != null) {
+                        tongTienVatPham = tongTienVatPham.add(inventory.getGiaNhap().multiply(new java.math.BigDecimal(soLuong)));
+                    }
+                    
+                    // Cập nhật tồn kho
+                    inventory.setSoLuongTon((short)(inventory.getSoLuongTon() - soLuong));
+                    inventoryManagementRepository.save(inventory);
+                }
+            }
+            
+            // Cập nhật tổng tiền dịch vụ và tổng thanh toán booking
+            java.math.BigDecimal tongTienDichVuHienTai = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal tongTienDichVuMoi = tongTienDichVuHienTai.add(tongTienVatPham);
+            booking.setTongTienDichVu(tongTienDichVuMoi);
+            
+            if (booking.getTongTienPhong() != null) {
+                booking.setTongThanhToan(booking.getTongTienPhong().add(tongTienDichVuMoi));
+            } else {
+                booking.setTongThanhToan(tongTienDichVuMoi);
+            }
+            bookingRepository.save(booking);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
