@@ -25,7 +25,7 @@ public class ServiceDetail {
     @Column(name = "dat_phong_id", nullable = false)
     private Integer datPhongId;
 
-    @Column(name = "dich_vu_id", nullable = false)
+    @Column(name = "dich_vu_id")
     private Integer dichVuId;
 
     @Column(name = "so_luong")

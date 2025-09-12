@@ -51,4 +51,12 @@ public interface SupplyRequestRepository extends JpaRepository<SupplyRequest, In
     // Tìm yêu cầu gần đây nhất của nhân viên
     @Query("SELECT sr FROM SupplyRequest sr WHERE sr.nhanVienYeuCau = :nhanVienYeuCau ORDER BY sr.ngayYeuCau DESC")
     List<SupplyRequest> findRecentRequestsByStaff(@Param("nhanVienYeuCau") Integer nhanVienYeuCau);
+    
+    // Lấy tất cả yêu cầu với thông tin nhân viên yêu cầu
+    @Query("SELECT sr FROM SupplyRequest sr LEFT JOIN FETCH sr.staffRequester LEFT JOIN FETCH sr.inventoryItem ORDER BY sr.ngayYeuCau DESC")
+    List<SupplyRequest> findAllWithStaffRequester();
+    
+    // Lấy yêu cầu theo trạng thái với thông tin nhân viên yêu cầu
+    @Query("SELECT sr FROM SupplyRequest sr LEFT JOIN FETCH sr.staffRequester LEFT JOIN FETCH sr.inventoryItem WHERE sr.trangThai = :trangThai ORDER BY sr.ngayYeuCau DESC")
+    List<SupplyRequest> findByTrangThaiWithStaffRequester(@Param("trangThai") TrangThaiYeuCau trangThai);
 }

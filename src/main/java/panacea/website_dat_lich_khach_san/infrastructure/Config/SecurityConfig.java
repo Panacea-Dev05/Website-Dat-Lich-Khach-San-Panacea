@@ -4,10 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,11 +32,52 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import java.io.IOException;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
     @Autowired
     private StaffRepository staffRepository;
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(
+            googleClientRegistration(),
+            facebookClientRegistration()
+        );
+    }
+
+    private ClientRegistration googleClientRegistration() {
+        return ClientRegistration.withRegistrationId("google")
+            .clientId("185058313445-gfgbd1f7hpkl424fpgor3if3l0os83hr.apps.googleusercontent.com")
+            .clientSecret("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")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .redirectUri("http://localhost:8080/login/oauth2/code/google")
+            .scope("profile", "email")
+            .authorizationUri("https://accounts.google.com/o/oauth2/auth")
+            .tokenUri("https://oauth2.googleapis.com/token")
+            .userInfoUri("https://www.googleapis.com/oauth2/v2/userinfo")
+            .userNameAttributeName("email")
+            .clientName("Google")
+            .build();
+    }
+
+    private ClientRegistration facebookClientRegistration() {
+        return ClientRegistration.withRegistrationId("facebook")
+            .clientId("781851997739362")
+            .clientSecret("038c7ff0cea9c2418f18c12132b3267e")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .redirectUri("http://localhost:8080/login/oauth2/code/facebook")
+            .scope("email", "public_profile")
+            .authorizationUri("https://www.facebook.com/v12.0/dialog/oauth")
+            .tokenUri("https://graph.facebook.com/v12.0/oauth/access_token")
+            .userInfoUri("https://graph.facebook.com/me?fields=id,name,email,picture")
+            .userNameAttributeName("id")
+            .clientName("Facebook")
+            .build();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -1085,12 +1085,19 @@ public class QuanLyDatPhongService {
             dto.setBookingId(sd.getDatPhongId());
             dto.setServiceId(sd.getDichVuId());
             
-            // Lấy tên dịch vụ từ ServiceRepository
-            String serviceName = "Dịch vụ không xác định";
+            // Lấy tên dịch vụ hoặc tên vật phẩm
+            String serviceName = "Không xác định";
             if (sd.getDichVuId() != null) {
+                // Đây là dịch vụ
                 var service = serviceRepository.findById(sd.getDichVuId());
                 if (service.isPresent()) {
                     serviceName = service.get().getTenDichVu();
+                }
+            } else if (sd.getInventoryItemId() != null) {
+                // Đây là vật phẩm tồn kho
+                var inventory = inventoryManagementRepository.findById(sd.getInventoryItemId());
+                if (inventory.isPresent()) {
+                    serviceName = inventory.get().getTenVatPham();
                 }
             }
             dto.setServiceName(serviceName);
@@ -1104,6 +1111,7 @@ public class QuanLyDatPhongService {
             
             dto.setSoLuong(sd.getSoLuong() != null ? sd.getSoLuong().intValue() : null);
             dto.setDonGia(sd.getDonGiaThucTe());
+            dto.setGiaBan(sd.getDonGiaThucTe()); // Set giaBan để hiển thị trên giao diện
             if (sd.getDonGiaThucTe() != null && sd.getSoLuong() != null) {
                 dto.setThanhTien(sd.getDonGiaThucTe().multiply(new java.math.BigDecimal(sd.getSoLuong())));
             }
@@ -1271,7 +1279,7 @@ public class QuanLyDatPhongService {
         try {
             java.util.List<InventoryManagement> inventoryItems = inventoryManagementRepository.findAll();
             return inventoryItems.stream()
-                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() > 0)
+                .filter(item -> item .getSoLuongTon() != null && item.getSoLuongTon() > 0)
                 .map(item -> {
                     java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
                     itemMap.put("id", item.getId());
@@ -1336,18 +1344,22 @@ public class QuanLyDatPhongService {
                     // Kiểm tra tồn kho
                     if (inventory.getSoLuongTon() < soLuong) continue;
                     
+                    // Kiểm tra giá bán
+                    if (inventory.getGiaBan() == null) {
+                        logger.warn("Vật phẩm {} (ID: {}) chưa có giá bán", inventory.getTenVatPham(), inventoryId);
+                        continue;
+                    }
+                    
                     var detail = new panacea.website_dat_lich_khach_san.entity.ServiceDetail();
                     detail.setDatPhongId(booking.getId());
                     detail.setDichVuId(null); // Không phải dịch vụ
                     detail.setInventoryItemId(inventoryId); // Lưu ID vật phẩm tồn kho
                     detail.setSoLuong(soLuong.shortValue());
-                    detail.setDonGiaThucTe(inventory.getGiaNhap());
+                    detail.setDonGiaThucTe(inventory.getGiaBan());
                     detail.setGhiChu("Vật phẩm: " + inventory.getTenVatPham());
                     serviceDetailRepository.save(detail);
                     
-                    if (inventory.getGiaNhap() != null) {
-                        tongTienVatPham = tongTienVatPham.add(inventory.getGiaNhap().multiply(new java.math.BigDecimal(soLuong)));
-                    }
+                    tongTienVatPham = tongTienVatPham.add(inventory.getGiaBan().multiply(new java.math.BigDecimal(soLuong)));
                     
                     // Cập nhật tồn kho
                     inventory.setSoLuongTon((short)(inventory.getSoLuongTon() - soLuong));

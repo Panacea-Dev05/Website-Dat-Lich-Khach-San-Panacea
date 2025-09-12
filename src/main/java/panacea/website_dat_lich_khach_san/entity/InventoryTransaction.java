@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -22,6 +23,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiDuyet;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -64,6 +66,7 @@ public class InventoryTransaction {
     @Column(name = "phong_id")
     private Integer phongId; // Nếu xuất cho phòng cụ thể
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "ngay_giao_dich")
     private LocalDateTime ngayGiaoDich;
 
@@ -83,11 +86,15 @@ public class InventoryTransaction {
     @Column(name = "admin_duyet_id")
     private Integer adminDuyetId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "ngay_duyet")
     private LocalDateTime ngayDuyet;
 
     @Column(name = "ghi_chu_duyet", length = 500)
     private String ghiChuDuyet;
+
+    @Column(name = "khach_san_id", nullable = false)
+    private Integer khachSanId;
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
@@ -104,6 +111,11 @@ public class InventoryTransaction {
     @JoinColumn(name = "phong_id", insertable = false, updatable = false)
     @JsonIgnore
     private Room room;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "khach_san_id", insertable = false, updatable = false)
+    @JsonIgnore
+    private Hotel hotel;
 
     @PrePersist
     public void prePersist() {

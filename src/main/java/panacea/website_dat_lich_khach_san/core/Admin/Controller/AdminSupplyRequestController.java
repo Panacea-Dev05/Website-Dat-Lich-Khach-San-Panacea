@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.SupplyRequestService;
 import panacea.website_dat_lich_khach_san.entity.SupplyRequest;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiYeuCau;
@@ -29,6 +30,7 @@ public class AdminSupplyRequestController {
     private QuanLyKhoService quanLyKhoService;
     
     @GetMapping
+    @Transactional
     public String supplyRequestManagement(Model model) {
         List<SupplyRequest> allRequests = supplyRequestService.getAllRequests();
         List<SupplyRequest> pendingRequests = supplyRequestService.getPendingRequests();
@@ -50,6 +52,7 @@ public class AdminSupplyRequestController {
     
     @GetMapping("/{id}")
     @ResponseBody
+    @Transactional
     public SupplyRequest getRequest(@PathVariable Integer id) {
         return supplyRequestService.getAllRequests().stream()
                 .filter(request -> request.getId().equals(id))
@@ -59,9 +62,10 @@ public class AdminSupplyRequestController {
     
     @PostMapping("/{id}/approve")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> approveRequest(
             @PathVariable Integer id,
-            @RequestParam(required = false) String ghiChu) {
+            @RequestParam(required = false, defaultValue = "") String ghiChu) {
         
         Map<String, Object> response = new HashMap<>();
         try {
@@ -79,6 +83,7 @@ public class AdminSupplyRequestController {
     
     @PostMapping("/{id}/reject")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> rejectRequest(
             @PathVariable Integer id,
             @RequestParam String lyDoTuChoi) {
@@ -99,6 +104,7 @@ public class AdminSupplyRequestController {
     
     @PostMapping("/{id}/complete")
     @ResponseBody
+    @Transactional
     public ResponseEntity<Map<String, Object>> markAsCompleted(@PathVariable Integer id) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -116,12 +122,14 @@ public class AdminSupplyRequestController {
     
     @GetMapping("/status/{status}")
     @ResponseBody
+    @Transactional
     public List<SupplyRequest> getRequestsByStatus(@PathVariable TrangThaiYeuCau status) {
         return supplyRequestService.getRequestsByStatus(status);
     }
     
     @GetMapping("/statistics")
     @ResponseBody
+    @Transactional
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         List<SupplyRequest> allRequests = supplyRequestService.getAllRequests();

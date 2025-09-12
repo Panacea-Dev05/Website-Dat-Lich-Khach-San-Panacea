@@ -79,6 +79,13 @@ public class QuanLyKhoService {
         if (existingItem.isEmpty()) {
             throw new RuntimeException("Không tìm thấy vật phẩm với ID: " + item.getId());
         }
+        
+        // Giữ lại khach_san_id từ item hiện có để tránh lỗi NULL
+        InventoryManagement existing = existingItem.get();
+        if (item.getKhachSanId() == null) {
+            item.setKhachSanId(existing.getKhachSanId());
+        }
+        
         return inventoryManagementRepository.save(item);
     }
     
@@ -93,10 +100,53 @@ public class QuanLyKhoService {
     public InventoryTransaction saveTransaction(InventoryTransaction transaction) {
         validateTransaction(transaction);
         
+        // Thiết lập khach_san_id nếu chưa có
+        if (transaction.getKhachSanId() == null) {
+            transaction.setKhachSanId(1); // Default hotel ID
+        }
+        
         // Thiết lập trạng thái phê duyệt cho phiếu nhập kho
         if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
             // Phiếu nhập kho cần phê duyệt từ Admin
             transaction.setTrangThaiDuyet(TrangThaiDuyet.CHO_DUYET);
+        } else if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.XUAT_KHO) {
+            // Phiếu xuất kho được duyệt tự động
+            transaction.setTrangThaiDuyet(TrangThaiDuyet.DA_DUYET);
+        }
+        
+        // Chỉ cập nhật tồn kho nếu giao dịch đã được duyệt
+        if (transaction.getTrangThaiDuyet() == TrangThaiDuyet.DA_DUYET) {
+            updateInventoryStock(transaction);
+        }
+        
+        if (transaction.getNgayGiaoDich() == null) {
+            transaction.setNgayGiaoDich(LocalDateTime.now());
+        }
+        
+        return inventoryTransactionRepository.save(transaction);
+    }
+    
+    // Overloaded method for Admin to auto-approve import transactions
+    public InventoryTransaction saveTransaction(InventoryTransaction transaction, boolean isAdmin) {
+        validateTransaction(transaction);
+        
+        // Thiết lập khach_san_id nếu chưa có
+        if (transaction.getKhachSanId() == null) {
+            transaction.setKhachSanId(1); // Default hotel ID
+        }
+        
+        // Thiết lập trạng thái phê duyệt
+        if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+            if (isAdmin) {
+                // Admin tự động phê duyệt phiếu nhập kho của mình
+                transaction.setTrangThaiDuyet(TrangThaiDuyet.DA_DUYET);
+                transaction.setAdminDuyetId(transaction.getNhanVienId());
+                transaction.setNgayDuyet(LocalDateTime.now());
+                transaction.setGhiChuDuyet("Tự động phê duyệt - Admin tạo");
+            } else {
+                // Staff cần phê duyệt từ Admin
+                transaction.setTrangThaiDuyet(TrangThaiDuyet.CHO_DUYET);
+            }
         } else if (transaction.getLoaiGiaoDich() == LoaiGiaoDich.XUAT_KHO) {
             // Phiếu xuất kho được duyệt tự động
             transaction.setTrangThaiDuyet(TrangThaiDuyet.DA_DUYET);

@@ -858,7 +858,7 @@
                                 </tr></thead><tbody>`;
                         booking.serviceUsages.forEach(sv => {
                             content += `<tr>
-                                <td style='padding:8px;border-bottom:1px solid #eee;'>${sv.serviceName || 'Dịch vụ không xác định'}</td>
+                                <td style='padding:8px;border-bottom:1px solid #eee;'>${sv.serviceName || 'Không xác định'}</td>
                                 <td style='padding:8px;border-bottom:1px solid #eee;text-align:center;'>${sv.soLuong}</td>
                                 <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.giaBan ? new Intl.NumberFormat('vi-VN').format(sv.giaBan) : ''}</td>
                                 <td style='padding:8px;border-bottom:1px solid #eee;text-align:right;'>${sv.thanhTien ? new Intl.NumberFormat('vi-VN').format(sv.thanhTien) : ''}</td>

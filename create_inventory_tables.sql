@@ -140,3 +140,4 @@ PRINT '';
 PRINT N'=== HOÀN THÀNH TẠO CÁC BẢNG QUẢN LÝ KHO ===';
 PRINT N'Bây giờ bạn có thể chạy lại ứng dụng Spring Boot.';
 PRINT N'Các bảng INVENTORY_MANAGEMENT và INVENTORY_TRANSACTION đã được tạo với dữ liệu mẫu.';
+

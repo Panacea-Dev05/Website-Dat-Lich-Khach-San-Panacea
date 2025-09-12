@@ -109,7 +109,7 @@ public class SupplyRequestService {
     
     // Lấy tất cả yêu cầu
     public List<SupplyRequest> getAllRequests() {
-        return supplyRequestRepository.findAll();
+        return supplyRequestRepository.findAllWithStaffRequester();
     }
     
     // Lấy yêu cầu theo nhân viên
@@ -119,12 +119,12 @@ public class SupplyRequestService {
     
     // Lấy yêu cầu theo trạng thái
     public List<SupplyRequest> getRequestsByStatus(TrangThaiYeuCau status) {
-        return supplyRequestRepository.findByTrangThai(status);
+        return supplyRequestRepository.findByTrangThaiWithStaffRequester(status);
     }
     
     // Lấy yêu cầu chờ duyệt
     public List<SupplyRequest> getPendingRequests() {
-        return supplyRequestRepository.findByTrangThai(TrangThaiYeuCau.CHO_DUYET);
+        return supplyRequestRepository.findByTrangThaiWithStaffRequester(TrangThaiYeuCau.CHO_DUYET);
     }
     
     // Validation

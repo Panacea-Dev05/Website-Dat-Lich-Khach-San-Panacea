@@ -10,18 +10,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.entity.Staff;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/nhanvien/quanlykho")
 @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
 public class QuanLyKhoController {
     private final QuanLyKhoService quanLyKhoService;
+    
+    @Autowired
+    private StaffRepository staffRepository;
     
     public QuanLyKhoController(QuanLyKhoService quanLyKhoService) {
         this.quanLyKhoService = quanLyKhoService;
@@ -207,21 +214,32 @@ public class QuanLyKhoController {
             }
             
             // Set transaction creator (using staff ID)
-            // Note: This assumes authentication.getName() returns staff ID as string
-            // You may need to adjust this based on your authentication setup
-            try {
-                Integer staffId = Integer.parseInt(authentication.getName());
-                transaction.setNhanVienId(staffId);
-            } catch (NumberFormatException e) {
-                // If authentication.getName() is not a number, you might need to
-                // look up the staff ID from the database using the username
-                // For now, setting a default or throwing an error
-                throw new RuntimeException("Cannot determine staff ID from authentication");
-            }
+            // Look up staff ID from username
+             try {
+                 String username = authentication.getName();
+                 Optional<Staff> staff = staffRepository.findByTaiKhoan(username);
+                 
+                 if (staff.isEmpty()) {
+                     throw new RuntimeException("Cannot determine staff ID from authentication");
+                 }
+                 
+                 Integer staffId = staff.get().getId();
+                 transaction.setNhanVienId(staffId);
+             } catch (Exception e) {
+                 throw new RuntimeException("Cannot determine staff ID from authentication: " + e.getMessage());
+             }
             
-            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction);
+            // Check if user is Admin
+            boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            InventoryTransaction savedTransaction = quanLyKhoService.saveTransaction(transaction, isAdmin);
             response.put("success", true);
-            response.put("message", "Thêm giao dịch thành công");
+            if (isAdmin && transaction.getLoaiGiaoDich() == LoaiGiaoDich.NHAP_KHO) {
+                response.put("message", "Thêm giao dịch thành công và đã được tự động phê duyệt");
+            } else {
+                response.put("message", "Thêm giao dịch thành công");
+            }
             response.put("data", savedTransaction);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -392,8 +410,15 @@ public class QuanLyKhoController {
                 return ResponseEntity.status(403).body(response);
             }
             
-            // Get admin ID (assuming it's stored in authentication name)
-            Integer adminId = Integer.parseInt(authentication.getName());
+            // Get admin ID from username
+             String username = authentication.getName();
+             Optional<Staff> admin = staffRepository.findByTaiKhoan(username);
+             
+             if (admin.isEmpty()) {
+                 throw new RuntimeException("Cannot determine admin ID from authentication");
+             }
+             
+             Integer adminId = admin.get().getId();
             String ghiChu = request.get("ghiChu");
             
             InventoryTransaction approvedTransaction = quanLyKhoService.approveTransaction(id, adminId, ghiChu);
@@ -433,8 +458,15 @@ public class QuanLyKhoController {
                 return ResponseEntity.status(403).body(response);
             }
             
-            // Get admin ID (assuming it's stored in authentication name)
-            Integer adminId = Integer.parseInt(authentication.getName());
+            // Get admin ID from username
+             String username = authentication.getName();
+             Optional<Staff> admin = staffRepository.findByTaiKhoan(username);
+             
+             if (admin.isEmpty()) {
+                 throw new RuntimeException("Cannot determine admin ID from authentication");
+             }
+             
+             Integer adminId = admin.get().getId();
             String ghiChu = request.get("ghiChu");
             
             InventoryTransaction rejectedTransaction = quanLyKhoService.rejectTransaction(id, adminId, ghiChu);

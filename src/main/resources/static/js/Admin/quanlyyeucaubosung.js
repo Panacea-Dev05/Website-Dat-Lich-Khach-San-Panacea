@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Add event listeners for modal close functionality
+    setupModalEventListeners();
+
     // Initialize page
     loadSupplyRequests();
 });
@@ -77,6 +80,43 @@ function closeViewModal() {
     document.getElementById('viewModal').style.display = 'none';
 }
 
+// Function to close any modal by ID
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Setup modal event listeners
+function setupModalEventListeners() {
+    const modals = ['approveModal', 'rejectModal', 'viewModal'];
+    
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Close modal when clicking outside of modal content
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal(modalId);
+                }
+            });
+        }
+    });
+    
+    // Close modal when pressing Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal && modal.style.display === 'block') {
+                    closeModal(modalId);
+                }
+            });
+        }
+    });
+}
+
 function approveRequest(id) {
     if (confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')) {
         fetch(`/admin/supply-requests/${id}/approve`, {
@@ -127,12 +167,38 @@ function rejectRequest(id) {
     }
 }
 
+function markAsCompleted(id) {
+    if (confirm('Bạn có chắc chắn muốn đánh dấu yêu cầu này là hoàn thành?')) {
+        fetch(`/admin/supply-requests/${id}/complete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showNotification(data.message || 'Có lỗi xảy ra khi đánh dấu hoàn thành', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Có lỗi xảy ra khi đánh dấu hoàn thành', 'error');
+        });
+    }
+}
+
 function getStatusText(status) {
     switch(status) {
         case 'CHO_DUYET': return 'Chờ duyệt';
         case 'DA_DUYET': return 'Đã duyệt';
         case 'TU_CHOI': return 'Từ chối';
-        case 'HOAN_THANH': return 'Hoàn thành';
+        case 'DA_THUC_HIEN': return 'Hoàn thành';
         default: return status;
     }
 }
