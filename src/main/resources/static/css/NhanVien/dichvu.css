@@ -17,6 +17,21 @@ body {
     flex-direction: column;
     height: 100vh;
 }
+/* Header Styles */
+header {
+    grid-area: header;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: #fff;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
 a {
     text-decoration: none;
     color: inherit;
@@ -187,37 +202,37 @@ aside.sidebar nav ul li a .material-icons {
 }
 
 .form-label .material-icons {
-        font-size: 1.375rem;
-        color: #10b981;
-        background: rgba(16, 185, 129, 0.1);
-        padding: 0.375rem;
-        border-radius: 8px;
-    }
+    font-size: 1.375rem;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 0.375rem;
+    border-radius: 8px;
+}
 
-    .form-input, .form-select, .form-control {
-         width: 100% !important;
-         max-width: 100% !important;
-         box-sizing: border-box !important;
-         padding: 0.75rem 1rem;
-         border: 2px solid #e5e7eb;
-         border-radius: 12px;
-         font-size: 1rem;
-         transition: all 0.3s ease;
-         background: #fafafa;
-         min-width: 0;
-     }
- 
-     .form-input:focus, .form-select:focus, .form-control:focus {
-         outline: none;
-         border-color: #10b981;
-         background: white;
-         box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-     }
- 
-     .form-input:hover, .form-select:hover, .form-control:hover {
-          border-color: #d1d5db;
-          background: white;
-      }
+.form-input, .form-select, .form-control {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+    min-width: 0;
+}
+
+.form-input:focus, .form-select:focus, .form-control:focus {
+    outline: none;
+    border-color: #10b981;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-input:hover, .form-select:hover, .form-control:hover {
+    border-color: #d1d5db;
+    background: white;
+}
 
 /* Form control styles moved above to unified selector */
 
@@ -644,35 +659,35 @@ aside.sidebar nav ul li a .material-icons {
     .service-booking-section {
         padding: 2rem;
     }
-    
+
     .form-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .table-controls {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
     }
-    
+
     .search-box {
         min-width: auto;
     }
-    
+
     .filter-controls {
         justify-content: space-between;
     }
-    
+
     .filter-select {
         flex: 1;
         min-width: auto;
     }
-    
+
     .services-table {
         font-size: 0.9rem;
     }
-    
+
     .services-table thead th,
     .services-table tbody td {
         padding: 1rem 0.75rem;
@@ -686,112 +701,112 @@ aside.sidebar nav ul li a .material-icons {
         margin-bottom: 2rem;
         border-radius: 16px;
     }
-    
+
     .section-header {
         margin-bottom: 2rem;
     }
-    
+
     .section-header h2 {
         font-size: 1.5rem;
         flex-direction: column;
         gap: 0.75rem;
     }
-    
+
     .section-header h2 .material-icons {
         font-size: 2rem;
     }
-    
+
     .form-grid {
         grid-template-columns: 1fr;
         gap: 1.25rem;
         margin-bottom: 2rem;
     }
-    
+
     .form-group {
         padding: 1.25rem;
     }
-    
+
     .price-preview {
         padding: 1.5rem;
         margin-bottom: 2rem;
     }
-    
+
     .price-info {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .price-value {
         font-size: 1.5rem;
     }
-    
+
     .form-actions {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .btn {
         width: 100%;
         padding: 1rem 1.5rem;
     }
-    
+
     /* Mobile table styling */
     .table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .services-table {
         min-width: 700px;
         font-size: 0.85rem;
     }
-    
+
     .services-table thead th,
     .services-table tbody td {
         padding: 0.75rem 0.5rem;
     }
-    
+
     .service-info {
         min-width: 120px;
     }
-    
+
     .service-name {
         font-size: 0.9rem;
     }
-    
+
     .service-category {
         font-size: 0.8rem;
     }
-    
+
     .action-buttons {
         flex-direction: column;
         gap: 0.25rem;
     }
-    
+
     .btn-action {
         width: 2rem;
         height: 2rem;
     }
-    
+
     .btn-action .material-icons {
         font-size: 1rem;
     }
-    
+
     .booking-badge,
     .quantity-badge {
         font-size: 0.8rem;
         padding: 0.25rem 0.5rem;
     }
-    
+
     .price,
     .total-price {
         font-size: 0.9rem;
     }
-    
+
     .datetime-info {
         min-width: 80px;
     }
-    
+
     .date,
     .time {
         font-size: 0.8rem;
@@ -805,170 +820,170 @@ aside.sidebar nav ul li a .material-icons {
         margin-bottom: 1.5rem;
         border-radius: 12px;
     }
-    
+
     .section-header {
         margin-bottom: 1.5rem;
     }
-    
+
     .section-header h2 {
         font-size: 1.25rem;
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .section-header h2 .material-icons {
         font-size: 1.75rem;
         padding: 0.25rem;
     }
-    
+
     .section-description {
         font-size: 1rem;
     }
-    
+
     .form-grid {
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .form-group {
         padding: 1rem;
         border-radius: 12px;
     }
-    
+
     .form-label {
         font-size: 0.95rem;
         gap: 0.5rem;
     }
-    
+
     .form-label .material-icons {
         font-size: 1.25rem;
         padding: 0.25rem;
     }
-    
+
     .form-control {
         padding: 0.875rem 1rem;
         font-size: 16px; /* Prevent zoom on iOS */
     }
-    
+
     .price-preview {
         padding: 1.25rem;
         margin-bottom: 1.5rem;
         border-radius: 16px;
     }
-    
+
     .price-label {
         font-size: 1.1rem;
     }
-    
+
     .price-value {
         font-size: 1.375rem;
         padding: 0.375rem 0.75rem;
     }
-    
+
     .form-actions {
         gap: 0.75rem;
     }
-    
+
     .btn {
         padding: 0.875rem 1.25rem;
         font-size: 0.95rem;
     }
-    
+
     /* Mobile-first table approach */
     .services-table {
         min-width: 600px;
         font-size: 0.8rem;
     }
-    
+
     .services-table thead th {
         font-size: 0.75rem;
         padding: 0.75rem 0.25rem;
     }
-    
+
     .services-table tbody td {
         padding: 0.75rem 0.25rem;
     }
-    
+
     .service-info {
         min-width: 100px;
     }
-    
+
     .service-name {
         font-size: 0.85rem;
         line-height: 1.2;
     }
-    
+
     .service-category {
         font-size: 0.75rem;
     }
-    
+
     .booking-badge {
         font-size: 0.75rem;
         padding: 0.2rem 0.4rem;
     }
-    
+
     .quantity-badge {
         font-size: 0.75rem;
         padding: 0.2rem 0.4rem;
         min-width: 1.5rem;
     }
-    
+
     .price,
     .total-price {
         font-size: 0.8rem;
     }
-    
+
     .datetime-info {
         min-width: 70px;
     }
-    
+
     .date {
         font-size: 0.75rem;
     }
-    
+
     .time {
         font-size: 0.7rem;
     }
-    
+
     .status {
         font-size: 0.7rem;
         padding: 0.2rem 0.4rem;
     }
-    
+
     .action-buttons {
         min-width: 60px;
     }
-    
+
     .btn-action {
         width: 1.75rem;
         height: 1.75rem;
     }
-    
+
     .btn-action .material-icons {
         font-size: 0.9rem;
     }
-    
+
     .empty-state {
         padding: 2rem 1rem;
     }
-    
+
     .empty-state .material-icons {
         font-size: 3rem;
     }
-    
+
     .empty-state h3 {
         font-size: 1.1rem;
     }
-    
+
     .empty-state p {
         font-size: 0.9rem;
     }
-    
+
     /* Search and filter mobile adjustments */
     .search-input {
         font-size: 16px; /* Prevent zoom on iOS */
     }
-    
+
     .filter-select {
         font-size: 16px; /* Prevent zoom on iOS */
     }
@@ -979,7 +994,7 @@ aside.sidebar nav ul li a .material-icons {
     .services-table {
         font-size: 0.75rem;
     }
-    
+
     .services-table thead th,
     .services-table tbody td {
         padding: 0.5rem 0.25rem;
@@ -992,21 +1007,21 @@ aside.sidebar nav ul li a .material-icons {
     .service-list-section {
         padding: 0.75rem;
     }
-    
+
     .section-header h2 {
         font-size: 1.1rem;
     }
-    
+
     .services-table {
         min-width: 550px;
         font-size: 0.75rem;
     }
-    
+
     .btn-action {
         width: 1.5rem;
         height: 1.5rem;
     }
-    
+
     .btn-action .material-icons {
         font-size: 0.8rem;
     }
@@ -1190,11 +1205,11 @@ aside.sidebar nav ul li a .material-icons {
 }
 
 @keyframes scaleIn {
-    from { 
+    from {
         opacity: 0;
         transform: scale(0.9);
     }
-    to { 
+    to {
         opacity: 1;
         transform: scale(1);
     }

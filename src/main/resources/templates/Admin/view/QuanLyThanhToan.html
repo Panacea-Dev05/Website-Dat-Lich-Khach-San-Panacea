@@ -56,20 +56,21 @@
               <td th:text="${payment.paymentMethod}">Thẻ tín dụng</td>
               <td th:text="${#temporals.format(payment.paymentDate, 'dd/MM/yyyy HH:mm')}">15/12/2024 14:30</td>
               <td>
-                <span th:class="${payment.status == 'Completed' ? 'status-completed' : 
-                                  payment.status == 'Pending' ? 'status-pending' : 
-                                  payment.status == 'Failed' ? 'status-failed' : 'status-refunded'}" th:text="${payment.status == 'Completed' ? 'Hoàn thành' : 
-                                payment.status == 'Pending' ? 'Chờ xử lý' : 
-                                payment.status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'}">
-                  Hoàn thành
+                <span th:class="${payment.status == 'Thành công' ? 'status-completed' : 
+                                  payment.status == 'Đang xử lý' ? 'status-pending' : 
+                                  payment.status == 'Thất bại' ? 'status-failed' : 'status-refunded'}" th:text="${payment.status}">
+                  Thành công
                 </span>
               </td>
               <td>
                 <button class="btn-view" th:onclick="'viewPayment(' + ${payment.id} + ')'" title="Xem chi tiết">
                   <span class="material-icons">visibility</span>
                 </button>
-                <button class="btn-edit" data-id="[[${payment.id}]]" title="Sửa">
+                <button class="btn-edit" th:data-id="${payment.id}" title="Sửa">
                   <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-delete" th:data-id="${payment.id}" title="Xóa">
+                  <span class="material-icons">delete</span>
                 </button>
               </td>
             </tr>
@@ -106,9 +107,10 @@
               <label for="status">Trạng thái</label>
               <select id="status" name="status" required>
                 <option value="" disabled selected>Chọn trạng thái</option>
-                <option th:each="status : ${paymentStatuses}" th:value="${status}"
-                  th:text="${status == 'Completed' ? 'Hoàn thành' : (status == 'Pending' ? 'Chờ xử lý' : (status == 'Failed' ? 'Thất bại' : 'Hoàn tiền'))}">
-                </option>
+                <option value="DANG_XU_LY">Đang xử lý</option>
+                <option value="THANH_CONG">Thành công</option>
+                <option value="THAT_BAI">Thất bại</option>
+                <option value="HOAN_TIEN">Hoàn tiền</option>
               </select>
 
               <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
@@ -208,6 +210,11 @@
       form.reset();
       document.getElementById('formTitle').innerText = 'Thêm thanh toán mới';
       document.getElementById('paymentId').value = '';
+      
+      // Set default values
+      document.getElementById('status').value = 'DANG_XU_LY'; // Default to "Đang xử lý"
+      document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 16); // Current datetime
+      
       form.setAttribute('data-mode', 'add');
       form.setAttribute('action', '/admin/payments');
     }
@@ -224,7 +231,40 @@
       document.getElementById('amount').value = payment.amount;
       document.getElementById('paymentMethod').value = payment.paymentMethod;
       document.getElementById('paymentDate').value = payment.paymentDate ? payment.paymentDate.substring(0,16) : '';
-      document.getElementById('status').value = payment.status;
+      
+      // Set status correctly - map from display value to enum value
+      var statusMapping = {
+        'Thành công': 'THANH_CONG',
+        'Đang xử lý': 'DANG_XU_LY', 
+        'Thất bại': 'THAT_BAI',
+        'Hoàn tiền': 'HOAN_TIEN',
+        // Handle old values
+        'Completed': 'THANH_CONG',
+        'Pending': 'DANG_XU_LY',
+        'Failed': 'THAT_BAI',
+        'Refunded': 'HOAN_TIEN'
+      };
+      
+      // Reverse mapping for edit
+      var reverseStatusMapping = {
+        'THANH_CONG': 'THANH_CONG',
+        'DANG_XU_LY': 'DANG_XU_LY',
+        'THAT_BAI': 'THAT_BAI', 
+        'HOAN_TIEN': 'HOAN_TIEN'
+      };
+      
+      // Map status value
+      var statusValue = reverseStatusMapping[payment.status] || statusMapping[payment.status] || payment.status;
+      console.log('Payment status:', payment.status, 'Mapped to:', statusValue);
+      
+      // Set the status value, with fallback
+      if (statusValue && document.getElementById('status').querySelector('option[value="' + statusValue + '"]')) {
+        document.getElementById('status').value = statusValue;
+      } else {
+        console.log('Status value not found in options, using default');
+        document.getElementById('status').value = 'DANG_XU_LY';
+      }
+      
       form.setAttribute('data-mode', 'edit');
       form.setAttribute('action', '/admin/payments/' + payment.id);
     }
@@ -254,12 +294,12 @@
           
           // Hiển thị trạng thái với màu sắc tương ứng
           const statusElement = document.getElementById('viewStatus');
-          statusElement.textContent = data.status === 'Completed' ? 'Hoàn thành' : 
-                                      data.status === 'Pending' ? 'Chờ xử lý' : 
-                                      data.status === 'Failed' ? 'Thất bại' : 'Hoàn tiền';
-          statusElement.className = data.status === 'Completed' ? 'status-completed' : 
-                                   data.status === 'Pending' ? 'status-pending' : 
-                                   data.status === 'Failed' ? 'status-failed' : 'status-refunded';
+          statusElement.textContent = data.status === 'Thành công' ? 'Thành công' : 
+                                      data.status === 'Đang xử lý' ? 'Đang xử lý' : 
+                                      data.status === 'Thất bại' ? 'Thất bại' : 'Hoàn tiền';
+          statusElement.className = data.status === 'Thành công' ? 'status-completed' : 
+                                   data.status === 'Đang xử lý' ? 'status-pending' : 
+                                   data.status === 'Thất bại' ? 'status-failed' : 'status-refunded';
           
           // Hiển thị modal
           document.getElementById('viewPaymentModal').style.display = 'flex';
@@ -293,6 +333,41 @@
         });
     }
 
+    // Xóa thanh toán
+    function deletePayment(paymentId) {
+      if (!confirm('Bạn có chắc chắn muốn xóa thanh toán này? Hành động này không thể hoàn tác.')) {
+        return;
+      }
+      
+      console.log('Deleting payment with ID:', paymentId);
+      
+      fetch('/admin/payments/' + paymentId, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        console.log('Delete response status:', res.status);
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status + ': Lỗi khi xóa thanh toán');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('Delete response:', data);
+        if (data.error) {
+          throw new Error(data.message || 'Lỗi không xác định');
+        }
+        alert('Xóa thanh toán thành công!');
+        location.reload(); // Reload page to update table
+      })
+      .catch(error => {
+        console.error('Lỗi khi xóa thanh toán:', error);
+        alert('Không thể xóa thanh toán: ' + error.message);
+      });
+    }
+
     // Gắn sự kiện cho các nút
     document.addEventListener('DOMContentLoaded', function() {
       // Nút thêm thanh toán mới
@@ -321,17 +396,27 @@
       };
       
       // Gắn sự kiện cho nút Sửa (Edit)
-      document.querySelectorAll('.btn-edit[data-id]').forEach(function(btn) {
+      document.querySelectorAll('.btn-edit').forEach(function(btn) {
         btn.onclick = function() {
           var paymentId = this.getAttribute('data-id');
+          console.log('Loading payment with ID:', paymentId);
+          
+          if (!paymentId) {
+            console.error('No payment ID found');
+            alert('Không tìm thấy ID thanh toán');
+            return;
+          }
+          
           fetch('/admin/payments/' + paymentId)
             .then(res => {
+              console.log('Response status:', res.status);
               if (!res.ok) {
-                throw new Error('Lỗi khi tải dữ liệu thanh toán');
+                throw new Error('HTTP ' + res.status + ': Lỗi khi tải dữ liệu thanh toán');
               }
               return res.json();
             })
             .then(data => {
+              console.log('Received data:', data);
               // Kiểm tra nếu có lỗi từ server
               if (data.error) {
                 throw new Error(data.message || 'Lỗi không xác định');
@@ -339,9 +424,25 @@
               showEditPaymentForm(data);
             })
             .catch(error => {
-              console.error('Lỗi:', error);
+              console.error('Lỗi chi tiết:', error);
               alert('Không thể chỉnh sửa thanh toán: ' + error.message);
             });
+        };
+      });
+      
+      // Gắn sự kiện cho nút Xóa (Delete)
+      document.querySelectorAll('.btn-delete').forEach(function(btn) {
+        btn.onclick = function() {
+          var paymentId = this.getAttribute('data-id');
+          console.log('Delete button clicked for payment ID:', paymentId);
+          
+          if (!paymentId) {
+            console.error('No payment ID found for delete');
+            alert('Không tìm thấy ID thanh toán');
+            return;
+          }
+          
+          deletePayment(paymentId);
         };
       });
       
@@ -352,13 +453,31 @@
         var mode = form.getAttribute('data-mode');
         var url = form.getAttribute('action');
         var method = mode === 'edit' ? 'PUT' : 'POST';
+        
+        // Validation
+        var bookingId = document.getElementById('bookingId').value;
+        var amount = document.getElementById('amount').value;
+        var paymentMethod = document.getElementById('paymentMethod').value;
+        var paymentDate = document.getElementById('paymentDate').value;
+        var status = document.getElementById('status').value;
+        
+        if (!bookingId || !amount || !paymentMethod || !paymentDate || !status) {
+          alert('Vui lòng điền đầy đủ thông tin!');
+          return;
+        }
+        
+        if (parseFloat(amount) <= 0) {
+          alert('Số tiền phải lớn hơn 0!');
+          return;
+        }
+        
         var data = {
           id: document.getElementById('paymentId').value,
-          bookingId: document.getElementById('bookingId').value,
-          amount: document.getElementById('amount').value,
-          paymentMethod: document.getElementById('paymentMethod').value,
-          paymentDate: document.getElementById('paymentDate').value,
-          status: document.getElementById('status').value
+          bookingId: bookingId,
+          amount: amount,
+          paymentMethod: paymentMethod,
+          paymentDate: paymentDate,
+          status: status
         };
         fetch(url, {
           method: method,

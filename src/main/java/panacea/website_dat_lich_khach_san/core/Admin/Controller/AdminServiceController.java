@@ -139,8 +139,15 @@ public class AdminServiceController {
         return "redirect:/admin/services";
     }
 
-    // Xem chi tiết dịch vụ
+    // Xem chi tiết dịch vụ (JSON)
     @GetMapping("/{id}")
+    @ResponseBody
+    public ServiceDTO getService(@PathVariable Integer id) {
+        return adminServiceService.getServiceById(id);
+    }
+
+    // Xem chi tiết dịch vụ (HTML)
+    @GetMapping("/view/{id}")
     public String viewService(@PathVariable Integer id, Model model) {
         ServiceDTO dto = adminServiceService.getServiceById(id);
         if (dto != null) {
