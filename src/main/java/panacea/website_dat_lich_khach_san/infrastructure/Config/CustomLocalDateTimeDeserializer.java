@@ -13,6 +13,7 @@ import java.time.format.DateTimeParseException;
 public class CustomLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATETIME_FORMATTER_MINUTE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final DateTimeFormatter DATETIME_FORMATTER_WITH_MS = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private static final DateTimeFormatter DATETIME_FORMATTER_WITH_TZ = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -32,6 +33,8 @@ public class CustomLocalDateTimeDeserializer extends JsonDeserializer<LocalDateT
                     return LocalDateTime.parse(dateString, DATETIME_FORMATTER_WITH_TZ);
                 } else if (dateString.contains(".")) {
                     return LocalDateTime.parse(dateString, DATETIME_FORMATTER_WITH_MS);
+                } else if (dateString.length() == 16) { // yyyy-MM-ddTHH:mm format
+                    return LocalDateTime.parse(dateString, DATETIME_FORMATTER_MINUTE);
                 } else {
                     return LocalDateTime.parse(dateString, DATETIME_FORMATTER);
                 }
@@ -43,7 +46,7 @@ public class CustomLocalDateTimeDeserializer extends JsonDeserializer<LocalDateT
         } catch (DateTimeParseException e) {
             // Nếu tất cả các format đều fail, throw exception với thông báo rõ ràng
             throw new IOException("Không thể parse ngày tháng: " + dateString + 
-                                ". Format hỗ trợ: yyyy-MM-dd, yyyy-MM-ddTHH:mm:ss, yyyy-MM-ddTHH:mm:ss.SSS", e);
+                                ". Format hỗ trợ: yyyy-MM-dd, yyyy-MM-ddTHH:mm, yyyy-MM-ddTHH:mm:ss, yyyy-MM-ddTHH:mm:ss.SSS", e);
         }
     }
 }

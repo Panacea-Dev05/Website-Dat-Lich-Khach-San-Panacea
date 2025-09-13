@@ -373,6 +373,19 @@
       // Nút thêm thanh toán mới
       document.getElementById('btnAddPayment').onclick = showAddPaymentForm;
       
+      // Nút tạo hoàn tiền
+      document.getElementById('btnCreateRefund').onclick = function() {
+        document.getElementById('refundModal').style.display = 'flex';
+      };
+      
+      // Đóng modal hoàn tiền
+      document.getElementById('closeRefundModal').onclick = function() {
+        document.getElementById('refundModal').style.display = 'none';
+      };
+      document.getElementById('cancelRefundBtn').onclick = function() {
+        document.getElementById('refundModal').style.display = 'none';
+      };
+      
       // Đóng modal thêm/sửa
       document.getElementById('closePaymentModal').onclick = function() {
         document.getElementById('paymentModal').style.display = 'none';
@@ -452,7 +465,7 @@
         var form = this;
         var mode = form.getAttribute('data-mode');
         var url = form.getAttribute('action');
-        var method = mode === 'edit' ? 'PUT' : 'POST';
+        var method = 'POST';
         
         // Validation
         var bookingId = document.getElementById('bookingId').value;
@@ -479,25 +492,100 @@
           paymentDate: paymentDate,
           status: status
         };
+        
+        // Set method based on mode
+        if (mode === 'edit') {
+          method = 'PUT';
+        }
+        
         fetch(url, {
           method: method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         })
         .then(res => {
+          console.log('Response status:', res.status);
           if(res.ok) {
             return res.json();
           } else {
-            throw new Error('Lưu thanh toán thất bại!');
+            return res.json().then(errorData => {
+              throw new Error(errorData.message || 'Lưu thanh toán thất bại!');
+            });
           }
         })
         .then(data => {
           console.log('Thanh toán đã được lưu:', data);
-          location.reload();
+          if (data && data.error) {
+            throw new Error(data.message || 'Có lỗi xảy ra khi lưu thanh toán');
+          }
+          if (data && data.id) {
+            alert('Lưu thanh toán thành công!');
+            location.reload();
+          } else {
+            throw new Error('Dữ liệu phản hồi không hợp lệ');
+          }
         })
         .catch(error => {
           console.error('Lỗi:', error);
-          alert(error.message);
+          alert('Lỗi: ' + error.message);
+        });
+      };
+      
+      // Submit form hoàn tiền
+      document.getElementById('refundForm').onsubmit = function(e) {
+        e.preventDefault();
+        var form = this;
+        
+        var bookingId = document.getElementById('refundBookingId').value;
+        var refundAmount = document.getElementById('refundAmount').value;
+        var refundReason = document.getElementById('refundReason').value;
+        
+        if (!bookingId || !refundAmount) {
+          alert('Vui lòng điền đầy đủ thông tin!');
+          return;
+        }
+        
+        if (parseFloat(refundAmount) <= 0) {
+          alert('Số tiền hoàn phải lớn hơn 0!');
+          return;
+        }
+        
+        var data = {
+          bookingId: bookingId,
+          refundAmount: refundAmount,
+          reason: refundReason
+        };
+        
+        fetch('/admin/payments/refund', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(res => {
+          console.log('Refund response status:', res.status);
+          if(res.ok) {
+            return res.json();
+          } else {
+            return res.json().then(errorData => {
+              throw new Error(errorData.message || 'Tạo hoàn tiền thất bại!');
+            });
+          }
+        })
+        .then(data => {
+          console.log('Hoàn tiền đã được tạo:', data);
+          if (data && data.error) {
+            throw new Error(data.message || 'Có lỗi xảy ra khi tạo hoàn tiền');
+          }
+          if (data && data.id) {
+            alert('Tạo hoàn tiền thành công!');
+            location.reload();
+          } else {
+            throw new Error('Dữ liệu phản hồi không hợp lệ');
+          }
+        })
+        .catch(error => {
+          console.error('Lỗi:', error);
+          alert('Lỗi: ' + error.message);
         });
       };
     });

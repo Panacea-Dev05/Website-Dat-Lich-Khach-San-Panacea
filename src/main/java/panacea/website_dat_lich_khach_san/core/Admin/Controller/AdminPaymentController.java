@@ -1,5 +1,6 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import java.util.Map;
+import java.math.BigDecimal;
 
 import panacea.website_dat_lich_khach_san.entity.Payment;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.PaymentDTO;
@@ -130,15 +133,25 @@ public class AdminPaymentController {
     // API: Thêm mới thanh toán
     @PostMapping
     @ResponseBody
-    public PaymentDTO createPayment(@RequestBody PaymentDTO dto) {
+    public Object createPayment(@RequestBody PaymentDTO dto) {
         try {
+            if (dto == null) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Dữ liệu thanh toán không hợp lệ"
+                );
+            }
+            
             // Kiểm tra booking có hợp lệ không (không bị hủy)
             List<BookingDTO> payableBookings = adminBookingService.getPayableBookings();
             boolean isBookingValid = payableBookings.stream()
                 .anyMatch(b -> b.getId().equals(dto.getBookingId()));
             
             if (!isBookingValid) {
-                return null; // Booking đã bị hủy hoặc không hợp lệ
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Booking đã bị hủy hoặc không hợp lệ"
+                );
             }
             
             Payment payment = adminPaymentService.createPayment(
@@ -147,7 +160,12 @@ public class AdminPaymentController {
                 dto.getHinhThucThanhToan() != null ? dto.getHinhThucThanhToan() : dto.getPaymentMethod(),
                 "Thanh toán thêm từ admin"
             );
-            if (payment == null) return null;
+            if (payment == null) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Không thể tạo thanh toán mới"
+                );
+            }
             
             // Update status if provided
             if (dto.getStatus() != null || dto.getTrangThai() != null) {
@@ -189,54 +207,130 @@ public class AdminPaymentController {
             return convertToDTO(payment);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return java.util.Map.of(
+                "error", true,
+                "message", "Lỗi khi tạo thanh toán: " + e.getMessage()
+            );
         }
     }
 
     // API: Sửa thanh toán
     @PutMapping("/{id}")
     @ResponseBody
-    public PaymentDTO updatePayment(@PathVariable Integer id, @RequestBody PaymentDTO dto) {
-        Payment payment = paymentRepository.findById(id).orElse(null);
-        if (payment == null) return null;
-        if (dto.getSoTien() != null) payment.setSoTien(dto.getSoTien());
-        if (dto.getAmount() != null) payment.setSoTien(dto.getAmount());
-        if (dto.getHinhThucThanhToan() != null) payment.setPhuongThuc(dto.getHinhThucThanhToan());
-        if (dto.getPaymentMethod() != null) payment.setPhuongThuc(dto.getPaymentMethod());
-        if (dto.getThoiGianThanhToan() != null) payment.setNgayThanhToan(dto.getThoiGianThanhToan());
-        if (dto.getPaymentDate() != null) payment.setNgayThanhToan(dto.getPaymentDate());
-        // Handle status update - map from display value to enum
-        String statusValue = dto.getTrangThai() != null ? dto.getTrangThai() : dto.getStatus();
-        if (statusValue != null) {
-            Payment.TrangThaiPayment statusEnum = null;
-            switch (statusValue) {
-                case "Đang xử lý":
-                    statusEnum = Payment.TrangThaiPayment.DANG_XU_LY;
-                    break;
-                case "Thành công":
-                    statusEnum = Payment.TrangThaiPayment.THANH_CONG;
-                    break;
-                case "Thất bại":
-                    statusEnum = Payment.TrangThaiPayment.THAT_BAI;
-                    break;
-                case "Hoàn tiền":
-                    statusEnum = Payment.TrangThaiPayment.HOAN_TIEN;
-                    break;
-                default:
-                    // Try to parse as enum value directly
-                    try {
-                        statusEnum = Payment.TrangThaiPayment.valueOf(statusValue);
-                    } catch (IllegalArgumentException e) {
-                        // If not a valid enum value, try fromLabel
-                        statusEnum = Payment.TrangThaiPayment.fromLabel(statusValue);
-                    }
+    public Object updatePayment(@PathVariable Integer id, @RequestBody Map<String, Object> requestData) {
+        try {
+            System.out.println("Updating payment with ID: " + id);
+            System.out.println("Received request data: " + requestData);
+            
+            if (requestData == null || requestData.isEmpty()) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Dữ liệu yêu cầu không hợp lệ"
+                );
             }
-            if (statusEnum != null) {
-                payment.setTrangThai(statusEnum);
+            
+            Payment payment = paymentRepository.findById(id).orElse(null);
+            if (payment == null) {
+                System.out.println("Payment not found with ID: " + id);
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Không tìm thấy thanh toán với ID: " + id
+                );
             }
+            
+            // Update amount
+            Object amountObj = requestData.get("amount");
+            if (amountObj != null) {
+                BigDecimal amount = new BigDecimal(amountObj.toString());
+                payment.setSoTien(amount);
+                System.out.println("Updated amount to: " + amount);
+            }
+            
+            // Update payment method
+            Object paymentMethodObj = requestData.get("paymentMethod");
+            if (paymentMethodObj != null) {
+                String paymentMethod = paymentMethodObj.toString();
+                payment.setPhuongThuc(paymentMethod);
+                System.out.println("Updated payment method to: " + paymentMethod);
+            }
+            
+            // Update payment date
+            Object paymentDateObj = requestData.get("paymentDate");
+            if (paymentDateObj != null) {
+                String paymentDateStr = paymentDateObj.toString();
+                try {
+                    LocalDateTime paymentDate = LocalDateTime.parse(paymentDateStr);
+                    payment.setNgayThanhToan(paymentDate);
+                    System.out.println("Updated payment date to: " + paymentDate);
+                } catch (Exception e) {
+                    System.out.println("Error parsing payment date: " + paymentDateStr);
+                }
+            }
+            
+            // Handle status update - map from display value to enum
+            Object statusObj = requestData.get("status");
+            if (statusObj != null) {
+                String statusValue = statusObj.toString();
+                System.out.println("Updating status from: " + payment.getTrangThai() + " to: " + statusValue);
+                
+                Payment.TrangThaiPayment statusEnum = null;
+                switch (statusValue) {
+                    case "Đang xử lý":
+                        statusEnum = Payment.TrangThaiPayment.DANG_XU_LY;
+                        break;
+                    case "Thành công":
+                        statusEnum = Payment.TrangThaiPayment.THANH_CONG;
+                        break;
+                    case "Thất bại":
+                        statusEnum = Payment.TrangThaiPayment.THAT_BAI;
+                        break;
+                    case "Hoàn tiền":
+                        statusEnum = Payment.TrangThaiPayment.HOAN_TIEN;
+                        break;
+                    case "DANG_XU_LY":
+                        statusEnum = Payment.TrangThaiPayment.DANG_XU_LY;
+                        break;
+                    case "THANH_CONG":
+                        statusEnum = Payment.TrangThaiPayment.THANH_CONG;
+                        break;
+                    case "THAT_BAI":
+                        statusEnum = Payment.TrangThaiPayment.THAT_BAI;
+                        break;
+                    case "HOAN_TIEN":
+                        statusEnum = Payment.TrangThaiPayment.HOAN_TIEN;
+                        break;
+                    default:
+                        // Try to parse as enum value directly
+                        try {
+                            statusEnum = Payment.TrangThaiPayment.valueOf(statusValue);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Could not parse status: " + statusValue);
+                        }
+                }
+                
+                if (statusEnum != null) {
+                    payment.setTrangThai(statusEnum);
+                    System.out.println("Status updated to: " + statusEnum);
+                } else {
+                    System.out.println("Could not map status: " + statusValue);
+                }
+            }
+            
+            paymentRepository.save(payment);
+            System.out.println("Payment saved successfully");
+            
+            PaymentDTO result = convertToDTO(payment);
+            System.out.println("Converted DTO status: " + result.getStatus());
+            return result;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error updating payment: " + e.getMessage());
+            return java.util.Map.of(
+                "error", true,
+                "message", "Lỗi khi cập nhật thanh toán: " + e.getMessage()
+            );
         }
-        paymentRepository.save(payment);
-        return convertToDTO(payment);
     }
     
     // API: Xóa thanh toán
@@ -276,19 +370,34 @@ public class AdminPaymentController {
     // API: Tạo payment hoàn tiền cho booking đã hủy
     @PostMapping("/refund")
     @ResponseBody
-    public PaymentDTO createRefundPayment(@RequestBody java.util.Map<String, Object> request) {
+    public Object createRefundPayment(@RequestBody java.util.Map<String, Object> request) {
         try {
+            if (request == null || request.isEmpty()) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Dữ liệu yêu cầu không hợp lệ"
+                );
+            }
+            
             Integer bookingId = Integer.valueOf(request.get("bookingId").toString());
             java.math.BigDecimal refundAmount = new java.math.BigDecimal(request.get("refundAmount").toString());
             String reason = request.get("reason") != null ? request.get("reason").toString() : "Hoàn tiền do hủy đặt phòng";
             
             Payment refundPayment = adminPaymentService.createRefundPayment(bookingId, refundAmount, reason);
-            if (refundPayment == null) return null;
+            if (refundPayment == null) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Không thể tạo thanh toán hoàn tiền"
+                );
+            }
             
             return convertToDTO(refundPayment);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return java.util.Map.of(
+                "error", true,
+                "message", "Lỗi khi tạo thanh toán hoàn tiền: " + e.getMessage()
+            );
         }
     }
 
