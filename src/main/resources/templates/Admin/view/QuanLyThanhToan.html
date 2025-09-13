@@ -35,10 +35,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    #useCalculatedAmount:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
-    }
     
     #submitRefundBtn:hover {
       transform: translateY(-2px);
@@ -86,10 +82,6 @@
         max-width: none !important;
       }
       
-      #useCalculatedAmount {
-        font-size: 11px !important;
-        padding: 10px 12px !important;
-      }
       
       #refundInfo {
         margin: 10px 0 !important;
@@ -101,10 +93,6 @@
         font-size: 1.2rem !important;
       }
       
-      #useCalculatedAmount {
-        font-size: 10px !important;
-        padding: 8px 10px !important;
-      }
     }
   </style>
 </head>
@@ -308,15 +296,9 @@
               </div>
 
               <label for="refundAmount">Số tiền hoàn (VNĐ)</label>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" 
-                       placeholder="Nhập số tiền hoàn (ví dụ: 1000000)" 
-                       style="flex: 1;" />
-                <button type="button" id="useCalculatedAmount" 
-                        style="background: #3b82f6; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
-                   Dùng số tính toán
-                </button>
-              </div>
+              <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" 
+                     placeholder="Số tiền hoàn sẽ được tự động điền khi chọn booking..." 
+                     readonly />
               <div id="refundAmountError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng nhập số tiền hoàn hợp lệ</div>
 
               <label for="refundReason">Lý do hoàn tiền</label>
@@ -639,12 +621,8 @@
         }
       };
       
-      // Nút sử dụng số tiền tính toán
-      document.getElementById('useCalculatedAmount').onclick = function() {
-        var calculatedAmount = document.getElementById('refundCalculatedAmount').textContent;
-        var amount = calculatedAmount.replace(/[^\d]/g, ''); // Lấy chỉ số
-        document.getElementById('refundAmount').value = amount;
-      };
+      // Tự động điền số tiền hoàn khi chọn booking (không cần button)
+      // Logic này đã được tích hợp vào loadRefundInfo function
       
       // Đóng modal thêm/sửa
       document.getElementById('closePaymentModal').onclick = function() {
