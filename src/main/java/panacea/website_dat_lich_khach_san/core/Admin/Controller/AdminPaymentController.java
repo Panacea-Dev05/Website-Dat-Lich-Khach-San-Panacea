@@ -367,6 +367,63 @@ public class AdminPaymentController {
         }
     }
 
+    // API: Lấy thông tin hoàn tiền cho booking
+    @GetMapping("/refund-info/{bookingId}")
+    @ResponseBody
+    public Object getRefundInfo(@PathVariable Integer bookingId) {
+        try {
+            Booking booking = bookingRepository.findById(bookingId).orElse(null);
+            if (booking == null) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Không tìm thấy booking với ID: " + bookingId
+                );
+            }
+            
+            // Kiểm tra booking đã hủy chưa
+            if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Chỉ có thể hoàn tiền cho booking đã hủy"
+                );
+            }
+            
+            // Kiểm tra đã hoàn tiền chưa
+            if (adminPaymentService.hasRefunded(bookingId)) {
+                return java.util.Map.of(
+                    "error", true,
+                    "message", "Booking này đã được hoàn tiền trước đó"
+                );
+            }
+            
+            java.math.BigDecimal totalPaid = adminPaymentService.getTotalPaidAmount(bookingId);
+            java.math.BigDecimal calculatedRefund = adminPaymentService.calculateRefundAmount(bookingId);
+            
+            // Phí hủy = 20% số tiền cọc (tổng đã thanh toán)
+            java.math.BigDecimal cancellationFee = totalPaid.multiply(new java.math.BigDecimal("0.20"));
+            
+            return java.util.Map.of(
+                "bookingId", bookingId,
+                "maDatPhong", booking.getMaDatPhong(),
+                "customerName", booking.getKhachHang() != null ? 
+                    (booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen()).trim() : "Không rõ",
+                "totalPaid", totalPaid,
+                "cancellationFee", cancellationFee,
+                "calculatedRefund", calculatedRefund,
+                "cancellationPolicy", booking.getCancellationPolicy() != null ? booking.getCancellationPolicy().name() : "MODERATE",
+                "ngayHuy", booking.getNgayHuy(),
+                "lyDoHuy", booking.getLyDoHuy()
+            );
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Map.of(
+                "error", true,
+                "message", "Lỗi khi lấy thông tin hoàn tiền: " + e.getMessage()
+            );
+        }
+    }
+    
     // API: Tạo payment hoàn tiền cho booking đã hủy
     @PostMapping("/refund")
     @ResponseBody
@@ -384,14 +441,14 @@ public class AdminPaymentController {
             String reason = request.get("reason") != null ? request.get("reason").toString() : "Hoàn tiền do hủy đặt phòng";
             
             Payment refundPayment = adminPaymentService.createRefundPayment(bookingId, refundAmount, reason);
-            if (refundPayment == null) {
-                return java.util.Map.of(
-                    "error", true,
-                    "message", "Không thể tạo thanh toán hoàn tiền"
-                );
-            }
-            
             return convertToDTO(refundPayment);
+            
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return java.util.Map.of(
+                "error", true,
+                "message", e.getMessage()
+            );
         } catch (Exception e) {
             e.printStackTrace();
             return java.util.Map.of(

@@ -9,6 +9,104 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/css/Admin/quanlythanhtoan.css}">
   <link rel="stylesheet" th:href="@{/css/responsive.css}">
+  <style>
+    /* Custom styles for refund modal */
+    .modal-content {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .form-section {
+      transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    #useCalculatedAmount:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    }
+    
+    #submitRefundBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    #cancelRefundBtn:hover {
+      background: #dc2626 !important;
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .info-card {
+      transition: all 0.2s ease;
+    }
+    
+    .info-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Form group styling */
+    .form-group {
+      margin-bottom: 0;
+    }
+    
+    /* Error styling */
+    [id$="Error"] {
+      transition: all 0.2s ease;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95% !important;
+        margin: 10px;
+        min-width: auto !important;
+        max-width: none !important;
+      }
+      
+      #useCalculatedAmount {
+        font-size: 11px !important;
+        padding: 10px 12px !important;
+      }
+      
+      #refundInfo {
+        margin: 10px 0 !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .modal-header h2 {
+        font-size: 1.2rem !important;
+      }
+      
+      #useCalculatedAmount {
+        font-size: 10px !important;
+        padding: 8px 10px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -167,27 +265,69 @@
 
         <!-- Modal tạo hoàn tiền (ẩn mặc định) -->
         <div class="modal-overlay" id="refundModal" style="display:none;">
-          <div class="modal-content">
-            <button type="button" class="modal-close" id="closeRefundModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+          <div class="modal-content" style="min-width: 300px; max-width: 50%; width: 100%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+              <h2 style="color:#1f2937; margin:0; font-size: 1.4rem; font-weight: 600;">💰 Tạo hoàn tiền</h2>
+              <button type="button" class="modal-close" id="closeRefundModal" style="background:none; border:none; font-size:1.5rem; color:#6b7280; cursor:pointer; padding:5px; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">&times;</button>
+            </div>
+            
             <form id="refundForm">
-              <h2 style="color:#064e3b; margin-bottom:1rem;">Tạo hoàn tiền cho booking đã hủy</h2>
-
-              <label for="refundBookingId">Booking đã hủy</label>
+              <label for="refundBookingId">Chọn booking đã hủy</label>
               <select id="refundBookingId" name="refundBookingId" required>
-                <option value="" disabled selected>Chọn booking đã hủy</option>
+                <option value="" disabled selected>Chọn booking đã hủy để tạo hoàn tiền...</option>
                 <option th:each="booking : ${cancelledBookings}" th:value="${booking.id}"
                   th:text="${booking.maDatPhong + ' - ' + booking.customerName + ' (Hủy: ' + #temporals.format(booking.ngayHuy, 'dd/MM/yyyy') + ')'}"></option>
               </select>
+              <div id="refundBookingError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng chọn booking đã hủy</div>
+
+              <!-- Thông tin hoàn tiền tự động -->
+              <div id="refundInfo" style="display:none; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 15px 0;">
+                <h3 style="color:#1f2937; margin: 0 0 12px 0; font-size: 14px; font-weight: 600;">📊 Thông tin booking</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; font-size: 13px;">
+                  <div>
+                    <span style="color: #6b7280;">Khách hàng:</span>
+                    <div style="font-weight: 500; color: #1f2937;" id="refundCustomerName"></div>
+                  </div>
+                  <div>
+                    <span style="color: #6b7280;">Mã đặt phòng:</span>
+                    <div style="font-weight: 500; color: #1f2937;" id="refundMaDatPhong"></div>
+                  </div>
+                  <div>
+                    <span style="color: #6b7280;">Tổng đã thanh toán:</span>
+                    <div style="font-weight: 500; color: #059669;" id="refundTotalPaid"></div>
+                  </div>
+                  <div>
+                    <span style="color: #6b7280;">Phí hủy:</span>
+                    <div style="font-weight: 500; color: #dc2626;" id="refundCancellationFee"></div>
+                  </div>
+                </div>
+                <div style="background: #dbeafe; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #93c5fd;">
+                  <div style="font-size: 12px; color: #1e40af; margin-bottom: 4px;">Số tiền hoàn được tính toán</div>
+                  <div style="font-size: 18px; font-weight: 700; color: #1e40af;" id="refundCalculatedAmount"></div>
+                </div>
+              </div>
 
               <label for="refundAmount">Số tiền hoàn (VNĐ)</label>
-              <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" placeholder="Nhập số tiền hoàn" />
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" 
+                       placeholder="Nhập số tiền hoàn (ví dụ: 1000000)" 
+                       style="flex: 1;" />
+                <button type="button" id="useCalculatedAmount" 
+                        style="background: #3b82f6; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+                   Dùng số tính toán
+                </button>
+              </div>
+              <div id="refundAmountError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng nhập số tiền hoàn hợp lệ</div>
 
               <label for="refundReason">Lý do hoàn tiền</label>
-              <textarea id="refundReason" name="refundReason" rows="3" placeholder="Hoàn tiền do hủy đặt phòng theo chính sách"></textarea>
+              <textarea id="refundReason" name="refundReason" rows="5" 
+                        placeholder="Nhập lý do hoàn tiền (ví dụ: Hoàn tiền do hủy đặt phòng theo chính sách, khách hàng yêu cầu hủy do thay đổi kế hoạch, v.v...)" 
+                        style="resize: vertical; min-height: 100px;"></textarea>
+              <div id="refundReasonError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng nhập lý do hoàn tiền</div>
 
               <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
                 <button type="submit" class="btn" id="submitRefundBtn">Tạo hoàn tiền</button>
-                <button type="button" class="btn" id="cancelRefundBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                <button type="button" class="btn" id="cancelRefundBtn" style="background: transparent; color: #dc2626; border: 1px solid #dc2626; margin-left: 12px;">Hủy</button>
               </div>
             </form>
           </div>
@@ -313,6 +453,103 @@
         });
     }
 
+    // Clear validation errors
+    function clearRefundErrors() {
+      document.getElementById('refundBookingError').style.display = 'none';
+      document.getElementById('refundAmountError').style.display = 'none';
+      document.getElementById('refundReasonError').style.display = 'none';
+    }
+    
+    // Show validation error
+    function showRefundError(fieldId, message) {
+      var errorElement = document.getElementById(fieldId);
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+    
+    // Load thông tin hoàn tiền
+    function loadRefundInfo(bookingId) {
+      // Hiển thị loading
+      document.getElementById('refundInfo').style.display = 'block';
+      document.getElementById('refundInfo').innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #e5e7eb; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <div style="margin-top: 15px; color: #6b7280; font-weight: 500;">Đang tải thông tin booking...</div>
+        </div>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      
+      fetch('/admin/payments/refund-info/' + bookingId)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Lỗi khi tải thông tin hoàn tiền');
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.error) {
+            throw new Error(data.message || 'Lỗi không xác định');
+          }
+          
+          // Hiển thị thông tin hoàn tiền
+          document.getElementById('refundInfo').innerHTML = `
+            <h3 style="color:#0c4a6e; margin: 0 0 15px 0; font-size: 1.1rem; font-weight: 600;">📊 Thông tin chi tiết booking</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">👤 KHÁCH HÀNG</div>
+                <div style="font-weight: 600; color: #1f2937;">${data.customerName}</div>
+              </div>
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">🏷️ MÃ ĐẶT PHÒNG</div>
+                <div style="font-weight: 600; color: #1f2937;">${data.maDatPhong}</div>
+              </div>
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">💰 TỔNG ĐÃ THANH TOÁN</div>
+                <div style="font-weight: 600; color: #059669;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.totalPaid)}</div>
+              </div>
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">💸 PHÍ HỦY</div>
+                <div style="font-weight: 600; color: #dc2626;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.cancellationFee)}</div>
+              </div>
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">📋 CHÍNH SÁCH HỦY</div>
+                <div style="font-weight: 600; color: #1f2937;">${data.cancellationPolicy}</div>
+              </div>
+              <div class="info-card" style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">📅 NGÀY HỦY</div>
+                <div style="font-weight: 600; color: #1f2937;">${new Date(data.ngayHuy).toLocaleDateString('vi-VN')}</div>
+              </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 15px; border-radius: 10px; text-align: center; border: 2px solid #3b82f6;">
+              <div style="font-size: 14px; color: #1e40af; margin-bottom: 5px;">🎯 SỐ TIỀN HOÀN ĐƯỢC TÍNH TOÁN</div>
+              <div style="font-size: 24px; font-weight: 700; color: #1e40af;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.calculatedRefund)}</div>
+            </div>
+          `;
+          
+          // Tự động điền số tiền hoàn
+          document.getElementById('refundAmount').value = data.calculatedRefund;
+          
+          // Clear any amount errors
+          document.getElementById('refundAmountError').style.display = 'none';
+          
+        })
+        .catch(error => {
+          console.error('Lỗi:', error);
+          document.getElementById('refundInfo').innerHTML = `
+            <div style="text-align: center; padding: 20px; background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px; color: #dc2626;">
+              <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+              <div style="font-weight: 600; margin-bottom: 5px;">Không thể tải thông tin</div>
+              <div style="font-size: 14px;">${error.message}</div>
+            </div>
+          `;
+        });
+    }
+
     // In hóa đơn
     function printInvoice(paymentId) {
       fetch('/admin/payments/invoice/' + paymentId)
@@ -376,6 +613,8 @@
       // Nút tạo hoàn tiền
       document.getElementById('btnCreateRefund').onclick = function() {
         document.getElementById('refundModal').style.display = 'flex';
+        document.getElementById('refundInfo').style.display = 'none';
+        document.getElementById('refundForm').reset();
       };
       
       // Đóng modal hoàn tiền
@@ -384,6 +623,27 @@
       };
       document.getElementById('cancelRefundBtn').onclick = function() {
         document.getElementById('refundModal').style.display = 'none';
+      };
+      
+      // Xử lý khi chọn booking để hoàn tiền
+      document.getElementById('refundBookingId').onchange = function() {
+        var bookingId = this.value;
+        // Clear previous errors
+        clearRefundErrors();
+        
+        if (bookingId) {
+          loadRefundInfo(bookingId);
+        } else {
+          document.getElementById('refundInfo').style.display = 'none';
+          document.getElementById('refundAmount').value = '';
+        }
+      };
+      
+      // Nút sử dụng số tiền tính toán
+      document.getElementById('useCalculatedAmount').onclick = function() {
+        var calculatedAmount = document.getElementById('refundCalculatedAmount').textContent;
+        var amount = calculatedAmount.replace(/[^\d]/g, ''); // Lấy chỉ số
+        document.getElementById('refundAmount').value = amount;
       };
       
       // Đóng modal thêm/sửa
@@ -519,8 +779,8 @@
             throw new Error(data.message || 'Có lỗi xảy ra khi lưu thanh toán');
           }
           if (data && data.id) {
-            alert('Lưu thanh toán thành công!');
-            location.reload();
+          alert('Lưu thanh toán thành công!');
+          location.reload();
           } else {
             throw new Error('Dữ liệu phản hồi không hợp lệ');
           }
@@ -536,17 +796,47 @@
         e.preventDefault();
         var form = this;
         
+        // Clear previous errors
+        clearRefundErrors();
+        
         var bookingId = document.getElementById('refundBookingId').value;
         var refundAmount = document.getElementById('refundAmount').value;
         var refundReason = document.getElementById('refundReason').value;
         
-        if (!bookingId || !refundAmount) {
-          alert('Vui lòng điền đầy đủ thông tin!');
-          return;
+        var hasError = false;
+        
+        // Validation booking
+        if (!bookingId) {
+          showRefundError('refundBookingError', 'Vui lòng chọn booking đã hủy');
+          hasError = true;
         }
         
-        if (parseFloat(refundAmount) <= 0) {
-          alert('Số tiền hoàn phải lớn hơn 0!');
+        // Validation amount
+        if (!refundAmount) {
+          showRefundError('refundAmountError', 'Vui lòng nhập số tiền hoàn');
+          hasError = true;
+        } else if (parseFloat(refundAmount) <= 0) {
+          showRefundError('refundAmountError', 'Số tiền hoàn phải lớn hơn 0');
+          hasError = true;
+        } else {
+          // Lấy thông tin booking để validation
+          var totalPaidText = document.getElementById('refundTotalPaid').textContent;
+          if (totalPaidText) {
+            var totalPaid = parseFloat(totalPaidText.replace(/[^\d]/g, ''));
+            if (parseFloat(refundAmount) > totalPaid) {
+              showRefundError('refundAmountError', 'Số tiền hoàn không được vượt quá số tiền đã thanh toán');
+              hasError = true;
+            }
+          }
+        }
+        
+        // Validation reason
+        if (!refundReason.trim()) {
+          showRefundError('refundReasonError', 'Vui lòng nhập lý do hoàn tiền');
+          hasError = true;
+        }
+        
+        if (hasError) {
           return;
         }
         

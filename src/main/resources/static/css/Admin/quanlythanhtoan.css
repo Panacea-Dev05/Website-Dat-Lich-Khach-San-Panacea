@@ -208,6 +208,15 @@ th {
 td:nth-child(9) {
     text-align: center;
     white-space: nowrap;
+    padding: 8px 4px;
+}
+
+/* Đảm bảo các button trong cột thao tác hiển thị đúng */
+td:nth-child(9) .btn-view,
+td:nth-child(9) .btn-edit,
+td:nth-child(9) .btn-delete {
+    display: inline-flex;
+    vertical-align: middle;
 }
 
 tbody tr:hover {
@@ -251,13 +260,16 @@ tbody tr:hover {
 .btn-view, .btn-edit, .btn-delete {
     background: none;
     border: none;
-    padding: 6px;
-    border-radius: 50%;
+    padding: 8px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    margin: 0 2px;
+    margin: 0 3px;
+    min-width: 32px;
+    min-height: 32px;
+    cursor: pointer;
 }
 
 .btn-view {
@@ -270,6 +282,7 @@ tbody tr:hover {
 
 .btn-delete {
     color: #dc2626;
+    background-color: rgba(220, 38, 38, 0.05);
 }
 
 .btn-view:hover, .btn-edit:hover, .btn-delete:hover {
@@ -279,15 +292,27 @@ tbody tr:hover {
 
 .btn-view:hover {
     color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
 }
 
 .btn-edit:hover {
     color: #0ea5e9;
+    background-color: rgba(14, 165, 233, 0.1);
 }
 
 .btn-delete:hover {
-    color: #ef4444;
-    background-color: rgba(220, 38, 38, 0.1);
+    color: #ffffff;
+    background-color: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Đảm bảo Material Icons hiển thị đúng trong button */
+.btn-view .material-icons,
+.btn-edit .material-icons,
+.btn-delete .material-icons {
+    font-size: 18px;
+    line-height: 1;
+    display: block;
 }
 /* Buttons */
 .btn {

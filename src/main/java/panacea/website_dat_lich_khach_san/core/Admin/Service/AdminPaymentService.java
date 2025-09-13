@@ -78,16 +78,35 @@ public class AdminPaymentService {
     // 5b. Tạo payment hoàn tiền cho booking đã hủy
     public Payment createRefundPayment(Integer bookingId, BigDecimal refundAmount, String reason) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null) return null;
+        if (booking == null) {
+            throw new RuntimeException("Không tìm thấy booking với ID: " + bookingId);
+        }
         
         // Chỉ cho phép hoàn tiền cho booking đã hủy
         if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) {
-            return null;
+            throw new RuntimeException("Chỉ có thể hoàn tiền cho booking đã hủy");
         }
         
         // Kiểm tra số tiền hoàn lại hợp lệ
         if (refundAmount == null || refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            return null;
+            throw new RuntimeException("Số tiền hoàn phải lớn hơn 0");
+        }
+        
+        // Kiểm tra số tiền hoàn không vượt quá số tiền đã thanh toán
+        BigDecimal totalPaid = getTotalPaidAmount(bookingId);
+        if (refundAmount.compareTo(totalPaid) > 0) {
+            throw new RuntimeException("Số tiền hoàn không được vượt quá số tiền đã thanh toán: " + totalPaid);
+        }
+        
+        // Kiểm tra số tiền hoàn không vượt quá 80% số tiền cọc (vì phí hủy = 20%)
+        BigDecimal maxRefund = totalPaid.multiply(new BigDecimal("0.80"));
+        if (refundAmount.compareTo(maxRefund) > 0) {
+            throw new RuntimeException("Số tiền hoàn không được vượt quá 80% số tiền cọc (tối đa: " + maxRefund + " VNĐ)");
+        }
+        
+        // Kiểm tra đã hoàn tiền chưa
+        if (hasRefunded(bookingId)) {
+            throw new RuntimeException("Booking này đã được hoàn tiền trước đó");
         }
         
         Payment refundPayment = new Payment();
@@ -99,7 +118,44 @@ public class AdminPaymentService {
         refundPayment.setTrangThai(Payment.TrangThaiPayment.HOAN_TIEN);
         refundPayment.setNgayThanhToan(LocalDateTime.now());
         
+        // Cập nhật trạng thái thanh toán của booking
+        booking.setTrangThaiThanhToan(Booking.TrangThaiThanhToan.HOAN_TIEN);
+        bookingRepository.save(booking);
+        
         return paymentRepository.save(refundPayment);
+    }
+    
+    // Tính tổng số tiền đã thanh toán cho booking
+    public BigDecimal getTotalPaidAmount(Integer bookingId) {
+        List<Payment> payments = getPaymentsByBooking(bookingId);
+        return payments.stream()
+            .filter(p -> p.getTrangThai() == Payment.TrangThaiPayment.THANH_CONG)
+            .map(Payment::getSoTien)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    // Kiểm tra booking đã được hoàn tiền chưa
+    public boolean hasRefunded(Integer bookingId) {
+        List<Payment> payments = getPaymentsByBooking(bookingId);
+        return payments.stream()
+            .anyMatch(p -> p.getTrangThai() == Payment.TrangThaiPayment.HOAN_TIEN);
+    }
+    
+    // Tính toán số tiền hoàn tiền dựa trên chính sách hủy
+    public BigDecimal calculateRefundAmount(Integer bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking == null) return BigDecimal.ZERO;
+        
+        BigDecimal totalPaid = getTotalPaidAmount(bookingId);
+        
+        // Phí hủy = 20% số tiền cọc (tổng đã thanh toán)
+        BigDecimal cancellationFee = totalPaid.multiply(new BigDecimal("0.20"));
+        
+        // Số tiền hoàn = Tổng đã thanh toán - Phí hủy
+        BigDecimal refundAmount = totalPaid.subtract(cancellationFee);
+        
+        // Đảm bảo không âm
+        return refundAmount.compareTo(BigDecimal.ZERO) > 0 ? refundAmount : BigDecimal.ZERO;
     }
 
     // 6. Xem lịch sử thanh toán theo booking/customer
