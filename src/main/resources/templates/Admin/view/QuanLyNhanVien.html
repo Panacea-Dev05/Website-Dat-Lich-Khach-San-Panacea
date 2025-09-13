@@ -74,42 +74,55 @@
                 <div class="staff-form-overlay" id="staffFormOverlay">
                     <div class="staff-form-container">
                         <button type="button" class="close-btn" id="closeFormBtn">&times;</button>
-                        <form id="staffForm">
-                            <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem; grid-column: 1 / 3;">Thêm nhân viên mới</h2>
+                        <form id="staffForm" class="staff-form">
+                            <h2 id="formTitle" class="form-title">Thêm nhân viên mới</h2>
                             <input type="hidden" id="staffId" name="staffId" />
 
-                            <label for="maNhanVien">Mã nhân viên</label>
-                            <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
+                            <div class="form-group">
+                                <label for="maNhanVien">Mã nhân viên</label>
+                                <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
+                            </div>
 
-                            <label for="ho">Họ</label>
-                            <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
+                            <div class="form-group">
+                                <label for="ho">Họ</label>
+                                <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
+                            </div>
 
-                            <label for="ten">Tên</label>
-                            <input type="text" id="ten" name="ten" required placeholder="Văn A" />
+                            <div class="form-group">
+                                <label for="ten">Tên</label>
+                                <input type="text" id="ten" name="ten" required placeholder="Văn A" />
+                            </div>
 
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
+                            </div>
 
-                            <label for="soDienThoai">Số điện thoại</label>
-                            <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456" />
+                            <div class="form-group">
+                                <label for="soDienThoai">Số điện thoại</label>
+                                <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456" />
+                            </div>
 
-                            <label for="chucVu">Chức vụ</label>
-                            <select id="chucVu" name="chucVu" required>
-                                <option value="" disabled selected>Chọn chức vụ</option>
-                                <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
-                            </select>
+                            <div class="form-group">
+                                <label for="chucVu">Chức vụ</label>
+                                <select id="chucVu" name="chucVu" required>
+                                    <option value="" disabled selected>Chọn chức vụ</option>
+                                    <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
+                                </select>
+                            </div>
 
-                            <label for="trangThai">Trạng thái</label>
-                            <select id="trangThai" name="trangThai" required>
-                                <option value="" disabled selected>Chọn trạng thái</option>
-                                <option th:each="status : ${staffStatuses}" th:value="${status}"
-                                    th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
-                            </select>
+                            <div class="form-group">
+                                <label for="trangThai">Trạng thái</label>
+                                <select id="trangThai" name="trangThai" required>
+                                    <option value="" disabled selected>Chọn trạng thái</option>
+                                    <option th:each="status : ${staffStatuses}" th:value="${status}"
+                                        th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
+                                </select>
+                            </div>
 
-                            <div style="grid-column: 1 / 3; margin-top: 1.5rem; text-align: right;">
-                                <button type="submit" class="btn" id="submitBtn">Lưu nhân viên</button>
-                                <button type="button" class="btn" id="cancelBtn"
-                                    style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">Lưu nhân viên</button>
+                                <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
                             </div>
                         </form>
                     </div>

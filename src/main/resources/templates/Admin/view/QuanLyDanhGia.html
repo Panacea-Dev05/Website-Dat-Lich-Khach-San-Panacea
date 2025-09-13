@@ -8,6 +8,349 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlydanhgia.css}">
+    
+    <style>
+        /* Modal Overlay - Professional Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        /* Modal Content - Simple */
+        .modal-content {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalSlideIn 0.3s ease-out;
+            position: relative;
+        }
+
+        /* Modal Header - Simple */
+        .modal-header {
+            background: #f8fafc;
+            color: #1f2937;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-icon {
+            font-size: 1.2rem;
+        }
+
+        .modal-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: #e5e7eb;
+            border: none;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #d1d5db;
+        }
+
+        .close-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6b7280;
+        }
+
+        /* Modal Body - Simple */
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        /* Modal Actions - Simple Buttons */
+        .modal-actions {
+            background: #ffffff;
+            padding: 20px 25px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        .btn-reject {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .btn-reject:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        .btn-close {
+            background: #6b7280;
+            color: white;
+            border-color: #6b7280;
+        }
+
+        .btn-close:hover {
+            background: #4b5563;
+            border-color: #4b5563;
+        }
+
+        .btn-icon {
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(10px);
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+                margin: 10px;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-actions {
+                padding: 20px;
+                flex-direction: column;
+            }
+            
+            .modal-actions button {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        /* Custom Scrollbar for Modal Body */
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Review Detail Content Styles - Simple */
+        .review-detail-container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .review-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .rating-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .rating-stars {
+            font-size: 16px;
+            color: #f59e0b;
+        }
+
+        .comment-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .comment-content {
+            color: #1f2937;
+            line-height: 1.5;
+            font-size: 14px;
+            min-height: 60px;
+        }
+
+        .status-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .review-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -27,7 +370,7 @@
         <main role="main" tabindex="0">
             <h1>Quản lý đánh giá</h1>
             <section class="content-section" id="contentSection">
-                <button class="btn" id="btnAddReview">Thêm đánh giá mới</button>
+                <!-- Admin không thể thêm đánh giá mới, chỉ quản lý đánh giá có sẵn -->
                 <table aria-label="Danh sách đánh giá" id="reviewTable">
                     <thead>
                         <tr>
@@ -66,10 +409,10 @@
                             </td>
                             <td th:text="${#temporals.format(review.createdDate, 'dd/MM/yyyy')}">15/12/2024</td>
                             <td>
-                                <span th:class="${review.status == 'Approved' ? 'status-approved' : 
-                                                  review.status == 'Pending' ? 'status-pending' : 'status-rejected'}"
-                                    th:text="${review.status == 'Approved' ? 'Đã duyệt' : 
-                                                review.status == 'Pending' ? 'Chờ duyệt' : 'Từ chối'}">
+                                <span th:class="${review.status == 'DA_DUYET' ? 'status-approved' : 
+                                                  review.status == 'CHO_DUYET' ? 'status-pending' : 'status-rejected'}"
+                                    th:text="${review.status == 'DA_DUYET' ? 'Đã duyệt' : 
+                                                review.status == 'CHO_DUYET' ? 'Chờ duyệt' : 'Đã ẩn'}">
                                     Đã duyệt
                                 </span>
                             </td>
@@ -78,11 +421,16 @@
                                     title="Xem chi tiết">
                                     <span class="material-icons">visibility</span>
                                 </button>
-                                <button class="btn-edit" th:onclick="'editReview(' + ${review.id} + ')'" title="Sửa">
-                                    <span class="material-icons">edit</span>
+                                <button th:if="${review.status == 'CHO_DUYET'}" class="btn-approve" th:onclick="'approveReview(' + ${review.id} + ')'" 
+                                    title="Duyệt đánh giá" style="background: #10b981; color: white; border: none; padding: 6px; border-radius: 4px; margin: 0 2px;">
+                                    <span class="material-icons" style="font-size: 18px;">check</span>
+                                </button>
+                                <button th:if="${review.status == 'CHO_DUYET'}" class="btn-reject" th:onclick="'rejectReview(' + ${review.id} + ')'" 
+                                    title="Từ chối đánh giá" style="background: #dc2626; color: white; border: none; padding: 6px; border-radius: 4px; margin: 0 2px;">
+                                    <span class="material-icons" style="font-size: 18px;">close</span>
                                 </button>
                                 <button class="btn-delete" th:onclick="'deleteReview(' + ${review.id} + ')'"
-                                    title="Xóa">
+                                    title="Xóa đánh giá">
                                     <span class="material-icons">delete</span>
                                 </button>
                             </td>
@@ -90,55 +438,41 @@
                     </tbody>
                 </table>
 
-                <!-- Form thêm/sửa đánh giá -->
-                <form id="reviewForm" style="display:none; margin-top: 2rem;">
-                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm đánh giá mới</h2>
-                    <input type="hidden" id="reviewId" name="reviewId" />
-
-                    <label for="customerId">Khách hàng</label>
-                    <select id="customerId" name="customerId" required>
-                        <option value="" disabled selected>Chọn khách hàng</option>
-                        <option th:each="customer : ${customers}" th:value="${customer.id}"
-                            th:text="${customer.ho + ' ' + customer.ten}"></option>
-                    </select>
-
-                    <label for="roomId">Phòng</label>
-                    <select id="roomId" name="roomId" required>
-                        <option value="" disabled selected>Chọn phòng</option>
-                        <option th:each="room : ${rooms}" th:value="${room.id}"
-                            th:text="${room.soPhong + ' - ' + room.roomTypeName}"></option>
-                    </select>
-
-                    <label for="rating">Điểm đánh giá</label>
-                    <div class="rating-input">
-                        <input type="number" id="rating" name="rating" required min="1" max="5" step="0.5"
-                            placeholder="4.5" />
-                        <div class="stars-display">
-                            <span class="material-icons">star</span>
-                            <span class="material-icons">star</span>
-                            <span class="material-icons">star</span>
-                            <span class="material-icons">star</span>
-                            <span class="material-icons">star</span>
+                <!-- Modal xem chi tiết đánh giá -->
+                <div class="modal-overlay" id="viewReviewModal" style="display:none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <span class="modal-icon">📝</span>
+                                <h2>Chi tiết đánh giá</h2>
+                            </div>
+                            <button type="button" class="modal-close" id="closeViewReviewModal">
+                                <span class="close-icon">&times;</span>
+                            </button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div id="reviewDetails">
+                                <!-- Nội dung chi tiết đánh giá sẽ được load bằng JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn-approve" id="approveReviewBtn" style="display: none;">
+                                <span class="btn-icon">✅</span>
+                                Duyệt đánh giá
+                            </button>
+                            <button type="button" class="btn-reject" id="rejectReviewBtn" style="display: none;">
+                                <span class="btn-icon">❌</span>
+                                Từ chối đánh giá
+                            </button>
+                            <button type="button" class="btn-close" id="closeViewReviewBtn">
+                                <span class="btn-icon">✕</span>
+                                Đóng
+                            </button>
                         </div>
                     </div>
-
-                    <label for="comment">Nội dung đánh giá</label>
-                    <textarea id="comment" name="comment" required placeholder="Nhập nội dung đánh giá chi tiết..."
-                        rows="4"></textarea>
-
-                    <label for="status">Trạng thái</label>
-                    <select id="status" name="status" required>
-                        <option value="Pending" selected>Chờ duyệt</option>
-                        <option value="Approved">Đã duyệt</option>
-                        <option value="Rejected">Từ chối</option>
-                    </select>
-
-                    <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-                        <button type="submit" class="btn" id="submitBtn">Lưu đánh giá</button>
-                        <button type="button" class="btn" id="cancelBtn"
-                            style="background:#ef4444; margin-left: 12px;">Hủy</button>
-                    </div>
-                </form>
+                </div>
             </section>
         </main>
 
@@ -148,6 +482,162 @@
     </div>
 
     <script th:src="@{/js/Admin/quanlydanhgia.js}"></script>
+    <script>
+        // Xem chi tiết đánh giá
+        function viewReview(reviewId) {
+            fetch('/admin/reviews/' + reviewId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('reviewDetails').innerHTML = `
+                        <div class="review-detail-container">
+                            <div class="review-info">
+                                <div class="info-item">
+                                    <div class="info-label">Khách hàng</div>
+                                    <div class="info-value">${data.customerName || 'Không rõ'}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Phòng</div>
+                                    <div class="info-value">${data.roomNumber || 'Không rõ'}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Ngày đánh giá</div>
+                                    <div class="info-value">${new Date(data.ngayDanhGia).toLocaleDateString('vi-VN')}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Trạng thái</div>
+                                    <div class="info-value">
+                                        <span class="status-badge status-${data.trangThai === 'DA_DUYET' ? 'approved' : data.trangThai === 'CHO_DUYET' ? 'pending' : 'rejected'}">
+                                            ${data.trangThai === 'DA_DUYET' ? 'Đã duyệt' : data.trangThai === 'CHO_DUYET' ? 'Chờ duyệt' : 'Đã ẩn'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rating-info">
+                                <div class="info-label">Điểm đánh giá</div>
+                                <div class="rating-display">
+                                    <span class="rating-score">${data.diemDanhGia || data.rating || 0}</span>
+                                    <span>/ 5</span>
+                                    <span class="rating-stars">${'★'.repeat(data.diemDanhGia || data.rating || 0)}${'☆'.repeat(5 - (data.diemDanhGia || data.rating || 0))}</span>
+                                </div>
+                            </div>
+
+                            <div class="comment-info">
+                                <div class="info-label">Bình luận</div>
+                                <div class="comment-content">
+                                    ${data.noiDung || data.comment || 'Không có bình luận'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Hiển thị button duyệt/từ chối nếu đang chờ duyệt
+                    if (data.trangThai === 'CHO_DUYET') {
+                        document.getElementById('approveReviewBtn').style.display = 'inline-block';
+                        document.getElementById('rejectReviewBtn').style.display = 'inline-block';
+                        document.getElementById('approveReviewBtn').onclick = () => approveReview(reviewId);
+                        document.getElementById('rejectReviewBtn').onclick = () => rejectReview(reviewId);
+                    } else {
+                        document.getElementById('approveReviewBtn').style.display = 'none';
+                        document.getElementById('rejectReviewBtn').style.display = 'none';
+                    }
+                    
+                    document.getElementById('viewReviewModal').style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể tải chi tiết đánh giá');
+                });
+        }
+        
+        // Duyệt đánh giá
+        function approveReview(reviewId) {
+            if (confirm('Bạn có chắc chắn muốn duyệt đánh giá này?')) {
+                fetch('/admin/reviews/' + reviewId + '/approve', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Lỗi: ' + data.message);
+                    } else {
+                        alert('Đã duyệt đánh giá thành công');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể duyệt đánh giá');
+                });
+            }
+        }
+        
+        // Từ chối đánh giá
+        function rejectReview(reviewId) {
+            if (confirm('Bạn có chắc chắn muốn từ chối đánh giá này?')) {
+                fetch('/admin/reviews/' + reviewId + '/reject', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Lỗi: ' + data.message);
+                    } else {
+                        alert('Đã từ chối đánh giá thành công');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể từ chối đánh giá');
+                });
+            }
+        }
+        
+        // Xóa đánh giá
+        function deleteReview(reviewId) {
+            if (confirm('Bạn có chắc chắn muốn xóa đánh giá này? Hành động này không thể hoàn tác.')) {
+                fetch('/admin/reviews/' + reviewId, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Lỗi: ' + data.message);
+                    } else {
+                        alert('Đã xóa đánh giá thành công');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể xóa đánh giá');
+                });
+            }
+        }
+        
+        // Đóng modal xem chi tiết
+        document.getElementById('closeViewReviewModal').onclick = function() {
+            document.getElementById('viewReviewModal').style.display = 'none';
+        };
+        
+        document.getElementById('closeViewReviewBtn').onclick = function() {
+            document.getElementById('viewReviewModal').style.display = 'none';
+        };
+        
+        // Đóng modal khi click outside
+        document.getElementById('viewReviewModal').onclick = function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        };
+    </script>
 </body>
 
 </html>

@@ -45,20 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnAddStaff) {
     btnAddStaff.addEventListener('click', () => {
       resetForm();
-<<<<<<< HEAD
       if (formTitle) formTitle.textContent = 'Thêm nhân viên mới';
       openStaffForm();
-=======
-      formTitle.textContent = 'Thêm nhân viên mới';
-      staffForm.style.display = 'grid';
->>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
     });
   }
 
   // Hủy thêm/sửa nhân viên
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
-<<<<<<< HEAD
       closeStaffForm();
     });
   }
@@ -78,28 +72,30 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  
-=======
-      staffForm.style.display = 'none';
-    });
-  }
->>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
 
   // Xử lý submit form
   if (staffForm) {
     staffForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      // Clear previous errors
+      clearFormErrors();
+      
       const staffId = document.getElementById('staffId').value;
       const staffData = {
-        maNhanVien: document.getElementById('maNhanVien').value,
-        ho: document.getElementById('ho').value,
-        ten: document.getElementById('ten').value,
-        email: document.getElementById('email').value,
-        soDienThoai: document.getElementById('soDienThoai').value,
+        maNhanVien: document.getElementById('maNhanVien').value.trim(),
+        ho: document.getElementById('ho').value.trim(),
+        ten: document.getElementById('ten').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        soDienThoai: document.getElementById('soDienThoai').value.trim(),
         chucVu: document.getElementById('chucVu').value,
         trangThai: document.getElementById('trangThai').value
       };
+      
+      // Validate form
+      if (!validateStaffForm(staffData)) {
+        return;
+      }
       
       try {
         let response;
@@ -109,25 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
           // Cập nhật nhân viên
           response = await fetch(`/admin/staff/${staffId}`, {
             method: 'PUT',
-<<<<<<< HEAD
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
-=======
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(staffData)
-          });
-          
-          staff = await response.json();
-          updateStaffRow(staff);
->>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
         } else {
           // Thêm nhân viên mới
           response = await fetch('/admin/staff', {
             method: 'POST',
-<<<<<<< HEAD
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
@@ -158,23 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error('Lỗi:', error);
         showNotification(error.message || 'Đã xảy ra lỗi, vui lòng thử lại', 'error');
-=======
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(staffData)
-          });
-          
-          staff = await response.json();
-          addStaffRow(staff);
-        }
-        
-        staffForm.style.display = 'none';
-        showNotification(staffId ? 'Cập nhật nhân viên thành công' : 'Thêm nhân viên thành công');
-      } catch (error) {
-        console.error('Lỗi:', error);
-        showNotification('Có lỗi xảy ra', 'error');
->>>>>>> f4609f3f78b032a6efdb6d54d3371006ea29fbf5
       }
     });
   }
@@ -366,4 +333,117 @@ function showNotification(message, type = 'success') {
       notification.remove();
     }, 300);
   }, 3000);
+}
+
+// Hàm validation form nhân viên
+function validateStaffForm(data) {
+  let isValid = true;
+  
+  // Validate mã nhân viên
+  if (!data.maNhanVien) {
+    showFieldError('maNhanVien', 'Mã nhân viên không được để trống');
+    isValid = false;
+  } else if (data.maNhanVien.length < 3) {
+    showFieldError('maNhanVien', 'Mã nhân viên phải có ít nhất 3 ký tự');
+    isValid = false;
+  }
+  
+  // Validate họ
+  if (!data.ho) {
+    showFieldError('ho', 'Họ không được để trống');
+    isValid = false;
+  }
+  
+  // Validate tên
+  if (!data.ten) {
+    showFieldError('ten', 'Tên không được để trống');
+    isValid = false;
+  }
+  
+  // Validate email
+  if (!data.email) {
+    showFieldError('email', 'Email không được để trống');
+    isValid = false;
+  } else if (!isValidEmail(data.email)) {
+    showFieldError('email', 'Email không hợp lệ');
+    isValid = false;
+  }
+  
+  // Validate số điện thoại
+  if (!data.soDienThoai) {
+    showFieldError('soDienThoai', 'Số điện thoại không được để trống');
+    isValid = false;
+  } else if (!isValidPhone(data.soDienThoai)) {
+    showFieldError('soDienThoai', 'Số điện thoại không hợp lệ');
+    isValid = false;
+  }
+  
+  // Validate chức vụ
+  if (!data.chucVu) {
+    showFieldError('chucVu', 'Vui lòng chọn chức vụ');
+    isValid = false;
+  }
+  
+  // Validate trạng thái
+  if (!data.trangThai) {
+    showFieldError('trangThai', 'Vui lòng chọn trạng thái');
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
+// Hàm hiển thị lỗi cho field
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.style.borderColor = '#ef4444';
+    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+    
+    // Remove existing error message
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+      existingError.remove();
+    }
+    
+    // Add new error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    errorDiv.style.color = '#ef4444';
+    errorDiv.style.fontSize = '12px';
+    errorDiv.style.marginTop = '4px';
+    errorDiv.style.fontWeight = '500';
+    
+    field.parentNode.appendChild(errorDiv);
+  }
+}
+
+// Hàm xóa tất cả lỗi form
+function clearFormErrors() {
+  const fields = ['maNhanVien', 'ho', 'ten', 'email', 'soDienThoai', 'chucVu', 'trangThai'];
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.style.borderColor = '';
+      field.style.boxShadow = '';
+      
+      const errorDiv = field.parentNode.querySelector('.field-error');
+      if (errorDiv) {
+        errorDiv.remove();
+      }
+    }
+  });
+}
+
+// Hàm validate email
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Hàm validate số điện thoại
+function isValidPhone(phone) {
+  const phoneRegex = /^[0-9]{10,11}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
 }
