@@ -57,6 +57,14 @@ public class AdminRoomService {
 
     public RoomDTO createRoom(RoomDTO roomDTO) {
         Room room = convertToEntity(roomDTO);
+        
+        // Thiết lập RoomType nếu có roomTypeId
+        if (roomDTO.getRoomTypeId() != null) {
+            RoomType roomType = roomTypeRepository.findById(roomDTO.getRoomTypeId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy hạng phòng với ID: " + roomDTO.getRoomTypeId()));
+            room.setRoomType(roomType);
+        }
+        
         Room savedRoom = roomRepository.save(room);
         return convertToDTO(savedRoom);
     }

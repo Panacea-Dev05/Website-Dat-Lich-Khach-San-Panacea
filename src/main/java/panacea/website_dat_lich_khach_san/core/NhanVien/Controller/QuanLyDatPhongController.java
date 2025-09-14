@@ -22,10 +22,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import org.springframework.http.ResponseEntity;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ValidationException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.InternalServerErrorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/nhanvien/quanlydatphong")
 public class QuanLyDatPhongController {
+    private static final Logger logger = LoggerFactory.getLogger(QuanLyDatPhongController.class);
+    
     private final QuanLyDatPhongService quanLyDatPhongService;
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
@@ -197,17 +205,36 @@ public class QuanLyDatPhongController {
         try {
             boolean success = quanLyDatPhongService.addCustomerBooking(requestData);
             return success ? "success" : "error";
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ValidationException | BadRequestException e) {
+            logger.warn("Validation error in addCustomerBooking: {}", e.getMessage());
             return "error: " + e.getMessage();
+        } catch (ResourceNotFoundException e) {
+            logger.warn("Resource not found in addCustomerBooking: {}", e.getMessage());
+            return "error: " + e.getMessage();
+        } catch (Exception e) {
+            logger.error("Unexpected error in addCustomerBooking", e);
+            return "error: Có lỗi hệ thống xảy ra";
         }
     }
 
     @PostMapping("/checkout/{bookingId}")
     @ResponseBody
     public Map<String, Object> checkoutBooking(@PathVariable Integer bookingId) {
-        boolean result = quanLyDatPhongService.checkoutBooking(bookingId);
-        return java.util.Map.of("success", result);
+        try {
+            boolean result = quanLyDatPhongService.checkoutBooking(bookingId);
+            return java.util.Map.of("success", result);
+        } catch (IllegalStateException e) {
+            return java.util.Map.of("success", false, "error", true, "message", e.getMessage());
+        } catch (ValidationException | BadRequestException e) {
+            logger.warn("Validation error in checkoutBooking: {}", e.getMessage());
+            return java.util.Map.of("success", false, "error", true, "message", e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            logger.warn("Resource not found in checkoutBooking: {}", e.getMessage());
+            return java.util.Map.of("success", false, "error", true, "message", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error in checkoutBooking", e);
+            return java.util.Map.of("success", false, "error", true, "message", "Có lỗi hệ thống xảy ra khi checkout");
+        }
     }
 
     @PostMapping("/checkin/{bookingId}")
@@ -252,8 +279,12 @@ public class QuanLyDatPhongController {
         try {
             java.util.List<java.util.Map<String, Object>> inventoryItems = quanLyDatPhongService.getAvailableInventoryItems();
             return ResponseEntity.ok(inventoryItems);
+        } catch (ResourceNotFoundException e) {
+            logger.warn("Resource not found in getAvailableInventoryItems: {}", e.getMessage());
+            return ResponseEntity.status(404).body(java.util.Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(java.util.Map.of("error", "Có lỗi khi lấy danh sách vật phẩm tồn kho"));
+            logger.error("Unexpected error in getAvailableInventoryItems", e);
+            return ResponseEntity.status(500).body(java.util.Map.of("error", "Có lỗi hệ thống khi lấy danh sách vật phẩm tồn kho"));
         }
     }
 
@@ -272,8 +303,15 @@ public class QuanLyDatPhongController {
             } else {
                 return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ và vật phẩm!"));
             }
+        } catch (ValidationException | BadRequestException e) {
+            logger.warn("Validation error in updateBookingServicesAndInventory: {}", e.getMessage());
+            return ResponseEntity.status(400).body(java.util.Map.of("success", false, "message", e.getMessage()));
+        } catch (ResourceNotFoundException e) {
+            logger.warn("Resource not found in updateBookingServicesAndInventory: {}", e.getMessage());
+            return ResponseEntity.status(404).body(java.util.Map.of("success", false, "message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ và vật phẩm!"));
+            logger.error("Unexpected error in updateBookingServicesAndInventory", e);
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi hệ thống khi cập nhật dịch vụ và vật phẩm"));
         }
     }
 
@@ -287,8 +325,15 @@ public class QuanLyDatPhongController {
             } else {
                 return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi thêm vật phẩm!"));
             }
+        } catch (ValidationException | BadRequestException e) {
+            logger.warn("Validation error in addInventoryToBooking: {}", e.getMessage());
+            return ResponseEntity.status(400).body(java.util.Map.of("success", false, "message", e.getMessage()));
+        } catch (ResourceNotFoundException e) {
+            logger.warn("Resource not found in addInventoryToBooking: {}", e.getMessage());
+            return ResponseEntity.status(404).body(java.util.Map.of("success", false, "message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi thêm vật phẩm!"));
+            logger.error("Unexpected error in addInventoryToBooking", e);
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi hệ thống khi thêm vật phẩm"));
         }
     }
 }

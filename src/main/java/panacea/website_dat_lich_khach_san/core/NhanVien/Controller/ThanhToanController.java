@@ -65,11 +65,17 @@ public class ThanhToanController {
             System.out.println("Received request: " + request);
             // Validate input data
             if (request.get("bookingId") == null || request.get("bookingId").toString().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Vui lòng chọn booking"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Vui lòng chọn booking");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             if (request.get("soTien") == null || request.get("soTien").toString().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Vui lòng nhập số tiền"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Vui lòng nhập số tiền");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             // Validate số tiền
@@ -77,14 +83,23 @@ public class ThanhToanController {
             try {
                 soTien = new BigDecimal(request.get("soTien").toString());
                 if (soTien.compareTo(BigDecimal.ZERO) <= 0) {
-                    return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Số tiền phải lớn hơn 0"));
+                    Map<String, Object> errorResponse = new java.util.HashMap<>();
+                    errorResponse.put("error", true);
+                    errorResponse.put("message", "Số tiền phải lớn hơn 0");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
                 }
             } catch (NumberFormatException e) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Số tiền không hợp lệ"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Số tiền không hợp lệ");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             if (request.get("phuongThuc") == null || request.get("phuongThuc").toString().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Vui lòng chọn phương thức thanh toán"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Vui lòng chọn phương thức thanh toán");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             Integer bookingId = Integer.valueOf(request.get("bookingId").toString());
@@ -99,22 +114,37 @@ public class ThanhToanController {
                 .anyMatch(b -> b.getId().equals(bookingId));
             
             if (!isBookingValid) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Booking đã bị hủy hoặc không hợp lệ để thanh toán"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Booking đã bị hủy hoặc không hợp lệ để thanh toán");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             Payment payment = thanhToanService.createCashPayment(bookingId, soTien, phuongThuc, noiDung, maGiaoDich);
             if (payment == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không thể tạo thanh toán. Booking có thể đã bị hủy."));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Không thể tạo thanh toán. Booking có thể đã bị hủy.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             // Convert to DTO to avoid circular reference
             PaymentDTO paymentDTO = convertToDTO(payment);
-            return ResponseEntity.ok(Map.of("success", true, "payment", paymentDTO));
+            Map<String, Object> successResponse = new java.util.HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("payment", paymentDTO);
+            return ResponseEntity.ok(successResponse);
         } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Dữ liệu số không hợp lệ"));
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Dữ liệu số không hợp lệ");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Lỗi: " + e.getMessage()));
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     
@@ -125,14 +155,23 @@ public class ThanhToanController {
         try {
             Payment payment = thanhToanService.confirmCashPayment(id);
             if (payment == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không thể xác nhận thanh toán"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Không thể xác nhận thanh toán");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             // Convert to DTO to avoid circular reference
             PaymentDTO paymentDTO = convertToDTO(payment);
-            return ResponseEntity.ok(Map.of("success", true, "payment", paymentDTO));
+            Map<String, Object> successResponse = new java.util.HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("payment", paymentDTO);
+            return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Lỗi: " + e.getMessage()));
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     
@@ -143,12 +182,21 @@ public class ThanhToanController {
         try {
             String invoice = thanhToanService.generateInvoice(id);
             if (invoice == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không thể tạo hóa đơn"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Không thể tạo hóa đơn");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
-            return ResponseEntity.ok(Map.of("success", true, "invoice", invoice));
+            Map<String, Object> successResponse = new java.util.HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("invoice", invoice);
+            return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Lỗi: " + e.getMessage()));
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     
@@ -159,14 +207,43 @@ public class ThanhToanController {
         try {
             Payment payment = thanhToanService.getPaymentById(id);
             if (payment == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Không tìm thấy thanh toán"));
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Không tìm thấy thanh toán");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             
             // Convert to DTO to avoid circular reference
             PaymentDTO paymentDTO = convertToDTO(payment);
             return ResponseEntity.ok(paymentDTO);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", true, "message", "Lỗi: " + e.getMessage()));
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+    
+    @GetMapping("/booking/{bookingId}/status")
+    @ResponseBody
+    public ResponseEntity<?> getBookingPaymentStatus(@PathVariable Integer bookingId) {
+        try {
+            Map<String, Object> paymentStatus = thanhToanService.getBookingPaymentStatus(bookingId);
+            if (paymentStatus == null) {
+                Map<String, Object> errorResponse = new java.util.HashMap<>();
+                errorResponse.put("error", true);
+                errorResponse.put("message", "Booking không tồn tại");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+            Map<String, Object> successResponse = new java.util.HashMap<>();
+            successResponse.put("success", true);
+            successResponse.put("data", paymentStatus);
+            return ResponseEntity.ok(successResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("error", true);
+            errorResponse.put("message", "Lỗi khi lấy trạng thái thanh toán: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
     

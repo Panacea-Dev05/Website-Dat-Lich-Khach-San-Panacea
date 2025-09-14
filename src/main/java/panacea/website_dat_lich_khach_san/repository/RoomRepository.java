@@ -42,5 +42,8 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     
     @Query("SELECT r FROM Room r WHERE r.roomType.id = :roomTypeId AND r.trangThai = :trangThai")
     List<Room> findByRoomTypeIdAndTrangThai(@Param("roomTypeId") Integer roomTypeId, @Param("trangThai") Room.TrangThaiPhong trangThai);
+    
+    @Query("SELECT DISTINCT r.tang FROM Room r WHERE r.tang IS NOT NULL ORDER BY r.tang")
+    List<Byte> findDistinctFloors();
 
 }

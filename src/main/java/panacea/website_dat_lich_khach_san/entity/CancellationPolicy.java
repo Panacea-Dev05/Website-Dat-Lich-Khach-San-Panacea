@@ -7,7 +7,7 @@ import java.time.temporal.ChronoUnit;
 public enum CancellationPolicy {
     FLEXIBLE("Linh hoạt", 0, 100), // Hủy bất kỳ lúc nào, hoàn 100%
     MODERATE("Vừa phải", 24, 50), // Hủy trước 24h hoàn 50%, sau đó không hoàn
-    STRICT("Nghiêm ngặt", 72, 0), // Hủy trước 72h hoàn 0%, sau đó không hoàn
+    STRICT("Nghiêm ngặt", 72, 25), // Hủy trước 72h hoàn 25%, sau đó không hoàn
     NON_REFUNDABLE("Không hoàn tiền", 0, 0); // Không hoàn tiền trong mọi trường hợp
 
     private final String label;

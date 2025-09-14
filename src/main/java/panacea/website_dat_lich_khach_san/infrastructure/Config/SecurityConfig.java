@@ -217,29 +217,23 @@ public class SecurityConfig {
                 newCustomer.setLastModifiedDate(currentTime);
                 
                 // Log chi tiết để debug
-                System.out.println("[DEBUG] Creating new Google customer:");
-                System.out.println("[DEBUG] Email: " + email);
-                System.out.println("[DEBUG] Ho: '" + newCustomer.getHo() + "' (length: " + newCustomer.getHo().length() + ")");
-                System.out.println("[DEBUG] Ten: '" + newCustomer.getTen() + "' (length: " + newCustomer.getTen().length() + ")");
-                System.out.println("[DEBUG] MaKhachHang: '" + newCustomer.getMaKhachHang() + "' (length: " + newCustomer.getMaKhachHang().length() + ")");
-                System.out.println("[DEBUG] TrangThai: " + newCustomer.getTrangThai() + " - DB value: " + newCustomer.getTrangThai().getValue());
-                System.out.println("[DEBUG] DiemTichLuy: " + newCustomer.getDiemTichLuy());
-                System.out.println("[DEBUG] MatKhauHash: " + newCustomer.getMatKhauHash());
+                // Log customer creation without sensitive information
+                System.out.println("[INFO] Creating new Google OAuth customer with ID: " + newCustomer.getMaKhachHang());
+                System.out.println("[INFO] Customer status: " + newCustomer.getTrangThai());
                 
                 // Validate before save
                 validateCustomerBeforeSave(newCustomer);
                 
                 Customer savedCustomer = customerRepository.save(newCustomer);
-                System.out.println("[DEBUG] Customer saved successfully with ID: " + savedCustomer.getId());
+                System.out.println("[INFO] Customer saved successfully with ID: " + savedCustomer.getId());
                 
             } catch (Exception e) {
-                System.err.println("[ERROR] Failed to create Google OAuth customer: " + e.getMessage());
+                // Log error without sensitive information
+                System.err.println("[ERROR] Failed to create Google OAuth customer account");
                 System.err.println("[ERROR] Exception type: " + e.getClass().getSimpleName());
-                if (e.getCause() != null) {
-                    System.err.println("[ERROR] Root cause: " + e.getCause().getMessage());
-                }
-                e.printStackTrace();
-                throw new RuntimeException("Failed to create customer account: " + e.getMessage(), e);
+                // Only log stack trace in development environment
+                // e.printStackTrace(); // Comment out for production
+                throw new RuntimeException("Failed to create customer account. Please contact support.", e);
             }
 
             return new DefaultOAuth2User(

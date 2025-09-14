@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -196,10 +198,27 @@ public class KhachHangController {
 
     // Trang quản lý booking của khách hàng
     @GetMapping("/my-bookings")
-    public String myBookings(@RequestParam(required = false) String email, Model model) {
+    public String myBookings(@RequestParam(required = false) String email, 
+                            @AuthenticationPrincipal OAuth2User principal, 
+                            Model model) {
         if (email != null && !email.isEmpty()) {
+            // Validation: Chỉ cho phép tìm kiếm email của chính user đăng nhập
+            if (principal != null) {
+                String loggedInEmail = principal.getAttribute("email");
+                if (loggedInEmail != null && !loggedInEmail.equalsIgnoreCase(email)) {
+                    // Nếu email tìm kiếm khác với email đăng nhập, chuyển hướng về email đúng
+                    return "redirect:/khachhang/my-bookings?email=" + loggedInEmail;
+                }
+            }
+            
             model.addAttribute("bookings", khachHangService.getBookingsByEmail(email));
             model.addAttribute("customerEmail", email);
+        } else if (principal != null) {
+            // Nếu không có email trong param, tự động dùng email của user đăng nhập
+            String loggedInEmail = principal.getAttribute("email");
+            if (loggedInEmail != null) {
+                return "redirect:/khachhang/my-bookings?email=" + loggedInEmail;
+            }
         }
         return "KhachHang/MyBookings";
     }

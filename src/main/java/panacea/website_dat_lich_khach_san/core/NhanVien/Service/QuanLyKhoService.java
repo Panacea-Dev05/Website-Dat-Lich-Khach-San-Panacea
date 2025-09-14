@@ -20,6 +20,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ValidationException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
 
 @Service
 public class QuanLyKhoService {
@@ -66,7 +69,7 @@ public class QuanLyKhoService {
             if (firstHotel != null) {
                 item.setKhachSanId(firstHotel.getId());
             } else {
-                throw new RuntimeException("Không tìm thấy khách sạn nào trong hệ thống");
+                throw new ResourceNotFoundException("Không tìm thấy khách sạn nào trong hệ thống");
             }
         }
         
@@ -77,7 +80,7 @@ public class QuanLyKhoService {
         validateItem(item);
         Optional<InventoryManagement> existingItem = inventoryManagementRepository.findById(item.getId());
         if (existingItem.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy vật phẩm với ID: " + item.getId());
+            throw new ResourceNotFoundException("Không tìm thấy vật phẩm với ID: " + item.getId());
         }
         
         // Giữ lại khach_san_id từ item hiện có để tránh lỗi NULL
@@ -92,7 +95,7 @@ public class QuanLyKhoService {
     public void deleteItem(Integer id) {
         Optional<InventoryManagement> existingItem = inventoryManagementRepository.findById(id);
         if (existingItem.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy vật phẩm với ID: " + id);
+            throw new ResourceNotFoundException("Không tìm thấy vật phẩm với ID: " + id);
         }
         inventoryManagementRepository.deleteById(id);
     }
@@ -208,34 +211,34 @@ public class QuanLyKhoService {
     
     public void validateItem(InventoryManagement item) {
         if (item.getTenVatPham() == null || item.getTenVatPham().trim().isEmpty()) {
-            throw new RuntimeException("Tên vật phẩm không được để trống");
+            throw new ValidationException("Tên vật phẩm không được để trống");
         }
         
         if (item.getMaVatPham() == null || item.getMaVatPham().trim().isEmpty()) {
-            throw new RuntimeException("Mã vật phẩm không được để trống");
+            throw new ValidationException("Mã vật phẩm không được để trống");
         }
         
         if (item.getSoLuongTon() != null && item.getSoLuongTon() < 0) {
-            throw new RuntimeException("Số lượng tồn không được âm");
+            throw new ValidationException("Số lượng tồn không được âm");
         }
         
         if (item.getGiaNhap() != null && item.getGiaNhap().doubleValue() < 0) {
-            throw new RuntimeException("Giá nhập không được âm");
+            throw new ValidationException("Giá nhập không được âm");
         }
     }
     
     public void validateTransaction(InventoryTransaction transaction) {
         if (transaction.getVatPhamId() == null) {
-            throw new RuntimeException("Vật phẩm không được để trống");
+            throw new ValidationException("Vật phẩm không được để trống");
         }
         
         if (transaction.getSoLuong() == null || transaction.getSoLuong() == 0) {
-            throw new RuntimeException("Số lượng không được để trống hoặc bằng 0");
+            throw new ValidationException("Số lượng không được để trống hoặc bằng 0");
         }
         
         Optional<InventoryManagement> itemOpt = inventoryManagementRepository.findById(transaction.getVatPhamId());
         if (itemOpt.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy vật phẩm với ID: " + transaction.getVatPhamId());
+            throw new ResourceNotFoundException("Không tìm thấy vật phẩm với ID: " + transaction.getVatPhamId());
         }
     }
     
@@ -243,13 +246,13 @@ public class QuanLyKhoService {
     public InventoryTransaction approveTransaction(Integer transactionId, Integer adminId, String ghiChu) {
         Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
         if (transactionOpt.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+            throw new ResourceNotFoundException("Không tìm thấy giao dịch với ID: " + transactionId);
         }
         
         InventoryTransaction transaction = transactionOpt.get();
         
         if (transaction.getTrangThaiDuyet() != TrangThaiDuyet.CHO_DUYET) {
-            throw new RuntimeException("Giao dịch này đã được xử lý trước đó");
+            throw new BadRequestException("Giao dịch này đã được xử lý trước đó");
         }
         
         // Cập nhật trạng thái phê duyệt
@@ -270,13 +273,13 @@ public class QuanLyKhoService {
     public InventoryTransaction rejectTransaction(Integer transactionId, Integer adminId, String ghiChu) {
         Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
         if (transactionOpt.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+            throw new ResourceNotFoundException("Không tìm thấy giao dịch với ID: " + transactionId);
         }
         
         InventoryTransaction transaction = transactionOpt.get();
         
         if (transaction.getTrangThaiDuyet() != TrangThaiDuyet.CHO_DUYET) {
-            throw new RuntimeException("Giao dịch này đã được xử lý trước đó");
+            throw new BadRequestException("Giao dịch này đã được xử lý trước đó");
         }
         
         // Cập nhật trạng thái từ chối
@@ -292,13 +295,13 @@ public class QuanLyKhoService {
     public void validateTransactionEdit(Integer transactionId) {
         Optional<InventoryTransaction> transactionOpt = inventoryTransactionRepository.findById(transactionId);
         if (transactionOpt.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy giao dịch với ID: " + transactionId);
+            throw new ResourceNotFoundException("Không tìm thấy giao dịch với ID: " + transactionId);
         }
         
         InventoryTransaction transaction = transactionOpt.get();
         
         // Không cho phép sửa/xóa giao dịch đã được lưu
-        throw new RuntimeException("Không được phép chỉnh sửa hoặc xóa phiếu nhập/xuất sau khi đã lưu");
+        throw new BadRequestException("Không được phép chỉnh sửa hoặc xóa phiếu nhập/xuất sau khi đã lưu");
     }
     
     // Lấy danh sách giao dịch chờ duyệt

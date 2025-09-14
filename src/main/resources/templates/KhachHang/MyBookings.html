@@ -341,8 +341,10 @@
                 <div class="form-group">
                     <label for="email">Email đặt phòng:</label>
                     <input type="email" id="email" name="email" th:value="${customerEmail}" 
-                           placeholder="Nhập email bạn đã sử dụng để đặt phòng" required
-                           data-user-email th:attr="data-user-email=${customerEmail}">
+                           placeholder="Email của bạn" readonly
+                           data-user-email th:attr="data-user-email=${customerEmail}"
+                           style="background-color: #f5f5f5; cursor: not-allowed;">
+                    <small class="form-text text-muted">Bạn chỉ có thể xem các đặt phòng của chính mình</small>
                 </div>
                 <button type="submit" class="btn btn-primary">
                     <span class="material-icons">search</span>
@@ -398,13 +400,16 @@
                     <div class="policy-content">
                         <div th:switch="${booking.cancellationPolicy.name()}">
                             <div th:case="'FLEXIBLE'">
-                                <strong>Linh hoạt:</strong> Hủy miễn phí trước 24 giờ check-in. Sau đó phí hủy 50% tổng tiền.
+                                <strong>Linh hoạt:</strong> Hủy miễn phí bất kỳ lúc nào. Hoàn tiền 100%.
                             </div>
                             <div th:case="'MODERATE'">
-                                <strong>Vừa phải:</strong> Hủy miễn phí trước 48 giờ check-in. Sau đó phí hủy 75% tổng tiền.
+                                <strong>Vừa phải:</strong> Hủy trước 24 giờ: hoàn 50%. Hủy trong vòng 24 giờ: không hoàn tiền.
                             </div>
                             <div th:case="'STRICT'">
-                                <strong>Nghiêm ngặt:</strong> Hủy miễn phí trước 7 ngày check-in. Sau đó phí hủy 100% tổng tiền.
+                                <strong>Nghiêm ngặt:</strong> Hủy trước 72 giờ: hoàn 25%. Hủy trong vòng 72 giờ: không hoàn tiền.
+                            </div>
+                            <div th:case="'NON_REFUNDABLE'">
+                                <strong>Không hoàn tiền:</strong> Không hoàn tiền trong mọi trường hợp.
                             </div>
                         </div>
                         <div th:if="${booking.refundAmount != null and booking.refundAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}" 

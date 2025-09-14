@@ -35,11 +35,52 @@ function initializeEventHandlers() {
     
     // Validation real-time cho form
     $('#bookingId').on('change', function() {
-        validateBookingId($(this).val());
+        const value = $(this).val();
+        if (value && value.trim() !== '') {
+            validateBookingId(value);
+        }
     });
     
     $('#soTien').on('input', function() {
-        validateAmount($(this).val());
+        const value = $(this).val();
+        if (value && value.trim() !== '') {
+            validateAmount(value);
+        }
+    });
+    
+    // Validate payment method
+    $('#phuongThuc').on('change', function() {
+        const value = $(this).val();
+        if (value && value.trim() !== '') {
+            showFieldValid('phuongThuc');
+        } else {
+            showFieldError('phuongThuc', 'Vui lòng chọn phương thức thanh toán');
+        }
+    });
+    
+    // Validate transaction code
+    $('#maGiaoDich').on('input', function() {
+        const value = $(this).val();
+        if (value && value.trim() !== '') {
+            if (value.trim().length < 3) {
+                showFieldError('maGiaoDich', 'Mã giao dịch phải có ít nhất 3 ký tự');
+            } else if (value.trim().length > 50) {
+                showFieldError('maGiaoDich', 'Mã giao dịch không được quá 50 ký tự');
+            } else {
+                showFieldValid('maGiaoDich');
+            }
+        }
+    });
+    
+    // Validate content
+    $('#noiDung').on('input', function() {
+        const value = $(this).val();
+        if (value && value.trim().length > 500) {
+            showFieldError('noiDung', 'Nội dung không được quá 500 ký tự');
+        } else {
+            // Remove error if exists
+            $('#noiDung').removeClass('is-invalid').siblings('.invalid-feedback').remove();
+        }
     });
 }
 
@@ -94,17 +135,25 @@ function formatCurrency(amount) {
 // Tạo thanh toán mới
 function createPayment() {
     const formData = {
-        bookingId: $('#bookingId').val(),
-        soTien: $('#soTien').val(),
-        phuongThuc: $('#phuongThuc').val(),
-        noiDung: $('#noiDung').val(),
-        maGiaoDich: $('#maGiaoDich').val()
+        bookingId: $('#bookingId').val()?.trim(),
+        soTien: $('#soTien').val()?.trim(),
+        phuongThuc: $('#phuongThuc').val()?.trim(),
+        noiDung: $('#noiDung').val()?.trim(),
+        maGiaoDich: $('#maGiaoDich').val()?.trim()
     };
     
     // Validate dữ liệu
     if (!validatePaymentForm(formData)) {
         return;
     }
+    
+    // Kiểm tra trùng lặp request
+    if (window.isCreatingPayment) {
+        showError('Đang xử lý thanh toán, vui lòng đợi...');
+        return;
+    }
+    
+    window.isCreatingPayment = true;
     
     // Hiển thị loading
     showLoading('Đang tạo thanh toán...');
@@ -114,47 +163,103 @@ function createPayment() {
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
+        timeout: 30000, // 30 seconds timeout
         success: function(response) {
             hideLoading();
-            if (response.success) {
+            window.isCreatingPayment = false;
+            
+            if (response && response.success) {
                 showSuccess('Tạo thanh toán thành công!');
                 resetForm();
                 refreshPaymentTable();
             } else {
-                showError(response.message || 'Có lỗi xảy ra');
+                const errorMsg = response?.message || 'Có lỗi xảy ra khi tạo thanh toán';
+                showError(errorMsg);
             }
         },
-        error: function(xhr) {
+        error: function(xhr, textStatus, errorThrown) {
             hideLoading();
-            const errorMsg = xhr.responseJSON?.message || 'Lỗi kết nối server';
+            window.isCreatingPayment = false;
+            
+            let errorMsg = 'Lỗi kết nối server';
+            
+            if (textStatus === 'timeout') {
+                errorMsg = 'Yêu cầu quá thời gian chờ, vui lòng thử lại';
+            } else if (xhr.status === 0) {
+                errorMsg = 'Không thể kết nối đến server';
+            } else if (xhr.status >= 400 && xhr.status < 500) {
+                errorMsg = xhr.responseJSON?.message || 'Dữ liệu không hợp lệ';
+            } else if (xhr.status >= 500) {
+                errorMsg = 'Lỗi server nội bộ, vui lòng thử lại sau';
+            } else if (xhr.responseJSON?.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+            
             showError(errorMsg);
+            console.error('Payment creation error:', {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                textStatus: textStatus,
+                errorThrown: errorThrown,
+                response: xhr.responseJSON
+            });
         }
     });
 }
 
 // Xác nhận thanh toán
 function confirmPayment(paymentId) {
+    // Validate payment ID
+    if (!paymentId || !/^\d+$/.test(paymentId.toString())) {
+        showError('ID thanh toán không hợp lệ');
+        return;
+    }
+    
     if (!confirm('Bạn có chắc chắn muốn xác nhận thanh toán này?')) {
         return;
     }
     
+    // Kiểm tra trùng lặp request
+    if (window.isConfirmingPayment) {
+        showError('Đang xử lý xác nhận, vui lòng đợi...');
+        return;
+    }
+    
+    window.isConfirmingPayment = true;
     showLoading('Đang xác nhận thanh toán...');
     
     $.ajax({
         url: `/nhanvien/thanhtoan/confirm/${paymentId}`,
         type: 'PUT',
+        timeout: 15000,
         success: function(response) {
             hideLoading();
-            if (response.success) {
+            window.isConfirmingPayment = false;
+            
+            if (response && response.success) {
                 showSuccess('Xác nhận thanh toán thành công!');
                 refreshPaymentTable();
             } else {
-                showError(response.message || 'Có lỗi xảy ra');
+                const errorMsg = response?.message || 'Không thể xác nhận thanh toán';
+                showError(errorMsg);
             }
         },
-        error: function(xhr) {
+        error: function(xhr, textStatus, errorThrown) {
             hideLoading();
-            const errorMsg = xhr.responseJSON?.message || 'Lỗi kết nối server';
+            window.isConfirmingPayment = false;
+            
+            let errorMsg = 'Lỗi kết nối server';
+            
+            if (textStatus === 'timeout') {
+                errorMsg = 'Yêu cầu quá thời gian chờ';
+            } else if (xhr.status === 404) {
+                errorMsg = 'Không tìm thấy thanh toán';
+            } else if (xhr.status === 400) {
+                errorMsg = xhr.responseJSON?.message || 'Thanh toán không thể xác nhận';
+            } else if (xhr.responseJSON?.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+            
             showError(errorMsg);
         }
     });
@@ -162,23 +267,43 @@ function confirmPayment(paymentId) {
 
 // In hóa đơn
 function printInvoice(paymentId) {
+    // Validate payment ID
+    if (!paymentId || !/^\d+$/.test(paymentId.toString())) {
+        showError('ID thanh toán không hợp lệ');
+        return;
+    }
+    
     showLoading('Đang tạo hóa đơn...');
     
     $.ajax({
         url: `/nhanvien/thanhtoan/invoice/${paymentId}`,
         type: 'GET',
+        timeout: 15000,
         success: function(response) {
             hideLoading();
-            if (response.success) {
-                // Hiển thị hóa đơn trong modal hoặc cửa sổ mới
+            
+            if (response && response.success && response.invoice) {
                 showInvoiceModal(response.invoice);
             } else {
-                showError(response.message || 'Không thể tạo hóa đơn');
+                const errorMsg = response?.message || 'Không thể tạo hóa đơn';
+                showError(errorMsg);
             }
         },
-        error: function(xhr) {
+        error: function(xhr, textStatus, errorThrown) {
             hideLoading();
-            const errorMsg = xhr.responseJSON?.message || 'Lỗi kết nối server';
+            
+            let errorMsg = 'Lỗi kết nối server';
+            
+            if (textStatus === 'timeout') {
+                errorMsg = 'Yêu cầu quá thời gian chờ';
+            } else if (xhr.status === 404) {
+                errorMsg = 'Không tìm thấy thanh toán để tạo hóa đơn';
+            } else if (xhr.status === 400) {
+                errorMsg = xhr.responseJSON?.message || 'Không thể tạo hóa đơn cho thanh toán này';
+            } else if (xhr.responseJSON?.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+            
             showError(errorMsg);
         }
     });
@@ -186,18 +311,40 @@ function printInvoice(paymentId) {
 
 // Xem chi tiết thanh toán
 function viewPaymentDetail(paymentId) {
+    // Validate payment ID
+    if (!paymentId || !/^\d+$/.test(paymentId.toString())) {
+        showError('ID thanh toán không hợp lệ');
+        return;
+    }
+    
     showLoading('Đang tải chi tiết...');
     
     $.ajax({
         url: `/nhanvien/thanhtoan/detail/${paymentId}`,
         type: 'GET',
+        timeout: 10000,
         success: function(payment) {
             hideLoading();
-            showPaymentDetailModal(payment);
+            
+            if (payment && (payment.id || payment.success !== false)) {
+                showPaymentDetailModal(payment);
+            } else {
+                showError('Không thể tải thông tin thanh toán');
+            }
         },
-        error: function(xhr) {
+        error: function(xhr, textStatus, errorThrown) {
             hideLoading();
-            const errorMsg = xhr.responseJSON?.message || 'Lỗi kết nối server';
+            
+            let errorMsg = 'Lỗi kết nối server';
+            
+            if (textStatus === 'timeout') {
+                errorMsg = 'Yêu cầu quá thời gian chờ';
+            } else if (xhr.status === 404) {
+                errorMsg = 'Không tìm thấy thông tin thanh toán';
+            } else if (xhr.responseJSON?.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+            
             showError(errorMsg);
         }
     });
@@ -205,43 +352,157 @@ function viewPaymentDetail(paymentId) {
 
 // Validation functions
 function validatePaymentForm(data) {
-    if (!data.bookingId) {
-        showError('Vui lòng chọn booking');
-        $('#bookingId').focus();
+    // Reset validation states
+    $('.form-control').removeClass('is-invalid is-valid');
+    
+    let isValid = true;
+    let firstErrorField = null;
+    
+    // Validate booking ID
+    if (!data.bookingId || data.bookingId.trim() === '') {
+        showFieldError('bookingId', 'Vui lòng chọn booking');
+        isValid = false;
+        if (!firstErrorField) firstErrorField = '#bookingId';
+    } else if (!/^\d+$/.test(data.bookingId.trim())) {
+        showFieldError('bookingId', 'Booking ID không hợp lệ');
+        isValid = false;
+        if (!firstErrorField) firstErrorField = '#bookingId';
+    } else {
+        showFieldValid('bookingId');
+    }
+    
+    // Validate amount
+    if (!data.soTien || data.soTien.trim() === '') {
+        showFieldError('soTien', 'Vui lòng nhập số tiền');
+        isValid = false;
+        if (!firstErrorField) firstErrorField = '#soTien';
+    } else {
+        const amount = parseFloat(data.soTien.replace(/[^\d.-]/g, ''));
+        if (isNaN(amount)) {
+            showFieldError('soTien', 'Số tiền phải là số hợp lệ');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#soTien';
+        } else if (amount <= 0) {
+            showFieldError('soTien', 'Số tiền phải lớn hơn 0');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#soTien';
+        } else if (amount > 999999999) {
+            showFieldError('soTien', 'Số tiền quá lớn (tối đa 999,999,999 VND)');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#soTien';
+        } else {
+            showFieldValid('soTien');
+        }
+    }
+    
+    // Validate payment method
+    if (!data.phuongThuc || data.phuongThuc.trim() === '') {
+        showFieldError('phuongThuc', 'Vui lòng chọn phương thức thanh toán');
+        isValid = false;
+        if (!firstErrorField) firstErrorField = '#phuongThuc';
+    } else {
+        const validMethods = ['TIEN_MAT', 'CHUYEN_KHOAN', 'THE_TIN_DUNG'];
+        if (!validMethods.includes(data.phuongThuc)) {
+            showFieldError('phuongThuc', 'Phương thức thanh toán không hợp lệ');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#phuongThuc';
+        } else {
+            showFieldValid('phuongThuc');
+        }
+    }
+    
+    // Validate transaction code if provided
+    if (data.maGiaoDich && data.maGiaoDich.trim() !== '') {
+        if (data.maGiaoDich.trim().length < 3) {
+            showFieldError('maGiaoDich', 'Mã giao dịch phải có ít nhất 3 ký tự');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#maGiaoDich';
+        } else if (data.maGiaoDich.trim().length > 50) {
+            showFieldError('maGiaoDich', 'Mã giao dịch không được quá 50 ký tự');
+            isValid = false;
+            if (!firstErrorField) firstErrorField = '#maGiaoDich';
+        } else {
+            showFieldValid('maGiaoDich');
+        }
+    }
+    
+    // Validate content if provided
+    if (data.noiDung && data.noiDung.trim().length > 500) {
+        showFieldError('noiDung', 'Nội dung không được quá 500 ký tự');
+        isValid = false;
+        if (!firstErrorField) firstErrorField = '#noiDung';
+    }
+    
+    // Focus on first error field
+    if (!isValid && firstErrorField) {
+        setTimeout(() => {
+            $(firstErrorField).focus();
+        }, 100);
+    }
+    
+    return isValid;
+}
+
+function validateBookingId(bookingId) {
+    if (!bookingId || bookingId.trim() === '') {
+        showFieldError('bookingId', 'Vui lòng chọn booking');
         return false;
     }
     
-    if (!data.soTien || parseFloat(data.soTien) <= 0) {
-        showError('Vui lòng nhập số tiền hợp lệ');
-        $('#soTien').focus();
+    if (!/^\d+$/.test(bookingId.trim())) {
+        showFieldError('bookingId', 'Booking ID không hợp lệ');
         return false;
     }
     
-    if (!data.phuongThuc) {
-        showError('Vui lòng chọn phương thức thanh toán');
-        $('#phuongThuc').focus();
-        return false;
-    }
+    // AJAX validation để kiểm tra booking có tồn tại không
+    $.ajax({
+        url: `/nhanvien/thanhtoan/booking/${bookingId}/status`,
+        type: 'GET',
+        success: function(response) {
+            if (response.success && response.data) {
+                showFieldValid('bookingId');
+                updatePaymentInfo();
+            } else {
+                showFieldError('bookingId', 'Booking không tồn tại hoặc không hợp lệ');
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status === 404) {
+                showFieldError('bookingId', 'Booking không tồn tại');
+            } else {
+                showFieldError('bookingId', 'Không thể kiểm tra booking');
+            }
+        }
+    });
     
     return true;
 }
 
-function validateBookingId(bookingId) {
-    if (bookingId) {
-        // Có thể thêm validation AJAX để kiểm tra booking có tồn tại không
-        $('#bookingId').removeClass('is-invalid').addClass('is-valid');
-    } else {
-        $('#bookingId').removeClass('is-valid').addClass('is-invalid');
-    }
-}
-
 function validateAmount(amount) {
-    const numAmount = parseFloat(amount);
-    if (amount && numAmount > 0) {
-        $('#soTien').removeClass('is-invalid').addClass('is-valid');
-    } else {
-        $('#soTien').removeClass('is-valid').addClass('is-invalid');
+    if (!amount || amount.trim() === '') {
+        showFieldError('soTien', 'Vui lòng nhập số tiền');
+        return false;
     }
+    
+    const numAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
+    
+    if (isNaN(numAmount)) {
+        showFieldError('soTien', 'Số tiền phải là số hợp lệ');
+        return false;
+    }
+    
+    if (numAmount <= 0) {
+        showFieldError('soTien', 'Số tiền phải lớn hơn 0');
+        return false;
+    }
+    
+    if (numAmount > 999999999) {
+        showFieldError('soTien', 'Số tiền quá lớn (tối đa 999,999,999 VND)');
+        return false;
+    }
+    
+    showFieldValid('soTien');
+    return true;
 }
 
 // UI Helper functions
@@ -283,17 +544,82 @@ function showInfo(message) {
 }
 
 function resetForm() {
-    $('#paymentForm')[0].reset();
-    $('#paymentForm .form-control').removeClass('is-valid is-invalid');
+    try {
+        $('#paymentForm')[0].reset();
+        $('#paymentForm .form-control').removeClass('is-valid is-invalid');
+        
+        // Reset payment details display
+        const paymentDetails = document.getElementById('paymentDetails');
+        if (paymentDetails) {
+            paymentDetails.style.display = 'none';
+        }
+        
+        // Re-enable amount field if it was disabled
+        const soTienInput = document.getElementById('soTien');
+        if (soTienInput) {
+            soTienInput.removeAttribute('readonly');
+            soTienInput.style.backgroundColor = '';
+            soTienInput.style.cursor = '';
+        }
+        
+        // Clear any validation messages
+        $('.invalid-feedback').hide();
+        $('.valid-feedback').hide();
+        
+    } catch (error) {
+        console.error('Error resetting form:', error);
+        showError('Có lỗi khi reset form');
+    }
 }
 
 function refreshPaymentTable() {
-    // Reload trang để cập nhật bảng thanh toán
-    location.reload();
+    try {
+        // Hiển thị loading ngắn
+        showInfo('Đang cập nhật dữ liệu...');
+        
+        // Delay reload để user thấy thông báo
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error refreshing table:', error);
+        // Fallback to immediate reload
+        location.reload();
+    }
+}
+
+// Helper functions for field validation display
+function showFieldError(fieldId, message) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-valid').addClass('is-invalid');
+    
+    // Remove existing error message
+    field.siblings('.invalid-feedback').remove();
+    
+    // Add new error message
+    field.after(`<div class="invalid-feedback">${message}</div>`);
+}
+
+function showFieldValid(fieldId) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-invalid').addClass('is-valid');
+    
+    // Remove error message
+    field.siblings('.invalid-feedback').remove();
 }
 
 // Modal functions
 function showInvoiceModal(invoiceContent) {
+    // Validate invoice content
+    if (!invoiceContent || typeof invoiceContent !== 'string') {
+        showError('Nội dung hóa đơn không hợp lệ');
+        return;
+    }
+    
+    // Escape HTML to prevent XSS
+    const escapedContent = $('<div>').text(invoiceContent).html();
+    
     const modalHtml = `
         <div class="modal fade" id="invoiceModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
@@ -305,7 +631,7 @@ function showInvoiceModal(invoiceContent) {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <pre style="white-space: pre-wrap; font-family: monospace;">${invoiceContent}</pre>
+                        <pre style="white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto;">${escapedContent}</pre>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="printInvoiceContent()">In hóa đơn</button>
@@ -316,21 +642,48 @@ function showInvoiceModal(invoiceContent) {
         </div>
     `;
     
-    // Remove existing modal if any
-    $('#invoiceModal').remove();
-    
-    // Add new modal
-    $('body').append(modalHtml);
-    $('#invoiceModal').modal('show');
+    try {
+        // Remove existing modal if any
+        $('#invoiceModal').remove();
+        
+        // Add new modal
+        $('body').append(modalHtml);
+        $('#invoiceModal').modal('show');
+        
+    } catch (error) {
+        console.error('Error showing invoice modal:', error);
+        showError('Không thể hiển thị hóa đơn');
+    }
 }
 
 function showPaymentDetailModal(payment) {
+    // Validate payment data
+    if (!payment || !payment.id) {
+        showError('Dữ liệu thanh toán không hợp lệ');
+        return;
+    }
+    
+    // Safely get values with fallbacks
+    const safeGet = (obj, path, fallback = 'N/A') => {
+        try {
+            return path.split('.').reduce((o, p) => o && o[p], obj) || fallback;
+        } catch {
+            return fallback;
+        }
+    };
+    
+    // Escape HTML to prevent XSS
+    const escapeHtml = (text) => {
+        if (!text) return 'N/A';
+        return $('<div>').text(text.toString()).html();
+    };
+    
     const modalHtml = `
         <div class="modal fade" id="paymentDetailModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Chi tiết thanh toán #${payment.id}</h5>
+                        <h5 class="modal-title">Chi tiết thanh toán #${escapeHtml(payment.id)}</h5>
                         <button type="button" class="close" data-dismiss="modal">
                             <span>&times;</span>
                         </button>
@@ -338,27 +691,31 @@ function showPaymentDetailModal(payment) {
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-sm-4"><strong>Mã booking:</strong></div>
-                            <div class="col-sm-8">${payment.booking?.id || 'N/A'}</div>
+                            <div class="col-sm-8">${escapeHtml(safeGet(payment, 'booking.id'))}</div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-4"><strong>Số tiền:</strong></div>
-                            <div class="col-sm-8">${formatCurrency(payment.soTien)}</div>
+                            <div class="col-sm-8">${formatCurrencySafe(payment.soTien)}</div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-4"><strong>Phương thức:</strong></div>
-                            <div class="col-sm-8">${payment.phuongThuc}</div>
+                            <div class="col-sm-8">${escapeHtml(payment.phuongThuc)}</div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-4"><strong>Trạng thái:</strong></div>
-                            <div class="col-sm-8"><span class="badge badge-${getStatusBadgeClass(payment.trangThai)}">${payment.trangThai}</span></div>
+                            <div class="col-sm-8"><span class="badge badge-${getStatusBadgeClass(payment.trangThai)}">${escapeHtml(payment.trangThai)}</span></div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-4"><strong>Nội dung:</strong></div>
-                            <div class="col-sm-8">${payment.noiDung || 'Không có'}</div>
+                            <div class="col-sm-8">${escapeHtml(payment.noiDung || 'Không có')}</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Mã giao dịch:</strong></div>
+                            <div class="col-sm-8">${escapeHtml(payment.maGiaoDich || 'Không có')}</div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-4"><strong>Ngày tạo:</strong></div>
-                            <div class="col-sm-8">${formatDateTime(payment.ngayTao)}</div>
+                            <div class="col-sm-8">${formatDateTimeSafe(payment.ngayTao)}</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -369,27 +726,62 @@ function showPaymentDetailModal(payment) {
         </div>
     `;
     
-    // Remove existing modal if any
-    $('#paymentDetailModal').remove();
-    
-    // Add new modal
-    $('body').append(modalHtml);
-    $('#paymentDetailModal').modal('show');
+    try {
+        // Remove existing modal if any
+        $('#paymentDetailModal').remove();
+        
+        // Add new modal
+        $('body').append(modalHtml);
+        $('#paymentDetailModal').modal('show');
+        
+    } catch (error) {
+        console.error('Error showing payment detail modal:', error);
+        showError('Không thể hiển thị chi tiết thanh toán');
+    }
 }
 
 function printInvoiceContent() {
-    const content = $('#invoiceModal pre').text();
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <html>
-            <head><title>Hóa đơn thanh toán</title></head>
-            <body style="font-family: monospace; white-space: pre-wrap;">
-                ${content}
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
+    try {
+        const content = $('#invoiceModal pre').text();
+        
+        if (!content || content.trim() === '') {
+            showError('Không có nội dung hóa đơn để in');
+            return;
+        }
+        
+        const printWindow = window.open('', '_blank');
+        
+        if (!printWindow) {
+            showError('Không thể mở cửa sổ in. Vui lòng kiểm tra popup blocker.');
+            return;
+        }
+        
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Hóa đơn thanh toán</title>
+                    <style>
+                        body { font-family: monospace; white-space: pre-wrap; margin: 20px; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    ${$('<div>').text(content).html()}
+                </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        
+        // Wait for content to load before printing
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error printing invoice:', error);
+        showError('Có lỗi khi in hóa đơn');
+    }
 }
 
 // Utility functions
@@ -400,9 +792,38 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
+function formatCurrencySafe(amount) {
+    try {
+        if (amount === null || amount === undefined || isNaN(amount)) {
+            return '0 VND';
+        }
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
+    } catch (error) {
+        console.error('Error formatting currency:', error);
+        return amount ? amount.toString() + ' VND' : '0 VND';
+    }
+}
+
 function formatDateTime(dateTime) {
     if (!dateTime) return 'N/A';
     return new Date(dateTime).toLocaleString('vi-VN');
+}
+
+function formatDateTimeSafe(dateTime) {
+    try {
+        if (!dateTime) return 'N/A';
+        const date = new Date(dateTime);
+        if (isNaN(date.getTime())) {
+            return 'Ngày không hợp lệ';
+        }
+        return date.toLocaleString('vi-VN');
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'N/A';
+    }
 }
 
 function getStatusBadgeClass(status) {
@@ -415,6 +836,19 @@ function getStatusBadgeClass(status) {
     }
 }
 
+// Global error handler for unhandled errors
+window.addEventListener('error', function(event) {
+    console.error('Unhandled error:', event.error);
+    showError('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+});
+
+// Global handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+    showError('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.');
+    event.preventDefault();
+});
+
 // Cấu hình toastr
 if (typeof toastr !== 'undefined') {
     toastr.options = {
@@ -423,7 +857,7 @@ if (typeof toastr !== 'undefined') {
         "newestOnTop": true,
         "progressBar": true,
         "positionClass": "toast-top-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "onclick": null,
         "showDuration": "300",
         "hideDuration": "1000",
@@ -434,4 +868,6 @@ if (typeof toastr !== 'undefined') {
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     };
+} else {
+    console.warn('Toastr library not loaded. Notifications may not work properly.');
 }
