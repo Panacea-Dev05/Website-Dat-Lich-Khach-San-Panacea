@@ -8,6 +8,7 @@ import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.repository.*;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
@@ -71,6 +72,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private CancellationService cancellationServiceBean;
+    
+    @Autowired
+    private HotelRepository hotelRepository;
 
     @Autowired
     private RoomPricingRepositoty roomPricingRepository;
@@ -373,38 +377,45 @@ public class QuanLyDatPhongService {
             @SuppressWarnings("unchecked")
             List<Integer> roomIds = (List<Integer>) roomIdsObj;
             if (roomIds.isEmpty()) throw new IllegalArgumentException("Danh sách phòng không được để trống");
-            
-            // Get dates first for validation
+
+// Get dates first for validation
             Object ngayNhanPhongObj = requestData.get("ngayNhanPhong");
             if (ngayNhanPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayNhanPhong trong requestData");
             LocalDate checkInDate = LocalDate.parse(ngayNhanPhongObj.toString());
+
             Object ngayTraPhongObj = requestData.get("ngayTraPhong");
             if (ngayTraPhongObj == null) throw new IllegalArgumentException("Thiếu trường ngayTraPhong trong requestData");
             LocalDate checkOutDate = LocalDate.parse(ngayTraPhongObj.toString());
-            
-            // Validate all rooms exist and are available
+
+// Validate all rooms exist and are available
             List<Room> rooms = new ArrayList<>();
             for (Integer roomId : roomIds) {
                 Room room = roomRepository.findById(roomId)
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với ID: " + roomId));
-                
-                // Kiểm tra phòng có trống trong khoảng thời gian đặt không
+
                 if (isRoomBookedInPeriod(roomId, checkInDate, checkOutDate)) {
-                    throw new RuntimeException("Phòng " + room.getSoPhong() + " đã được đặt trong khoảng thời gian từ " 
-                        + checkInDate + " đến " + checkOutDate + ". Vui lòng chọn phòng khác hoặc thời gian khác.");
+                    throw new RuntimeException("Phòng " + room.getSoPhong() + " đã được đặt trong khoảng thời gian từ "
+                            + checkInDate + " đến " + checkOutDate + ". Vui lòng chọn phòng khác hoặc thời gian khác.");
                 }
-                
+
                 rooms.add(room);
             }
-            
-            // Create booking
+
+// Get hotel (assuming single hotel model)
+            Hotel hotel = hotelRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy khách sạn"));
+
+// Create booking
             Booking booking = new Booking();
             booking.setKhachHang(customer);
+            booking.setHotel(hotel);
             booking.setNgayNhanPhong(checkInDate);
             booking.setNgayTraPhong(checkOutDate);
+
             Object soNguoiLonObj = requestData.get("soNguoiLon");
             if (soNguoiLonObj == null) throw new IllegalArgumentException("Thiếu trường soNguoiLon trong requestData");
             booking.setSoNguoiLon(Byte.valueOf(soNguoiLonObj.toString()));
+
             Object soTreEmObj = requestData.get("soTreEm");
             if (soTreEmObj == null) throw new IllegalArgumentException("Thiếu trường soTreEm trong requestData");
             booking.setSoTreEm(Byte.valueOf(soTreEmObj.toString()));

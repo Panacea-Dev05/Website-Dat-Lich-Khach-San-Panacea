@@ -175,9 +175,21 @@ table {
     border-radius: 8px;
     overflow: hidden;
 }
+
+/* Cập nhật các cột của bảng - Đã đồng bộ với quản lý khách hàng */
+table th:nth-child(1), table td:nth-child(1) { width: 5%; } /* STT */
+table th:nth-child(2), table td:nth-child(2) { width: 10%; } /* Mã thanh toán */
+table th:nth-child(3), table td:nth-child(3) { width: 10%; } /* Mã đặt phòng */
+table th:nth-child(4), table td:nth-child(4) { width: 15%; } /* Khách hàng */
+table th:nth-child(5), table td:nth-child(5) { width: 12%; } /* Số tiền */
+table th:nth-child(6), table td:nth-child(6) { width: 12%; } /* Phương thức */
+table th:nth-child(7), table td:nth-child(7) { width: 14%; } /* Ngày thanh toán */
+table th:nth-child(8), table td:nth-child(8) { width: 12%; } /* Trạng thái */
+table th:nth-child(9), table td:nth-child(9) { width: 10%; } /* Thao tác - Đủ chỗ cho 3 nút */
+
 thead {
     background: #d1fae5;
-    color: #065f46;
+    color: #064e3b;
 }
 th, td {
     padding: 12px 16px;
@@ -186,14 +198,37 @@ th, td {
     font-weight: 500;
     font-size: 0.95rem;
 }
+
+/* Đảm bảo tiêu đề không bị xuống dòng */
+th {
+    white-space: nowrap;
+}
+
+/* Căn giữa cột thao tác và đảm bảo các nút không bị xuống dòng */
+td:nth-child(9) {
+    text-align: center;
+    white-space: nowrap;
+    padding: 8px 4px;
+}
+
+/* Đảm bảo các button trong cột thao tác hiển thị đúng */
+td:nth-child(9) .btn-view,
+td:nth-child(9) .btn-edit,
+td:nth-child(9) .btn-delete {
+    display: inline-flex;
+    vertical-align: middle;
+}
+
 tbody tr:hover {
     background: #a7f3d0;
     cursor: pointer;
 }
 
-/* Status styles */
+/* Status styles - Tinh chỉnh để hiển thị tốt hơn */
 .status-completed, .status-pending, .status-failed, .status-refunded {
-    display: inline-block;
+    display: inline-flex; /* Sử dụng flexbox để căn giữa nội dung */
+    align-items: center;
+    justify-content: center;
     padding: 6px 12px;
     border-radius: 20px;
     font-weight: 600;
@@ -221,17 +256,20 @@ tbody tr:hover {
     color: #4338ca;
 }
 
-/* Action buttons in table */
-.btn-view, .btn-edit {
+/* Action buttons in table - Sửa lại để hiển thị đầy đủ và đồng bộ */
+.btn-view, .btn-edit, .btn-delete {
     background: none;
     border: none;
-    padding: 6px;
-    border-radius: 50%;
+    padding: 8px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    margin: 0 2px;
+    margin: 0 3px;
+    min-width: 32px;
+    min-height: 32px;
+    cursor: pointer;
 }
 
 .btn-view {
@@ -242,17 +280,39 @@ tbody tr:hover {
     color: #0284c7;
 }
 
-.btn-view:hover, .btn-edit:hover {
+.btn-delete {
+    color: #dc2626;
+    background-color: rgba(220, 38, 38, 0.05);
+}
+
+.btn-view:hover, .btn-edit:hover, .btn-delete:hover {
     background-color: rgba(0, 0, 0, 0.05);
     transform: scale(1.1);
 }
 
 .btn-view:hover {
     color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
 }
 
 .btn-edit:hover {
     color: #0ea5e9;
+    background-color: rgba(14, 165, 233, 0.1);
+}
+
+.btn-delete:hover {
+    color: #ffffff;
+    background-color: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Đảm bảo Material Icons hiển thị đúng trong button */
+.btn-view .material-icons,
+.btn-edit .material-icons,
+.btn-delete .material-icons {
+    font-size: 18px;
+    line-height: 1;
+    display: block;
 }
 /* Buttons */
 .btn {
@@ -386,132 +446,132 @@ main::-webkit-scrollbar-thumb {
 }
 /* Modal overlay cho form thêm/sửa thanh toán */
 .modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
-  display: none;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 .modal-overlay.active,
 .modal-overlay[style*="display: flex"] {
-  display: flex !important;
+    display: flex !important;
 }
 .modal-content {
-  background: #fff;
-  border-radius: 18px;
-  padding: 2.2rem 2.5rem 2rem 2.5rem;
-  min-width: 350px;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  animation: modalFadeIn 0.25s;
+    background: #fff;
+    border-radius: 18px;
+    padding: 2.2rem 2.5rem 2rem 2.5rem;
+    min-width: 350px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    animation: modalFadeIn 0.25s;
 }
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: none; }
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: none; }
 }
 
 /* Form layout 2 cột */
 #paymentForm {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem 2.2rem;
-  align-items: end;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem 2.2rem;
+    align-items: end;
 }
 #paymentForm h2 {
-  grid-column: 1 / span 2;
+    grid-column: 1 / span 2;
 }
 .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.2rem;
 }
 .form-group label {
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-  color: #176c4b;
-  text-align: left;
-  font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #176c4b;
+    text-align: left;
+    font-size: 1rem;
 }
 .form-control {
-  border: 1.5px solid #1abc9c;
-  border-radius: 8px;
-  padding: 0.55rem 0.9rem;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.2s;
-  background: #f8fdfc;
-  margin-bottom: 0.1rem;
+    border: 1.5px solid #1abc9c;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+    background: #f8fdfc;
+    margin-bottom: 0.1rem;
 }
 .form-control:focus {
-  border-color: #176c4b;
-  background: #fff;
+    border-color: #176c4b;
+    background: #fff;
 }
 
 /* Nút lưu/hủy */
 #paymentForm .form-actions {
-  grid-column: 1 / span 2;
-  display: flex;
-  gap: 1.2rem;
-  justify-content: flex-end;
-  margin-top: 1.2rem;
+    grid-column: 1 / span 2;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: flex-end;
+    margin-top: 1.2rem;
 }
 .btn-success {
-  background: linear-gradient(90deg,#1abc9c,#16a085);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1.5rem;
-  font-size: 1.08rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(26,188,156,0.08);
-  transition: background 0.2s, box-shadow 0.2s;
+    background: linear-gradient(90deg,#1abc9c,#16a085);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(26,188,156,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .btn-success:hover {
-  background: linear-gradient(90deg,#16a085,#1abc9c);
-  box-shadow: 0 4px 16px rgba(26,188,156,0.13);
+    background: linear-gradient(90deg,#16a085,#1abc9c);
+    box-shadow: 0 4px 16px rgba(26,188,156,0.13);
 }
 .btn-danger {
-  background: #ee3d3d;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1.5rem;
-  font-size: 1.08rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(238,61,61,0.08);
-  transition: background 0.2s, box-shadow 0.2s;
+    background: #ee3d3d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(238,61,61,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .btn-danger:hover {
-  background: #c82333;
-  box-shadow: 0 4px 16px rgba(238,61,61,0.13);
+    background: #c82333;
+    box-shadow: 0 4px 16px rgba(238,61,61,0.13);
 }
 
 /* Nút đóng modal */
 #closePaymentModal {
-  position: absolute;
-  top: 14px;
-  right: 18px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: #888;
-  cursor: pointer;
-  transition: color 0.2s;
-  z-index: 10;
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10;
 }
 #closePaymentModal:hover {
-  color: #176c4b;
+    color: #176c4b;
 }
 
 @media (max-width: 700px) {
-  .modal-content { padding: 1rem; min-width: 90vw; max-width: 98vw; }
-  #paymentForm { grid-template-columns: 1fr; gap: 1rem; }
-  #paymentForm .form-actions { grid-column: 1; justify-content: stretch; }
+    .modal-content { padding: 1rem; min-width: 90vw; max-width: 98vw; }
+    #paymentForm { grid-template-columns: 1fr; gap: 1rem; }
+    #paymentForm .form-actions { grid-column: 1; justify-content: stretch; }
 }

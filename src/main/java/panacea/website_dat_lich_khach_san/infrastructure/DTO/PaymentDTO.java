@@ -5,22 +5,34 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentDTO {
     private Integer id;
     private Integer bookingId;
     private String hinhThucThanhToan;
     private BigDecimal soTien;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime thoiGianThanhToan;
+    
     private String trangThai;
     private BigDecimal amount;          // Thêm field này
     private String paymentMethod;       // Thêm field này
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime paymentDate;  // Thêm field này
+    
     private String status;
     private UUID uuidId;
     private Long createdDate;
     private String customerName;
+    
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 

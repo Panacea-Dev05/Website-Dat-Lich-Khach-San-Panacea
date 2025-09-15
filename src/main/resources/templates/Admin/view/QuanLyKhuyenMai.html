@@ -213,9 +213,9 @@
                   th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}"></option>
               </select>
 
-              <div style="margin-top: 1.5rem;">
+              <div class="btn-row">
                 <button type="submit" class="btn" id="submitBtn">Lưu khuyến mãi</button>
-                <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;" onclick="hideForm()">Hủy</button>
+                <button type="button" class="btn" id="cancelBtn" onclick="hideForm()">Hủy</button>
               </div>
             </form>
           </div>
@@ -237,9 +237,18 @@
       // Reset input ngày về rỗng để tránh giữ giá trị cũ sai định dạng
       document.getElementById('ngayBatDau').value = '';
       document.getElementById('ngayKetThuc').value = '';
+      // Đảm bảo form action đúng cho thêm mới
+      document.getElementById('promotionForm').setAttribute('action', '/admin/promotions');
+      document.getElementById('promotionForm').setAttribute('data-mode', 'add');
+      // Reset hidden field
+      document.querySelector('input[name="id"]').value = '';
     }
     function hideForm() {
       document.getElementById('promotionModal').classList.remove('active');
+      document.getElementById('promotionForm').reset();
+      document.getElementById('promotionForm').setAttribute('data-mode', 'add');
+      // Reset hidden field
+      document.querySelector('input[name="id"]').value = '';
     }
     function editPromotion(id) {
       window.location.href = '/admin/promotions/edit/' + id;

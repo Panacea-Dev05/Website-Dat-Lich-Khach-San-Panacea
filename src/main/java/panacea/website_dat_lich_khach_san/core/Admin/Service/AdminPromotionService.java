@@ -68,15 +68,15 @@ public class AdminPromotionService {
         dto.setMaKhuyenMai(promotion.getMaKhuyenMai());
         dto.setTenKhuyenMai(promotion.getTenKhuyenMai());
         dto.setMoTa(promotion.getMoTa());
-        dto.setLoaiGiamGia(promotion.getLoaiGiamGia().name());
+        dto.setLoaiGiamGia(promotion.getLoaiGiamGia() != null ? promotion.getLoaiGiamGia().name() : null);
         dto.setGiaTriGiam(promotion.getGiaTriGiam());
         dto.setGiamToiDa(promotion.getGiamToiDa());
         dto.setNgayBatDau(promotion.getNgayBatDau());
         dto.setNgayKetThuc(promotion.getNgayKetThuc());
         dto.setSoLuongToiDa(promotion.getSoLuongToiDa());
-        dto.setDaSuDung(promotion.getDaSuDung());
+        dto.setDaSuDung(promotion.getDaSuDung() != null ? promotion.getDaSuDung() : 0);
         dto.setDieuKienApDung(promotion.getDieuKienApDung());
-        dto.setTrangThai(promotion.getTrangThai().name());
+        dto.setTrangThai(promotion.getTrangThai() != null ? promotion.getTrangThai().name() : null);
         dto.setUuidId(promotion.getUuidId());
         dto.setCreatedDate(promotion.getCreatedDate());
         dto.setLastModifiedDate(promotion.getLastModifiedDate());
@@ -115,8 +115,17 @@ public class AdminPromotionService {
     // Filter danh sách promotion
     public List<PromotionDTO> filterPromotions(String status, String keyword) {
         return promotionRepository.findAll().stream()
-            .filter(p -> status == null || p.getTrangThai().name().equalsIgnoreCase(status))
-            .filter(p -> keyword == null || p.getTenKhuyenMai().toLowerCase().contains(keyword.toLowerCase()) || p.getMaKhuyenMai().toLowerCase().contains(keyword.toLowerCase()))
+            .filter(p -> {
+                if (status == null || status.isBlank()) return true;
+                return p.getTrangThai() != null && p.getTrangThai().name().equalsIgnoreCase(status);
+            })
+            .filter(p -> {
+                if (keyword == null || keyword.isBlank()) return true;
+                String ten = p.getTenKhuyenMai() != null ? p.getTenKhuyenMai().toLowerCase() : "";
+                String ma = p.getMaKhuyenMai() != null ? p.getMaKhuyenMai().toLowerCase() : "";
+                String k = keyword.toLowerCase();
+                return ten.contains(k) || ma.contains(k);
+            })
             .map(this::convertToDTO)
             .toList();
     }

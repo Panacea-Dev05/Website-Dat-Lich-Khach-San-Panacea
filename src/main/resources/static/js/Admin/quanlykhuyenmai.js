@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelBtn && form) {
     cancelBtn.addEventListener("click", () => {
       form.style.display = "none";
+      form.reset();
+      form.setAttribute("data-mode", "add");
+      form.action = "/admin/promotions";
+      formTitle.textContent = "Thêm khuyến mãi mới";
+      if (form.promotionId) {
+        form.promotionId.value = "";
+      }
     });
   }
 
@@ -77,7 +84,22 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", function(e) {
       e.preventDefault();
       const mode = form.getAttribute("data-mode");
-      const id = form.promotionId.value;
+      const id = form.querySelector('input[name="id"]') ? form.querySelector('input[name="id"]').value : '';
+      
+      // Kiểm tra xem đang ở chế độ thêm hay sửa
+      if (mode === "add") {
+        // Đảm bảo form action đúng cho thêm mới
+        form.setAttribute("action", "/admin/promotions");
+        // Đảm bảo id trống khi thêm mới
+        if (form.querySelector('input[name="id"]')) {
+          form.querySelector('input[name="id"]').value = '';
+        }
+        // Cho phép form submit bình thường
+        form.submit();
+        return;
+      }
+      
+      // Xử lý cho chế độ edit
       const dto = {
         maKhuyenMai: form.maKhuyenMai.value,
         tenKhuyenMai: form.tenKhuyenMai.value,

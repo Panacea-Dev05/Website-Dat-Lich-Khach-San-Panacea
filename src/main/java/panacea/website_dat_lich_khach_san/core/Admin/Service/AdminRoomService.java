@@ -189,6 +189,11 @@ public class AdminRoomService {
         room.setUuidId(dto.getUuidId());
         room.setCreatedDate(dto.getCreatedDate());
         room.setLastModifiedDate(dto.getLastModifiedDate());
+        
+        // Set hotel (assuming single hotel model)
+        Hotel hotel = hotelRepository.findAll().stream().findFirst().orElse(null);
+        room.setHotel(hotel);
+        
         return room;
     }
 

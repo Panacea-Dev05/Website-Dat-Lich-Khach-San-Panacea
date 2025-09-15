@@ -39,21 +39,39 @@ public class AdminReviewController {
         return adminReviewService.getReviewById(id);
     }
     
-    @PostMapping
+    // Admin chỉ có thể duyệt/từ chối đánh giá, không thể tạo/sửa
+    @PutMapping("/{id}/approve")
     @ResponseBody
-    public ReviewDTO createReview(@RequestBody ReviewDTO reviewDTO) {
-        return adminReviewService.createReview(reviewDTO);
+    public Object approveReview(@PathVariable Long id) {
+        try {
+            return adminReviewService.approveReview(id);
+        } catch (Exception e) {
+            return java.util.Map.of("error", true, "message", e.getMessage());
+        }
     }
     
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/reject")
     @ResponseBody
-    public ReviewDTO updateReview(@PathVariable Long id, @RequestBody ReviewDTO reviewDTO) {
-        return adminReviewService.updateReview(id, reviewDTO);
+    public Object rejectReview(@PathVariable Long id) {
+        try {
+            return adminReviewService.rejectReview(id);
+        } catch (Exception e) {
+            return java.util.Map.of("error", true, "message", e.getMessage());
+        }
     }
     
     @DeleteMapping("/{id}")
     @ResponseBody
-    public boolean deleteReview(@PathVariable Long id) {
-        return adminReviewService.deleteReview(id);
+    public Object deleteReview(@PathVariable Long id) {
+        try {
+            boolean deleted = adminReviewService.deleteReview(id);
+            if (deleted) {
+                return java.util.Map.of("success", true, "message", "Đã xóa đánh giá thành công");
+            } else {
+                return java.util.Map.of("error", true, "message", "Không tìm thấy đánh giá để xóa");
+            }
+        } catch (Exception e) {
+            return java.util.Map.of("error", true, "message", e.getMessage());
+        }
     }
 } 

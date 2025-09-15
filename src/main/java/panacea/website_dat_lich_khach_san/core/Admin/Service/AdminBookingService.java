@@ -15,6 +15,7 @@ import panacea.website_dat_lich_khach_san.entity.Payment;
 import panacea.website_dat_lich_khach_san.entity.Promotion;
 import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
 import panacea.website_dat_lich_khach_san.entity.Staff;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDTO;
 import panacea.website_dat_lich_khach_san.repository.AuditLogRepository;
 import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
@@ -23,6 +24,7 @@ import panacea.website_dat_lich_khach_san.repository.PaymentRepository;
 import panacea.website_dat_lich_khach_san.repository.PromotionRepository;
 import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 
 @Service
 public class AdminBookingService {
@@ -46,6 +48,8 @@ public class AdminBookingService {
     private AuditLogRepository auditLogRepository;
     @Autowired
     private StaffRepository staffRepository;
+    @Autowired
+    private HotelRepository hotelRepository;
     
     public List<BookingDTO> getAllBookings() {
         return bookingRepository.findAll().stream()
@@ -157,6 +161,11 @@ public class AdminBookingService {
         booking.setTongThanhToan(dto.getTongThanhToan());
         booking.setTrangThaiDatPhong(dto.getTrangThaiDatPhong() != null ? Booking.TrangThaiDatPhong.fromString(dto.getTrangThaiDatPhong()) : null);
         booking.setGhiChuKhachHang(dto.getGhiChuKhachHang());
+        
+        // Set hotel (assuming single hotel model)
+        Hotel hotel = hotelRepository.findAll().stream().findFirst().orElse(null);
+        booking.setHotel(hotel);
+        
         return booking;
     }
     

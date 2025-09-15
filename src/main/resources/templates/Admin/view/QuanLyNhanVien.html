@@ -29,7 +29,10 @@
         <main role="main" tabindex="0">
             <h1>Quản lý nhân viên</h1>
             <section class="content-section" id="contentSection">
-                <button class="btn" id="btnAddStaff">Thêm nhân viên mới</button>
+                <button class="btn btn-primary" id="btnAddStaff">
+          <span class="material-icons">person_add</span>
+          Thêm nhân viên mới
+        </button>
                 <table aria-label="Danh sách nhân viên" id="staffTable">
                     <thead>
                         <tr>
@@ -59,6 +62,9 @@
                                 </span>
                             </td>
                             <td>
+                                <button class="btn-view" th:onclick="'viewStaff(' + ${staff.id} + ')'" title="Xem chi tiết">
+                                    <span class="material-icons">visibility</span>
+                                </button>
                                 <button class="btn-edit" th:onclick="'editStaff(' + ${staff.id} + ')'" title="Sửa">
                                     <span class="material-icons">edit</span>
                                 </button>
@@ -70,45 +76,104 @@
                     </tbody>
                 </table>
 
-                <!-- Form thêm/sửa nhân viên -->
-                <form id="staffForm" style="display:none; margin-top: 2rem;">
-                    <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm nhân viên mới</h2>
-                    <input type="hidden" id="staffId" name="staffId" />
+                <!-- Modal form thêm/sửa nhân viên (ẩn mặc định) -->
+                <div class="modal-overlay" id="staffModal" style="display:none;">
+                    <div class="modal-content">
+                        <button type="button" class="modal-close" id="closeStaffModal">&times;</button>
+                        <form id="staffForm">
+                            <div class="form-header">
+                                <h2 id="formTitle">Thêm nhân viên mới</h2>
+                                <p>Vui lòng điền đầy đủ thông tin nhân viên vào form dưới đây</p>
+                            </div>
+                            <input type="hidden" id="staffId" name="staffId" />
 
-                    <label for="maNhanVien">Mã nhân viên</label>
-                    <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
-
-                    <label for="ho">Họ</label>
-                    <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
-
-                    <label for="ten">Tên</label>
-                    <input type="text" id="ten" name="ten" required placeholder="Văn A" />
-
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
-
-                    <label for="soDienThoai">Số điện thoại</label>
-                    <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456" />
-
-                    <label for="chucVu">Chức vụ</label>
-                    <select id="chucVu" name="chucVu" required>
-                        <option value="" disabled selected>Chọn chức vụ</option>
-                        <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
-                    </select>
-
-                    <label for="trangThai">Trạng thái</label>
-                    <select id="trangThai" name="trangThai" required>
-                        <option value="" disabled selected>Chọn trạng thái</option>
-                        <option th:each="status : ${staffStatuses}" th:value="${status}"
-                            th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
-                    </select>
-
-                    <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-                        <button type="submit" class="btn" id="submitBtn">Lưu nhân viên</button>
-                        <button type="button" class="btn" id="cancelBtn"
-                            style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                            <label for="maNhanVien">Mã nhân viên</label>
+                            <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
+                            
+                            <label for="ho">Họ</label>
+                            <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
+                            
+                            <label for="ten">Tên</label>
+                            <input type="text" id="ten" name="ten" required placeholder="Văn A" />
+                            
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
+                            
+                            <label for="soDienThoai">Số điện thoại</label>
+                            <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
+                                pattern="^[0-9()+\- ]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
+                            
+                            <label for="chucVu">Chức vụ</label>
+                            <select id="chucVu" name="chucVu" required>
+                                <option value="" disabled selected>Chọn chức vụ</option>
+                                <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
+                            </select>
+                            
+                            <label for="trangThai">Trạng thái</label>
+                            <select id="trangThai" name="trangThai" required>
+                                <option value="" disabled selected>Chọn trạng thái</option>
+                                <option th:each="status : ${staffStatuses}" th:value="${status}"
+                                    th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
+                            </select>
+                            
+                            <div class="form-footer">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">Lưu nhân viên</button>
+                                <button type="button" class="btn btn-danger" id="cancelBtn">Hủy</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
+
+                <!-- Modal xem chi tiết nhân viên (ẩn mặc định) -->
+                <div class="modal-overlay" id="viewStaffModal" style="display:none;">
+                    <div class="modal-content">
+                        <button type="button" class="modal-close" id="closeViewStaffModal">&times;</button>
+                        <div class="form-header">
+                            <h2>Chi tiết nhân viên</h2>
+                            <p>Thông tin chi tiết của nhân viên trong hệ thống</p>
+                        </div>
+                        
+                        <div class="staff-details">
+                            <div class="detail-row">
+                                <div class="detail-label">ID:</div>
+                                <div class="detail-value" id="viewStaffId"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Mã nhân viên:</div>
+                                <div class="detail-value" id="viewStaffCode"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Họ tên:</div>
+                                <div class="detail-value" id="viewStaffName"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value" id="viewStaffEmail"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Số điện thoại:</div>
+                                <div class="detail-value" id="viewStaffPhone"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Chức vụ:</div>
+                                <div class="detail-value" id="viewStaffPosition"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Trạng thái:</div>
+                                <div class="detail-value" id="viewStaffStatus"></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Ngày tạo:</div>
+                                <div class="detail-value" id="viewStaffCreatedDate"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-footer">
+                            <button type="button" class="btn btn-primary" id="editStaffBtn">Chỉnh sửa</button>
+                            <button type="button" class="btn btn-danger" id="closeViewBtn">Đóng</button>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
 
@@ -119,6 +184,97 @@
 
     <script th:src="@{/js/Admin/quanlynhanvien.js}"></script>
     <script th:src="@{/js/Admin/quanlynhanvien-search.js}"></script>
+    <script th:inline="javascript">
+        // Hiển thị chi tiết nhân viên
+        function viewStaff(staffId) {
+            fetch('/admin/staff/' + staffId)
+                .then(res => {
+                    if (!res.ok) {
+                        if (res.status === 500) {
+                            throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+                        }
+                        if (res.status === 404) {
+                            throw new Error('Không tìm thấy thông tin nhân viên');
+                        }
+                        throw new Error('Lỗi khi tải dữ liệu nhân viên');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    // Kiểm tra nếu có lỗi từ server
+                    if (data.error) {
+                        throw new Error(data.message || 'Lỗi không xác định');
+                    }
+                    
+                    // Nếu không có lỗi, hiển thị thông tin nhân viên
+                    document.getElementById('viewStaffId').textContent = data.id;
+                    document.getElementById('viewStaffCode').textContent = data.maNhanVien || 'Chưa cập nhật';
+                    document.getElementById('viewStaffName').textContent = data.ho + ' ' + data.ten;
+                    document.getElementById('viewStaffEmail').textContent = data.email;
+                    document.getElementById('viewStaffPhone').textContent = data.soDienThoai || 'Chưa cập nhật';
+                    document.getElementById('viewStaffPosition').textContent = data.chucVu || 'Chưa cập nhật';
+                    
+                    // Hiển thị trạng thái với màu sắc tương ứng
+                    const statusElement = document.getElementById('viewStaffStatus');
+                    statusElement.textContent = data.trangThai === 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc';
+                    statusElement.className = data.trangThai === 'HOAT_DONG' ? 'status-active' : 'status-inactive';
+                    
+                    // Hiển thị ngày tạo
+                    const createdDate = data.createdDate ? new Date(data.createdDate).toLocaleDateString('vi-VN') : 'Không có thông tin';
+                    document.getElementById('viewStaffCreatedDate').textContent = createdDate;
+                    
+                    // Hiển thị modal
+                    document.getElementById('viewStaffModal').style.display = 'flex';
+                    
+                    // Lưu ID nhân viên cho nút chỉnh sửa
+                    document.getElementById('editStaffBtn').setAttribute('data-id', data.id);
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể xem chi tiết nhân viên: ' + error.message);
+                });
+        }
+
+        // Gắn sự kiện cho các nút
+        document.addEventListener('DOMContentLoaded', function() {
+            // Nút thêm nhân viên mới
+            document.getElementById('btnAddStaff').onclick = showAddStaffForm;
+            
+            // Đóng modal thêm/sửa
+            document.getElementById('closeStaffModal').onclick = function() {
+                document.getElementById('staffModal').style.display = 'none';
+            };
+            document.getElementById('cancelBtn').onclick = function() {
+                document.getElementById('staffModal').style.display = 'none';
+            };
+            
+            // Đóng modal xem chi tiết
+            document.getElementById('closeViewStaffModal').onclick = function() {
+                document.getElementById('viewStaffModal').style.display = 'none';
+            };
+            document.getElementById('closeViewBtn').onclick = function() {
+                document.getElementById('viewStaffModal').style.display = 'none';
+            };
+            
+            // Nút chỉnh sửa từ modal xem chi tiết
+            document.getElementById('editStaffBtn').onclick = function() {
+                const staffId = this.getAttribute('data-id');
+                document.getElementById('viewStaffModal').style.display = 'none';
+                editStaff(staffId);
+            };
+        });
+
+        // Hiển thị form thêm nhân viên mới
+        function showAddStaffForm() {
+            var modal = document.getElementById('staffModal');
+            var form = document.getElementById('staffForm');
+            modal.style.display = 'flex';
+            form.reset();
+            document.getElementById('formTitle').innerText = 'Thêm nhân viên mới';
+            document.getElementById('staffId').value = '';
+            form.setAttribute('data-mode', 'add');
+        }
+    </script>
     <script th:src="@{/js/responsive.js}"></script>
 </body>
 

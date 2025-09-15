@@ -1,3 +1,25 @@
+// Khai báo các biến toàn cục để sử dụng trong các hàm
+let staffForm, staffFormOverlay, formTitle, btnAddStaff, cancelBtn, closeFormBtn, submitBtn, staffTableBody;
+
+// Hàm mở form với hiệu ứng
+function openStaffForm() {
+  staffFormOverlay.style.display = 'flex';
+  setTimeout(() => {
+    staffFormOverlay.classList.add('active');
+  }, 10);
+}
+
+// Hàm đóng form với hiệu ứng
+function closeStaffForm() {
+  // Ẩn lớp active trước, rồi mới ẩn overlay để mượt hơn
+  if (staffFormOverlay) {
+    staffFormOverlay.classList.remove('active');
+    setTimeout(() => {
+      staffFormOverlay.style.display = 'none';
+    }, 300);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle for mobile
   const mobileToggle = document.getElementById("mobileToggle");
@@ -9,27 +31,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Các phần tử DOM
-  const staffForm = document.getElementById('staffForm');
-  const formTitle = document.getElementById('formTitle');
-  const btnAddStaff = document.getElementById('btnAddStaff');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const submitBtn = document.getElementById('submitBtn');
-  const staffTableBody = document.getElementById('staffTableBody');
+  // Khởi tạo các phần tử DOM
+  staffForm = document.getElementById('staffForm');
+  staffFormOverlay = document.getElementById('staffFormOverlay');
+  formTitle = document.getElementById('formTitle');
+  btnAddStaff = document.getElementById('btnAddStaff');
+  cancelBtn = document.getElementById('cancelBtn');
+  closeFormBtn = document.getElementById('closeFormBtn');
+  submitBtn = document.getElementById('submitBtn');
+  staffTableBody = document.getElementById('staffTableBody');
 
   // Hiển thị form thêm nhân viên
   if (btnAddStaff) {
     btnAddStaff.addEventListener('click', () => {
       resetForm();
-      formTitle.textContent = 'Thêm nhân viên mới';
-      staffForm.style.display = 'grid';
+      if (formTitle) formTitle.textContent = 'Thêm nhân viên mới';
+      openStaffForm();
     });
   }
 
   // Hủy thêm/sửa nhân viên
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
-      staffForm.style.display = 'none';
+      closeStaffForm();
+    });
+  }
+  
+  // Đóng form khi click vào nút đóng
+  if (closeFormBtn) {
+    closeFormBtn.addEventListener('click', () => {
+      closeStaffForm();
+    });
+  }
+  
+  // Đóng form khi click vào overlay
+  if (staffFormOverlay) {
+    staffFormOverlay.addEventListener('click', (e) => {
+      if (e.target === staffFormOverlay) {
+        closeStaffForm();
+      }
     });
   }
 
@@ -38,16 +78,24 @@ document.addEventListener("DOMContentLoaded", () => {
     staffForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      // Clear previous errors
+      clearFormErrors();
+      
       const staffId = document.getElementById('staffId').value;
       const staffData = {
-        maNhanVien: document.getElementById('maNhanVien').value,
-        ho: document.getElementById('ho').value,
-        ten: document.getElementById('ten').value,
-        email: document.getElementById('email').value,
-        soDienThoai: document.getElementById('soDienThoai').value,
+        maNhanVien: document.getElementById('maNhanVien').value.trim(),
+        ho: document.getElementById('ho').value.trim(),
+        ten: document.getElementById('ten').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        soDienThoai: document.getElementById('soDienThoai').value.trim(),
         chucVu: document.getElementById('chucVu').value,
         trangThai: document.getElementById('trangThai').value
       };
+      
+      // Validate form
+      if (!validateStaffForm(staffData)) {
+        return;
+      }
       
       try {
         let response;
@@ -57,33 +105,43 @@ document.addEventListener("DOMContentLoaded", () => {
           // Cập nhật nhân viên
           response = await fetch(`/admin/staff/${staffId}`, {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
-          
-          staff = await response.json();
-          updateStaffRow(staff);
         } else {
           // Thêm nhân viên mới
           response = await fetch('/admin/staff', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(staffData)
           });
-          
-          staff = await response.json();
-          addStaffRow(staff);
         }
-        
-        staffForm.style.display = 'none';
-        showNotification(staffId ? 'Cập nhật nhân viên thành công' : 'Thêm nhân viên thành công');
+  
+        if (!response.ok) {
+          // Thử đọc thông tin lỗi từ server
+          let errorText = 'Yêu cầu không thành công';
+          try { const err = await response.json(); errorText = err.message || err.error || errorText; } catch (_) {}
+          throw new Error(`${errorText} (HTTP ${response.status})`);
+        }
+  
+        staff = await response.json();
+  
+        if (!staff || !staff.id) {
+          throw new Error('Dữ liệu trả về không hợp lệ');
+        }
+  
+        if (staffId) {
+          updateStaffRow(staff);
+          showNotification('Cập nhật nhân viên thành công');
+        } else {
+          addStaffRow(staff);
+          showNotification('Thêm nhân viên thành công');
+        }
+  
+        closeStaffForm();
       } catch (error) {
         console.error('Lỗi:', error);
-        showNotification('Có lỗi xảy ra', 'error');
+        showNotification(error.message || 'Đã xảy ra lỗi, vui lòng thử lại', 'error');
       }
     });
   }
@@ -159,40 +217,63 @@ function updateStaffRow(staff) {
   }
 }
 
-// Hàm sửa nhân viên
+// Hàm chỉnh sửa nhân viên
 async function editStaff(id) {
   try {
     const response = await fetch(`/admin/staff/${id}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Lỗi HTTP: ${response.status} - ${response.statusText}`);
+    }
+    
     const staff = await response.json();
     
-    document.getElementById('staffId').value = staff.id;
-    document.getElementById('maNhanVien').value = staff.maNhanVien;
-    document.getElementById('ho').value = staff.ho;
-    document.getElementById('ten').value = staff.ten;
-    document.getElementById('email').value = staff.email;
-    document.getElementById('soDienThoai').value = staff.soDienThoai;
+    // Kiểm tra dữ liệu trả về
+    if (!staff || !staff.id) {
+      throw new Error('Dữ liệu nhân viên không hợp lệ hoặc không tồn tại');
+    }
     
+    document.getElementById('staffId').value = staff.id;
+    document.getElementById('maNhanVien').value = staff.maNhanVien || '';
+    document.getElementById('ho').value = staff.ho || '';
+    document.getElementById('ten').value = staff.ten || '';
+    document.getElementById('email').value = staff.email || '';
+    document.getElementById('soDienThoai').value = staff.soDienThoai || '';
+    
+    // Chọn chức vụ
     const chucVuSelect = document.getElementById('chucVu');
+    let foundChucVu = false;
     for (let i = 0; i < chucVuSelect.options.length; i++) {
       if (chucVuSelect.options[i].value === staff.chucVu) {
         chucVuSelect.selectedIndex = i;
+        foundChucVu = true;
         break;
       }
     }
+    if (!foundChucVu && chucVuSelect.options.length > 0) {
+      chucVuSelect.selectedIndex = 0;
+    }
     
+    // Chọn trạng thái
     const trangThaiSelect = document.getElementById('trangThai');
+    let foundTrangThai = false;
     for (let i = 0; i < trangThaiSelect.options.length; i++) {
       if (trangThaiSelect.options[i].value === staff.trangThai) {
         trangThaiSelect.selectedIndex = i;
+        foundTrangThai = true;
         break;
       }
     }
+    if (!foundTrangThai && trangThaiSelect.options.length > 0) {
+      trangThaiSelect.selectedIndex = 0;
+    }
     
-    document.getElementById('formTitle').textContent = 'Sửa thông tin nhân viên';
-    document.getElementById('staffForm').style.display = 'grid';
+    document.getElementById('formTitle').textContent = 'Chỉnh sửa thông tin nhân viên';
+    openStaffForm();
   } catch (error) {
-    console.error('Lỗi:', error);
-    showNotification('Không thể tải thông tin nhân viên', 'error');
+    console.error('Lỗi khi tải thông tin nhân viên:', error);
+    showNotification(`Không thể tải thông tin nhân viên: ${error.message}`, 'error');
   }
 }
 
@@ -252,4 +333,117 @@ function showNotification(message, type = 'success') {
       notification.remove();
     }, 300);
   }, 3000);
+}
+
+// Hàm validation form nhân viên
+function validateStaffForm(data) {
+  let isValid = true;
+  
+  // Validate mã nhân viên
+  if (!data.maNhanVien) {
+    showFieldError('maNhanVien', 'Mã nhân viên không được để trống');
+    isValid = false;
+  } else if (data.maNhanVien.length < 3) {
+    showFieldError('maNhanVien', 'Mã nhân viên phải có ít nhất 3 ký tự');
+    isValid = false;
+  }
+  
+  // Validate họ
+  if (!data.ho) {
+    showFieldError('ho', 'Họ không được để trống');
+    isValid = false;
+  }
+  
+  // Validate tên
+  if (!data.ten) {
+    showFieldError('ten', 'Tên không được để trống');
+    isValid = false;
+  }
+  
+  // Validate email
+  if (!data.email) {
+    showFieldError('email', 'Email không được để trống');
+    isValid = false;
+  } else if (!isValidEmail(data.email)) {
+    showFieldError('email', 'Email không hợp lệ');
+    isValid = false;
+  }
+  
+  // Validate số điện thoại
+  if (!data.soDienThoai) {
+    showFieldError('soDienThoai', 'Số điện thoại không được để trống');
+    isValid = false;
+  } else if (!isValidPhone(data.soDienThoai)) {
+    showFieldError('soDienThoai', 'Số điện thoại không hợp lệ');
+    isValid = false;
+  }
+  
+  // Validate chức vụ
+  if (!data.chucVu) {
+    showFieldError('chucVu', 'Vui lòng chọn chức vụ');
+    isValid = false;
+  }
+  
+  // Validate trạng thái
+  if (!data.trangThai) {
+    showFieldError('trangThai', 'Vui lòng chọn trạng thái');
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
+// Hàm hiển thị lỗi cho field
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.style.borderColor = '#ef4444';
+    field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+    
+    // Remove existing error message
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+      existingError.remove();
+    }
+    
+    // Add new error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    errorDiv.style.color = '#ef4444';
+    errorDiv.style.fontSize = '12px';
+    errorDiv.style.marginTop = '4px';
+    errorDiv.style.fontWeight = '500';
+    
+    field.parentNode.appendChild(errorDiv);
+  }
+}
+
+// Hàm xóa tất cả lỗi form
+function clearFormErrors() {
+  const fields = ['maNhanVien', 'ho', 'ten', 'email', 'soDienThoai', 'chucVu', 'trangThai'];
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.style.borderColor = '';
+      field.style.boxShadow = '';
+      
+      const errorDiv = field.parentNode.querySelector('.field-error');
+      if (errorDiv) {
+        errorDiv.remove();
+      }
+    }
+  });
+}
+
+// Hàm validate email
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Hàm validate số điện thoại
+function isValidPhone(phone) {
+  const phoneRegex = /^[0-9]{10,11}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
 }

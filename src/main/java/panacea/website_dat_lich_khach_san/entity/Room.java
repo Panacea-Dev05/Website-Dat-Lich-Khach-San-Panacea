@@ -54,6 +54,10 @@ public class Room {
     @JoinColumn(name = "loai_phong_id", nullable = false)
     private RoomType roomType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "khach_san_id", nullable = false)
+    private Hotel hotel;
+
     @JsonIgnore
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookingDetail> bookingDetails;

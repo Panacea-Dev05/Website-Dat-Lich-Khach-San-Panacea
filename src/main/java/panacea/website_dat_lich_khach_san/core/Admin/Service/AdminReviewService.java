@@ -9,13 +9,13 @@ import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Room;
 
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 @Service
 public class AdminReviewService {
@@ -64,6 +64,29 @@ public class AdminReviewService {
         return false;
     }
     
+    // Admin chỉ có thể duyệt/từ chối đánh giá
+    public ReviewDTO approveReview(Long id) {
+        Optional<Review> reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isPresent()) {
+            Review review = reviewOpt.get();
+            review.setTrangThai(panacea.website_dat_lich_khach_san.entity.Review.TrangThaiReview.DA_DUYET);
+            Review savedReview = reviewRepository.save(review);
+            return convertToDTO(savedReview);
+        }
+        throw new RuntimeException("Không tìm thấy đánh giá với ID: " + id);
+    }
+    
+    public ReviewDTO rejectReview(Long id) {
+        Optional<Review> reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isPresent()) {
+            Review review = reviewOpt.get();
+            review.setTrangThai(panacea.website_dat_lich_khach_san.entity.Review.TrangThaiReview.DA_AN);
+            Review savedReview = reviewRepository.save(review);
+            return convertToDTO(savedReview);
+        }
+        throw new RuntimeException("Không tìm thấy đánh giá với ID: " + id);
+    }
+    
     private ReviewDTO convertToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
@@ -75,19 +98,7 @@ public class AdminReviewService {
         dto.setTrangThai(review.getTrangThai() != null ? review.getTrangThai().name() : null);
         // Map trạng thái nội bộ sang status cho template
         if (review.getTrangThai() != null) {
-            switch (review.getTrangThai()) {
-                case DA_DUYET:
-                    dto.setStatus("Approved");
-                    break;
-                case CHO_DUYET:
-                    dto.setStatus("Pending");
-                    break;
-                case DA_AN:
-                    dto.setStatus("Rejected");
-                    break;
-                default:
-                    dto.setStatus("Unknown");
-            }
+            dto.setStatus(review.getTrangThai().name());
         } else {
             dto.setStatus("Unknown");
         }

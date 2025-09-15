@@ -22,6 +22,8 @@ public class RoomDTO {
     private Integer roomTypeId;
     private String roomTypeName;
     private String maLoaiPhong;
+    private Integer hotelId;
+    private String hotelName;
 
     // Thêm thông tin từ RoomType
     private BigDecimal dienTich;
@@ -51,8 +53,10 @@ public class RoomDTO {
         dto.setCreatedDate(room.getCreatedDate());
         dto.setLastModifiedDate(room.getLastModifiedDate());
 
-        // XÓA: if (room.getHotel() != null) { ... }
-        // Room entity KHÔNG có thuộc tính hotel
+        if (room.getHotel() != null) {
+            dto.setHotelId(room.getHotel().getId());
+            dto.setHotelName(room.getHotel().getTenKhachSan());
+        }
 
         if (room.getRoomType() != null) {
             dto.setRoomTypeId(room.getRoomType().getId());
