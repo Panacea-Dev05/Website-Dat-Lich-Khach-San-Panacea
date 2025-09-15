@@ -1,3 +1,8 @@
+/**
+ * Thanh toán - Nhân viên
+ * Xử lý các chức năng thanh toán và in hóa đơn cho khách hàng
+ */
+
 // JavaScript cho chức năng thanh toán nhân viên
 
 $(document).ready(function() {

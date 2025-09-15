@@ -23,6 +23,7 @@ import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminRoomService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
+// Controller quản lý phòng và loại phòng cho Admin
 @Controller
 @RequestMapping("/admin/rooms")
 public class AdminRoomController {
@@ -30,6 +31,7 @@ public class AdminRoomController {
     @Autowired
     private AdminRoomService adminRoomService;
     
+    // HIỂN THỊ TRANG QUẢN LÝ PHÒNG: Hiển thị danh sách phòng với tính năng tìm kiếm, lọc và phân trang
     @GetMapping
     public String roomManagement(
         @RequestParam(required = false) String keyword,
@@ -68,30 +70,35 @@ public class AdminRoomController {
         return "Admin/view/QuanLyPhong";
     }
     
+    // API LẤY THÔNG TIN PHÒNG: Lấy chi tiết thông tin phòng theo ID
     @GetMapping("/{id}")
     @ResponseBody
     public RoomDTO getRoom(@PathVariable Integer id) {
         return adminRoomService.getRoomById(id);
     }
     
+    // API TẠO PHÒNG MỚI: Tạo phòng mới với thông tin từ form
     @PostMapping
     @ResponseBody
     public RoomDTO createRoom(@RequestBody RoomDTO roomDTO) {
         return adminRoomService.createRoom(roomDTO);
     }
     
+    // API CẬP NHẬT PHÒNG: Cập nhật thông tin phòng theo ID
     @PutMapping("/{id}")
     @ResponseBody
     public RoomDTO updateRoom(@PathVariable Integer id, @RequestBody RoomDTO roomDTO) {
         return adminRoomService.updateRoom(id, roomDTO);
     }
     
+    // API XÓA PHÒNG: Xóa phòng theo ID
     @DeleteMapping("/{id}")
     @ResponseBody
     public boolean deleteRoom(@PathVariable Integer id) {
         return adminRoomService.deleteRoom(id);
     }
     
+    // HIỂN THỊ TRANG QUẢN LÝ LOẠI PHÒNG: Hiển thị danh sách loại phòng với tính năng tìm kiếm
     @GetMapping("/room-types")
     public String roomTypeManagement(
         @RequestParam(required = false) String keyword,
@@ -103,33 +110,38 @@ public class AdminRoomController {
         return "Admin/view/QuanLyHangPhong";
     }
 
+    // API LẤY THÔNG TIN LOẠI PHÒNG: Lấy chi tiết thông tin loại phòng theo ID
     @GetMapping("/room-types/{id}")
     @ResponseBody
     public RoomTypeDTO getRoomType(@PathVariable Integer id) {
         return adminRoomService.getRoomTypeById(id);
     }
     
+    // API TẠO LOẠI PHÒNG MỚI: Tạo loại phòng mới với thông tin từ form
     @PostMapping("/room-types")
     @ResponseBody
     public RoomTypeDTO createRoomType(@RequestBody RoomTypeDTO roomTypeDTO) {
         return adminRoomService.createRoomType(roomTypeDTO);
     }
     
+    // API CẬP NHẬT LOẠI PHÒNG: Cập nhật thông tin loại phòng theo ID
     @PutMapping("/room-types/{id}")
     @ResponseBody
     public RoomTypeDTO updateRoomType(@PathVariable Integer id, @RequestBody RoomTypeDTO roomTypeDTO) {
         return adminRoomService.updateRoomType(id, roomTypeDTO);
     }
     
+    // API XÓA LOẠI PHÒNG: Xóa loại phòng theo ID
     @DeleteMapping("/room-types/{id}")
     @ResponseBody
     public boolean deleteRoomType(@PathVariable Integer id) {
         return adminRoomService.deleteRoomType(id);
     }
 
+    // API LẤY DANH SÁCH LOẠI PHÒNG JSON: Trả về tất cả loại phòng dạng JSON cho dropdown/select
     @GetMapping("/room-types/json")
     @ResponseBody
     public List<RoomTypeDTO> getRoomTypesJson() {
         return adminRoomService.getAllRoomTypes();
     }
-} 
+}

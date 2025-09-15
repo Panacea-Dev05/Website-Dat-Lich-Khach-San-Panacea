@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.ThongTinKhachHangService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
 
+// Controller quản lý thông tin khách hàng cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/thongtinkhachhang")
 public class ThongTinKhachHangController {
@@ -19,6 +20,8 @@ public class ThongTinKhachHangController {
     public ThongTinKhachHangController(ThongTinKhachHangService thongTinKhachHangService) {
         this.thongTinKhachHangService = thongTinKhachHangService;
     }
+    
+    // Hiển thị trang thông tin khách hàng
     @GetMapping("")
     public String view(Model model) {
         java.util.List<panacea.website_dat_lich_khach_san.entity.Customer> dsKhachHang;
@@ -38,6 +41,7 @@ public class ThongTinKhachHangController {
         return "NhanVien/ThongTinKhachHang";
     }
 
+    // Thêm khách hàng mới
     @PostMapping("/add")
     public String addCustomer(@ModelAttribute CustomerDTO customerDTO, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -51,12 +55,14 @@ public class ThongTinKhachHangController {
         return "redirect:/nhanvien/thongtinkhachhang";
     }
 
+    // Xóa khách hàng
     @PostMapping("/delete/{id}")
     public String deleteCustomer(@PathVariable Integer id) {
         thongTinKhachHangService.deleteCustomer(id);
         return "redirect:/nhanvien/thongtinkhachhang";
     }
 
+    // Hiển thị form chỉnh sửa khách hàng
     @GetMapping("/edit/{id}")
     public String editCustomerForm(@PathVariable Integer id, Model model) {
         var customer = thongTinKhachHangService.getCustomerById(id);
@@ -72,6 +78,7 @@ public class ThongTinKhachHangController {
         return "NhanVien/ThongTinKhachHang";
     }
 
+    // Cập nhật thông tin khách hàng
     @PostMapping("/edit")
     public String editCustomer(@ModelAttribute("editCustomer") CustomerDTO customerDTO, RedirectAttributes redirectAttributes) {
         try {
@@ -91,4 +98,4 @@ public class ThongTinKhachHangController {
         }
         return "redirect:/nhanvien/thongtinkhachhang";
     }
-} 
+}

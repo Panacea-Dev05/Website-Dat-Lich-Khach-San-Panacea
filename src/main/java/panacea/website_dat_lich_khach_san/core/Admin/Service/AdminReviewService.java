@@ -26,23 +26,27 @@ public class AdminReviewService {
     @Autowired
     private BookingDetailRepository bookingDetailRepository;
     
+    // Lấy danh sách tất cả đánh giá
     public List<ReviewDTO> getAllReviews() {
         return reviewRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
+    // Lấy thông tin đánh giá theo ID
     public ReviewDTO getReviewById(Long id) {
         Optional<Review> review = reviewRepository.findById(id);
         return review.map(this::convertToDTO).orElse(null);
     }
     
+    // Tạo đánh giá mới
     public ReviewDTO createReview(ReviewDTO reviewDTO) {
         Review review = convertToEntity(reviewDTO);
         Review savedReview = reviewRepository.save(review);
         return convertToDTO(savedReview);
     }
     
+    // Cập nhật thông tin đánh giá
     public ReviewDTO updateReview(Long id, ReviewDTO reviewDTO) {
         Optional<Review> existingReview = reviewRepository.findById(id);
         if (existingReview.isPresent()) {
@@ -56,6 +60,7 @@ public class AdminReviewService {
         return null;
     }
     
+    // Xóa đánh giá
     public boolean deleteReview(Long id) {
         if (reviewRepository.existsById(id)) {
             reviewRepository.deleteById(id);
@@ -64,7 +69,7 @@ public class AdminReviewService {
         return false;
     }
     
-    // Admin chỉ có thể duyệt/từ chối đánh giá
+    // Duyệt đánh giá
     public ReviewDTO approveReview(Long id) {
         Optional<Review> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isPresent()) {
@@ -76,17 +81,19 @@ public class AdminReviewService {
         throw new RuntimeException("Không tìm thấy đánh giá với ID: " + id);
     }
     
+    // Từ chối đánh giá
     public ReviewDTO rejectReview(Long id) {
         Optional<Review> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isPresent()) {
             Review review = reviewOpt.get();
-            review.setTrangThai(panacea.website_dat_lich_khach_san.entity.Review.TrangThaiReview.DA_AN);
+            review.setTrangThai(Review.TrangThaiReview.BI_TU_CHOI);
             Review savedReview = reviewRepository.save(review);
             return convertToDTO(savedReview);
         }
-        throw new RuntimeException("Không tìm thấy đánh giá với ID: " + id);
+        return null;
     }
     
+    // Chuyển đổi entity thành DTO
     private ReviewDTO convertToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
@@ -128,6 +135,7 @@ public class AdminReviewService {
         return dto;
     }
     
+    // Chuyển đổi DTO thành entity
     private Review convertToEntity(ReviewDTO dto) {
         Review review = new Review();
         review.setDiemTongQuan(dto.getDiemDanhGia() != null ? dto.getDiemDanhGia().byteValue() : null);
@@ -187,4 +195,4 @@ public class AdminReviewService {
         Review saved = reviewRepository.save(review);
         return convertToDTO(saved);
     }
-} 
+}

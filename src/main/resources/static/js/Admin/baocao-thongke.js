@@ -1,3 +1,8 @@
+/**
+ * Báo cáo và Thống kê - Admin Dashboard
+ * Quản lý các biểu đồ và thống kê doanh thu, tỷ lệ lấp đầy phòng
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle for mobile
   const mobileToggle = document.getElementById("mobileToggle");

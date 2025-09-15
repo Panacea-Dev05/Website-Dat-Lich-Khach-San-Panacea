@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+// Controller xử lý đăng xuất tùy chỉnh
 @Controller
 public class LogoutController {
     

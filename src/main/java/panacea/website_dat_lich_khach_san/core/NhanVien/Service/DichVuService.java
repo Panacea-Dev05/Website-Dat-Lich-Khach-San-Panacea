@@ -16,13 +16,17 @@ public class DichVuService {
     @Autowired
     private ServiceRepository serviceRepository;
 
+    // Lấy tên nhân viên
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
 
+    // Lấy danh sách tất cả chi tiết dịch vụ
     public List<ServiceDetail> getAllServiceDetails() {
         return serviceDetailRepository.findAll();
     }
+    
+    // Lấy danh sách tất cả dịch vụ
     public List<ServiceEntity> getAllServices() {
         return serviceRepository.findAll();
     }

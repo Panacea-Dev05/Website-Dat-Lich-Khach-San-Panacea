@@ -26,9 +26,19 @@ import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 
+/**
+ * Service class quản lý đặt phòng cho Admin
+ * Chức năng chính:
+ * - Quản lý toàn bộ booking trong hệ thống
+ * - Xử lý thanh toán và hoàn tiền
+ * - Áp dụng khuyến mãi
+ * - Theo dõi lịch sử và audit log
+ * - Lọc và tìm kiếm booking theo nhiều tiêu chí
+ */
 @Service
 public class AdminBookingService {
     
+    // Repository dependencies - Các repository để truy cập dữ liệu
     @Autowired
     private BookingRepository bookingRepository;
     
@@ -51,6 +61,11 @@ public class AdminBookingService {
     @Autowired
     private HotelRepository hotelRepository;
     
+    /**
+     * Lấy danh sách tất cả booking trong hệ thống
+     * Bao gồm thông tin nhân viên tạo booking từ audit log
+     * @return List<BookingDTO> - Danh sách booking với thông tin đầy đủ
+     */
     public List<BookingDTO> getAllBookings() {
         return bookingRepository.findAll().stream()
                 .map(booking -> {
@@ -73,7 +88,11 @@ public class AdminBookingService {
                 .collect(Collectors.toList());
     }
     
-    // Lấy danh sách booking có thể thanh toán (loại bỏ booking đã hủy)
+    /**
+     * Lấy danh sách booking có thể thanh toán
+     * Loại bỏ các booking đã hủy khỏi danh sách
+     * @return List<BookingDTO> - Danh sách booking có thể thanh toán
+     */
     public List<BookingDTO> getPayableBookings() {
         return bookingRepository.findAll().stream()
                 .filter(booking -> booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_HUY) // Loại bỏ booking đã hủy
@@ -81,7 +100,11 @@ public class AdminBookingService {
                 .collect(Collectors.toList());
     }
     
-    // Lấy danh sách booking đã hủy để tạo hoàn tiền
+    /**
+     * Lấy danh sách booking đã hủy để tạo hoàn tiền
+     * Chỉ lấy các booking có trạng thái đã hủy
+     * @return List<BookingDTO> - Danh sách booking đã hủy
+     */
     public List<BookingDTO> getCancelledBookings() {
         return bookingRepository.findByTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HUY)
                 .stream()
@@ -89,17 +112,33 @@ public class AdminBookingService {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Lấy thông tin booking theo ID
+     * @param id - ID của booking cần tìm
+     * @return BookingDTO - Thông tin booking hoặc null nếu không tìm thấy
+     */
     public BookingDTO getBookingById(Integer id) {
         Optional<Booking> booking = bookingRepository.findById(id);
         return booking.map(this::convertToDTO).orElse(null);
     }
     
+    /**
+     * Tạo booking mới trong hệ thống
+     * @param bookingDTO - Thông tin booking cần tạo
+     * @return BookingDTO - Thông tin booking đã được tạo
+     */
     public BookingDTO createBooking(BookingDTO bookingDTO) {
         Booking booking = convertToEntity(bookingDTO);
         Booking savedBooking = bookingRepository.save(booking);
         return convertToDTO(savedBooking);
     }
     
+    /**
+     * Cập nhật thông tin booking
+     * @param id - ID của booking cần cập nhật
+     * @param bookingDTO - Thông tin booking mới
+     * @return BookingDTO - Thông tin booking đã cập nhật hoặc null nếu không tìm thấy
+     */
     public BookingDTO updateBooking(Integer id, BookingDTO bookingDTO) {
         Optional<Booking> existingBooking = bookingRepository.findById(id);
         if (existingBooking.isPresent()) {
@@ -116,6 +155,11 @@ public class AdminBookingService {
         return null;
     }
     
+    /**
+     * Xóa booking khỏi hệ thống
+     * @param id - ID của booking cần xóa
+     * @return boolean - true nếu xóa thành công, false nếu không tìm thấy
+     */
     public boolean deleteBooking(Integer id) {
         if (bookingRepository.existsById(id)) {
             bookingRepository.deleteById(id);
@@ -124,6 +168,12 @@ public class AdminBookingService {
         return false;
     }
     
+    /**
+     * Chuyển đổi entity Booking thành DTO
+     * Bao gồm thông tin phòng, loại phòng và khách hàng
+     * @param booking - Entity booking cần chuyển đổi
+     * @return BookingDTO - DTO chứa thông tin booking
+     */
     private BookingDTO convertToDTO(Booking booking) {
         BookingDTO dto = new BookingDTO();
         dto.setId(booking.getId());
@@ -154,6 +204,11 @@ public class AdminBookingService {
         return dto;
     }
     
+    /**
+     * Chuyển đổi DTO thành entity Booking
+     * @param dto - DTO chứa thông tin booking
+     * @return Booking - Entity booking
+     */
     private Booking convertToEntity(BookingDTO dto) {
         Booking booking = new Booking();
         booking.setNgayNhanPhong(dto.getNgayNhanPhong());
@@ -169,7 +224,11 @@ public class AdminBookingService {
         return booking;
     }
     
-    // Xác nhận booking
+    /**
+     * Xác nhận booking - chuyển trạng thái thành đã xác nhận
+     * @param bookingId - ID của booking cần xác nhận
+     * @return BookingDTO - Thông tin booking đã xác nhận hoặc null nếu không tìm thấy
+     */
     public BookingDTO confirmBooking(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
@@ -179,7 +238,11 @@ public class AdminBookingService {
         return convertToDTO(saved);
     }
     
-    // Check-in
+    /**
+     * Check-in khách hàng - chuyển trạng thái thành đã nhận phòng
+     * @param bookingId - ID của booking cần check-in
+     * @return BookingDTO - Thông tin booking đã check-in hoặc null nếu không tìm thấy
+     */
     public BookingDTO checkIn(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
@@ -189,7 +252,11 @@ public class AdminBookingService {
         return convertToDTO(saved);
     }
     
-    // Check-out
+    /**
+     * Check-out khách hàng - chuyển trạng thái thành đã hoàn thành
+     * @param bookingId - ID của booking cần check-out
+     * @return BookingDTO - Thông tin booking đã check-out hoặc null nếu không tìm thấy
+     */
     public BookingDTO checkOut(Integer bookingId) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
@@ -199,7 +266,13 @@ public class AdminBookingService {
         return convertToDTO(saved);
     }
     
-    // Áp dụng promotion
+    /**
+     * Áp dụng mã khuyến mãi cho booking
+     * Giảm 10% tổng thanh toán nếu mã khuyến mãi hợp lệ
+     * @param bookingId - ID của booking
+     * @param promoCode - Mã khuyến mãi
+     * @return BookingDTO - Thông tin booking sau khi áp dụng khuyến mãi
+     */
     public BookingDTO applyPromotion(Integer bookingId, String promoCode) {
         Optional<Booking> opt = bookingRepository.findById(bookingId);
         if (opt.isEmpty()) return null;
@@ -217,7 +290,14 @@ public class AdminBookingService {
         return convertToDTO(saved);
     }
     
-    // Lọc danh sách booking theo customer/hotel/date
+    /**
+     * Lọc danh sách booking theo nhiều tiêu chí
+     * @param customerId - ID khách hàng (có thể null)
+     * @param hotelId - ID khách sạn (có thể null)
+     * @param from - Ngày bắt đầu (có thể null)
+     * @param to - Ngày kết thúc (có thể null)
+     * @return List<BookingDTO> - Danh sách booking phù hợp với tiêu chí
+     */
     public List<BookingDTO> filterBookings(Integer customerId, Integer hotelId, LocalDate from, LocalDate to) {
         return bookingRepository.findAll().stream()
             .filter(b -> (customerId == null || (b.getKhachHang() != null && b.getKhachHang().getId().equals(customerId))))
@@ -228,7 +308,7 @@ public class AdminBookingService {
             .collect(Collectors.toList());
     }
     
-    // Xem chi tiết booking đầy đủ (phòng, dịch vụ, thanh toán)
+    // Lấy chi tiết booking đầy đủ bao gồm dịch vụ và thanh toán
     public BookingFullDetail getBookingFullDetail(Integer id) {
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
         if (bookingOpt.isEmpty()) return null;

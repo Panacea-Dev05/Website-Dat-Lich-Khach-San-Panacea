@@ -29,6 +29,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.Exception.InternalServe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// Controller quản lý đặt phòng cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/quanlydatphong")
 public class QuanLyDatPhongController {
@@ -55,6 +56,7 @@ public class QuanLyDatPhongController {
         this.bookingHistoryRepository = bookingHistoryRepository;
     }
     
+    // Hiển thị trang quản lý đặt phòng
     @GetMapping("")
     public String view(@RequestParam(value = "page", defaultValue = "0") int page,
                       @RequestParam(value = "size", defaultValue = "10") int size,
@@ -73,6 +75,7 @@ public class QuanLyDatPhongController {
         return "NhanVien/QuanLyDatPhong";
     }
     
+    // Xác nhận đặt phòng và gán phòng
     @PostMapping("/confirm")
     @ResponseBody
     public Map<String, Object> confirmBooking(@RequestBody Map<String, Object> payload) {
@@ -107,6 +110,7 @@ public class QuanLyDatPhongController {
         }
     }
     
+    // Hủy đặt phòng
     @PostMapping("/cancel/{bookingId}")
     @ResponseBody
     public String cancelBooking(@PathVariable Integer bookingId) {
@@ -114,6 +118,7 @@ public class QuanLyDatPhongController {
         return success ? "success" : "error";
     }
     
+    // Lấy chi tiết đặt phòng
     @GetMapping("/detail/{bookingId}")
     @ResponseBody
     public Object getBookingDetail(@PathVariable Integer bookingId) {
@@ -122,6 +127,7 @@ public class QuanLyDatPhongController {
         return dto;
     }
     
+    // Lấy danh sách khách sạn
     @GetMapping("/hotels")
     @ResponseBody
     public List<Hotel> getHotels() {

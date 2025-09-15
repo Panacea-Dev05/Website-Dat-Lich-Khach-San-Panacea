@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// Controller quản lý kho cho Admin
 @Controller
 @RequestMapping("/admin/inventory")
 @PreAuthorize("hasRole('ADMIN')")
@@ -30,6 +31,7 @@ public class AdminInventoryController {
     @Autowired
     private StaffRepository staffRepository;
 
+    // Hiển thị trang quản lý kho
     @GetMapping
     public String inventoryManagement(Model model) {
         try {
@@ -62,6 +64,7 @@ public class AdminInventoryController {
         return "Admin/view/QuanLyKho";
     }
 
+    // Tạo vật phẩm mới
     @PostMapping("/items")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createItem(@RequestBody InventoryManagement item) {
@@ -88,6 +91,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Cập nhật vật phẩm
     @PutMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateItem(@PathVariable Integer id, @RequestBody InventoryManagement item) {
@@ -115,6 +119,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Xóa vật phẩm
     @DeleteMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteItem(@PathVariable Integer id) {
@@ -131,6 +136,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Lấy thông tin vật phẩm theo ID
     @GetMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getItem(@PathVariable Integer id) {
@@ -151,6 +157,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Tạo giao dịch kho
     @PostMapping("/transactions")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody InventoryTransaction transaction, Authentication authentication) {

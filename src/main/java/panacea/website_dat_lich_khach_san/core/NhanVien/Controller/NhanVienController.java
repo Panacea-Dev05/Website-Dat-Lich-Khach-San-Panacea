@@ -4,9 +4,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+// Controller chính cho nhân viên
 @Controller
 @RequestMapping("/nhanvien")
 public class NhanVienController {
+    
+    // Hiển thị dashboard nhân viên
     @GetMapping("/dashboard")
     public String dashboard() {
         return "NhanVien/Home";

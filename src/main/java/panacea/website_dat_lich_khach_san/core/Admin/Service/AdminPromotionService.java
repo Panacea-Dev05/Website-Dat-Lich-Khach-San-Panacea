@@ -16,23 +16,27 @@ public class AdminPromotionService {
     @Autowired
     private PromotionRepository promotionRepository;
     
+    // Lấy danh sách tất cả khuyến mãi
     public List<PromotionDTO> getAllPromotions() {
         return promotionRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
+    // Lấy thông tin khuyến mãi theo ID
     public PromotionDTO getPromotionById(Integer id) {
         Optional<Promotion> promotion = promotionRepository.findById(id);
         return promotion.map(this::convertToDTO).orElse(null);
     }
     
+    // Tạo khuyến mãi mới
     public PromotionDTO createPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = convertToEntity(promotionDTO);
         Promotion savedPromotion = promotionRepository.save(promotion);
         return convertToDTO(savedPromotion);
     }
     
+    // Cập nhật thông tin khuyến mãi
     public PromotionDTO updatePromotion(Integer id, PromotionDTO promotionDTO) {
         Optional<Promotion> existingPromotion = promotionRepository.findById(id);
         if (existingPromotion.isPresent()) {
@@ -54,6 +58,7 @@ public class AdminPromotionService {
         return null;
     }
     
+    // Xóa khuyến mãi
     public boolean deletePromotion(Integer id) {
         if (promotionRepository.existsById(id)) {
             promotionRepository.deleteById(id);
@@ -62,6 +67,7 @@ public class AdminPromotionService {
         return false;
     }
     
+    // Chuyển đổi entity thành DTO
     private PromotionDTO convertToDTO(Promotion promotion) {
         PromotionDTO dto = new PromotionDTO();
         dto.setId(promotion.getId());
@@ -83,6 +89,7 @@ public class AdminPromotionService {
         return dto;
     }
     
+    // Chuyển đổi DTO thành entity
     private Promotion convertToEntity(PromotionDTO dto) {
         Promotion promotion = new Promotion();
         promotion.setMaKhuyenMai(dto.getMaKhuyenMai());
@@ -158,4 +165,4 @@ public class AdminPromotionService {
         Promotion saved = promotionRepository.save(promo);
         return convertToDTO(saved);
     }
-} 
+}

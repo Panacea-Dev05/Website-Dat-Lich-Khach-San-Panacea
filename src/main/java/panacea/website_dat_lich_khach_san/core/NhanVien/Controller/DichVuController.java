@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+// Controller quản lý dịch vụ cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/dichvu")
 public class DichVuController {
@@ -49,6 +50,7 @@ public class DichVuController {
         this.inventoryManagementRepository = inventoryManagementRepository;
     }
 
+    // Hiển thị trang quản lý dịch vụ
     @GetMapping("")
     public String view(Model model) {
         model.addAttribute("staffName", dichVuService.getStaffName());

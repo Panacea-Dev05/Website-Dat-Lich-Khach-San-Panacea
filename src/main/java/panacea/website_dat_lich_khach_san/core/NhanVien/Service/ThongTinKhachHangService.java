@@ -18,19 +18,23 @@ public class ThongTinKhachHangService {
     @Autowired
     private CustomerPreferencesRepository customerPreferencesRepository;
 
+    // Lấy tên nhân viên
     public String getStaffName() {
-        return "Nguyễn Văn A";
+        return "Nhân viên quản lý khách hàng";
     }
 
+    // Lấy danh sách tất cả khách hàng
     public List<Customer> getAllCustomers() {
         List<Customer> list = customerRepository.findAll();
         return list != null ? list : new java.util.ArrayList<>();
     }
 
+    // Lấy danh sách tất cả sở thích khách hàng
     public List<CustomerPreferences> getAllPreferences() {
         return customerPreferencesRepository.findAll();
     }
 
+    // Thêm khách hàng mới
     public void addCustomer(CustomerDTO dto) {
         // Validate dữ liệu đầu vào
         if (dto.getHo() == null || dto.getHo().trim().isEmpty()) {
@@ -67,10 +71,12 @@ public class ThongTinKhachHangService {
         customerRepository.save(customer);
     }
 
+    // Xóa khách hàng
     public void deleteCustomer(Integer id) {
         customerRepository.deleteById(id);
     }
 
+    // Lấy thông tin khách hàng theo ID
     public CustomerDTO getCustomerById(Integer id) {
         var c = customerRepository.findById(id).orElse(null);
         if (c == null) return null;
@@ -90,6 +96,7 @@ public class ThongTinKhachHangService {
         return dto;
     }
 
+    // Cập nhật thông tin khách hàng
     public void updateCustomer(CustomerDTO dto) {
         var c = customerRepository.findById(dto.getId()).orElse(null);
         if (c == null) {

@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<!-- 
+    TRANG CHỦ KHÁCH HÀNG - PANACEA HOTEL
+    =====================================
+    Chức năng chính:
+    - Hiển thị trang chủ khách sạn với giao diện hiện đại
+    - Tích hợp hệ thống đặt phòng trực tuyến
+    - Hiển thị thông tin khách sạn, phòng, dịch vụ
+    - Hỗ trợ đăng nhập/đăng ký khách hàng
+    - Responsive design cho mobile và desktop
+    
+    Các tính năng:
+    - Booking form với date picker
+    - Gallery hình ảnh khách sạn
+    - Menu điều hướng động
+    - Modal đặt phòng
+    - Tích hợp OAuth2 (Google, Facebook)
+-->
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 
 
@@ -13,10 +30,11 @@
     <link rel="icon" href="/css/KhachHang/assets/img/favicon.svg" />
     <!-- Site Title -->
     <title>Panacea - Royale Restaurant HTML Template</title>
-    <!-- CSS -->
+    <!-- CSS Libraries - Bootstrap, LightGallery, Swiper cho carousel và gallery -->
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
+    <!-- Custom CSS cho giao diện khách hàng và authentication -->
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/auth-styles.css}" />
 </head>

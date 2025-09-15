@@ -13,6 +13,7 @@
 
 <body>
   <div class="app" id="app">
+    <!-- HEADER: Logo khách sạn và nút toggle mobile menu -->
     <header>
       <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
         <span class="material-icons" aria-hidden="true">hotel</span>
@@ -23,12 +24,16 @@
       </button>
     </header>
 
+    <!-- SIDEBAR: Import sidebar từ fragment AdminSlidebar -->
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
       <h1>Quản lý đặt phòng</h1>
+      
+      <!-- BẢNG DANH SÁCH ĐẶT PHÒNG: Hiển thị tất cả booking với thông tin chi tiết -->
       <section class="content-section" id="contentSection">
         <table aria-label="Danh sách đặt phòng" id="bookingTable">
+          <!-- HEADER BẢNG: Các cột thông tin booking -->
           <thead>
             <tr>
               <th>STT</th>
@@ -44,8 +49,9 @@
               <th>Nhân viên tạo</th>
             </tr>
           </thead>
+          
+          <!-- DỮ LIỆU BOOKING: Loop qua danh sách bookings từ controller -->
           <tbody id="bookingTableBody">
-            <!-- Dữ liệu đặt phòng từ controller -->
             <tr th:each="booking, stat : ${bookings}" th:attr="data-madatphong=${booking.maDatPhong},
                          data-customername=${booking.customerName},
                          data-roomnumber=${booking.roomNumber},
@@ -57,17 +63,36 @@
                          data-trangthai=${booking.trangThaiDatPhong},
                          data-nhanvienta=${booking.tenNhanVienTao},
                          data-yeucaudacbiet=${booking.yeuCauDacBiet}" class="booking-row" style="cursor:pointer;">
+              <!-- STT: Số thứ tự tự động -->
               <td th:text="${stat.count}">1</td>
+              
+              <!-- MÃ ĐẶT PHÒNG: Unique booking ID -->
               <td th:text="${booking.maDatPhong}">BK001</td>
+              
+              <!-- TÊN KHÁCH HÀNG: Hiển thị tên hoặc "Không rõ" nếu null -->
               <td th:text="${booking.customerName != null ? booking.customerName : 'Không rõ'}">
                 Nguyễn Văn A</td>
+              
+              <!-- SỐ PHÒNG: Room number -->
               <td th:text="${booking.roomNumber}">101</td>
+              
+              <!-- HẠNG PHÒNG: Room type name -->
               <td th:text="${booking.roomTypeName != null ? booking.roomTypeName : 'N/A'}">Standard</td>
+              
+              <!-- NGÀY ĐẶT: Booking creation date -->
               <td th:text="${#temporals.format(booking.ngayDat, 'dd/MM/yyyy')}">15/12/2024</td>
+              
+              <!-- NGÀY NHẬN PHÒNG: Check-in date -->
               <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}">15/12/2024</td>
+              
+              <!-- NGÀY TRẢ PHÒNG: Check-out date -->
               <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}">18/12/2024</td>
+              
+              <!-- TỔNG TIỀN: Format số tiền với dấu phẩy -->
               <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000
                 VNĐ</td>
+              
+              <!-- TRẠNG THÁI: Hiển thị status với CSS class tương ứng -->
               <td>
                 <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
                                    booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
@@ -79,20 +104,24 @@
                                    booking.trangThaiDatPhong == 'DA_HUY' ? 'Đã hủy' : 'Hoàn thành'}">
                 </span>
               </td>
+              
+              <!-- NHÂN VIÊN TẠO: Staff member who created booking -->
               <td th:text="${booking.tenNhanVienTao != null ? booking.tenNhanVienTao : '---'}">---</td>
             </tr>
           </tbody>
         </table>
-
       </section>
-      <!-- Modal chi tiết booking -->
+      
+      <!-- MODAL CHI TIẾT: Popup hiển thị thông tin booking chi tiết khi click row -->
       <div id="bookingDetailModal" class="modal"
         style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
         <div class="modal-content"
           style="background:#fff; border-radius:12px; max-width:95vw; width:350px; margin:auto; padding:20px; position:relative;">
+          <!-- NÚT ĐÓNG MODAL: X button ở góc phải -->
           <span style="position:absolute; top:10px; right:16px; font-size:24px; cursor:pointer; color:#888;"
             onclick="closeBookingDetailModal()">&times;</span>
           <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết đặt phòng</h2>
+          <!-- NỘI DUNG CHI TIẾT: Được populate bởi JavaScript -->
           <div id="bookingDetailContent"></div>
         </div>
       </div>

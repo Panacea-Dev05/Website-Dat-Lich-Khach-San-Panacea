@@ -35,6 +35,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDTO;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminBookingService;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminPaymentService;
 
+// Controller quản lý thanh toán cho Admin
 @Controller
 @RequestMapping("/admin/payments")
 public class AdminPaymentController {
@@ -62,6 +63,7 @@ public class AdminPaymentController {
     @Autowired
     private AdminPaymentService adminPaymentService;
     
+    // HIỂN THỊ TRANG QUẢN LÝ THANH TOÁN: Hiển thị danh sách thanh toán, booking có thể thanh toán và booking đã hủy
     @GetMapping
     public String paymentManagement(Model model) {
         try {
@@ -97,6 +99,7 @@ public class AdminPaymentController {
         }
     }
     
+    // API LẤY THÔNG TIN THANH TOÁN: Lấy chi tiết thông tin thanh toán theo ID
     @GetMapping("/{id}")
     @ResponseBody
     public Object getPayment(@PathVariable Integer id) {
@@ -130,7 +133,7 @@ public class AdminPaymentController {
         }
     }
 
-    // API: Thêm mới thanh toán
+    // API TẠO THANH TOÁN MỚI: Tạo thanh toán mới cho booking hợp lệ (chưa bị hủy)
     @PostMapping
     @ResponseBody
     public Object createPayment(@RequestBody PaymentDTO dto) {
@@ -214,7 +217,7 @@ public class AdminPaymentController {
         }
     }
 
-    // API: Sửa thanh toán
+    // API CẬP NHẬT THANH TOÁN: Cập nhật thông tin thanh toán (số tiền, phương thức, trạng thái, ngày thanh toán)
     @PutMapping("/{id}")
     @ResponseBody
     public Object updatePayment(@PathVariable Integer id, @RequestBody Map<String, Object> requestData) {
@@ -333,7 +336,7 @@ public class AdminPaymentController {
         }
     }
     
-    // API: Xóa thanh toán
+    // API XÓA THANH TOÁN: Xóa thanh toán theo ID
     @DeleteMapping("/{id}")
     @ResponseBody
     public Object deletePayment(@PathVariable Integer id) {
@@ -367,7 +370,7 @@ public class AdminPaymentController {
         }
     }
 
-    // API: Lấy thông tin hoàn tiền cho booking
+    // API LẤY THÔNG TIN HOÀN TIỀN: Lấy thông tin hoàn tiền cho booking đã hủy (tính phí hủy và số tiền hoàn)
     @GetMapping("/refund-info/{bookingId}")
     @ResponseBody
     public Object getRefundInfo(@PathVariable Integer bookingId) {
@@ -424,7 +427,7 @@ public class AdminPaymentController {
         }
     }
     
-    // API: Tạo payment hoàn tiền cho booking đã hủy
+    // API TẠO THANH TOÁN HOÀN TIỀN: Tạo payment hoàn tiền cho booking đã hủy với số tiền đã tính toán
     @PostMapping("/refund")
     @ResponseBody
     public Object createRefundPayment(@RequestBody java.util.Map<String, Object> request) {

@@ -1,12 +1,33 @@
 <!DOCTYPE html>
+<!-- 
+    NHÂN VIÊN - QUẢN LÝ ĐẶT PHÒNG
+    ==============================
+    Chức năng chính:
+    - Giao diện nhân viên để quản lý đặt phòng
+    - Xác nhận/hủy đặt phòng
+    - Check-in/Check-out khách hàng
+    - Quản lý trạng thái phòng
+    - Xử lý thanh toán và dịch vụ
+    
+    Tính năng nâng cao:
+    - Dashboard thống kê đặt phòng
+    - Form tạo đặt phòng mới
+    - Quản lý khách hàng walk-in
+    - Báo cáo doanh thu theo ca
+    - Tích hợp email notification
+    - Responsive design cho tablet/mobile
+-->
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Đặt phòng - Panacea</title>
+    <!-- Font Inter cho giao diện chuyên nghiệp -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Material Icons cho các icon giao diện -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <!-- CSS cho giao diện nhân viên -->
     <link rel="stylesheet" th:href="@{/css/NhanVien/style.css}">
     <style>
         :root {

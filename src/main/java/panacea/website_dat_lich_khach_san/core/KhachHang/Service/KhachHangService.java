@@ -47,6 +47,14 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Service xử lý các chức năng dành cho khách hàng
+ * Chức năng chính:
+ * - Đặt phòng đơn lẻ và combo nhiều loại phòng
+ * - Quản lý thông tin khách hàng
+ * - Gửi email xác nhận và QR code thanh toán
+ * - Lấy thông tin phòng và giá cả
+ */
 @Service
 public class KhachHangService {
     @Autowired
@@ -67,8 +75,11 @@ public class KhachHangService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
-
-
+    /**
+     * ĐẶT PHÒNG CHO KHÁCH HÀNG: Xử lý đặt phòng đơn lẻ hoặc combo nhiều loại phòng
+     * @param dto - Thông tin đặt phòng từ khách hàng
+     * @return boolean - true nếu đặt phòng thành công, false nếu thất bại
+     */
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
             // Kiểm tra loại booking: single room hoặc multiple room types
@@ -283,6 +294,10 @@ public class KhachHangService {
         }
     }
 
+    /**
+     * LẤY TẤT CẢ LOẠI PHÒNG CHO KHÁCH HÀNG: Lấy danh sách loại phòng với giá và hình ảnh
+     * @return List<RoomTypeDTO> - Danh sách loại phòng với thông tin đầy đủ
+     */
     public List<RoomTypeDTO> getAllRoomTypesForCustomer() {
         List<panacea.website_dat_lich_khach_san.entity.RoomType> roomTypes = roomTypeRepository.findAll();
         List<RoomTypeDTO> result = new ArrayList<>();
@@ -311,6 +326,11 @@ public class KhachHangService {
         return result;
     }
 
+    /**
+     * LẤY LOẠI PHÒNG THEO ID: Lấy thông tin chi tiết loại phòng theo ID
+     * @param id - ID loại phòng
+     * @return RoomTypeDTO - Thông tin loại phòng hoặc null nếu không tìm thấy
+     */
     public RoomTypeDTO getRoomTypeDTOById(Integer id) {
         var rtOpt = roomTypeRepository.findById(id);
         if (rtOpt.isEmpty()) return null;
@@ -340,6 +360,13 @@ public class KhachHangService {
         return dto;
     }
 
+    /**
+     * GỬI EMAIL: Gửi email HTML đến khách hàng
+     * @param to - Email người nhận
+     * @param subject - Tiêu đề email
+     * @param text - Nội dung HTML
+     * @throws MessagingException - Lỗi gửi email
+     */
     private void sendMail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -349,7 +376,13 @@ public class KhachHangService {
         mailSender.send(message);
     }
 
-    // Hàm sinh QR code từ chuỗi (dùng ZXing)
+    /**
+     * SINH QR CODE: Tạo mã QR từ chuỗi text (dùng ZXing)
+     * @param text - Nội dung cần tạo QR
+     * @param width - Chiều rộng QR code
+     * @param height - Chiều cao QR code
+     * @return byte[] - Dữ liệu ảnh PNG hoặc null nếu lỗi
+     */
     private byte[] generateQRCodeImage(String text, int width, int height) {
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -365,7 +398,14 @@ public class KhachHangService {
         }
     }
 
-    // Gửi mail kèm QR code (ảnh inline từ file)
+    /**
+     * GỬI EMAIL KÈM QR CODE: Gửi email HTML kèm ảnh QR code inline
+     * @param to - Email người nhận
+     * @param subject - Tiêu đề email
+     * @param html - Nội dung HTML
+     * @param qrImage - Ảnh QR code để đính kèm
+     * @throws MessagingException - Lỗi gửi email
+     */
     private void sendMailWithQRFile(String to, String subject, String html, InputStreamSource qrImage) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -406,6 +446,11 @@ public class KhachHangService {
                 .orElse(null);
     }
 
+    /**
+     * LẤY BOOKING THEO EMAIL: Lấy danh sách đặt phòng của khách hàng theo email
+     * @param email - Email khách hàng
+     * @return List<Booking> - Danh sách booking của khách hàng
+     */
     public List<Booking> getBookingsByEmail(String email) {
         Optional<Customer> customer = customerRepository.findByEmail(email);
         if (customer.isPresent()) {

@@ -1,3 +1,8 @@
+/**
+ * Login Main JavaScript
+ * Xử lý các chức năng đăng nhập và quên mật khẩu
+ */
+
 "use strict"
 
 $(window).on("load", function() {

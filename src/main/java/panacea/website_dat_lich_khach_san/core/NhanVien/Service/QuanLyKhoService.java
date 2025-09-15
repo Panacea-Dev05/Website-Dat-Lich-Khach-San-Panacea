@@ -33,10 +33,12 @@ public class QuanLyKhoService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    // Lấy tên nhân viên
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
 
+    // Lấy danh sách tất cả vật phẩm kho
     public List<InventoryManagement> getAllItems() {
         try {
             return inventoryManagementRepository.findAll();
@@ -48,6 +50,7 @@ public class QuanLyKhoService {
         }
     }
 
+    // Lấy danh sách tất cả giao dịch kho
     public List<InventoryTransaction> getAllTransactions() {
         try {
             return inventoryTransactionRepository.findAllWithInventoryItem();
@@ -59,7 +62,7 @@ public class QuanLyKhoService {
         }
     }
     
-    // CRUD operations cho InventoryManagement
+    // Lưu vật phẩm kho mới
     public InventoryManagement saveItem(InventoryManagement item) {
         validateItem(item);
         
@@ -76,6 +79,7 @@ public class QuanLyKhoService {
         return inventoryManagementRepository.save(item);
     }
     
+    // Cập nhật vật phẩm kho
     public InventoryManagement updateItem(InventoryManagement item) {
         validateItem(item);
         Optional<InventoryManagement> existingItem = inventoryManagementRepository.findById(item.getId());
@@ -92,6 +96,7 @@ public class QuanLyKhoService {
         return inventoryManagementRepository.save(item);
     }
     
+    // Xóa vật phẩm kho
     public void deleteItem(Integer id) {
         Optional<InventoryManagement> existingItem = inventoryManagementRepository.findById(id);
         if (existingItem.isEmpty()) {
@@ -100,6 +105,7 @@ public class QuanLyKhoService {
         inventoryManagementRepository.deleteById(id);
     }
     
+    // Lưu giao dịch kho
     public InventoryTransaction saveTransaction(InventoryTransaction transaction) {
         validateTransaction(transaction);
         
@@ -129,7 +135,7 @@ public class QuanLyKhoService {
         return inventoryTransactionRepository.save(transaction);
     }
     
-    // Overloaded method for Admin to auto-approve import transactions
+    // Lưu giao dịch kho với quyền admin
     public InventoryTransaction saveTransaction(InventoryTransaction transaction, boolean isAdmin) {
         validateTransaction(transaction);
         
@@ -167,6 +173,7 @@ public class QuanLyKhoService {
         return inventoryTransactionRepository.save(transaction);
     }
     
+    // Cập nhật tồn kho sau giao dịch
     private void updateInventoryStock(InventoryTransaction transaction) {
         Optional<InventoryManagement> itemOpt = inventoryManagementRepository.findById(transaction.getVatPhamId());
         if (itemOpt.isPresent()) {
@@ -192,6 +199,7 @@ public class QuanLyKhoService {
         }
     }
     
+    // Tìm kiếm vật phẩm kho
     public List<InventoryManagement> searchItems(String keyword, String loaiVatPham) {
         List<InventoryManagement> allItems = inventoryManagementRepository.findAll();
         

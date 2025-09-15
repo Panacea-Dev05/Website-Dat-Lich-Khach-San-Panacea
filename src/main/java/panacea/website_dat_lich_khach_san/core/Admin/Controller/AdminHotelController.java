@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Controller quản lý khách sạn cho Admin
 @Controller
 @RequestMapping("/admin/hotels")
 public class AdminHotelController {
@@ -20,6 +21,7 @@ public class AdminHotelController {
     @Autowired
     private HotelRepository hotelRepository;
     
+    // Hiển thị trang quản lý khách sạn
     @GetMapping
     public String hotelManagement(Model model) {
         // Lấy khách sạn đầu tiên (hoặc duy nhất) trong hệ thống
@@ -33,6 +35,7 @@ public class AdminHotelController {
         return "Admin/view/QuanLyKhachSan";
     }
     
+    // Cập nhật thông tin khách sạn
     @PostMapping("/update")
     @ResponseBody
     public ResponseEntity<HotelDTO> updateHotel(@RequestBody HotelDTO hotelDTO) {
@@ -68,6 +71,7 @@ public class AdminHotelController {
         }
     }
     
+    // Lấy thông tin khách sạn theo ID
     @GetMapping("/{id}")
     @ResponseBody
     public HotelDTO getHotel(@PathVariable Integer id) {
@@ -76,6 +80,7 @@ public class AdminHotelController {
                 .orElse(null);
     }
     
+    // Lấy thông tin khách sạn theo ID (API)
     @GetMapping("/api/hotels/{id}")
     @ResponseBody
     public ResponseEntity<HotelDTO> getHotelById(@PathVariable Integer id) {
@@ -87,6 +92,7 @@ public class AdminHotelController {
         return ResponseEntity.ok(dto);
     }
     
+    // Chuyển đổi Hotel entity sang DTO
     private HotelDTO convertToDTO(Hotel hotel) {
         HotelDTO dto = new HotelDTO();
         dto.setId(hotel.getId());

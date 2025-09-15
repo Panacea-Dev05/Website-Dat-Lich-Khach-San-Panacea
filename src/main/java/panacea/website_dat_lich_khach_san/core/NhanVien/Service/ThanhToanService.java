@@ -23,15 +23,17 @@ public class ThanhToanService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    // Lấy tên nhân viên
     public String getStaffName() {
-        return "Nguyễn Văn A";
+        return "Nhân viên thanh toán";
     }
 
+    // Lấy danh sách tất cả thanh toán
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
     }
     
-    // Lấy danh sách booking đang hoạt động (chưa thanh toán hoặc thanh toán một phần và chưa bị hủy)
+    // Lấy danh sách booking đang hoạt động
     public List<Booking> getActiveBookings() {
         return bookingRepository.findAll().stream()
             .filter(b -> (b.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.CHUA_THANH_TOAN || 
@@ -40,12 +42,12 @@ public class ThanhToanService {
             .collect(java.util.stream.Collectors.toList());
     }
     
-    // Lấy danh sách phương thức thanh toán cho nhân viên (chỉ cash và chuyển khoản)
+    // Lấy danh sách phương thức thanh toán
     public List<String> getPaymentMethods() {
         return Arrays.asList("CASH", "CHUYEN_KHOAN");
     }
     
-    // Tạo thanh toán cash (nhân viên chỉ được tạo thanh toán tại quầy)
+    // Tạo thanh toán tiền mặt
     public Payment createCashPayment(Integer bookingId, BigDecimal soTien, String phuongThuc, String noiDung, String maGiaoDich) {
         try {
             // Kiểm tra booking có tồn tại không
@@ -93,7 +95,7 @@ public class ThanhToanService {
         }
     }
     
-    // Xác nhận thanh toán cash (nhân viên chỉ được xác nhận thanh toán tại quầy)
+    // Xác nhận thanh toán tiền mặt
     public Payment confirmCashPayment(Integer paymentId) {
         try {
             Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
@@ -145,7 +147,7 @@ public class ThanhToanService {
         }
     }
     
-    // Tính tổng tiền cần thanh toán: Tổng tiền phòng + dịch vụ - 50% tiền phòng (tiền cọc đã trả)
+    // Tính tổng tiền cần thanh toán
     public BigDecimal calculateTotalPaymentAmount(Integer bookingId) {
         try {
             Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
@@ -175,7 +177,7 @@ public class ThanhToanService {
         }
     }
     
-    // Tạo hóa đơn chi tiết với tính toán mới
+    // Tạo hóa đơn thanh toán
     public String generateInvoice(Integer paymentId) {
         try {
             Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
@@ -219,7 +221,7 @@ public class ThanhToanService {
         }
     }
     
-    // Lấy chi tiết thanh toán
+    // Lấy thông tin thanh toán theo ID
     public Payment getPaymentById(Integer paymentId) {
         try {
             return paymentRepository.findById(paymentId).orElse(null);
@@ -229,7 +231,7 @@ public class ThanhToanService {
         }
     }
     
-    // Lấy thông tin trạng thái thanh toán của booking
+    // Lấy trạng thái thanh toán của booking
     public java.util.Map<String, Object> getBookingPaymentStatus(Integer bookingId) {
         try {
             System.out.println("Getting payment status for booking ID: " + bookingId);

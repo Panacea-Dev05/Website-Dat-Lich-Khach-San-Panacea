@@ -43,9 +43,21 @@ import panacea.website_dat_lich_khach_san.repository.InventoryManagementReposito
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 
+/**
+ * Service class quản lý đặt phòng cho Nhân viên
+ * Chức năng chính:
+ * - Quản lý booking: tạo, xác nhận, hủy, check-in, check-out
+ * - Gửi email thông báo cho khách hàng
+ * - Quản lý phòng và phân bổ phòng tự động
+ * - Quản lý dịch vụ và inventory
+ * - Tự động hủy booking chưa thanh toán
+ * - Lọc và tìm kiếm booking với phân trang
+ */
 @Service
 public class QuanLyDatPhongService {
     private static final Logger logger = LoggerFactory.getLogger(QuanLyDatPhongService.class);
+    
+    // Repository dependencies - Các repository để truy cập dữ liệu
     @Autowired
     private BookingRepository bookingRepository;
     
@@ -82,18 +94,36 @@ public class QuanLyDatPhongService {
     @Autowired
     private InventoryManagementRepository inventoryManagementRepository;
 
+    /**
+     * Lấy tên nhân viên hiện tại (hardcoded)
+     * @return String - Tên nhân viên
+     */
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
 
+    /**
+     * Lấy danh sách tất cả booking
+     * @return List<Booking> - Danh sách booking
+     */
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
     
+    /**
+     * Lấy thông tin booking theo ID
+     * @param id - ID của booking
+     * @return Optional<Booking> - Thông tin booking
+     */
     public Optional<Booking> getBookingById(Integer id) {
         return bookingRepository.findById(id);
     }
     
+    /**
+     * Xác nhận booking - chuyển trạng thái và gửi email xác nhận
+     * @param bookingId - ID của booking cần xác nhận
+     * @return boolean - true nếu xác nhận thành công
+     */
     public boolean confirmBooking(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isPresent()) {

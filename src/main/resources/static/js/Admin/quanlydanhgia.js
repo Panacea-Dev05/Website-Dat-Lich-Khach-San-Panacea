@@ -1,3 +1,8 @@
+/**
+ * Quản lý Đánh giá - Admin Dashboard
+ * Xử lý các chức năng quản lý đánh giá khách hàng
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle for mobile
   const mobileToggle = document.getElementById("mobileToggle");

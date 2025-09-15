@@ -647,8 +647,8 @@
                                 </div>
                                 <div class="ak-height-30 ak-height-lg-20"></div>
                                 
-                                <!-- Chọn loại giá -->
-                                <div class="form-group">
+                                <!-- Chọn loại giá - Ẩn vì được set tự động -->
+                                <div class="form-group" style="display: none;">
                                     <h5 class="ak-white-color">Loại giá:</h5>
                                     <div class="ak-height-15 ak-height-lg-10"></div>
                                     <select name="loaiGia" id="priceType" class="form-control booking-now-input custom-input-separated" onchange="updatePrice()">
@@ -1112,6 +1112,22 @@ function updateLabelAndQuantityVisibility() {
     if (type === 'ngay') label.innerText = 'Số ngày';
     else if (type === 'gio') label.innerText = 'Số giờ';
     else if (type === 'dem') label.innerText = 'Số đêm';
+    
+    // Tự động set loại giá dựa trên loại thuê
+    const priceTypeSelect = document.getElementById('priceType');
+    if (priceTypeSelect) {
+        if (type === 'ngay') {
+            priceTypeSelect.value = 'giaNgay';
+        } else if (type === 'gio') {
+            priceTypeSelect.value = 'giaGio';
+        } else if (type === 'dem') {
+            priceTypeSelect.value = 'giaQuaDem';
+        }
+        // Trigger updatePrice sau khi thay đổi loại giá
+        if (typeof updatePrice === 'function') {
+            updatePrice();
+        }
+    }
 }
 function updateQuantityFromDate() {
     const type = document.getElementById('bookingType').value;

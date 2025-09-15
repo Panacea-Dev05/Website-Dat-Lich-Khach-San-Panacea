@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Arrays;
 import java.util.Optional;
 
+// Controller quản lý kho cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/quanlykho")
 @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
@@ -34,6 +35,7 @@ public class QuanLyKhoController {
         this.quanLyKhoService = quanLyKhoService;
     }
     
+    // Hiển thị trang quản lý kho
     @GetMapping("")
     public String view(Model model, Authentication authentication) {
         try {

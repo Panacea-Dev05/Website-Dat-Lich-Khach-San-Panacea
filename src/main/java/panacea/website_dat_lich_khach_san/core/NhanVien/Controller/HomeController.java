@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.HomeService;
 
+// Controller trang chủ cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/trangchu")
 public class HomeController {
@@ -14,6 +15,8 @@ public class HomeController {
     public HomeController(HomeService homeService) {
         this.homeService = homeService;
     }
+    
+    // Hiển thị trang chủ nhân viên
     @GetMapping("")
     public String home(Model model) {
         // Truyền tên nhân viên (có thể lấy từ service hoặc hardcode)
