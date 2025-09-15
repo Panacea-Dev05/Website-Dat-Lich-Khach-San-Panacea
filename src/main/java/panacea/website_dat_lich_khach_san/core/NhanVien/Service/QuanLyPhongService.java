@@ -21,6 +21,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
+import panacea.website_dat_lich_khach_san.enums.FloorType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -76,10 +77,12 @@ public class QuanLyPhongService {
         // Validate room type exists
         RoomType roomType = roomTypeRepository.findById(roomCreateDTO.getRoomTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomCreateDTO.getRoomTypeId()));
-        
+
         // Get hotel (assuming single hotel model)
         Hotel hotel = hotelRepository.findAll().stream().findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách sạn"));
+        // Validate floor number
+        validateFloor(roomCreateDTO.getTang());
         
         // Check if room number already exists in the hotel
         Optional<Room> existingRoom = roomRepository.findAll().stream().filter(r -> r.getSoPhong().equals(roomCreateDTO.getSoPhong())).findFirst();
@@ -128,6 +131,7 @@ public class QuanLyPhongService {
             room.setSoPhong(roomUpdateDTO.getSoPhong());
         }
         if (roomUpdateDTO.getTang() != null) {
+            validateFloor(roomUpdateDTO.getTang());
             room.setTang(roomUpdateDTO.getTang());
         }
         if (roomUpdateDTO.getViewPhong() != null) {
@@ -300,5 +304,26 @@ public class QuanLyPhongService {
     public long getTotalRoomsByTrangThaiPaged(String trangThai, int page, int size) {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
         return roomRepository.findByTrangThai(status).size();
+    }
+    
+    /**
+     * Validate floor number using FloorType enum
+     * @param tang Floor number to validate
+     * @throws BadRequestException if floor number is invalid
+     */
+    private void validateFloor(Byte tang) {
+        if (tang == null) {
+            throw new BadRequestException("Tầng không được để trống");
+        }
+        
+        if (!FloorType.isValidFloor(tang)) {
+            throw new BadRequestException("Tầng không hợp lệ. Chỉ cho phép: tầng hầm (-1), tầng trệt (0), tầng thường (1-50), tầng áp mái (99), tầng mái (100)");
+        }
+        
+        // Get floor type for additional validation
+        FloorType floorType = FloorType.getFloorType(tang);
+        
+        // Log floor type for debugging (optional)
+        // System.out.println("Floor " + tang + " is of type: " + floorType.getDisplayName());
     }
 }

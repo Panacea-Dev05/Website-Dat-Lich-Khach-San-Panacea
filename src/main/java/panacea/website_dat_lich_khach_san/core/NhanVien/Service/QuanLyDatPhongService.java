@@ -41,6 +41,7 @@ import panacea.website_dat_lich_khach_san.service.CancellationService;
 import panacea.website_dat_lich_khach_san.repository.ServiceRepository;
 import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 
 @Service
 public class QuanLyDatPhongService {
@@ -360,7 +361,7 @@ public class QuanLyDatPhongService {
                 }
                 customer.setQuocTich((String) customerData.get("quocTich"));
                 customer.setTrangThai(Customer.TrangThaiCustomer.HOAT_DONG);
-                customer.setLoaiKhachHang("CA_NHAN");
+                customer.setLoaiKhachHang(LoaiKhachHang.CA_NHAN.getDbValue());
                 customer.setDiemTichLuy(0);
                 customer.setMatKhauHash("default_password_hash"); // Temporary password
                 // Generate customer code
@@ -807,9 +808,15 @@ public class QuanLyDatPhongService {
         if (booking == null) return false;
         if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_NHAN_PHONG
             && booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_XAC_NHAN) return false;
-        // Cập nhật trạng thái booking
+        
+        // Kiểm tra trạng thái thanh toán trước khi cho phép checkout
+        if (booking.getTrangThaiThanhToan() != Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+            throw new IllegalStateException("Không thể checkout: Khách hàng chưa thanh toán đủ. Trạng thái hiện tại: " + booking.getTrangThaiThanhToan().getLabel());
+        }
+        
+        // Cập nhật trạng thái booking (chỉ cập nhật trạng thái đặt phòng, không thay đổi trạng thái thanh toán)
         booking.setTrangThaiDatPhong(Booking.TrangThaiDatPhong.DA_HOAN_THANH);
-        booking.setTrangThaiThanhToan(Booking.TrangThaiThanhToan.DA_THANH_TOAN);
+        // Bỏ dòng tự động đặt trạng thái thanh toán: booking.setTrangThaiThanhToan(Booking.TrangThaiThanhToan.DA_THANH_TOAN);
         bookingRepository.save(booking);
         // Cập nhật trạng thái phòng
         java.util.List<panacea.website_dat_lich_khach_san.entity.BookingDetail> details = bookingDetailRepository.findByDatPhongId(booking.getId());

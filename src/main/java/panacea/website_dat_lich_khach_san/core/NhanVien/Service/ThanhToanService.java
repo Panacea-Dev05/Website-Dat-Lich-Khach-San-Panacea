@@ -228,4 +228,41 @@ public class ThanhToanService {
             return null;
         }
     }
+    
+    // Lấy thông tin trạng thái thanh toán của booking
+    public java.util.Map<String, Object> getBookingPaymentStatus(Integer bookingId) {
+        try {
+            Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
+            if (!bookingOpt.isPresent()) {
+                return null;
+            }
+            
+            Booking booking = bookingOpt.get();
+            
+            // Tính tổng tiền đã thanh toán thành công
+            BigDecimal totalPaid = paymentRepository.findAll().stream()
+                .filter(p -> p.getBooking() != null && p.getBooking().getId().equals(bookingId))
+                .filter(p -> p.getTrangThai() == TrangThaiPayment.THANH_CONG)
+                .map(Payment::getSoTien)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Tổng tiền cần thanh toán
+            BigDecimal totalAmount = booking.getTongThanhToan() != null ? booking.getTongThanhToan() : BigDecimal.ZERO;
+            
+            java.util.Map<String, Object> result = new java.util.HashMap<>();
+            result.put("bookingId", bookingId);
+            result.put("maDatPhong", booking.getMaDatPhong());
+            result.put("trangThaiThanhToan", booking.getTrangThaiThanhToan().name());
+            result.put("trangThaiThanhToanLabel", booking.getTrangThaiThanhToan().getLabel());
+            result.put("tongTien", totalAmount);
+            result.put("daThanhtoan", totalPaid);
+            result.put("conLai", totalAmount.subtract(totalPaid));
+            result.put("isPaid", booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN);
+            
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -45,8 +45,9 @@
                     </select>
 
                     <label for="tang">Tầng</label>
-                    <input type="number" id="tang" name="tang" th:value="${room.tang}" required min="1" max="100"
-                        placeholder="1" />
+                    <input type="number" id="tang" name="tang" th:value="${room.tang}" required min="1" max="50"
+                        placeholder="Nhập số tầng (1-50)" oninput="validateFloor(this)" />
+                    <small class="validation-message" style="color: #e53935; font-size: 12px; display: none;">Tầng phải từ 1 đến 50</small>
 
                     <label for="viewPhong">View</label>
                     <select id="viewPhong" name="viewPhong" required>
@@ -82,6 +83,22 @@
             &copy; 2024 Panacea Hotel Booking System - All rights reserved.
         </footer>
     </div>
+
+    <script>
+        // Validation function for floor input
+        function validateFloor(input) {
+            const value = parseInt(input.value);
+            const messageElement = input.parentElement.querySelector('.validation-message');
+            
+            if (isNaN(value) || value < 1 || value > 50) {
+                messageElement.style.display = 'block';
+                input.style.borderColor = '#e53935';
+            } else {
+                messageElement.style.display = 'none';
+                input.style.borderColor = '';
+            }
+        }
+    </script>
 
 </body>
 

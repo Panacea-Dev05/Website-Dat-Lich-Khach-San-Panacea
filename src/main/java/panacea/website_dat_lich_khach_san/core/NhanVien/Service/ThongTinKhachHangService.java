@@ -106,9 +106,8 @@ public class ThongTinKhachHangService {
         if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
         }
-        if (dto.getMatKhauHash() == null || dto.getMatKhauHash().trim().isEmpty()) {
-            throw new IllegalArgumentException("Mật khẩu không được để trống");
-        }
+        // Mật khẩu không bắt buộc khi cập nhật - nhân viên có thể chỉ cập nhật thông tin cơ bản
+        // Nếu không cung cấp mật khẩu mới, sẽ giữ nguyên mật khẩu cũ
 
         // Kiểm tra email đã tồn tại chưa (trừ khách hàng hiện tại)
         var existingCustomer = customerRepository.findByEmail(dto.getEmail());

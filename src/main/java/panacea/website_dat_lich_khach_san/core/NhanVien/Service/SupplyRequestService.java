@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ValidationException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
 
 @Service
 public class SupplyRequestService {
@@ -55,12 +58,12 @@ public class SupplyRequestService {
     public SupplyRequest approveRequest(Integer requestId, Integer adminId, String ghiChu) {
         Optional<SupplyRequest> requestOpt = supplyRequestRepository.findById(requestId);
         if (requestOpt.isEmpty()) {
-            throw new RuntimeException("Yêu cầu không tồn tại!");
+            throw new ResourceNotFoundException("Yêu cầu không tồn tại!");
         }
         
         SupplyRequest request = requestOpt.get();
         if (request.getTrangThai() != TrangThaiYeuCau.CHO_DUYET) {
-            throw new RuntimeException("Yêu cầu đã được xử lý!");
+            throw new BadRequestException("Yêu cầu đã được xử lý!");
         }
         
         request.setTrangThai(TrangThaiYeuCau.DA_DUYET);
@@ -75,12 +78,12 @@ public class SupplyRequestService {
     public SupplyRequest rejectRequest(Integer requestId, Integer adminId, String lyDoTuChoi) {
         Optional<SupplyRequest> requestOpt = supplyRequestRepository.findById(requestId);
         if (requestOpt.isEmpty()) {
-            throw new RuntimeException("Yêu cầu không tồn tại!");
+            throw new ResourceNotFoundException("Yêu cầu không tồn tại!");
         }
         
         SupplyRequest request = requestOpt.get();
         if (request.getTrangThai() != TrangThaiYeuCau.CHO_DUYET) {
-            throw new RuntimeException("Yêu cầu đã được xử lý!");
+            throw new BadRequestException("Yêu cầu đã được xử lý!");
         }
         
         request.setTrangThai(TrangThaiYeuCau.TU_CHOI);
@@ -95,12 +98,12 @@ public class SupplyRequestService {
     public SupplyRequest markAsCompleted(Integer requestId) {
         Optional<SupplyRequest> requestOpt = supplyRequestRepository.findById(requestId);
         if (requestOpt.isEmpty()) {
-            throw new RuntimeException("Yêu cầu không tồn tại!");
+            throw new ResourceNotFoundException("Yêu cầu không tồn tại!");
         }
         
         SupplyRequest request = requestOpt.get();
         if (request.getTrangThai() != TrangThaiYeuCau.DA_DUYET) {
-            throw new RuntimeException("Yêu cầu chưa được phê duyệt!");
+            throw new BadRequestException("Yêu cầu chưa được phê duyệt!");
         }
         
         request.setTrangThai(TrangThaiYeuCau.DA_THUC_HIEN);
@@ -130,19 +133,19 @@ public class SupplyRequestService {
     // Validation
     private void validateSupplyRequest(SupplyRequest request) {
         if (request.getVatPhamId() == null) {
-            throw new RuntimeException("Vật phẩm không được để trống!");
+            throw new ValidationException("Vật phẩm không được để trống!");
         }
         
         if (request.getSoLuongYeuCau() == null || request.getSoLuongYeuCau() <= 0) {
-            throw new RuntimeException("Số lượng yêu cầu phải lớn hơn 0!");
+            throw new ValidationException("Số lượng yêu cầu phải lớn hơn 0!");
         }
         
         if (request.getLyDoYeuCau() == null || request.getLyDoYeuCau().trim().isEmpty()) {
-            throw new RuntimeException("Lý do yêu cầu không được để trống!");
+            throw new ValidationException("Lý do yêu cầu không được để trống!");
         }
         
         if (request.getLyDoYeuCau().length() > 500) {
-            throw new RuntimeException("Lý do yêu cầu không được vượt quá 500 ký tự!");
+            throw new ValidationException("Lý do yêu cầu không được vượt quá 500 ký tự!");
         }
     }
     
