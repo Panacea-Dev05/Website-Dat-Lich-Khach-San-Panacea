@@ -1238,6 +1238,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm dịch vụ nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             // Xóa toàn bộ ServiceDetail cũ
             var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
             serviceDetailRepository.deleteAll(oldDetails);
@@ -1308,6 +1320,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm dịch vụ nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             
             // Xóa toàn bộ ServiceDetail cũ
             var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
@@ -1396,6 +1420,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm vật phẩm nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm vật phẩm cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm vật phẩm cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             
             java.math.BigDecimal tongTienVatPham = java.math.BigDecimal.ZERO;
             

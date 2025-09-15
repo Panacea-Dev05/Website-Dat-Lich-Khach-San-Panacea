@@ -257,11 +257,16 @@ public class QuanLyDatPhongController {
     @PostMapping("/update-services/{bookingId}")
     @ResponseBody
     public ResponseEntity<?> updateBookingServices(@PathVariable Integer bookingId, @RequestBody java.util.List<java.util.Map<String, Object>> services) {
-        boolean success = quanLyDatPhongService.updateBookingServices(bookingId, services);
-        if (success) {
-            return ResponseEntity.ok(java.util.Map.of("success", true));
-        } else {
-            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ!"));
+        try {
+            boolean success = quanLyDatPhongService.updateBookingServices(bookingId, services);
+            if (success) {
+                return ResponseEntity.ok(java.util.Map.of("success", true));
+            } else {
+                return ResponseEntity.status(400).body(java.util.Map.of("success", false, "message", "Không thể cập nhật dịch vụ. Booking có thể đã thanh toán đủ hoặc bị hủy."));
+            }
+        } catch (Exception e) {
+            logger.error("Error updating booking services for booking {}: {}", bookingId, e.getMessage());
+            return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi hệ thống khi cập nhật dịch vụ!"));
         }
     }
 
@@ -301,7 +306,7 @@ public class QuanLyDatPhongController {
             if (success) {
                 return ResponseEntity.ok(java.util.Map.of("success", true));
             } else {
-                return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi cập nhật dịch vụ và vật phẩm!"));
+                return ResponseEntity.status(400).body(java.util.Map.of("success", false, "message", "Không thể cập nhật dịch vụ và vật phẩm. Booking có thể đã thanh toán đủ hoặc bị hủy."));
             }
         } catch (ValidationException | BadRequestException e) {
             logger.warn("Validation error in updateBookingServicesAndInventory: {}", e.getMessage());
@@ -323,7 +328,7 @@ public class QuanLyDatPhongController {
             if (success) {
                 return ResponseEntity.ok(java.util.Map.of("success", true));
             } else {
-                return ResponseEntity.status(500).body(java.util.Map.of("success", false, "message", "Có lỗi khi thêm vật phẩm!"));
+                return ResponseEntity.status(400).body(java.util.Map.of("success", false, "message", "Không thể thêm vật phẩm. Booking có thể đã thanh toán đủ hoặc bị hủy."));
             }
         } catch (ValidationException | BadRequestException e) {
             logger.warn("Validation error in addInventoryToBooking: {}", e.getMessage());

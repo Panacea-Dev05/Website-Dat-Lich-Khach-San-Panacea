@@ -871,3 +871,23 @@ if (typeof toastr !== 'undefined') {
 } else {
     console.warn('Toastr library not loaded. Notifications may not work properly.');
 }
+
+// Helper functions for field validation display
+function showFieldError(fieldId, message) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-valid').addClass('is-invalid');
+    
+    // Remove existing error message
+    field.siblings('.invalid-feedback').remove();
+    
+    // Add new error message
+    field.after(`<div class="invalid-feedback">${message}</div>`);
+}
+
+function showFieldValid(fieldId) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-invalid').addClass('is-valid');
+    
+    // Remove error message
+    field.siblings('.invalid-feedback').remove();
+}
