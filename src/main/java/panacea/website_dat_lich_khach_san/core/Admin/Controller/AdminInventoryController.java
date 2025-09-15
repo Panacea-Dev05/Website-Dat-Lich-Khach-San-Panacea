@@ -39,7 +39,7 @@ public class AdminInventoryController {
             // Calculate statistics
             int totalItems = items.size();
             int lowStockItems = (int) items.stream()
-                .filter(item -> item.getSoLuongTon() <= item.getSoLuongToiThieu())
+                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() < 15)
                 .count();
             int outOfStockItems = (int) items.stream()
                 .filter(item -> item.getSoLuongTon() == 0)
@@ -190,6 +190,8 @@ public class AdminInventoryController {
         }
     }
 
+
+
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> searchItems(
@@ -275,21 +277,26 @@ public class AdminInventoryController {
 
     @GetMapping("/low-stock")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getLowStockItems() {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> getLowStockItems() {
         try {
-            // Filter low stock items from all items
-            List<InventoryManagement> allItems = quanLyKhoService.getAllItems();
-            List<InventoryManagement> lowStockItems = allItems.stream()
-                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() < 10)
-                .collect(java.util.stream.Collectors.toList());
+            List<InventoryManagement> lowStockItems = quanLyKhoService.getLowStockItems();
+            int count = quanLyKhoService.getLowStockItemsCount();
+            
+            Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("data", lowStockItems);
+            response.put("items", lowStockItems);
+            response.put("count", count);
+            response.put("message", count > 0 ? 
+                String.format("Có %d vật phẩm sắp hết hàng (tồn kho dưới 15)", count) : 
+                "Không có vật phẩm nào sắp hết hàng");
+            
             return ResponseEntity.ok(response);
+            
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi lấy danh sách vật phẩm sắp hết: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", true, 
+                "message", "Lỗi khi tải danh sách vật phẩm sắp hết hàng: " + e.getMessage()
+            ));
         }
     }
 

@@ -1052,6 +1052,8 @@ public class QuanLyDatPhongService {
                 }
                 return match;
             })
+            // Sắp xếp theo ID giảm dần (booking mới nhất trước)
+            .sorted((b1, b2) -> Integer.compare(b2.getId(), b1.getId()))
             .collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), filtered.size());
@@ -1075,6 +1077,8 @@ public class QuanLyDatPhongService {
                 }
                 return match;
             })
+            // Sắp xếp theo mã đặt phòng mới nhất ở đầu (theo ID giảm dần)
+            .sorted((b1, b2) -> Integer.compare(b2.getId(), b1.getId()))
             .collect(Collectors.toList());
         
         java.util.List<BookingDetailViewDTO> dtoList = filtered.stream()
@@ -1316,6 +1320,7 @@ public class QuanLyDatPhongService {
                     itemMap.put("tenVatPham", item.getTenVatPham());
                     itemMap.put("soLuongTon", item.getSoLuongTon());
                     itemMap.put("giaBan", item.getGiaBan());
+                    itemMap.put("giaNhap", item.getGiaNhap()); // Thêm giá nhập để tính giá bán động
                     itemMap.put("donViTinh", item.getDonViTinh());
                     return itemMap;
                 })

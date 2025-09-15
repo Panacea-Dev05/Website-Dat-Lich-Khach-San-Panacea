@@ -519,4 +519,30 @@ public class QuanLyKhoService {
         
         return summary;
     }
+    
+    /**
+     * Lấy danh sách vật phẩm sắp hết hàng (tồn kho dưới 15)
+     * @return List<InventoryManagement> danh sách vật phẩm sắp hết hàng
+     */
+    public List<InventoryManagement> getLowStockItems() {
+        try {
+            List<InventoryManagement> allItems = inventoryManagementRepository.findAll();
+            return allItems.stream()
+                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() < 15)
+                .filter(item -> "Hoạt động".equals(item.getTrangThai())) // Chỉ lấy vật phẩm đang hoạt động
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error loading low stock items: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Đếm số lượng vật phẩm sắp hết hàng (tồn kho dưới 15)
+     * @return int số lượng vật phẩm sắp hết hàng
+     */
+    public int getLowStockItemsCount() {
+        return getLowStockItems().size();
+    }
 }

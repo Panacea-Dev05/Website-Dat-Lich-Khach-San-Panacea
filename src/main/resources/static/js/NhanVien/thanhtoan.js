@@ -401,7 +401,7 @@ function validatePaymentForm(data) {
         isValid = false;
         if (!firstErrorField) firstErrorField = '#phuongThuc';
     } else {
-        const validMethods = ['TIEN_MAT', 'CHUYEN_KHOAN', 'THE_TIN_DUNG'];
+        const validMethods = ['CASH', 'CHUYEN_KHOAN'];
         if (!validMethods.includes(data.phuongThuc)) {
             showFieldError('phuongThuc', 'Phương thức thanh toán không hợp lệ');
             isValid = false;

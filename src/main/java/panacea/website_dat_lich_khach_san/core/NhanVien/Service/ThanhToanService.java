@@ -232,8 +232,10 @@ public class ThanhToanService {
     // Lấy thông tin trạng thái thanh toán của booking
     public java.util.Map<String, Object> getBookingPaymentStatus(Integer bookingId) {
         try {
+            System.out.println("Getting payment status for booking ID: " + bookingId);
             Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
             if (!bookingOpt.isPresent()) {
+                System.out.println("Booking not found with ID: " + bookingId);
                 return null;
             }
             
@@ -261,6 +263,7 @@ public class ThanhToanService {
             
             return result;
         } catch (Exception e) {
+            System.err.println("Error in getBookingPaymentStatus for booking ID " + bookingId + ": " + e.getMessage());
             e.printStackTrace();
             return null;
         }
