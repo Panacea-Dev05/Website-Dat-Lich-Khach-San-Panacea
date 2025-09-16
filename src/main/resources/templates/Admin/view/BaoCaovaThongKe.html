@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-    <!--    <link rel="stylesheet" th:href="@{/css/Admin/baocao-thongke.css}">-->
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -508,7 +507,7 @@
                     </div>
                     <div class="stat-content">
                         <h3>Tổng đặt phòng</h3>
-                        <p th:text="${statistics['totalBookings']}">0</p>
+                        <p th:text="${statistics != null ? statistics['totalBookings'] : '0'}">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -517,7 +516,7 @@
                     </div>
                     <div class="stat-content">
                         <h3>Tổng khách hàng</h3>
-                        <p th:text="${statistics['totalCustomers']}">0</p>
+                        <p th:text="${statistics != null ? statistics['totalCustomers'] : '0'}">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -526,7 +525,7 @@
                     </div>
                     <div class="stat-content">
                         <h3>Tổng phòng</h3>
-                        <p th:text="${statistics['totalRooms']}">0</p>
+                        <p th:text="${statistics != null ? statistics['totalRooms'] : '0'}">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -535,7 +534,7 @@
                     </div>
                     <div class="stat-content">
                         <h3>Tỷ lệ lấp đầy</h3>
-                        <p th:text="${#numbers.formatDecimal(statistics['occupancyRate'], 1, 1)} + '%'">75.5%</p>
+                        <p th:text="${statistics != null ? #numbers.formatDecimal(statistics['occupancyRate'], 1, 1) + '%' : '75.5%'}">75.5%</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -544,9 +543,7 @@
                     </div>
                     <div class="stat-content">
                         <h3>Doanh thu tháng</h3>
-                        <p
-                            th:text="'$' + ${#numbers.formatDecimal(statistics['monthlyRevenue'], 0, 'COMMA', 0, 'POINT')}">
-                            $125,800</p>
+                        <p th:text="${statistics != null ? #numbers.formatDecimal(statistics['monthlyRevenue'], 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '15,000,000 VNĐ'}">15,000,000 VNĐ</p>
                     </div>
                 </div>
             </section>
@@ -575,110 +572,7 @@
     </div>
 
     <script th:src="@{/js/Admin/baocao-thongke.js}"></script>
-    <script th:inline="javascript">
-        // Truyền dữ liệu từ Thymeleaf vào JavaScript
-        var revenueData = /*[[${@adminReportController.getRevenueData()}]]*/ {};
-        var occupancyData = /*[[${@adminReportController.getOccupancyData()}]]*/ {};
-    </script>
-
-    <script th:inline="javascript">
-        // Data from model
-        const monthlyRevenue = /*[[${monthlyRevenue}]]*/ {};
-        const roomTypeBookings = /*[[${roomTypeBookings}]]*/ {};
-
-        // Format data for Chart.js
-        const revenueLabels = Object.keys(monthlyRevenue);
-        const revenueData = Object.values(monthlyRevenue);
-
-        const roomTypeLabels = Object.keys(roomTypeBookings);
-        const roomTypeData = Object.values(roomTypeBookings);
-
-        // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: revenueLabels,
-                datasets: [{
-                    label: 'Doanh thu ($)',
-                    data: revenueData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                    borderColor: 'rgba(16, 185, 129, 1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgba(16, 185, 129, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverRadius: 6,
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(16, 185, 129, 1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Biểu đồ doanh thu theo tháng'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return '$' + value.toLocaleString();
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Room Type Chart
-        const roomTypeCtx = document.getElementById('roomTypeChart').getContext('2d');
-        new Chart(roomTypeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: roomTypeLabels,
-                datasets: [{
-                    label: 'Số lượt đặt',
-                    data: roomTypeData,
-                    backgroundColor: [
-                        'rgba(22, 163, 74, 0.7)',
-                        'rgba(34, 197, 94, 0.7)',
-                        'rgba(74, 222, 128, 0.7)',
-                        'rgba(134, 239, 172, 0.7)',
-                        'rgba(167, 243, 208, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(22, 163, 74, 1)',
-                        'rgba(34, 197, 94, 1)',
-                        'rgba(74, 222, 128, 1)',
-                        'rgba(134, 239, 172, 1)',
-                        'rgba(167, 243, 208, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Biểu đồ hạng phòng được đặt nhiều nhất'
-                    }
-                }
-            }
-        });
-    </script>
-<script th:src="@{/js/responsive.js}"></script>
+    <script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>

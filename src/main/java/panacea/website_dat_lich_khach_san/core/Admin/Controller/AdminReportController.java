@@ -3,69 +3,42 @@ package panacea.website_dat_lich_khach_san.core.Admin.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import panacea.website_dat_lich_khach_san.repository.BookingRepository;
-import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminReportService;
 
-import java.util.HashMap;
 import java.util.Map;
 
-// Controller báo cáo và thống kê cho Admin
 @Controller
-@RequestMapping("/admin/reports")
+@RequestMapping("/admin")
 public class AdminReportController {
-    
+
     @Autowired
-    private BookingRepository bookingRepository;
-    
-    @Autowired
-    private CustomerRepository customerRepository;
-    
-    @Autowired
-    private RoomRepository roomRepository;
-    
-    @GetMapping
-    public String reportsAndStatistics(Model model) {
-        // Thêm dữ liệu thống kê vào model
-        Map<String, Object> statistics = new HashMap<>();
-        
-        // Số lượng booking
-        statistics.put("totalBookings", bookingRepository.count());
-        
-        // Số lượng khách hàng
-        statistics.put("totalCustomers", customerRepository.count());
-        
-        // Số lượng phòng
-        statistics.put("totalRooms", roomRepository.count());
-        
-        // Tỷ lệ lấp đầy phòng (có thể tính toán từ booking)
-        statistics.put("occupancyRate", 75.5); // Giá trị mẫu
-        
-        // Doanh thu tháng hiện tại
-        statistics.put("monthlyRevenue", 15000000); // Giá trị mẫu
-        
+    private AdminReportService adminReportService;
+
+    @GetMapping("/baocao-thongke")
+    public String baoCaoThongKe(Model model) {
+        // Lấy thống kê tổng quan
+        Map<String, Object> statistics = adminReportService.getStatistics();
         model.addAttribute("statistics", statistics);
+        
+        // Lấy dữ liệu doanh thu theo tháng
+        Map<String, Object> monthlyRevenue = adminReportService.getMonthlyRevenue();
+        model.addAttribute("monthlyRevenue", monthlyRevenue);
+        
+        // Lấy dữ liệu booking theo loại phòng
+        Map<String, Object> roomTypeBookings = adminReportService.getRoomTypeBookings();
+        model.addAttribute("roomTypeBookings", roomTypeBookings);
+        
         return "Admin/view/BaoCaovaThongKe";
     }
-    
-    @GetMapping("/revenue")
-    @ResponseBody
+
+    // Các method để cung cấp dữ liệu cho JavaScript
     public Map<String, Object> getRevenueData() {
-        // Logic để lấy dữ liệu doanh thu
-        Map<String, Object> revenueData = new HashMap<>();
-        revenueData.put("labels", new String[]{"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"});
-        revenueData.put("data", new double[]{12000000, 13500000, 14200000, 15800000, 16500000, 17200000, 18000000, 17500000, 16800000, 15500000, 14800000, 16000000});
-        return revenueData;
+        return adminReportService.getMonthlyRevenue();
     }
-    
-    @GetMapping("/occupancy")
-    @ResponseBody
+
     public Map<String, Object> getOccupancyData() {
-        // Logic để lấy dữ liệu tỷ lệ lấp đầy
-        Map<String, Object> occupancyData = new HashMap<>();
-        occupancyData.put("labels", new String[]{"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"});
-        occupancyData.put("data", new double[]{65, 70, 75, 80, 85, 90, 95, 92, 88, 82, 78, 85});
-        return occupancyData;
+        return adminReportService.getOccupancyData();
     }
-} 
+}
