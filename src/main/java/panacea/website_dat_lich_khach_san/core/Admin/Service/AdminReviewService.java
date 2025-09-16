@@ -86,7 +86,7 @@ public class AdminReviewService {
         Optional<Review> reviewOpt = reviewRepository.findById(id);
         if (reviewOpt.isPresent()) {
             Review review = reviewOpt.get();
-            review.setTrangThai(Review.TrangThaiReview.BI_TU_CHOI);
+            review.setTrangThai(Review.TrangThaiReview.DA_AN);
             Review savedReview = reviewRepository.save(review);
             return convertToDTO(savedReview);
         }

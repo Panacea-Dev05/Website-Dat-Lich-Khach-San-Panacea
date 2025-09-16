@@ -25,7 +25,6 @@ import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.http.HttpMethod;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -95,7 +94,8 @@ public class SecurityConfig {
                                 "/assets/**",
                                 "/KhachHang/**",
                                 "/login",
-                                "/oauth2/**"
+                                "/oauth2/**",
+                                "/.well-known/**"
                         ).permitAll()
                         .requestMatchers("/khachhang/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")

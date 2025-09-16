@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangService;
+import panacea.website_dat_lich_khach_san.service.PricingService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import java.util.Map;
+import java.util.HashMap;
+import java.time.LocalDate;
 
 // Controller chính cho khách hàng
 @Controller
@@ -22,6 +26,9 @@ public class KhachHangController {
 
     @Autowired
     private KhachHangService khachHangService;
+    
+    @Autowired
+    private PricingService pricingService;
 
     @GetMapping("/dashboard")
     public String dashboard() {
@@ -64,16 +71,16 @@ public class KhachHangController {
 
     // Trang chi tiết phòng
     @GetMapping("/single-room")
-    public String roomDetail(@RequestParam("id") Integer id, Model model) {
+    public String roomDetail(@RequestParam(value = "id", defaultValue = "1") Integer id, Model model) {
         var roomType = khachHangService.getRoomTypeDTOById(id);
         model.addAttribute("roomType", roomType);
         model.addAttribute("room", roomType); // Thêm room để template có thể truy cập donGia
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";
     }
 
-    public String roomDetail() {
+    @GetMapping("/single-room-default")
+    public String roomDetailDefault() {
         // Trả về trang mặc định với room type id = 1
-        var roomType = khachHangService.getRoomTypeDTOById(1);
         return "redirect:/khachhang/single-room?id=1";
     }
 
@@ -81,6 +88,16 @@ public class KhachHangController {
     @GetMapping("/room-detail")
     public String roomDetailAlias() {
         return "KhachHang/hotel-resort/single-room";
+    }
+
+    // Handle Chrome DevTools request to prevent warnings
+    @GetMapping("/.well-known/appspecific/com.chrome.devtools.json")
+    @ResponseBody
+    public Map<String, Object> chromeDevTools() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("version", "1.0");
+        response.put("name", "Panacea Hotel Booking System");
+        return response;
     }
 
     // Trang resort
@@ -245,12 +262,105 @@ public class KhachHangController {
     // Trang chi tiết phòng động theo id loại phòng
     @GetMapping("/single-room/{roomTypeId}")
     public String roomDetailByType(@PathVariable Integer roomTypeId, Model model) {
+        System.out.println("[DEBUG] Controller: Truy cập room type ID = " + roomTypeId);
         var roomType = khachHangService.getRoomTypeDTOById(roomTypeId);
+        System.out.println("[DEBUG] Controller: RoomType loaded = " + (roomType != null ? roomType.getTenLoaiPhong() : "null"));
+        if (roomType != null) {
+            System.out.println("[DEBUG] Controller: Giá phòng - giaNgay=" + roomType.getGiaNgay() + ", giaGio=" + roomType.getGiaGio() + ", giaQuaDem=" + roomType.getGiaQuaDem());
+        }
         if (roomType == null) {
             return "KhachHang/hotel-resort/404";
         }
         model.addAttribute("roomType", roomType);
         model.addAttribute("room", roomType); // Thêm room để template có thể truy cập donGia
         return "KhachHang/hotel-resort/single-room";
+    }
+
+    // Endpoint để tính giá tiền
+    @GetMapping("/calculate-price")
+    @ResponseBody
+    public Map<String, Object> calculatePrice(
+            @RequestParam Integer roomTypeId,
+            @RequestParam String checkInDate,
+            @RequestParam String checkOutDate,
+            @RequestParam Integer numberOfRooms,
+            @RequestParam(defaultValue = "ngay") String bookingType) {
+        
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Lấy thông tin loại phòng
+            var roomType = khachHangService.getRoomTypeDTOById(roomTypeId);
+            if (roomType == null) {
+                result.put("success", false);
+                result.put("error", "Không tìm thấy loại phòng");
+                return result;
+            }
+            
+            // Parse ngày tháng
+            LocalDate checkIn = LocalDate.parse(checkInDate);
+            LocalDate checkOut = LocalDate.parse(checkOutDate);
+            
+            // Tính giá sử dụng PricingService
+            var pricingResult = pricingService.calculatePricing(
+                roomType.getGiaNgay(),
+                roomType.getGiaGio(),
+                roomType.getGiaQuaDem(),
+                checkIn,
+                checkOut,
+                numberOfRooms,
+                bookingType
+            );
+            
+            result.put("success", true);
+            result.put("unitPrice", pricingResult.getUnitPrice());
+            result.put("numberOfUnits", pricingResult.getNumberOfUnits());
+            result.put("numberOfRooms", pricingResult.getNumberOfRooms());
+            result.put("totalPrice", pricingResult.getTotalPrice());
+            result.put("bookingType", pricingResult.getBookingType());
+            result.put("unitType", getUnitType(bookingType));
+            
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("error", e.getMessage());
+        }
+        return result;
+    }
+    
+    private String getUnitType(String bookingType) {
+        switch (bookingType.toLowerCase()) {
+            case "gio": return "giờ";
+            case "dem": return "đêm";
+            case "ngay":
+            default: return "ngày";
+        }
+    }
+
+    // Endpoint để kiểm tra và thêm dữ liệu giá phòng
+    @GetMapping("/debug/pricing")
+    @ResponseBody
+    public Map<String, Object> debugPricing() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Thêm dữ liệu giá phòng mẫu
+            boolean success = khachHangService.addSamplePricingData();
+            result.put("success", success);
+            result.put("message", success ? "Đã thêm dữ liệu giá phòng mẫu" : "Lỗi khi thêm dữ liệu");
+            
+            // Kiểm tra dữ liệu sau khi thêm
+            var roomType = khachHangService.getRoomTypeDTOById(1006);
+            if (roomType != null) {
+                result.put("roomType", Map.of(
+                    "id", roomType.getId(),
+                    "tenLoaiPhong", roomType.getTenLoaiPhong(),
+                    "giaNgay", roomType.getGiaNgay(),
+                    "giaGio", roomType.getGiaGio(),
+                    "giaQuaDem", roomType.getGiaQuaDem()
+                ));
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("error", e.getMessage());
+        }
+        return result;
     }
 }
