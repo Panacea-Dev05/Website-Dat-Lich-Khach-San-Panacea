@@ -1,3 +1,8 @@
+/**
+ * Quản lý Khách sạn - Admin Dashboard
+ * Xử lý các chức năng quản lý thông tin khách sạn và tiện ích
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle for mobile
   const mobileToggle = document.getElementById("mobileToggle");

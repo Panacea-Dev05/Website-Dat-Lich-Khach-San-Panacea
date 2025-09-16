@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// Controller quản lý kho cho Admin
 @Controller
 @RequestMapping("/admin/inventory")
 @PreAuthorize("hasRole('ADMIN')")
@@ -30,6 +31,7 @@ public class AdminInventoryController {
     @Autowired
     private StaffRepository staffRepository;
 
+    // Hiển thị trang quản lý kho
     @GetMapping
     public String inventoryManagement(Model model) {
         try {
@@ -39,7 +41,7 @@ public class AdminInventoryController {
             // Calculate statistics
             int totalItems = items.size();
             int lowStockItems = (int) items.stream()
-                .filter(item -> item.getSoLuongTon() <= item.getSoLuongToiThieu())
+                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() < 15)
                 .count();
             int outOfStockItems = (int) items.stream()
                 .filter(item -> item.getSoLuongTon() == 0)
@@ -62,6 +64,7 @@ public class AdminInventoryController {
         return "Admin/view/QuanLyKho";
     }
 
+    // Tạo vật phẩm mới
     @PostMapping("/items")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createItem(@RequestBody InventoryManagement item) {
@@ -88,6 +91,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Cập nhật vật phẩm
     @PutMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateItem(@PathVariable Integer id, @RequestBody InventoryManagement item) {
@@ -115,6 +119,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Xóa vật phẩm
     @DeleteMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteItem(@PathVariable Integer id) {
@@ -131,6 +136,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Lấy thông tin vật phẩm theo ID
     @GetMapping("/items/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getItem(@PathVariable Integer id) {
@@ -151,6 +157,7 @@ public class AdminInventoryController {
         }
     }
 
+    // Tạo giao dịch kho
     @PostMapping("/transactions")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createTransaction(@RequestBody InventoryTransaction transaction, Authentication authentication) {
@@ -189,6 +196,8 @@ public class AdminInventoryController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+
 
     @GetMapping("/search")
     @ResponseBody
@@ -275,21 +284,26 @@ public class AdminInventoryController {
 
     @GetMapping("/low-stock")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getLowStockItems() {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> getLowStockItems() {
         try {
-            // Filter low stock items from all items
-            List<InventoryManagement> allItems = quanLyKhoService.getAllItems();
-            List<InventoryManagement> lowStockItems = allItems.stream()
-                .filter(item -> item.getSoLuongTon() != null && item.getSoLuongTon() < 10)
-                .collect(java.util.stream.Collectors.toList());
+            List<InventoryManagement> lowStockItems = quanLyKhoService.getLowStockItems();
+            int count = quanLyKhoService.getLowStockItemsCount();
+            
+            Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("data", lowStockItems);
+            response.put("items", lowStockItems);
+            response.put("count", count);
+            response.put("message", count > 0 ? 
+                String.format("Có %d vật phẩm sắp hết hàng (tồn kho dưới 15)", count) : 
+                "Không có vật phẩm nào sắp hết hàng");
+            
             return ResponseEntity.ok(response);
+            
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi lấy danh sách vật phẩm sắp hết: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", true, 
+                "message", "Lỗi khi tải danh sách vật phẩm sắp hết hàng: " + e.getMessage()
+            ));
         }
     }
 

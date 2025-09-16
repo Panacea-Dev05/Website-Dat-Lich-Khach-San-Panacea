@@ -14,14 +14,38 @@ import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
 import java.math.BigDecimal;
 
+/**
+ * CHỨC NĂNG: Lớp chính khởi động ứng dụng Website Đặt Lịch Khách Sạn Panacea
+ * 
+ * Mục đích:
+ * - Khởi động Spring Boot application
+ * - Tự động tạo dữ liệu mẫu cho hệ thống (Hotel, RoomType, Room)
+ * - Cấu hình async processing cho các tác vụ bất đồng bộ
+ * 
+ * Chức năng chính:
+ * 1. Khởi tạo dữ liệu Hotel mẫu nếu chưa có
+ * 2. Tạo các loại phòng chuẩn (Standard, Superior, Deluxe, Suite)
+ * 3. Tạo phòng mẫu cho từng loại với giá và thông tin chi tiết
+ */
 @SpringBootApplication
-@EnableAsync
+@EnableAsync // Kích hoạt xử lý bất đồng bộ
 public class WebsiteDatLichKhachSanApplication {
 
+    /**
+     * CHỨC NĂNG: Điểm khởi đầu của ứng dụng
+     */
     public static void main(String[] args) {
         SpringApplication.run(WebsiteDatLichKhachSanApplication.class, args);
     }
 
+    /**
+     * CHỨC NĂNG: Khởi tạo dữ liệu mẫu cho hệ thống
+     * 
+     * Tự động chạy khi ứng dụng khởi động để:
+     * - Kiểm tra và tạo dữ liệu Hotel nếu chưa có
+     * - Tạo các loại phòng và phòng mẫu
+     * - Đảm bảo hệ thống có dữ liệu cơ bản để hoạt động
+     */
     @Bean
     CommandLineRunner init(HotelRepository hotelRepository, RoomTypeRepository roomTypeRepository, RoomRepository roomRepository) {
         return args -> {

@@ -43,21 +43,24 @@ public class QuanLyPhongService {
     @Autowired
     private HotelRepository hotelRepository;
     
+    // Lấy tên nhân viên
     public String getStaffName() {
-        return "Nguyễn Văn A";
+        return "Nhân viên quản lý phòng";
     }
 
+    // Lấy danh sách tất cả phòng
     public List<Room> getAllRooms() {
         return roomRepository.findAll();
     }
     
-    // CRUD Operations for Rooms
+    // Lấy danh sách tất cả phòng dưới dạng DTO
     public List<RoomDTO> getAllRoomsDTO() {
         return roomRepository.findAll().stream()
                 .map(RoomDTO::fromEntity)
                 .collect(Collectors.toList());
     }
     
+    // Lấy danh sách phòng có phân trang
     public Page<RoomDTO> getAllRoomsPaged(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -67,12 +70,14 @@ public class QuanLyPhongService {
                 .map(RoomDTO::fromEntity);
     }
     
+    // Lấy thông tin phòng theo ID
     public RoomDTO getRoomById(Integer id) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng với ID: " + id));
         return RoomDTO.fromEntity(room);
     }
     
+    // Tạo phòng mới
     public RoomDTO createRoom(RoomCreateDTO roomCreateDTO) {
         // Validate room type exists
         RoomType roomType = roomTypeRepository.findById(roomCreateDTO.getRoomTypeId())
@@ -108,6 +113,7 @@ public class QuanLyPhongService {
         return RoomDTO.fromEntity(savedRoom);
     }
     
+    // Cập nhật thông tin phòng
     public RoomDTO updateRoom(Integer id, RoomUpdateDTO roomUpdateDTO) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng với ID: " + id));
@@ -151,6 +157,7 @@ public class QuanLyPhongService {
         return RoomDTO.fromEntity(updatedRoom);
     }
     
+    // Xóa phòng
     public void deleteRoom(Integer id) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng với ID: " + id));
@@ -163,7 +170,7 @@ public class QuanLyPhongService {
         roomRepository.delete(room);
     }
     
-    // Search and Filter Operations
+    // Tìm kiếm phòng theo số phòng
     public List<RoomDTO> searchRoomsBySoPhong(String soPhong) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getSoPhong() != null && room.getSoPhong().contains(soPhong))
@@ -171,6 +178,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy phòng theo trạng thái
     public List<RoomDTO> getRoomsByTrangThai(String trangThai) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getTrangThai() != null && room.getTrangThai().name().equals(trangThai))
@@ -178,6 +186,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy phòng theo trạng thái có phân trang
     public List<RoomDTO> getRoomsByTrangThaiPaged(String trangThai, int page, int size) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getTrangThai() != null && room.getTrangThai().name().equals(trangThai))
@@ -187,6 +196,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy phòng theo tầng
     public List<RoomDTO> getRoomsByTang(Byte tang) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getTang() != null && room.getTang().equals(tang))
@@ -194,6 +204,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy phòng theo khoảng giá
     public List<RoomDTO> getRoomsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getGiaCoBan() != null &&
@@ -203,6 +214,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy phòng có phân trang
     public List<RoomDTO> getRoomsPaged(int page, int size) {
         return roomRepository.findAll().stream()
             .skip((long) page * size)
@@ -211,13 +223,14 @@ public class QuanLyPhongService {
             .collect(Collectors.toList());
     }
     
-    // Room Type Operations
+    // Lấy danh sách tất cả loại phòng
     public List<RoomTypeDTO> getAllRoomTypes() {
         return roomTypeRepository.findAll().stream()
                 .map(RoomTypeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
     
+    // Lấy thông tin loại phòng theo ID
     public RoomTypeDTO getRoomTypeById(Integer id) {
         RoomType roomType = roomTypeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + id));
@@ -228,6 +241,7 @@ public class QuanLyPhongService {
         return RoomTypeDTO.fromEntityWithPricing(roomType, pricings);
     }
     
+    // Tìm kiếm loại phòng theo tên
     public List<RoomTypeDTO> searchRoomTypesByTenLoaiPhong(String tenLoaiPhong) {
         return roomTypeRepository.findByTenLoaiPhongContaining(tenLoaiPhong).stream()
                 .map(roomType -> {
@@ -239,6 +253,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy loại phòng theo số giường
     public List<RoomTypeDTO> getRoomTypesBySoGiuong(Byte soGiuong) {
         return roomTypeRepository.findBySoGiuong(soGiuong).stream()
                 .map(roomType -> {
@@ -250,6 +265,7 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy loại phòng theo sức chứa
     public List<RoomTypeDTO> getRoomTypesBySucChua(Byte sucChua) {
         return roomTypeRepository.findBySucChuaToiDaGreaterThanEqual(sucChua).stream()
                 .map(roomType -> {
@@ -261,13 +277,14 @@ public class QuanLyPhongService {
                 .collect(Collectors.toList());
     }
     
+    // Lấy loại phòng theo diện tích
     public List<RoomTypeDTO> getRoomTypesByDienTich(BigDecimal minDienTich, BigDecimal maxDienTich) {
         return roomTypeRepository.findByDienTichBetween(minDienTich, maxDienTich).stream()
                 .map(RoomTypeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
     
-    // Create room type
+    // Tạo loại phòng mới
     public RoomTypeDTO createRoomType(RoomTypeCreateDTO roomTypeCreateDTO) {
         if (roomTypeCreateDTO.getMaLoaiPhong() == null || roomTypeCreateDTO.getMaLoaiPhong().trim().isEmpty()) {
             throw new BadRequestException("Vui lòng nhập mã loại phòng.");
@@ -291,16 +308,18 @@ public class QuanLyPhongService {
         return RoomTypeDTO.fromEntity(savedRoomType);
     }
     
-    // Statistics
+    // Lấy tổng số phòng
     public long getTotalRooms() {
         return roomRepository.count();
     }
     
+    // Lấy tổng số phòng theo trạng thái
     public long getTotalRoomsByTrangThai(String trangThai) {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
         return roomRepository.findByTrangThai(status).size();
     }
     
+    // Lấy tổng số phòng theo trạng thái có phân trang
     public long getTotalRoomsByTrangThaiPaged(String trangThai, int page, int size) {
         Room.TrangThaiPhong status = Room.TrangThaiPhong.valueOf(trangThai);
         return roomRepository.findByTrangThai(status).size();

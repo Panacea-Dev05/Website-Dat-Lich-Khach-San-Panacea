@@ -1,3 +1,8 @@
+/**
+ * Thanh toán - Nhân viên
+ * Xử lý các chức năng thanh toán và in hóa đơn cho khách hàng
+ */
+
 // JavaScript cho chức năng thanh toán nhân viên
 
 $(document).ready(function() {
@@ -401,7 +406,7 @@ function validatePaymentForm(data) {
         isValid = false;
         if (!firstErrorField) firstErrorField = '#phuongThuc';
     } else {
-        const validMethods = ['TIEN_MAT', 'CHUYEN_KHOAN', 'THE_TIN_DUNG'];
+        const validMethods = ['CASH', 'CHUYEN_KHOAN'];
         if (!validMethods.includes(data.phuongThuc)) {
             showFieldError('phuongThuc', 'Phương thức thanh toán không hợp lệ');
             isValid = false;
@@ -870,4 +875,24 @@ if (typeof toastr !== 'undefined') {
     };
 } else {
     console.warn('Toastr library not loaded. Notifications may not work properly.');
+}
+
+// Helper functions for field validation display
+function showFieldError(fieldId, message) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-valid').addClass('is-invalid');
+    
+    // Remove existing error message
+    field.siblings('.invalid-feedback').remove();
+    
+    // Add new error message
+    field.after(`<div class="invalid-feedback">${message}</div>`);
+}
+
+function showFieldValid(fieldId) {
+    const field = $(`#${fieldId}`);
+    field.removeClass('is-invalid').addClass('is-valid');
+    
+    // Remove error message
+    field.siblings('.invalid-feedback').remove();
 }

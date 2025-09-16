@@ -3,6 +3,7 @@
 
 
 <!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/single-room.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:23:06 GMT -->
+
 <head>
     <!-- Meta Tags -->
     <meta charset="utf-8" />
@@ -24,18 +25,21 @@
             position: relative;
             z-index: 2;
         }
+
         .room-detail-layout {
             display: flex;
             gap: 32px;
             align-items: flex-start;
             margin-top: 0;
         }
+
         .room-gallery {
             flex: 2;
             display: flex;
             flex-wrap: wrap;
             gap: 16px;
         }
+
         .room-image {
             width: 100%;
             max-width: 350px;
@@ -43,8 +47,9 @@
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
         .booking-form {
             flex: 1;
             min-width: 320px;
@@ -52,13 +57,22 @@
             background: #0d2327;
             border-radius: 16px;
             padding: 32px 24px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
             color: #fff;
         }
+
         @media (max-width: 900px) {
-            .room-detail-layout { flex-direction: column; }
-            .booking-form { max-width: 100%; min-width: 0; margin-top: 24px; }
+            .room-detail-layout {
+                flex-direction: column;
+            }
+
+            .booking-form {
+                max-width: 100%;
+                min-width: 0;
+                margin-top: 24px;
+            }
         }
+
         /* Đảm bảo row chính chia 2 cột rõ ràng */
         #containerAround {
             display: flex;
@@ -68,26 +82,32 @@
             position: relative;
             z-index: 2;
         }
-        #containerAround > .col-md-8 {
+
+        #containerAround>.col-md-8 {
             flex: 2 1 0;
             min-width: 0;
             max-width: 70%;
         }
-        #containerAround > .col-md-4 {
+
+        #containerAround>.col-md-4 {
             flex: 1 1 320px;
             min-width: 320px;
             max-width: 400px;
         }
+
         @media (max-width: 900px) {
             #containerAround {
                 flex-direction: column;
             }
-            #containerAround > .col-md-8, #containerAround > .col-md-4 {
+
+            #containerAround>.col-md-8,
+            #containerAround>.col-md-4 {
                 max-width: 100%;
                 min-width: 0;
                 width: 100%;
             }
         }
+
         /* Đảm bảo similar room luôn ở dưới cùng, không bị chồng lên */
         .similar-room-section {
             clear: both;
@@ -97,6 +117,7 @@
             width: 100%;
             overflow: hidden;
         }
+
         /* Đảm bảo room-section hiển thị đúng */
         .room-section {
             display: flex;
@@ -106,7 +127,8 @@
             position: relative;
             z-index: 1;
         }
-        .room-section > .col {
+
+        .room-section>.col {
             flex: 1 1 300px;
             min-width: 300px;
             max-width: 100%;
@@ -304,7 +326,8 @@
             <div class="row" id="containerAround">
                 <div class="col-md-8">
                     <div class="blog-content" id="scrollGaleria">
-                        <img th:src="${roomType.imageUrls != null and !roomType.imageUrls.isEmpty()} ? @{${roomType.imageUrls[0]}} : @{/css/KhachHang/assets/img/room_1.jpg}" alt="...">
+                        <img th:src="${roomType.imageUrls != null and !roomType.imageUrls.isEmpty()} ? @{${roomType.imageUrls[0]}} : @{/css/KhachHang/assets/img/room_1.jpg}"
+                            alt="...">
                         <div class="ak-height-75 ak-height-lg-30"></div>
                         <div class="d-flex justify-content-between flex-wrap me-3 align-items-center">
                             <div class="blog-details">
@@ -317,14 +340,14 @@
                                     <p th:text="${roomType.loaiGiuong != null ? roomType.loaiGiuong : 'N/A'}"></p>
                                 </div>
                             </div>
-                            <div class="text-btn mt-5 mt-lg-0">
-                                <span class="text-btn1 text-uppercase" id="roomPriceDisplay" 
-                                      data-gia-gio="${roomType.giaGio}" 
-                                      data-gia-ngay="${roomType.giaNgay}" 
-                                      data-gia-dem="${roomType.giaQuaDem}">
-                                    Đang tải giá...
-                                </span>
-                            </div>
+                             <div class="text-btn mt-5 mt-lg-0">
+                                 <span class="text-btn1 text-uppercase" id="roomPriceDisplay" 
+                                       th:data-gia-gio="${roomType.giaGio}" 
+                                       th:data-gia-ngay="${roomType.giaNgay}" 
+                                       th:data-gia-dem="${roomType.giaQuaDem}">
+                                     Đang tải giá...
+                                 </span>
+                             </div>
                         </div>
                         <div class="ak-height-30 ak-height-lg-30"></div>
                         <p th:text="${roomType.moTa != null ? roomType.moTa : 'Đang cập nhật'}"></p>
@@ -524,28 +547,43 @@
                                 <input type="hidden" name="roomTypeId" th:value="${roomType.id}" />
                                 <input type="hidden" name="hotelId" value="1" />
                                 <div class="form-group">
-                                    <input type="text" name="hoKhach" class="form-control booking-now-input custom-input-separated" placeholder="First Name" required />
+                                    <input type="text" name="hoKhach"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="First Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="tenKhach" class="form-control booking-now-input custom-input-separated" placeholder="Last Name" required />
+                                    <input type="text" name="tenKhach"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Last Name" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" name="emailKhach" class="form-control booking-now-input custom-input-separated" placeholder="Email" required />
+                                    <input type="email" name="emailKhach"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Email" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="soDienThoai" class="form-control booking-now-input custom-input-separated" placeholder="Phone Number" required />
+                                    <input type="text" name="soDienThoai"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Phone Number" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="soCmndCccd" class="form-control booking-now-input custom-input-separated" placeholder="ID Card Number (CMND/CCCD)" required />
+                                    <input type="text" name="soCmndCccd"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="ID Card Number (CMND/CCCD)" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="diaChi" class="form-control booking-now-input custom-input-separated" placeholder="Address" required />
+                                    <input type="text" name="diaChi"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Address" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="date" name="ngaySinh" class="form-control booking-now-input custom-input-separated" placeholder="Date of Birth" />
+                                    <input type="date" name="ngaySinh"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Date of Birth" />
                                 </div>
                                 <div class="form-group">
-                                    <select name="gioiTinh" class="form-control booking-now-input custom-input-separated">
+                                    <select name="gioiTinh"
+                                        class="form-control booking-now-input custom-input-separated">
                                         <option value="">Select Gender</option>
                                         <option value="Nam">Nam</option>
                                         <option value="Nữ">Nữ</option>
@@ -553,11 +591,14 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" name="quocTich" class="form-control booking-now-input custom-input-separated" placeholder="Nationality" />
+                                    <input type="text" name="quocTich"
+                                        class="form-control booking-now-input custom-input-separated"
+                                        placeholder="Nationality" />
                                 </div>
                                 <div class="form-group">
                                     <label for="bookingType">Loại thuê:</label>
-                                    <select id="bookingType" name="bookingType" class="form-control booking-now-input custom-input-separated" required>
+                                    <select id="bookingType" name="bookingType"
+                                        class="form-control booking-now-input custom-input-separated" required>
                                         <option value="ngay">Theo ngày</option>
                                         <option value="gio">Theo giờ</option>
                                         <option value="dem">Theo đêm</option>
@@ -565,14 +606,16 @@
                                 </div>
                                 <div class="form-group" id="group-bookingQuantity">
                                     <label id="label-bookingQuantity" for="bookingQuantity">Số ngày</label>
-                                    <input type="number" id="bookingQuantity" name="bookingQuantity" class="form-control booking-now-input custom-input-separated" min="1" value="1" required />
+                                    <input type="number" id="bookingQuantity" name="bookingQuantity"
+                                        class="form-control booking-now-input custom-input-separated" min="1" value="1"
+                                        required />
                                 </div>
 
                                 <div class="check">
                                     <div class="check-data">
                                         <p class="check-title">Check In</p>
                                         <div class="date-packer">
-                                            <input type="date" name="ngayNhanPhong" value="2023-07-22" />
+                                            <input type="date" name="ngayNhanPhong" id="ngayNhanPhong" value="2023-07-22" onchange="updatePrice()" />
                                             <div class="date-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                                     viewBox="0 0 25 25" fill="none">
@@ -595,7 +638,7 @@
                                     <div class="check-data">
                                         <p class="check-title">Check Out</p>
                                         <div class="date-packer">
-                                            <input type="date" name="ngayTraPhong" value="2023-07-22" />
+                                            <input type="date" name="ngayTraPhong" id="ngayTraPhong" value="2023-07-22" onchange="updatePrice()" />
                                             <div class="date-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                                                     viewBox="0 0 25 25" fill="none">
@@ -617,11 +660,24 @@
                                     <div class="border-height-one my-3"></div>
                                 </div>
                                 <!-- Start Services -->
+                                <!-- Số phòng -->
+                                <div class="form-group">
+                                    <label class="ak-white-color">Số phòng</label>
+                                    <select name="soPhong" id="soPhong" class="form-control booking-now-input" required onchange="updatePrice()">
+                                        <option value="1">1 phòng</option>
+                                        <option value="2">2 phòng</option>
+                                        <option value="3">3 phòng</option>
+                                        <option value="4">4 phòng</option>
+                                        <option value="5">5 phòng</option>
+                                    </select>
+                                </div>
+
                                 <div class="number-of-input">
                                     <p>Adult</p>
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" value="Decrease Value">-</div>
-                                        <input class="number-input" type="number" id="number-single-room" name="soNguoiLon" value="1" />
+                                        <input class="number-input" type="number" id="number-single-room"
+                                            name="soNguoiLon" value="1" />
                                         <div class="value-button" id="increase" value="Increase Value">+</div>
                                     </div>
                                 </div>
@@ -630,7 +686,8 @@
                                     <div class="increase-decrease">
                                         <div class="value-button" id="decrease" onclick="decreaseValue()"
                                             value="Decrease Value">-</div>
-                                        <input type="number" class="number-input" id="number" name="soTreEm" value="0" />
+                                        <input type="number" class="number-input" id="number" name="soTreEm"
+                                            value="0" />
                                         <div class="value-button" id="increase" onclick="increaseValue()"
                                             value="Increase Value">+</div>
                                     </div>
@@ -643,13 +700,14 @@
                                 <div class="form-group">
                                     <h5 class="ak-white-color">Yêu cầu đặc biệt</h5>
                                     <div class="ak-height-15 ak-height-lg-10"></div>
-                                    <textarea name="yeuCauDacBiet" class="form-control booking-now-input custom-input-separated" 
-                                              rows="3" placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy, view hồ bơi..."
+                                    <textarea name="yeuCauDacBiet"
+                                        class="form-control booking-now-input custom-input-separated" rows="3"
+                                        placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy, view hồ bơi..."
                                               style="resize: vertical; min-height: 80px;"></textarea>
-                                    <small class="text-muted" style="color: #ccc !important;">Chúng tôi sẽ cố gắng đáp ứng yêu cầu của bạn tùy theo tình trạng phòng trống</small>
+                                    <small class="text-muted" style="color: #ccc !important;">Chúng tôi sẽ cố gắng đáp
+                                        ứng yêu cầu của bạn tùy theo tình trạng phòng trống</small>
                                 </div>
                                 <div class="ak-height-30 ak-height-lg-20"></div>
-                                
                                 <div class="ak-height-20 ak-height-lg-10"></div>
                                 
                                 <div class="total">
@@ -715,8 +773,8 @@
                             <div class="room-footer">
                                 <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
                                     <span class="ms-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
-                                            viewBox="0 0 31 31" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
+                                        fill="none">
                                             <g clip-path="url(#clip0_1355_128)">
                                                 <path
                                                     d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
@@ -764,8 +822,8 @@
                             <div class="room-footer">
                                 <a class="room-card-bottom-text" th:href="@{/khachhang/single-room}">room details
                                     <span class="ms-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31"
-                                            viewBox="0 0 31 31" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31"
+                                        fill="none">
                                             <g clip-path="url(#clip0_1355_1282)">
                                                 <path
                                                     d="M30.3017 14.8709L23.4837 8.05279C23.2388 7.7668 22.8084 7.73346 22.5224 7.97843C22.2364 8.22335 22.203 8.65377 22.448 8.93976C22.4709 8.96642 22.4957 8.99133 22.5224 9.01412L28.1745 14.6731H1.18178C0.805268 14.6731 0.5 14.9784 0.5 15.355C0.5 15.7315 0.805268 16.0367 1.18178 16.0367H28.1745L22.5224 21.6889C22.2364 21.9338 22.203 22.3642 22.448 22.6502C22.693 22.9362 23.1234 22.9696 23.4093 22.7246C23.436 22.7017 23.4609 22.6769 23.4837 22.6502L30.3018 15.8321C30.5661 15.5663 30.5661 15.1368 30.3017 14.8709Z"
@@ -846,8 +904,8 @@
                                     <input type="text" class="e-input" name="emailFooter" placeholder="Enter You Email"
                                         id="emailFooter">
                                     <button type="submit" class="btn-input">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"
-                                            viewBox="0 0 25 25" fill="none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25"
+                                        fill="none">
                                             <g clip-path="url(#clip0_1316_214)">
                                                 <path
                                                     d="M20.548 5.84478C20.98 4.64978 19.822 3.49178 18.627 3.92478L4.02203 9.20678C2.82303 9.64078 2.67803 11.2768 3.78103 11.9158L8.44303 14.6148L12.606 10.4518C12.7946 10.2696 13.0472 10.1688 13.3094 10.1711C13.5716 10.1734 13.8224 10.2786 14.0078 10.464C14.1933 10.6494 14.2984 10.9002 14.3007 11.1624C14.303 11.4246 14.2022 11.6772 14.02 11.8658L9.85703 16.0288L12.557 20.6908C13.195 21.7938 14.831 21.6478 15.265 20.4498L20.548 5.84478Z"
@@ -925,16 +983,19 @@
     <script th:src="@{/css/KhachHang/assets/js/main.js}"></script>
 
 <!-- Popup Modal -->
-<div id="bookingResultModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
-  <div style="background:#181a20; color:#fff; border-radius:16px; max-width:90vw; width:400px; margin:auto; padding:32px 24px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+    <div id="bookingResultModal"
+        style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); align-items:center; justify-content:center;">
+        <div
+            style="background:#181a20; color:#fff; border-radius:16px; max-width:90vw; width:400px; margin:auto; padding:32px 24px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
     <div id="bookingResultContent"></div>
-    <button onclick="document.getElementById('bookingResultModal').style.display='none'" style="margin-top:24px; padding:10px 32px; border:none; border-radius:8px; background:#FFD28D; color:#181a20; font-weight:600; cursor:pointer;">Đóng</button>
+            <button onclick="document.getElementById('bookingResultModal').style.display='none'"
+                style="margin-top:24px; padding:10px 32px; border:none; border-radius:8px; background:#FFD28D; color:#181a20; font-weight:600; cursor:pointer;">Đóng</button>
   </div>
 </div>
 
 <script>
 // Set default date for check-in/check-out to today and tomorrow
-window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', function () {
   var today = new Date();
   var tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
@@ -954,7 +1015,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // Gửi form booking bằng AJAX, show popup kết quả
 const bookingForm = document.getElementById('bookingNowForm');
 if (bookingForm) {
-  bookingForm.addEventListener('submit', async function(e) {
+            bookingForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     // Lấy nút Book Now
     const submitBtn = bookingForm.querySelector('button[type="submit"]');
@@ -969,7 +1030,7 @@ if (bookingForm) {
     const soNguoiLon = parseInt(bookingForm.querySelector('input[name="soNguoiLon"]').value, 10) || 0;
     const soTreEm = parseInt(bookingForm.querySelector('input[name="soTreEm"]').value, 10) || 0;
     const today = new Date();
-    today.setHours(0,0,0,0);
+                today.setHours(0, 0, 0, 0);
     const nhanDate = new Date(ngayNhan);
     const traDate = new Date(ngayTra);
     
@@ -1065,93 +1126,6 @@ function decreaseValue() {
 }
 </script>
 
-    <script>
-// Lấy giá từ Thymeleaf, nếu null thì về 0
-const giaNgay = /*[[${roomType.giaNgay != null ? roomType.giaNgay : 0}]]*/ 0;
-const giaGio = /*[[${roomType.giaGio != null ? roomType.giaGio : 0}]]*/ 0;
-const giaDem = /*[[${roomType.giaQuaDem != null ? roomType.giaQuaDem : 0}]]*/ 0;
-console.log('DEBUG giá phòng:', { giaNgay, giaGio, giaDem });
-
-function formatVND(val) {
-    return Number(val).toLocaleString('vi-VN');
-}
-function setDefaultDates() {
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const todayStr = `${yyyy}-${mm}-${dd}`;
-    const yyyy2 = tomorrow.getFullYear();
-    const mm2 = String(tomorrow.getMonth() + 1).padStart(2, '0');
-    const dd2 = String(tomorrow.getDate()).padStart(2, '0');
-    const tomorrowStr = `${yyyy2}-${mm2}-${dd2}`;
-    const checkIn = document.querySelector('input[name="ngayNhanPhong"]');
-    const checkOut = document.querySelector('input[name="ngayTraPhong"]');
-    if (checkIn) checkIn.value = todayStr;
-    if (checkOut) checkOut.value = tomorrowStr;
-}
-function updateLabelAndQuantityVisibility() {
-    const type = document.getElementById('bookingType').value;
-    const group = document.getElementById('group-bookingQuantity');
-    if (type === 'ngay') {
-        group.style.display = '';
-    } else {
-        group.style.display = 'none';
-    }
-    // Đổi label nếu cần
-    const label = document.getElementById('label-bookingQuantity');
-    if (type === 'ngay') label.innerText = 'Số ngày';
-    else if (type === 'gio') label.innerText = 'Số giờ';
-    else if (type === 'dem') label.innerText = 'Số đêm';
-}
-function updateQuantityFromDate() {
-    const type = document.getElementById('bookingType').value;
-    const checkIn = document.querySelector('input[name="ngayNhanPhong"]').value;
-    const checkOut = document.querySelector('input[name="ngayTraPhong"]').value;
-    if (type === 'ngay' && checkIn && checkOut) {
-        const d1 = new Date(checkIn);
-        const d2 = new Date(checkOut);
-        const diff = Math.max(1, Math.round((d2 - d1) / (1000*60*60*24)) + 1);
-        document.getElementById('bookingQuantity').value = diff;
-    }
-}
-window.addEventListener('DOMContentLoaded', function() {
-    if (typeof setDefaultDates === 'function') setDefaultDates();
-    
-    const bookingTypeElement = document.getElementById('bookingType');
-    if (bookingTypeElement) {
-        bookingTypeElement.addEventListener('change', function() {
-            if (typeof updateLabelAndQuantityVisibility === 'function') updateLabelAndQuantityVisibility();
-            if (typeof setDefaultDates === 'function') setDefaultDates();
-            if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
-            updatePrice();
-        });
-    }
-    
-    const bookingQuantityElement = document.getElementById('bookingQuantity');
-    if (bookingQuantityElement) {
-        bookingQuantityElement.addEventListener('input', updatePrice);
-    }
-    
-    // Lắng nghe thay đổi ngày ở input gốc
-    const checkInInput = document.querySelector('input[name="ngayNhanPhong"]');
-    const checkOutInput = document.querySelector('input[name="ngayTraPhong"]');
-    if (checkInInput) checkInInput.addEventListener('change', function() {
-        if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
-        updatePrice();
-    });
-    if (checkOutInput) checkOutInput.addEventListener('change', function() {
-        if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
-        updatePrice();
-    });
-    
-    if (typeof updateLabelAndQuantityVisibility === 'function') updateLabelAndQuantityVisibility();
-    if (typeof updateQuantityFromDate === 'function') updateQuantityFromDate();
-    updatePrice();
-});
-</script>
 
 <!-- Login Modal -->
 <div id="loginModal" class="modal" style="display:none;">
@@ -1159,12 +1133,14 @@ window.addEventListener('DOMContentLoaded', function() {
     <div class="modal-content" style="border-radius:16px;overflow:hidden;">
       <div class="modal-header" style="border-bottom:0;">
         <h5 class="modal-title" style="font-weight:700;">Đăng nhập để tiếp tục</h5>
-        <button type="button" class="close" onclick="closeLoginModal()" style="font-size:2rem;">&times;</button>
+                    <button type="button" class="close" onclick="closeLoginModal()"
+                        style="font-size:2rem;">&times;</button>
       </div>
       <div class="modal-body" style="padding:32px;">
         <form id="loginForm" method="post" action="/login">
           <div class="form-group">
-            <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập" required>
+                            <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập"
+                                required>
           </div>
           <div class="form-group">
             <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
@@ -1172,7 +1148,8 @@ window.addEventListener('DOMContentLoaded', function() {
           <button type="submit" class="btn btn-primary btn-block" style="width:100%;">Đăng nhập</button>
         </form>
         <div style="margin-top:16px;">
-          <a href="/oauth2/authorization/google" class="btn btn-danger btn-block" style="width:100%;">Đăng nhập với Google</a>
+                        <a href="/oauth2/authorization/google" class="btn btn-danger btn-block" style="width:100%;">Đăng
+                            nhập với Google</a>
         </div>
       </div>
     </div>
@@ -1182,10 +1159,23 @@ window.addEventListener('DOMContentLoaded', function() {
 
 <style>
 .modal {
-  position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
-}
-.modal-dialog { max-width: 400px; width: 100%; }
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            max-width: 400px;
+            width: 100%;
+        }
+
 .custom-input-separated {
   background: #ececec !important;
   border-radius: 10px !important;
@@ -1202,16 +1192,19 @@ window.addEventListener('DOMContentLoaded', function() {
   position: relative !important;
   z-index: 2 !important;
 }
+
 .custom-input-separated:focus {
   border: 1.5px solid #FFD28D !important;
   background: #f5f5f5 !important;
 }
+
 /* Đảm bảo các nút và input trong form đặt phòng hiển thị đúng */
 .booking-widget-inner .form-group {
   position: relative;
   z-index: 2;
   margin-bottom: 15px;
 }
+
 .booking-widget-inner .increase-decrease {
   display: flex;
   align-items: center;
@@ -1224,14 +1217,6 @@ window.addEventListener('DOMContentLoaded', function() {
   z-index: 2;
 }
 </style>
-
-<script>
-function showLoginModal() {
-  document.getElementById('loginModal').style.display = 'flex';
-}
-function closeLoginModal() {
-  document.getElementById('loginModal').style.display = 'none';
-}
 
 <script>
 // Giải pháp đột phá - sử dụng data attributes
@@ -1249,12 +1234,26 @@ function updatePrice() {
     var bookingType = bookingTypeElement.value;
     console.log('Booking type:', bookingType);
     
+    // Debug: Kiểm tra raw data attributes
+    console.log('Raw data attributes:');
+    console.log('data-gia-gio:', priceDisplayElement.getAttribute('data-gia-gio'));
+    console.log('data-gia-ngay:', priceDisplayElement.getAttribute('data-gia-ngay'));
+    console.log('data-gia-dem:', priceDisplayElement.getAttribute('data-gia-dem'));
+    
     // Lấy giá từ data attributes
     var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
     var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
     var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
     
-    console.log('Prices from data attributes:', { giaGio: giaGio, giaNgay: giaNgay, giaDem: giaDem });
+    // Fallback nếu data attributes không có giá trị
+    if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
+        console.log('Data attributes are empty, using fallback values');
+        giaGio = 100000;
+        giaNgay = 800000;
+        giaDem = 600000;
+    }
+    
+    console.log('Final prices:', { giaGio: giaGio, giaNgay: giaNgay, giaDem: giaDem });
     
     // Map booking type to price
     var basePrice;
@@ -1272,10 +1271,41 @@ function updatePrice() {
     
     console.log('Price calculation:', { priceLabel: priceLabel, basePrice: basePrice });
     
+    // Lấy số ngày và số phòng
+    var bookingQuantity = parseInt(document.getElementById('bookingQuantity').value) || 1;
+    var soPhong = parseInt(document.getElementById('soPhong').value) || 1;
+    
+    // Tính tổng tiền
+    var totalPrice = basePrice * bookingQuantity * soPhong;
+    
+    console.log('Total calculation:', { 
+        basePrice: basePrice, 
+        bookingQuantity: bookingQuantity, 
+        soPhong: soPhong, 
+        totalPrice: totalPrice 
+    });
+    
     var formattedBasePrice = new Intl.NumberFormat('vi-VN').format(basePrice);
+    var formattedTotalPrice = new Intl.NumberFormat('vi-VN').format(totalPrice);
+    
     priceDisplayElement.innerHTML = priceLabel + ': <span class="price-value">' + formattedBasePrice + '</span> VNĐ';
     
+    // Cập nhật phần giá phòng trong form booking với tổng tiền
+    var roomPriceElement = document.getElementById('roomPrice');
+    if (roomPriceElement) {
+        roomPriceElement.textContent = formattedTotalPrice + ' VNĐ';
+        console.log('Updated roomPrice element:', roomPriceElement.textContent);
+    }
+    
     console.log('Final price set:', priceDisplayElement.innerHTML);
+}
+
+function showLoginModal() {
+  document.getElementById('loginModal').style.display = 'flex';
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').style.display = 'none';
 }
 
 // Khởi tạo giá khi trang load
@@ -1295,6 +1325,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Thêm event listener cho số ngày
+    var bookingQuantityElement = document.getElementById('bookingQuantity');
+    if (bookingQuantityElement) {
+        bookingQuantityElement.addEventListener('input', function() {
+            console.log('Booking quantity changed to:', this.value);
+            updatePrice();
+        });
+    }
+    
+    // Thêm event listener cho số phòng
+    var soPhongElement = document.getElementById('soPhong');
+    if (soPhongElement) {
+        soPhongElement.addEventListener('change', function() {
+            console.log('Number of rooms changed to:', this.value);
+            updatePrice();
+        });
+    }
+    
     console.log('Pricing system initialized successfully!');
 });
 </script>
@@ -1302,4 +1350,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Mirrored from elegencia.pixcelsthemes.com/livepreview/elegencia-main/hotel-resort/single-room.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 17 Jun 2025 06:23:06 GMT -->
+
 </html>

@@ -19,6 +19,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.HotelDTO;
 import panacea.website_dat_lich_khach_san.repository.HotelAmenitiesRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 
+// REST API Controller quản lý khách sạn và tiện ích
 @RestController
 @RequestMapping("/api/hotels")
 public class HotelApiController {

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+// Controller xác thực và phân quyền người dùng
 @Controller
 @RequestMapping("/api/auth")
 public class AuthController {

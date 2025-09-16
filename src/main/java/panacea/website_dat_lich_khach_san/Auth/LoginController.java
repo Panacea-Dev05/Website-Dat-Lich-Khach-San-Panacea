@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+// Controller xử lý đăng nhập và chuyển hướng theo vai trò
 @Controller
 public class    LoginController {
     @GetMapping("/login")

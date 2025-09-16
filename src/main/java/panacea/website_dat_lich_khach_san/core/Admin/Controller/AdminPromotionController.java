@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 
+// Controller quản lý khuyến mãi cho Admin
 @Controller
 @RequestMapping("/admin/promotions")
 public class AdminPromotionController {
@@ -20,6 +21,7 @@ public class AdminPromotionController {
     @Autowired
     private AdminPromotionService adminPromotionService;
     
+    // Hiển thị trang quản lý khuyến mãi
     @GetMapping
     public String promotionManagement(Model model) {
         List<PromotionDTO> promotions = adminPromotionService.getAllPromotions();
@@ -33,12 +35,14 @@ public class AdminPromotionController {
         return "Admin/view/QuanLyKhuyenMai";
     }
     
+    // Lấy thông tin khuyến mãi theo ID
     @GetMapping("/{id}")
     @ResponseBody
     public PromotionDTO getPromotion(@PathVariable Integer id) {
         return adminPromotionService.getPromotionById(id);
     }
     
+    // Hiển thị form chỉnh sửa khuyến mãi
     @GetMapping("/edit/{id}")
     public String editPromotion(@PathVariable Integer id, Model model) {
         List<PromotionDTO> promotions = adminPromotionService.getAllPromotions();
@@ -53,6 +57,7 @@ public class AdminPromotionController {
         return "Admin/view/QuanLyKhuyenMai";
     }
     
+    // Tạo khuyến mãi mới
     @PostMapping
     public String createPromotion(@ModelAttribute("promotionForm") @Validated PromotionDTO promotionDTO,
                                  BindingResult bindingResult,
@@ -83,6 +88,7 @@ public class AdminPromotionController {
         return "redirect:/admin/promotions";
     }
     
+    // Cập nhật khuyến mãi (form)
     @PostMapping("/edit/{id}")
     public String updatePromotionForm(@PathVariable Integer id,
                                       @ModelAttribute("promotionForm") @Validated PromotionDTO promotionDTO,
@@ -103,15 +109,17 @@ public class AdminPromotionController {
         return "redirect:/admin/promotions";
     }
     
+    // Cập nhật khuyến mãi (API)
     @PutMapping("/{id}")
     @ResponseBody
     public PromotionDTO updatePromotion(@PathVariable Integer id, @RequestBody PromotionDTO promotionDTO) {
         return adminPromotionService.updatePromotion(id, promotionDTO);
     }
     
+    // Xóa khuyến mãi
     @DeleteMapping("/{id}")
     @ResponseBody
     public boolean deletePromotion(@PathVariable Integer id) {
         return adminPromotionService.deletePromotion(id);
     }
-} 
+}

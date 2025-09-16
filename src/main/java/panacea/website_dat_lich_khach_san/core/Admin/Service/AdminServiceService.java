@@ -12,30 +12,59 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/**
+ * Service quản lý dịch vụ khách sạn cho Admin
+ * Chức năng: CRUD dịch vụ (spa, massage, ăn uống, giặt ủi, v.v.)
+ */
 @Service
 public class AdminServiceService {
     @Autowired
     private ServiceRepository serviceRepository;
 
+    /**
+     * LẤY TẤT CẢ DỊCH VỤ: Lấy danh sách tất cả dịch vụ khách sạn
+     * @return List<ServiceDTO> - Danh sách dịch vụ
+     */
     public List<ServiceDTO> getAllServices() {
         return serviceRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    /**
+     * LẤY DỊCH VỤ CÓ PHÂN TRANG: Lấy danh sách dịch vụ với phân trang
+     * @param pageable - Thông tin phân trang (page, size, sort)
+     * @return Page<ServiceDTO> - Dịch vụ có phân trang
+     */
     public Page<ServiceDTO> getAllServicesPaged(Pageable pageable) {
         return serviceRepository.findAll(pageable).map(this::toDTO);
     }
 
+    /**
+     * LẤY DỊCH VỤ THEO ID: Lấy thông tin chi tiết dịch vụ theo ID
+     * @param id - ID dịch vụ
+     * @return ServiceDTO - Thông tin dịch vụ hoặc null nếu không tìm thấy
+     */
     public ServiceDTO getServiceById(Integer id) {
         Optional<ServiceEntity> service = serviceRepository.findById(id);
         return service.map(this::toDTO).orElse(null);
     }
 
+    /**
+     * TẠO DỊCH VỤ MỚI: Tạo dịch vụ mới trong hệ thống
+     * @param dto - Thông tin dịch vụ cần tạo
+     * @return ServiceDTO - Dịch vụ đã được tạo
+     */
     public ServiceDTO createService(ServiceDTO dto) {
         ServiceEntity service = toEntity(dto);
         ServiceEntity saved = serviceRepository.save(service);
         return toDTO(saved);
     }
 
+    /**
+     * CẬP NHẬT DỊCH VỤ: Cập nhật thông tin dịch vụ theo ID
+     * @param id - ID dịch vụ cần cập nhật
+     * @param dto - Thông tin dịch vụ mới
+     * @return ServiceDTO - Dịch vụ đã cập nhật hoặc null nếu không tìm thấy
+     */
     public ServiceDTO updateService(Integer id, ServiceDTO dto) {
         Optional<ServiceEntity> existing = serviceRepository.findById(id);
         if (existing.isPresent()) {
@@ -47,6 +76,11 @@ public class AdminServiceService {
         return null;
     }
 
+    /**
+     * XÓA DỊCH VỤ: Xóa dịch vụ khỏi hệ thống
+     * @param id - ID dịch vụ cần xóa
+     * @return boolean - true nếu xóa thành công, false nếu không tìm thấy
+     */
     public boolean deleteService(Integer id) {
         if (serviceRepository.existsById(id)) {
             serviceRepository.deleteById(id);
@@ -55,6 +89,11 @@ public class AdminServiceService {
         return false;
     }
 
+    /**
+     * CHUYỂN ĐỔI ENTITY SANG DTO: Chuyển đổi ServiceEntity thành ServiceDTO
+     * @param s - ServiceEntity cần chuyển đổi
+     * @return ServiceDTO - DTO đã chuyển đổi
+     */
     private ServiceDTO toDTO(ServiceEntity s) {
         ServiceDTO dto = new ServiceDTO();
         dto.setId(s.getId());
@@ -80,6 +119,11 @@ public class AdminServiceService {
         
         return dto;
     }
+    /**
+     * CHUYỂN ĐỔI DTO SANG ENTITY: Chuyển đổi ServiceDTO thành ServiceEntity
+     * @param dto - ServiceDTO cần chuyển đổi
+     * @return ServiceEntity - Entity đã chuyển đổi
+     */
     private ServiceEntity toEntity(ServiceDTO dto) {
         ServiceEntity s = new ServiceEntity();
         s.setId(dto.getId());
@@ -95,4 +139,4 @@ public class AdminServiceService {
         s.setLastModifiedDate(dto.getLastModifiedDate());
         return s;
     }
-} 
+}

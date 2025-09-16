@@ -30,17 +30,20 @@ public class AdminCustomerService {
     @Autowired
     private UserSessionRepository userSessionRepository;
     
+    // Lấy danh sách tất cả khách hàng
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
+    // Lấy thông tin khách hàng theo ID
     public CustomerDTO getCustomerById(Integer id) {
         Optional<Customer> customer = customerRepository.findById(id);
         return customer.map(this::convertToDTO).orElse(null);
     }
     
+    // Tạo khách hàng mới
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         // Kiểm tra trùng email
         if (customerRepository.findByEmail(customerDTO.getEmail()).isPresent()) {
@@ -53,6 +56,7 @@ public class AdminCustomerService {
         return convertToDTO(savedCustomer);
     }
     
+    // Cập nhật thông tin khách hàng
     public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) {
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if (existingCustomer.isPresent()) {
@@ -81,6 +85,7 @@ public class AdminCustomerService {
         return null;
     }
     
+    // Xóa khách hàng
     public boolean deleteCustomer(Integer id) {
         if (customerRepository.existsById(id)) {
             customerRepository.deleteById(id);
@@ -89,6 +94,7 @@ public class AdminCustomerService {
         return false;
     }
     
+    // Chuyển đổi entity thành DTO
     private CustomerDTO convertToDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
@@ -113,6 +119,7 @@ public class AdminCustomerService {
         return dto;
     }
     
+    // Chuyển đổi DTO thành entity
     private Customer convertToEntity(CustomerDTO dto) {
         Customer customer = new Customer();
         customer.setMaKhachHang(dto.getMaKhachHang());
@@ -192,12 +199,14 @@ public class AdminCustomerService {
         }
     }
     
+    // Lấy sở thích khách hàng
     public CustomerPreferences getPreferences(Integer customerId) {
         return customerPreferencesRepository.findAll().stream()
             .filter(p -> p.getKhachHang() != null && p.getKhachHang().getId().equals(customerId))
             .findFirst().orElse(null);
     }
 
+    // Chuyển đổi string thành enum trạng thái
     private Customer.TrangThaiCustomer parseTrangThai(String trangThaiStr) {
         if (trangThaiStr == null) return Customer.TrangThaiCustomer.HOAT_DONG;
         try {
@@ -206,4 +215,4 @@ public class AdminCustomerService {
             throw new BadRequestException("Trạng thái khách hàng không hợp lệ. Chỉ nhận: HOAT_DONG, TAM_KHOA, DA_XOA");
         }
     }
-} 
+}

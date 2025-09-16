@@ -1,3 +1,8 @@
+/**
+ * Yêu cầu Cung cấp Vật tư - Nhân viên
+ * Xử lý các chức năng tạo và quản lý yêu cầu cung cấp vật tư
+ */
+
 let currentRequests = [];
 let currentFilter = 'all';
 let currentAction = null;

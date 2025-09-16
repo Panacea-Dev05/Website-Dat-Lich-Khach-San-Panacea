@@ -12,45 +12,68 @@
        <aside class="sidebar" id="sidebar" aria-label="Thanh điều hướng chính" th:fragment="sidebar">
               <nav>
                      <ul>
+                            <!-- QUẢN LÝ KHÁCH SẠN: Cập nhật thông tin khách sạn, địa chỉ, liên hệ -->
                             <li><a th:href="@{/admin/hotels}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/hotels') ? 'active' : ''}">
                                           <span class="material-icons">business</span> Quản lý khách sạn</a></li>
 
+                            <!-- QUẢN LÝ PHÒNG: Thêm/sửa/xóa phòng, cập nhật trạng thái phòng, giá phòng -->
                             <li><a th:href="@{/admin/rooms}" data-section="rooms"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/rooms') ? 'active' : ''}"> 
                                           <span class="material-icons">meeting_room</span> Quản lý phòng</a>
                             </li>
+                            
+                            <!-- QUẢN LÝ TẦNG: Thêm/sửa/xóa tầng, sắp xếp phòng theo tầng -->
                             <li><a th:href="@{/admin/floors}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/floors') ? 'active' : ''}">
                                           <span class="material-icons">layers</span> Quản lý tầng</a></li>
+                            
+                            <!-- QUẢN LÝ DỊCH VỤ: Spa, massage, ăn uống, giá dịch vụ -->
                             <li><a th:href="@{/admin/services}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/services') ? 'active' : ''}">
                                           <span class="material-icons">room_service</span> Quản lý dịch vụ</a></li>
 
+                            <!-- QUẢN LÝ ĐẶT PHÒNG: Xem tất cả booking, xác nhận/hủy đặt phòng -->
                             <li><a th:href="@{/admin/bookings}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/bookings') ? 'active' : ''}">
                                           <span class="material-icons">book_online</span> Quản lý đặt phòng</a></li>
+                            
+                            <!-- QUẢN LÝ KHÁCH HÀNG: Danh sách khách hàng, lịch sử đặt phòng -->
                             <li><a th:href="@{/admin/customers}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/customers') ? 'active' : ''}">
                                           <span class="material-icons">people</span> Quản lý khách hàng</a></li>
+                            
+                            <!-- QUẢN LÝ THANH TOÁN: Xử lý thanh toán, hóa đơn, refund -->
                             <li><a th:href="@{/admin/payments}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/payments') ? 'active' : ''}">
                                           <span class="material-icons">payment</span> Quản lý thanh toán</a></li>
+                            
+                            <!-- QUẢN LÝ KHUYẾN MÃI: Tạo mã giảm giá, thiết lập điều kiện áp dụng -->
                             <li><a th:href="@{/admin/promotions}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/promotions') ? 'active' : ''}">
                                           <span class="material-icons">local_offer</span> Quản lý khuyến mãi</a></li>
+                            
+                            <!-- QUẢN LÝ ĐÁNH GIÁ: Xem đánh giá khách hàng, phản hồi review -->
                             <li><a th:href="@{/admin/reviews}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/reviews') ? 'active' : ''}">
                                           <span class="material-icons">rate_review</span> Quản lý đánh giá</a></li>
+                            
+                            <!-- QUẢN LÝ NHÂN VIÊN: Thêm/sửa/xóa nhân viên, phân quyền -->
                             <li><a th:href="@{/admin/staff}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/staff') ? 'active' : ''}">
                                           <span class="material-icons">badge</span> Quản lý nhân viên</a></li>
+                            
+                            <!-- QUẢN LÝ KHO: Inventory management, theo dõi vật tư tiêu hao -->
                             <li><a th:href="@{/admin/inventory}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/inventory') ? 'active' : ''}">
                                           <span class="material-icons">warehouse</span> Quản lý kho</a></li>
+                            
+                            <!-- YÊU CẦU BỔ SUNG: Xử lý yêu cầu bổ sung vật tư từ nhân viên -->
                             <li><a th:href="@{/admin/supply-requests}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/supply-requests') ? 'active' : ''}">
                                           <span class="material-icons">inventory</span> Quản lý yêu cầu bổ sung</a></li>
+                            
+                            <!-- BÁO CÁO & THỐNG KÊ: Doanh thu, tỷ lệ lấp đầy, hiệu suất -->
                             <li><a th:href="@{/admin/reports}"
                                           th:class="${#httpServletRequest != null and #httpServletRequest.requestURI.contains('/admin/reports') ? 'active' : ''}">
                                           <span class="material-icons">bar_chart</span> Báo cáo & Thống kê</a></li>

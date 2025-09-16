@@ -21,10 +21,12 @@ public class HomeService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    // Lấy tên nhân viên
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
 
+    // Lấy danh sách tổng quan cho dashboard
     public List<Map<String, Object>> getOverviewList() {
         List<Map<String, Object>> overviewList = new ArrayList<>();
 

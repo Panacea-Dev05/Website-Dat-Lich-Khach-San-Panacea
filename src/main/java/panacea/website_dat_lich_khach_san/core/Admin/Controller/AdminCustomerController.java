@@ -10,6 +10,7 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.CustomerDTO;
 import java.util.Arrays;
 import java.util.List;
 
+// Controller quản lý khách hàng cho Admin
 @Controller
 @RequestMapping("/admin/customers")
 public class AdminCustomerController {
@@ -17,6 +18,7 @@ public class AdminCustomerController {
     @Autowired
     private AdminCustomerService adminCustomerService;
     
+    // Hiển thị trang quản lý khách hàng
     @GetMapping
     public String customerManagement(Model model) {
         List<CustomerDTO> customers = adminCustomerService.getAllCustomers();
@@ -25,24 +27,28 @@ public class AdminCustomerController {
         return "Admin/view/QuanLyKhachHang";
     }
     
+    // Lấy thông tin khách hàng theo ID
     @GetMapping("/{id}")
     @ResponseBody
     public CustomerDTO getCustomer(@PathVariable Integer id) {
         return adminCustomerService.getCustomerById(id);
     }
     
+    // Tạo khách hàng mới
     @PostMapping
     @ResponseBody
     public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
         return adminCustomerService.createCustomer(customerDTO);
     }
     
+    // Cập nhật thông tin khách hàng
     @PutMapping("/{id}")
     @ResponseBody
     public CustomerDTO updateCustomer(@PathVariable Integer id, @RequestBody CustomerDTO customerDTO) {
         return adminCustomerService.updateCustomer(id, customerDTO);
     }
     
+    // Xóa khách hàng
     @DeleteMapping("/{id}")
     @ResponseBody
     public boolean deleteCustomer(@PathVariable Integer id) {

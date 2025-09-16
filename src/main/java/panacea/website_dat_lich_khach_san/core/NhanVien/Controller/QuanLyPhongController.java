@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// Controller quản lý phòng cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/quanlyphong")
 public class QuanLyPhongController {

@@ -1,3 +1,8 @@
+/**
+ * Quản lý Nhân viên - Admin Dashboard
+ * Xử lý các chức năng quản lý thông tin nhân viên
+ */
+
 // Khai báo các biến toàn cục để sử dụng trong các hàm
 let staffForm, staffFormOverlay, formTitle, btnAddStaff, cancelBtn, closeFormBtn, submitBtn, staffTableBody;
 

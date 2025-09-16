@@ -14,6 +14,7 @@
 
 <body>
     <div class="app" id="app">
+        <!-- HEADER: Logo khách sạn và nút toggle mobile menu -->
         <header>
             <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
                 <span class="material-icons" aria-hidden="true">hotel</span>
@@ -24,13 +25,16 @@
             </button>
         </header>
 
+        <!-- SIDEBAR: Import sidebar từ fragment AdminSlidebar -->
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
             <h1>Thông tin khách sạn</h1>
             <section class="content-section" id="contentSection">
-                <!-- Form thông tin khách sạn duy nhất -->
+                
+                <!-- FORM THÔNG TIN KHÁCH SẠN: Hiển thị và chỉnh sửa thông tin khách sạn duy nhất -->
                 <div class="hotel-info-container" th:if="${hotel}">
+                    <!-- HEADER FORM: Tiêu đề và nút chỉnh sửa -->
                     <div class="hotel-info-header">
                         <h2>Thông tin chi tiết khách sạn</h2>
                         <button type="button" class="btn btn-primary" id="btnEditHotel">
@@ -39,10 +43,14 @@
                         </button>
                     </div>
                     
+                    <!-- FORM CHÍNH: Các trường thông tin khách sạn -->
                     <form id="hotelInfoForm" class="hotel-info-form">
+                        <!-- HIDDEN ID: ID khách sạn để update -->
                         <input type="hidden" id="hotelId" th:value="${hotel.id}" />
                         
+                        <!-- HÀNG 1: Tên khách sạn và mã khách sạn -->
                         <div class="row">
+                            <!-- TÊN KHÁCH SẠN: Tên hiển thị của khách sạn -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="tenKhachSan" class="form-label">Tên khách sạn</label>
@@ -50,6 +58,7 @@
                                            th:value="${hotel.tenKhachSan}" readonly>
                                 </div>
                             </div>
+                            <!-- MÃ KHÁCH SẠN: Unique identifier cho khách sạn -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="maKhachSan" class="form-label">Mã khách sạn</label>
@@ -59,7 +68,9 @@
                             </div>
                         </div>
                         
+                        <!-- HÀNG 2: Địa chỉ, thành phố và quốc gia -->
                         <div class="row">
+                            <!-- ĐỊA CHỈ: Địa chỉ chi tiết của khách sạn -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="diaChi" class="form-label">Địa chỉ</label>
@@ -67,6 +78,7 @@
                                            th:value="${hotel.diaChi}" readonly>
                                 </div>
                             </div>
+                            <!-- THÀNH PHỐ: Thành phố nơi khách sạn tọa lạc -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="thanhPho" class="form-label">Thành phố</label>
@@ -74,6 +86,7 @@
                                            th:value="${hotel.thanhPho}" readonly>
                                 </div>
                             </div>
+                            <!-- QUỐC GIA: Quốc gia nơi khách sạn tọa lạc -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="quocGia" class="form-label">Quốc gia</label>
@@ -83,7 +96,9 @@
                             </div>
                         </div>
                         
+                        <!-- HÀNG 3: Thông tin liên hệ -->
                         <div class="row">
+                            <!-- SỐ ĐIỆN THOẠI: Hotline liên hệ khách sạn -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="soDienThoai" class="form-label">Số điện thoại</label>
@@ -91,6 +106,7 @@
                                            th:value="${hotel.soDienThoai}" readonly>
                                 </div>
                             </div>
+                            <!-- EMAIL: Email liên hệ chính thức -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="email" class="form-label">Email</label>

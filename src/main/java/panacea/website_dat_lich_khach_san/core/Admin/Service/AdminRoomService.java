@@ -26,6 +26,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
+// Service quản lý phòng và loại phòng cho Admin
 @Service
 public class AdminRoomService {
 
@@ -44,17 +45,20 @@ public class AdminRoomService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    // Lấy tất cả phòng
     public List<RoomDTO> getAllRooms() {
         return roomRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    // Lấy phòng theo ID
     public RoomDTO getRoomById(Integer id) {
         Optional<Room> room = roomRepository.findById(id);
         return room.map(this::convertToDTO).orElse(null);
     }
 
+    // Tạo phòng mới
     public RoomDTO createRoom(RoomDTO roomDTO) {
         Room room = convertToEntity(roomDTO);
         
@@ -69,6 +73,7 @@ public class AdminRoomService {
         return convertToDTO(savedRoom);
     }
 
+    // Cập nhật phòng
     public RoomDTO updateRoom(Integer id, RoomDTO roomDTO) {
         Optional<Room> existingRoom = roomRepository.findById(id);
         if (existingRoom.isPresent()) {
@@ -91,6 +96,7 @@ public class AdminRoomService {
         return null;
     }
 
+    // Xóa phòng
     public boolean deleteRoom(Integer id) {
         if (roomRepository.existsById(id)) {
             roomRepository.deleteById(id);
@@ -99,17 +105,20 @@ public class AdminRoomService {
         return false;
     }
 
+    // Lấy tất cả loại phòng
     public List<RoomTypeDTO> getAllRoomTypes() {
         return roomTypeRepository.findAll().stream()
                 .map(this::convertRoomTypeToDTO)
                 .collect(Collectors.toList());
     }
 
+    // Lấy loại phòng theo ID
     public RoomTypeDTO getRoomTypeById(Integer id) {
         Optional<RoomType> roomType = roomTypeRepository.findById(id);
         return roomType.map(this::convertRoomTypeToDTO).orElse(null);
     }
 
+    // Chuyển đổi RoomType sang DTO
     private RoomTypeDTO convertRoomTypeToDTO(RoomType roomType) {
         RoomTypeDTO dto = new RoomTypeDTO();
         dto.setId(roomType.getId());
@@ -142,6 +151,7 @@ public class AdminRoomService {
         return dto;
     }
 
+    // Chuyển đổi Room sang DTO
     private RoomDTO convertToDTO(Room room) {
         RoomDTO dto = new RoomDTO();
         dto.setId(room.getId());
@@ -178,6 +188,7 @@ public class AdminRoomService {
         return dto;
     }
 
+    // Chuyển đổi DTO sang Room
     private Room convertToEntity(RoomDTO dto) {
         Room room = new Room();
         room.setSoPhong(dto.getSoPhong());
@@ -197,6 +208,7 @@ public class AdminRoomService {
         return room;
     }
 
+    // Tạo loại phòng mới
     public RoomTypeDTO createRoomType(RoomTypeDTO dto) {
         // Lấy hotel đầu tiên (single hotel model)
         Hotel hotel = hotelRepository.findAll().stream().findFirst().orElse(null);
@@ -232,6 +244,7 @@ public class AdminRoomService {
         return convertRoomTypeToDTO(saved);
     }
 
+    // Cập nhật loại phòng
     public RoomTypeDTO updateRoomType(Integer id, RoomTypeDTO dto) {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         if (opt.isEmpty()) return null;
@@ -278,6 +291,7 @@ public class AdminRoomService {
         return convertRoomTypeToDTO(saved);
     }
 
+    // Xóa loại phòng
     public boolean deleteRoomType(Integer id) {
         Optional<RoomType> opt = roomTypeRepository.findById(id);
         if (opt.isPresent()) {
@@ -294,6 +308,7 @@ public class AdminRoomService {
         return false;
     }
 
+    // Tìm phòng trống
     public List<RoomDTO> findAvailableRooms(LocalDate ngay, int soNguoi) {
         return roomRepository.findAll().stream()
                 .filter(room -> room.getTrangThai() == Room.TrangThaiPhong.SAN_SANG)
@@ -302,6 +317,7 @@ public class AdminRoomService {
                 .collect(Collectors.toList());
     }
 
+    // Thay đổi trạng thái phòng
     public RoomDTO changeRoomStatus(Integer roomId, Room.TrangThaiPhong newStatus) {
         Optional<Room> opt = roomRepository.findById(roomId);
         if (opt.isEmpty()) return null;
@@ -311,10 +327,12 @@ public class AdminRoomService {
         return convertToDTO(saved);
     }
 
+    // Thêm hình ảnh phòng
     public RoomImages addRoomImage(RoomImages img) {
         return roomImagesRepositoty.save(img);
     }
 
+    // Xóa hình ảnh phòng
     public boolean deleteRoomImage(Integer imgId) {
         if (roomImagesRepositoty.existsById(imgId)) {
             roomImagesRepositoty.deleteById(imgId);
@@ -323,16 +341,19 @@ public class AdminRoomService {
         return false;
     }
 
+    // Lấy danh sách hình ảnh theo phòng
     public List<RoomImages> listRoomImagesByRoom(Integer roomId) {
         return roomImagesRepositoty.findAll().stream()
                 .filter(img -> img.getPhong() != null && img.getPhong().getId().equals(roomId))
                 .collect(Collectors.toList());
     }
 
+    // Thiết lập giá phòng
     public RoomPricing setRoomPricing(RoomPricing pricing) {
         return roomPricingRepositoty.save(pricing);
     }
 
+    // Cập nhật giá phòng
     public RoomPricing updateRoomPricing(Integer id, RoomPricing updated) {
         Optional<RoomPricing> opt = roomPricingRepositoty.findById(id);
         if (opt.isEmpty()) return null;
@@ -347,12 +368,14 @@ public class AdminRoomService {
         return roomPricingRepositoty.save(pricing);
     }
 
+    // Lấy danh sách giá theo loại phòng
     public List<RoomPricing> listRoomPricingByRoomType(Integer roomTypeId) {
         return roomPricingRepositoty.findAll().stream()
                 .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(roomTypeId))
                 .collect(Collectors.toList());
     }
 
+    // Lọc phòng theo điều kiện
     public List<RoomDTO> filterRooms(String keyword, Integer roomTypeId, String status, String area, String branch) {
         return roomRepository.findAll().stream()
                 .filter(room -> {
@@ -376,6 +399,7 @@ public class AdminRoomService {
                 .collect(Collectors.toList());
     }
 
+    // Lọc phòng theo điều kiện có phân trang
     public Page<RoomDTO> filterRoomsPaged(String keyword, Integer roomTypeId, String status, String area, String branch, Pageable pageable) {
         List<RoomDTO> allRooms = filterRooms(keyword, roomTypeId, status, area, branch);
 
@@ -390,6 +414,7 @@ public class AdminRoomService {
         return new PageImpl<>(pageContent, pageable, allRooms.size());
     }
 
+    // Lọc loại phòng theo từ khóa
     public List<RoomTypeDTO> filterRoomTypes(String keyword, String branch, String status) {
         return roomTypeRepository.findAll().stream()
                 .filter(type -> {

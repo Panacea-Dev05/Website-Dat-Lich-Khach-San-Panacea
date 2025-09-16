@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+// Controller quản lý yêu cầu cung cấp vật tư cho Admin
 @Controller
 @RequestMapping("/admin/supply-requests")
 @PreAuthorize("hasRole('ADMIN')")

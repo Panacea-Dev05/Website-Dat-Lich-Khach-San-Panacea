@@ -40,6 +40,27 @@
             </div>
         </div>
 
+        <!-- Thông báo vật phẩm sắp hết hàng -->
+        <div id="lowStockNotification" class="notification-container" style="display: none;">
+            <div class="notification warning">
+                <div class="notification-header">
+                    <span class="material-icons">warning</span>
+                    <h3>Cảnh báo: Vật phẩm sắp hết hàng</h3>
+                    <button class="close-btn" onclick="closeLowStockNotification()">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="notification-content">
+                    <p id="lowStockMessage">Có vật phẩm sắp hết hàng (tồn kho dưới 15)</p>
+                    <div id="lowStockList" class="low-stock-list"></div>
+                    <div class="notification-actions">
+                        <button class="btn primary" onclick="viewLowStockDetails()">Xem chi tiết</button>
+                        <button class="btn secondary" onclick="refreshLowStockCheck()">Kiểm tra lại</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="section">
             <h2><span class="material-icons">inventory</span> Quản lý vật phẩm</h2>
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
@@ -423,6 +444,83 @@ window.closeUpdateItemModal = window.closeUpdateItemModal || function() {
     document.getElementById('updateItemModal').style.display = 'none';
     document.body.style.overflow = 'auto';
 };
+
+// Thông báo vật phẩm sắp hết hàng
+let lowStockItems = [];
+
+// Kiểm tra vật phẩm sắp hết hàng khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    checkLowStockItems();
+});
+
+// Hàm kiểm tra vật phẩm sắp hết hàng
+function checkLowStockItems() {
+    fetch('/admin/inventory/low-stock')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.count > 0) {
+                lowStockItems = data.items;
+                showLowStockNotification(data.message, data.items);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi kiểm tra vật phẩm sắp hết hàng:', error);
+        });
+}
+
+// Hiển thị thông báo vật phẩm sắp hết hàng
+function showLowStockNotification(message, items) {
+    const notification = document.getElementById('lowStockNotification');
+    const messageElement = document.getElementById('lowStockMessage');
+    const listElement = document.getElementById('lowStockList');
+    
+    messageElement.textContent = message;
+    
+    // Tạo danh sách vật phẩm sắp hết hàng
+    let listHtml = '<ul>';
+    items.forEach(item => {
+        listHtml += `<li><strong>${item.tenVatPham}</strong> - Tồn kho: ${item.soLuongTon} ${item.donViTinh || ''}</li>`;
+    });
+    listHtml += '</ul>';
+    listElement.innerHTML = listHtml;
+    
+    notification.style.display = 'block';
+}
+
+// Đóng thông báo
+function closeLowStockNotification() {
+    document.getElementById('lowStockNotification').style.display = 'none';
+}
+
+// Xem chi tiết vật phẩm sắp hết hàng
+function viewLowStockDetails() {
+    if (lowStockItems.length > 0) {
+        // Scroll đến bảng vật phẩm và highlight các item sắp hết hàng
+        const itemsTable = document.getElementById('itemsTable');
+        if (itemsTable) {
+            itemsTable.scrollIntoView({ behavior: 'smooth' });
+            
+            // Highlight các dòng vật phẩm sắp hết hàng
+            setTimeout(() => {
+                const rows = itemsTable.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const itemName = row.cells[1]?.textContent;
+                    const isLowStock = lowStockItems.some(item => item.tenVatPham === itemName);
+                    if (isLowStock) {
+                        row.style.backgroundColor = '#fef3c7';
+                        row.style.border = '2px solid #f59e0b';
+                    }
+                });
+            }, 500);
+        }
+    }
+    closeLowStockNotification();
+}
+
+// Kiểm tra lại vật phẩm sắp hết hàng
+function refreshLowStockCheck() {
+    checkLowStockItems();
+}
 </script>
 <script th:src="@{/js/Admin/quanlykho.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
 </body>

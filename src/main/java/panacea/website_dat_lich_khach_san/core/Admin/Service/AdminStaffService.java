@@ -21,12 +21,14 @@ public class AdminStaffService {
     @Autowired
     private RolePermissionRepository rolePermissionRepository;
     
+    // Lấy danh sách tất cả nhân viên
     public List<StaffDTO> getAllStaff() {
         return staffRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
+    // Lấy thông tin nhân viên theo ID
     public StaffDTO getStaffById(Integer id) {
         if (id == null) {
             return null;
@@ -35,6 +37,7 @@ public class AdminStaffService {
         return staff.map(this::convertToDTO).orElse(null);
     }
     
+    // Tạo nhân viên mới
     public StaffDTO createStaff(StaffDTO staffDTO) {
         // Validate bắt buộc
         if (staffDTO == null) {
@@ -73,6 +76,7 @@ public class AdminStaffService {
         return convertToDTO(savedStaff);
     }
     
+    // Cập nhật thông tin nhân viên
     public StaffDTO updateStaff(Integer id, StaffDTO staffDTO) {
         Optional<Staff> existingStaff = staffRepository.findById(id);
         if (existingStaff.isPresent()) {
@@ -115,6 +119,7 @@ public class AdminStaffService {
         return null;
     }
     
+    // Xóa nhân viên
     public boolean deleteStaff(Integer id) {
         if (staffRepository.existsById(id)) {
             staffRepository.deleteById(id);
@@ -123,12 +128,14 @@ public class AdminStaffService {
         return false;
     }
     
+    // Lấy danh sách nhân viên theo khách sạn
     public List<StaffDTO> getStaffByHotel(Integer hotelId) {
         return staffRepository.findAll().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
     
+    // Phân quyền cho nhân viên
     public RolePermission assignPermission(Integer staffId, String vaiTro, Integer quyenId) {
         RolePermission rp = new RolePermission();
         rp.setVaiTro(vaiTro);
@@ -137,6 +144,7 @@ public class AdminStaffService {
         return rolePermissionRepository.save(rp);
     }
     
+    // Vô hiệu hóa nhân viên
     public StaffDTO deactivateStaff(Integer id) {
         Optional<Staff> opt = staffRepository.findById(id);
         if (opt.isEmpty()) return null;
@@ -146,6 +154,7 @@ public class AdminStaffService {
         return convertToDTO(saved);
     }
     
+    // Chuyển đổi entity thành DTO
     private StaffDTO convertToDTO(Staff staff) {
         StaffDTO dto = new StaffDTO();
         dto.setId(staff.getId());
@@ -164,6 +173,7 @@ public class AdminStaffService {
         return dto;
     }
     
+    // Chuyển đổi DTO thành entity
     private Staff convertToEntity(StaffDTO dto) {
         Staff staff = new Staff();
         staff.setMaNhanVien(dto.getMaNhanVien());

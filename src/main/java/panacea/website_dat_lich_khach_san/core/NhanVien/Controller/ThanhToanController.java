@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+// Controller thanh toán cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/thanhtoan")
 @CrossOrigin(origins = "*")
@@ -29,6 +30,7 @@ public class ThanhToanController {
         this.thanhToanService = thanhToanService;
     }
     
+    // Hiển thị trang thanh toán
     @GetMapping("")
     public String view(Model model) {
         try {

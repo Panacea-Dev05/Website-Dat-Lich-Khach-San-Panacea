@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+// Controller cài đặt hệ thống cho Admin
 @Controller
 @RequestMapping("/admin/system")
 public class AdminSystemController {

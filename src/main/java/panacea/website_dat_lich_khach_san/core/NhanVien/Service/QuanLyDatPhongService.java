@@ -43,9 +43,21 @@ import panacea.website_dat_lich_khach_san.repository.InventoryManagementReposito
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 
+/**
+ * Service class quản lý đặt phòng cho Nhân viên
+ * Chức năng chính:
+ * - Quản lý booking: tạo, xác nhận, hủy, check-in, check-out
+ * - Gửi email thông báo cho khách hàng
+ * - Quản lý phòng và phân bổ phòng tự động
+ * - Quản lý dịch vụ và inventory
+ * - Tự động hủy booking chưa thanh toán
+ * - Lọc và tìm kiếm booking với phân trang
+ */
 @Service
 public class QuanLyDatPhongService {
     private static final Logger logger = LoggerFactory.getLogger(QuanLyDatPhongService.class);
+    
+    // Repository dependencies - Các repository để truy cập dữ liệu
     @Autowired
     private BookingRepository bookingRepository;
     
@@ -82,18 +94,36 @@ public class QuanLyDatPhongService {
     @Autowired
     private InventoryManagementRepository inventoryManagementRepository;
 
+    /**
+     * Lấy tên nhân viên hiện tại (hardcoded)
+     * @return String - Tên nhân viên
+     */
     public String getStaffName() {
         return "Nguyễn Văn A";
     }
 
+    /**
+     * Lấy danh sách tất cả booking
+     * @return List<Booking> - Danh sách booking
+     */
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
     
+    /**
+     * Lấy thông tin booking theo ID
+     * @param id - ID của booking
+     * @return Optional<Booking> - Thông tin booking
+     */
     public Optional<Booking> getBookingById(Integer id) {
         return bookingRepository.findById(id);
     }
     
+    /**
+     * Xác nhận booking - chuyển trạng thái và gửi email xác nhận
+     * @param bookingId - ID của booking cần xác nhận
+     * @return boolean - true nếu xác nhận thành công
+     */
     public boolean confirmBooking(Integer bookingId) {
         Optional<Booking> bookingOpt = bookingRepository.findById(bookingId);
         if (bookingOpt.isPresent()) {
@@ -1052,6 +1082,8 @@ public class QuanLyDatPhongService {
                 }
                 return match;
             })
+            // Sắp xếp theo ID giảm dần (booking mới nhất trước)
+            .sorted((b1, b2) -> Integer.compare(b2.getId(), b1.getId()))
             .collect(Collectors.toList());
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), filtered.size());
@@ -1075,6 +1107,8 @@ public class QuanLyDatPhongService {
                 }
                 return match;
             })
+            // Sắp xếp theo mã đặt phòng mới nhất ở đầu (theo ID giảm dần)
+            .sorted((b1, b2) -> Integer.compare(b2.getId(), b1.getId()))
             .collect(Collectors.toList());
         
         java.util.List<BookingDetailViewDTO> dtoList = filtered.stream()
@@ -1249,6 +1283,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm dịch vụ nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             // Xóa toàn bộ ServiceDetail cũ
             var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
             serviceDetailRepository.deleteAll(oldDetails);
@@ -1304,6 +1350,7 @@ public class QuanLyDatPhongService {
                     itemMap.put("tenVatPham", item.getTenVatPham());
                     itemMap.put("soLuongTon", item.getSoLuongTon());
                     itemMap.put("giaBan", item.getGiaBan());
+                    itemMap.put("giaNhap", item.getGiaNhap()); // Thêm giá nhập để tính giá bán động
                     itemMap.put("donViTinh", item.getDonViTinh());
                     return itemMap;
                 })
@@ -1319,6 +1366,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm dịch vụ nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm dịch vụ cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             
             // Xóa toàn bộ ServiceDetail cũ
             var oldDetails = serviceDetailRepository.findByDatPhongId(booking.getId());
@@ -1407,6 +1466,18 @@ public class QuanLyDatPhongService {
             var bookingOpt = bookingRepository.findById(bookingId);
             if (bookingOpt.isEmpty()) return false;
             var booking = bookingOpt.get();
+            
+            // Kiểm tra trạng thái thanh toán - không cho phép thêm vật phẩm nếu đã thanh toán đủ
+            if (booking.getTrangThaiThanhToan() == Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
+                logger.warn("Không thể thêm vật phẩm cho booking {} - đã thanh toán đủ", booking.getMaDatPhong());
+                return false;
+            }
+            
+            // Kiểm tra booking đã bị hủy
+            if (booking.getTrangThaiDatPhong() == Booking.TrangThaiDatPhong.DA_HUY) {
+                logger.warn("Không thể thêm vật phẩm cho booking {} - đã bị hủy", booking.getMaDatPhong());
+                return false;
+            }
             
             java.math.BigDecimal tongTienVatPham = java.math.BigDecimal.ZERO;
             

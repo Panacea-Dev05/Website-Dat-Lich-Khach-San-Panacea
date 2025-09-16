@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// Controller quản lý yêu cầu cung cấp vật tư cho nhân viên
 @Controller
 @RequestMapping("/nhanvien/supply-request")
 public class SupplyRequestController {

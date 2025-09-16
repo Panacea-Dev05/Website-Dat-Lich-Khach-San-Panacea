@@ -17,6 +17,7 @@ import panacea.website_dat_lich_khach_san.dto.FloorDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.service.AdminFloorService;
 
+// Controller quản lý tầng cho Admin
 @Controller
 @RequestMapping("/admin/floors")
 public class AdminFloorController {

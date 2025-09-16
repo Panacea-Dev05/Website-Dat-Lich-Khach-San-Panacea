@@ -11,6 +11,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+// Controller báo cáo và thống kê cho Admin
 @Controller
 @RequestMapping("/admin/reports")
 public class AdminReportController {

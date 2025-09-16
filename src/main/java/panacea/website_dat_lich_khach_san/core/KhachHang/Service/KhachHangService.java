@@ -1,6 +1,18 @@
 package panacea.website_dat_lich_khach_san.core.KhachHang.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,39 +27,44 @@ import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
-
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
-import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import java.util.ArrayList;
 import java.util.List;
 
-import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
-import panacea.website_dat_lich_khach_san.entity.RoomPricing;
-
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.time.LocalDateTime;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.io.ByteArrayOutputStream;
-import org.springframework.core.io.ByteArrayResource;
-import java.math.BigDecimal;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamSource;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Optional;
+import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.Customer;
+import panacea.website_dat_lich_khach_san.entity.Hotel;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
+import panacea.website_dat_lich_khach_san.repository.BookingRepository;
+import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
+import panacea.website_dat_lich_khach_san.repository.RoomRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
+/**
+ * Service xử lý các chức năng dành cho khách hàng
+ * Chức năng chính:
+ * - Đặt phòng đơn lẻ và combo nhiều loại phòng
+ * - Quản lý thông tin khách hàng
+ * - Gửi email xác nhận và QR code thanh toán
+ * - Lấy thông tin phòng và giá cả
+ */
 @Service
 public class KhachHangService {
     @Autowired
@@ -68,8 +85,11 @@ public class KhachHangService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
-
-
+    /**
+     * ĐẶT PHÒNG CHO KHÁCH HÀNG: Xử lý đặt phòng đơn lẻ hoặc combo nhiều loại phòng
+     * @param dto - Thông tin đặt phòng từ khách hàng
+     * @return boolean - true nếu đặt phòng thành công, false nếu thất bại
+     */
     public boolean datPhongChoKhachHang(BookingRequestDTO dto) {
         try {
             // Kiểm tra loại booking: single room hoặc multiple room types
@@ -284,6 +304,10 @@ public class KhachHangService {
         }
     }
 
+    /**
+     * LẤY TẤT CẢ LOẠI PHÒNG CHO KHÁCH HÀNG: Lấy danh sách loại phòng với giá và hình ảnh
+     * @return List<RoomTypeDTO> - Danh sách loại phòng với thông tin đầy đủ
+     */
     public List<RoomTypeDTO> getAllRoomTypesForCustomer() {
         List<panacea.website_dat_lich_khach_san.entity.RoomType> roomTypes = roomTypeRepository.findAll();
         List<RoomTypeDTO> result = new ArrayList<>();
@@ -312,6 +336,11 @@ public class KhachHangService {
         return result;
     }
 
+    /**
+     * LẤY LOẠI PHÒNG THEO ID: Lấy thông tin chi tiết loại phòng theo ID
+     * @param id - ID loại phòng
+     * @return RoomTypeDTO - Thông tin loại phòng hoặc null nếu không tìm thấy
+     */
     public RoomTypeDTO getRoomTypeDTOById(Integer id) {
         System.out.println("[DEBUG] ===== getRoomTypeDTOById called with ID: " + id + " =====");
         System.out.println("[DEBUG] Service method is being called!");
@@ -364,7 +393,46 @@ public class KhachHangService {
             System.out.println("[DEBUG] Created fallback pricing: giaGio=1200, giaNgay=14000, giaQuaDem=15000");
         }
         
+        // Lấy pricing đầu tiên từ danh sách
+        RoomPricing pricing = pricings.isEmpty() ? null : pricings.get(0);
+        
+        // Debug log pricing
+        System.out.println("[DEBUG] RoomPricing found: " + (pricing != null ? "YES" : "NO"));
+        if (pricing != null) {
+            System.out.println("[DEBUG] Pricing details: giaNgay=" + pricing.getGiaNgay() + ", giaGio=" + pricing.getGiaGio() + ", giaQuaDem=" + pricing.getGiaQuaDem());
+        }
+        
+        // Nếu không tìm thấy pricing, thử lấy pricing đầu tiên từ tất cả
+        if (pricing == null) {
+            List<RoomPricing> allPricings = roomPricingRepositoty.findAll().stream()
+                .filter(p -> p.getRoomType() != null && p.getRoomType().getId().equals(rt.getId()))
+                .collect(java.util.stream.Collectors.toList());
+            System.out.println("[DEBUG] All pricings for room type " + rt.getId() + ": " + allPricings.size());
+            if (!allPricings.isEmpty()) {
+                pricing = allPricings.get(0);
+                pricings = List.of(pricing);
+                System.out.println("[DEBUG] Using first available pricing: giaNgay=" + pricing.getGiaNgay() + ", giaGio=" + pricing.getGiaGio() + ", giaQuaDem=" + pricing.getGiaQuaDem());
+            }
+        }
+        
         RoomTypeDTO dto = RoomTypeDTO.fromEntityWithPricing(rt, pricings);
+        
+        // Nếu không có giá, sử dụng giá mặc định
+        if (dto.getGiaNgay() == null || dto.getGiaNgay().compareTo(java.math.BigDecimal.ZERO) == 0) {
+            dto.setGiaNgay(new java.math.BigDecimal("1500000")); // 1.5 triệu VNĐ
+            System.out.println("[DEBUG] Sử dụng giá mặc định cho giaNgay: 1,500,000");
+        }
+        if (dto.getGiaGio() == null || dto.getGiaGio().compareTo(java.math.BigDecimal.ZERO) == 0) {
+            dto.setGiaGio(new java.math.BigDecimal("200000")); // 200k VNĐ
+            System.out.println("[DEBUG] Sử dụng giá mặc định cho giaGio: 200,000");
+        }
+        if (dto.getGiaQuaDem() == null || dto.getGiaQuaDem().compareTo(java.math.BigDecimal.ZERO) == 0) {
+            dto.setGiaQuaDem(new java.math.BigDecimal("800000")); // 800k VNĐ
+            System.out.println("[DEBUG] Sử dụng giá mặc định cho giaQuaDem: 800,000");
+        }
+        
+        // Debug log cuối cùng
+        System.out.println("[DEBUG] Giá cuối cùng sau khi xử lý: giaNgay=" + dto.getGiaNgay() + ", giaGio=" + dto.getGiaGio() + ", giaQuaDem=" + dto.getGiaQuaDem());
         
         // Debug log sau khi convert
         System.out.println("[DEBUG] Single DTO DienTich: " + dto.getDienTich());
@@ -381,6 +449,13 @@ public class KhachHangService {
         return dto;
     }
 
+    /**
+     * GỬI EMAIL: Gửi email HTML đến khách hàng
+     * @param to - Email người nhận
+     * @param subject - Tiêu đề email
+     * @param text - Nội dung HTML
+     * @throws MessagingException - Lỗi gửi email
+     */
     private void sendMail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -390,7 +465,13 @@ public class KhachHangService {
         mailSender.send(message);
     }
 
-    // Hàm sinh QR code từ chuỗi (dùng ZXing)
+    /**
+     * SINH QR CODE: Tạo mã QR từ chuỗi text (dùng ZXing)
+     * @param text - Nội dung cần tạo QR
+     * @param width - Chiều rộng QR code
+     * @param height - Chiều cao QR code
+     * @return byte[] - Dữ liệu ảnh PNG hoặc null nếu lỗi
+     */
     private byte[] generateQRCodeImage(String text, int width, int height) {
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -406,7 +487,14 @@ public class KhachHangService {
         }
     }
 
-    // Gửi mail kèm QR code (ảnh inline từ file)
+    /**
+     * GỬI EMAIL KÈM QR CODE: Gửi email HTML kèm ảnh QR code inline
+     * @param to - Email người nhận
+     * @param subject - Tiêu đề email
+     * @param html - Nội dung HTML
+     * @param qrImage - Ảnh QR code để đính kèm
+     * @throws MessagingException - Lỗi gửi email
+     */
     private void sendMailWithQRFile(String to, String subject, String html, InputStreamSource qrImage) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -447,6 +535,11 @@ public class KhachHangService {
                 .orElse(null);
     }
 
+    /**
+     * LẤY BOOKING THEO EMAIL: Lấy danh sách đặt phòng của khách hàng theo email
+     * @param email - Email khách hàng
+     * @return List<Booking> - Danh sách booking của khách hàng
+     */
     public List<Booking> getBookingsByEmail(String email) {
         Optional<Customer> customer = customerRepository.findByEmail(email);
         if (customer.isPresent()) {
@@ -620,6 +713,54 @@ public class KhachHangService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * Thêm dữ liệu giá phòng mẫu để test
+     */
+    public boolean addSamplePricingData() {
+        try {
+            // Kiểm tra xem đã có dữ liệu chưa
+            List<RoomPricing> existingPricings = roomPricingRepositoty.findAll();
+            if (!existingPricings.isEmpty()) {
+                System.out.println("[DEBUG] Đã có " + existingPricings.size() + " bản ghi pricing trong database");
+                return true;
+            }
+
+            // Lấy danh sách room types
+            List<RoomType> roomTypes = roomTypeRepository.findAll();
+            if (roomTypes.isEmpty()) {
+                System.out.println("[DEBUG] Không có room types nào trong database");
+                return false;
+            }
+
+            System.out.println("[DEBUG] Tìm thấy " + roomTypes.size() + " room types");
+
+            // Thêm pricing cho mỗi room type
+            for (RoomType roomType : roomTypes) {
+                RoomPricing pricing = new RoomPricing();
+                pricing.setRoomType(roomType);
+                pricing.setLoaiGia(RoomPricing.LoaiGia.BASE);
+                pricing.setGiaTri(new BigDecimal("1500000")); // 1.5 triệu
+                pricing.setGiaNgay(new BigDecimal("1500000")); // 1.5 triệu
+                pricing.setGiaGio(new BigDecimal("200000")); // 200k
+                pricing.setGiaQuaDem(new BigDecimal("800000")); // 800k
+                pricing.setNgayBatDau(java.time.LocalDate.of(2024, 1, 1));
+                pricing.setNgayKetThuc(java.time.LocalDate.of(2025, 12, 31));
+                pricing.setApDungCho("All");
+                pricing.setHeSoDieuChinh(BigDecimal.ONE);
+                pricing.setTrangThai("Hoạt động");
+                
+                roomPricingRepositoty.save(pricing);
+                System.out.println("[DEBUG] Đã thêm pricing cho room type: " + roomType.getTenLoaiPhong());
+            }
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Lỗi khi thêm dữ liệu pricing: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 }
