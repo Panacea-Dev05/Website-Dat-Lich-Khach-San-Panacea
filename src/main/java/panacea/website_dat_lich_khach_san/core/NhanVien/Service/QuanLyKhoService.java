@@ -5,15 +5,16 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
+import panacea.website_dat_lich_khach_san.entity.RoomUsage;
 import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
 import panacea.website_dat_lich_khach_san.repository.InventoryTransactionRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomUsageRepository;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.TrangThaiDuyet;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,8 @@ public class QuanLyKhoService {
     private InventoryTransactionRepository inventoryTransactionRepository;
     @Autowired
     private HotelRepository hotelRepository;
+    @Autowired
+    private RoomUsageRepository roomUsageRepository;
 
     // Lấy tên nhân viên
     public String getStaffName() {
@@ -552,5 +555,203 @@ public class QuanLyKhoService {
      */
     public int getLowStockItemsCount() {
         return getLowStockItems().size();
+    }
+    
+    // ==================== QUẢN LÝ LỊCH SỬ SỬ DỤNG PHÒNG ====================
+    
+    /**
+     * Lấy danh sách lịch sử sử dụng đồ của phòng
+     * @param soPhong Số phòng
+     * @return List<RoomUsage> danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> getRoomUsageHistory(String soPhong) {
+        try {
+            return roomUsageRepository.findBySoPhongOrderByNgaySuDungDesc(soPhong);
+        } catch (Exception e) {
+            System.err.println("Error loading room usage history: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Lấy tất cả lịch sử sử dụng đồ của phòng
+     * @return List<RoomUsage> danh sách tất cả lịch sử sử dụng
+     */
+    public List<RoomUsage> getAllRoomUsageHistory() {
+        try {
+            return roomUsageRepository.findRecentUsage();
+        } catch (Exception e) {
+            System.err.println("Error loading all room usage history: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Lấy lịch sử sử dụng theo khoảng thời gian
+     * @param startDate Ngày bắt đầu
+     * @param endDate Ngày kết thúc
+     * @return List<RoomUsage> danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> getRoomUsageHistoryByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            return roomUsageRepository.findByNgaySuDungBetweenOrderByNgaySuDungDesc(startDate, endDate);
+        } catch (Exception e) {
+            System.err.println("Error loading room usage history by date range: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Lấy lịch sử sử dụng theo phòng và khoảng thời gian
+     * @param soPhong Số phòng
+     * @param startDate Ngày bắt đầu
+     * @param endDate Ngày kết thúc
+     * @return List<RoomUsage> danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> getRoomUsageHistoryByRoomAndDateRange(String soPhong, LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            return roomUsageRepository.findBySoPhongAndNgaySuDungBetweenOrderByNgaySuDungDesc(soPhong, startDate, endDate);
+        } catch (Exception e) {
+            System.err.println("Error loading room usage history by room and date range: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Ghi nhận sử dụng đồ của phòng
+     * @param roomUsage Thông tin sử dụng
+     * @return RoomUsage thông tin đã lưu
+     */
+    public RoomUsage recordRoomUsage(RoomUsage roomUsage) {
+        try {
+            validateRoomUsage(roomUsage);
+            
+            // Set thông tin nhân viên ghi nhận nếu chưa có
+            if (roomUsage.getNhanVienGhiNhan() == null || roomUsage.getNhanVienGhiNhan().trim().isEmpty()) {
+                roomUsage.setNhanVienGhiNhan("Nhân viên hệ thống");
+            }
+            
+            return roomUsageRepository.save(roomUsage);
+        } catch (Exception e) {
+            System.err.println("Error recording room usage: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi ghi nhận sử dụng đồ của phòng: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Validate thông tin sử dụng đồ của phòng
+     * @param roomUsage Thông tin sử dụng
+     */
+    private void validateRoomUsage(RoomUsage roomUsage) {
+        if (roomUsage.getSoPhong() == null || roomUsage.getSoPhong().trim().isEmpty()) {
+            throw new ValidationException("Số phòng không được để trống");
+        }
+        if (roomUsage.getTenVatPham() == null || roomUsage.getTenVatPham().trim().isEmpty()) {
+            throw new ValidationException("Tên vật phẩm không được để trống");
+        }
+        if (roomUsage.getSoLuongSuDung() == null || roomUsage.getSoLuongSuDung() <= 0) {
+            throw new ValidationException("Số lượng sử dụng phải lớn hơn 0");
+        }
+    }
+    
+    /**
+     * Lấy thống kê sử dụng theo phòng
+     * @param soPhong Số phòng
+     * @return List<Object[]> thống kê sử dụng
+     */
+    public List<Object[]> getRoomUsageStatistics(String soPhong) {
+        try {
+            return roomUsageRepository.getUsageStatisticsByRoom(soPhong);
+        } catch (Exception e) {
+            System.err.println("Error loading room usage statistics: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Lấy thống kê sử dụng theo loại vật phẩm
+     * @return List<Object[]> thống kê sử dụng
+     */
+    public List<Object[]> getUsageStatisticsByType() {
+        try {
+            return roomUsageRepository.getUsageStatisticsByType();
+        } catch (Exception e) {
+            System.err.println("Error loading usage statistics by type: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Tìm kiếm lịch sử sử dụng theo tên vật phẩm
+     * @param tenVatPham Tên vật phẩm
+     * @return List<RoomUsage> danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> searchRoomUsageByItemName(String tenVatPham) {
+        try {
+            return roomUsageRepository.findByTenVatPhamContainingOrderByNgaySuDungDesc(tenVatPham);
+        } catch (Exception e) {
+            System.err.println("Error searching room usage by item name: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Tìm kiếm lịch sử sử dụng theo nhiều tiêu chí
+     * @param tenVatPham Tên vật phẩm
+     * @param soPhong Số phòng
+     * @param maDatPhong Mã đặt phòng
+     * @param tenKhachHang Tên khách hàng
+     * @return Danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> searchRoomUsage(String tenVatPham, String soPhong, String maDatPhong, String tenKhachHang) {
+        try {
+            List<RoomUsage> allUsage = roomUsageRepository.findAll();
+            
+            return allUsage.stream()
+                    .filter(usage -> {
+                        boolean matchItem = tenVatPham == null || tenVatPham.trim().isEmpty() ||
+                                (usage.getTenVatPham() != null && usage.getTenVatPham().toLowerCase().contains(tenVatPham.toLowerCase()));
+                        
+                        boolean matchRoom = soPhong == null || soPhong.trim().isEmpty() ||
+                                (usage.getSoPhong() != null && usage.getSoPhong().equals(soPhong));
+                        
+                        boolean matchBooking = maDatPhong == null || maDatPhong.trim().isEmpty() ||
+                                (usage.getMaDatPhong() != null && usage.getMaDatPhong().toLowerCase().contains(maDatPhong.toLowerCase()));
+                        
+                        boolean matchCustomer = tenKhachHang == null || tenKhachHang.trim().isEmpty() ||
+                                (usage.getTenKhachHang() != null && usage.getTenKhachHang().toLowerCase().contains(tenKhachHang.toLowerCase()));
+                        
+                        return matchItem && matchRoom && matchBooking && matchCustomer;
+                    })
+                    .sorted((a, b) -> b.getNgaySuDung().compareTo(a.getNgaySuDung()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error searching room usage: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Lấy lịch sử sử dụng theo loại vật phẩm
+     * @param loaiSuDung Loại sử dụng
+     * @return List<RoomUsage> danh sách lịch sử sử dụng
+     */
+    public List<RoomUsage> getRoomUsageByType(String loaiSuDung) {
+        try {
+            return roomUsageRepository.findByLoaiSuDungOrderByNgaySuDungDesc(loaiSuDung);
+        } catch (Exception e) {
+            System.err.println("Error loading room usage by type: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

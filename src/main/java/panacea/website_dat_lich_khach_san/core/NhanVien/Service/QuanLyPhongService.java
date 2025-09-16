@@ -47,6 +47,46 @@ public class QuanLyPhongService {
     public String getStaffName() {
         return "Nhân viên quản lý phòng";
     }
+    
+    // Thay đổi trạng thái phòng - CHỈ CHỨC NĂNG NÀY ĐƯỢC PHÉP CHO NHÂN VIÊN
+    public boolean changeRoomStatus(Integer roomId, String newStatus, String ghiChu) {
+        try {
+            Optional<Room> roomOpt = roomRepository.findById(roomId);
+            if (roomOpt.isEmpty()) {
+                return false;
+            }
+            
+            Room room = roomOpt.get();
+            Room.TrangThaiPhong oldStatus = room.getTrangThai();
+            
+            // Chuyển đổi String thành enum
+            Room.TrangThaiPhong newStatusEnum;
+            try {
+                newStatusEnum = Room.TrangThaiPhong.valueOf(newStatus);
+            } catch (IllegalArgumentException e) {
+                System.err.println("Trạng thái không hợp lệ: " + newStatus);
+                return false;
+            }
+            
+            room.setTrangThai(newStatusEnum);
+            
+            // Có thể thêm ghi chú vào một field khác nếu cần
+            // room.setGhiChu(ghiChu);
+            
+            roomRepository.save(room);
+            
+            // Log thay đổi trạng thái
+            System.out.println("Phòng " + room.getSoPhong() + " đã thay đổi trạng thái từ " + oldStatus + " sang " + newStatusEnum);
+            if (ghiChu != null && !ghiChu.trim().isEmpty()) {
+                System.out.println("Ghi chú: " + ghiChu);
+            }
+            
+            return true;
+        } catch (Exception e) {
+            System.err.println("Lỗi khi thay đổi trạng thái phòng: " + e.getMessage());
+            return false;
+        }
+    }
 
     // Lấy danh sách tất cả phòng
     public List<Room> getAllRooms() {

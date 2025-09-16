@@ -33,6 +33,13 @@ public class PaymentDTO {
     private Long createdDate;
     private String customerName;
     
+    // Thêm các field còn thiếu
+    private String noiDung;
+    private String maGiaoDich;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime ngayTao;
+    
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 

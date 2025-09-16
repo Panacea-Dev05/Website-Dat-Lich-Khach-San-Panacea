@@ -13,318 +13,370 @@
 </head>
 
 <body>
-<div class="app" id="app">
-    <header>
-        <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
-            <span class="material-icons" aria-hidden="true">hotel</span>
-            <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
-        </div>
-    </header>
-
-    <div th:replace="~{NhanVien/sidebar :: sidebar}"></div>
-
-    <main role="main" tabindex="0">
-        <h1>Quản lý kho</h1>
-        <div th:if="${error}" class="error-message">
-            <span class="material-icons">error</span>
-            <span th:text="${error}"></span>
-        </div>
-
-
-
-        <div class="form-container">
-            <div class="card-header">
-                <h2 class="card-title"><span class="material-icons">compare_arrows</span> Giao dịch kho</h2>
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
             </div>
-            <form id="transactionForm">
-                <div class="form-row">
+        </header>
+
+        <div th:replace="~{NhanVien/sidebar :: sidebar}"></div>
+
+        <main role="main" tabindex="0">
+            <h1>Quản lý kho</h1>
+            <div th:if="${error}" class="error-message">
+                <span class="material-icons">error</span>
+                <span th:text="${error}"></span>
+            </div>
+
+
+
+            <div class="form-container">
+                <div class="card-header">
+                    <h2 class="card-title"><span class="material-icons">room_service</span> Ghi nhận sử dụng đồ của
+                        phòng</h2>
+                </div>
+                <form id="roomUsageForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mã đặt phòng</label>
+                            <select name="maDatPhong" id="maDatPhongSelect">
+                                <option disabled selected>Chọn mã đặt phòng...</option>
+                                <option th:each="booking : ${bookings}" th:value="${booking.maDatPhong}"
+                                    th:text="${booking.maDatPhong + ' - ' + (booking.khachHang != null ? (booking.khachHang.ho + ' ' + booking.khachHang.ten) : 'N/A')}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên khách hàng</label>
+                            <input type="text" name="tenKhachHang" id="tenKhachHangInput"
+                                placeholder="Tự động điền khi chọn mã đặt phòng" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="text" name="soDienThoai" placeholder="0123456789" />
+                        </div>
+                        <div class="form-group">
+                            <label>Số phòng</label>
+                            <input type="text" name="soPhong" placeholder="Ví dụ: 101, 102..." required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vật phẩm</label>
+                            <select name="vatPhamId" required>
+                                <option disabled selected>Chọn vật phẩm...</option>
+                                <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.tenVatPham}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng sử dụng</label>
+                            <input type="number" name="soLuongSuDung" min="1" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Loại sử dụng</label>
+                            <select name="loaiSuDung" required>
+                                <option disabled selected>Chọn loại sử dụng...</option>
+                                <option value="Amenities">Amenities</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Food">Food</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị tính</label>
+                            <input type="text" name="donViTinh" placeholder="Ví dụ: chai, gói, cái..." />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ngày sử dụng</label>
+                            <input type="datetime-local" name="ngaySuDung" required />
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <label>Vật phẩm</label>
-                        <select name="vatPham.id" required>
-                            <option disabled selected>Chọn vật phẩm...</option>
-                            <option th:each="vp : ${vatPhams}" th:value="${vp.id}" th:text="${vp.tenVatPham}"></option>
+                        <label>Ghi chú</label>
+                        <textarea name="ghiChu" rows="3"
+                            placeholder="Nhập ghi chú về việc sử dụng (tùy chọn)..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" id="addRoomUsageBtn">
+                            <span class="material-icons">add</span>
+                            Ghi nhận sử dụng
+                        </button>
+                        <div class="info-message">
+                            <span class="material-icons">info</span>
+                            Ghi nhận việc sử dụng đồ của phòng để theo dõi lịch sử sử dụng.
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <div class="card-header">
+                    <h2 class="card-title"><span class="material-icons">inventory</span> Danh sách vật phẩm</h2>
+                </div>
+
+                <div class="form-row" style="margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <input type="text" id="itemSearch" placeholder="Tìm kiếm theo tên hoặc mã vật phẩm...">
+                    </div>
+                    <div class="form-group">
+                        <select id="filterLoaiVatPham">
+                            <option value="">Tất cả loại vật phẩm</option>
+                            <option value="Amenities">Amenities</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Food">Food</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Loại giao dịch</label>
-                        <select name="loaiGiaoDich" required>
-                            <option disabled selected>Chọn loại giao dịch...</option>
-                            <option th:each="lgd : ${loaiGiaoDichList}" th:value="${lgd.name()}" th:text="${lgd.value}">
-                            </option>
+                        <button onclick="searchItems()" class="btn btn-primary">
+                            <span class="material-icons">search</span>Tìm kiếm
+                        </button>
+                        <button onclick="resetSearch()" class="btn btn-secondary">
+                            <span class="material-icons">refresh</span>Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                <table class="table" id="itemTable">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên</th>
+                            <th>Loại</th>
+                            <th>Tồn kho</th>
+                            <th>Giá nhập</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Hạn dùng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <td th:text="${item.maVatPham}"></td>
+                            <td th:text="${item.tenVatPham}"></td>
+                            <td th:text="${item.loaiVatPham}"></td>
+                            <td th:text="${item.soLuongTon}"></td>
+                            <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}">
+                            </td>
+                            <td th:text="${item.nhaCungCap}"></td>
+                            <td
+                                th:text="${item.hanSuDung != null ? #temporals.format(item.hanSuDung, 'yyyy-MM-dd') : 'N/A'}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="pagination-info">Hiển thị 1-10 của 0 kết quả</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-secondary" id="prev-page" onclick="changePage(-1)" disabled>
+                            <i class="fas fa-chevron-left"></i> Trước
+                        </button>
+                        <span class="page-numbers" id="page-numbers"></span>
+                        <button class="btn btn-secondary" id="next-page" onclick="changePage(1)" disabled>
+                            Sau <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="page-size-selector">
+                        <label for="page-size">Hiển thị:</label>
+                        <select id="page-size" onchange="changePageSize()">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
+                        <span>mục/trang</span>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Số lượng</label>
-                        <input type="number" name="soLuong" min="1" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Giá trị</label>
-                        <input type="number" name="giaTriGiaoDich" min="0" step="0.01" />
-                    </div>
+            </div>
+
+            <div class="table-container">
+                <div class="card-header">
+                    <h2 class="card-title"><span class="material-icons">room_service</span> Lịch sử sử dụng đồ của phòng
+                    </h2>
                 </div>
-                <div class="form-row">
+
+                <div class="form-row" style="margin-bottom: 1.5rem;">
                     <div class="form-group">
-                        <label>Ngày giao dịch</label>
-                        <input type="date" name="ngayGiaoDich" required />
+                        <input type="text" id="roomUsageSearch" placeholder="Tìm kiếm theo tên vật phẩm...">
                     </div>
                     <div class="form-group">
-                        <label>Số chứng từ</label>
-                        <input type="text" name="soChungTu" />
+                        <input type="text" id="roomNumberSearch" placeholder="Tìm kiếm theo số phòng...">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Ghi chú</label>
-                    <textarea name="ghiChu" rows="3" placeholder="Nhập ghi chú (tùy chọn)..."></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary" id="addTransactionBtn">
-                        <span class="material-icons">add</span>
-                        Tạo giao dịch
-                    </button>
-                    <div class="info-message">
-                        <span class="material-icons">info</span>
-                        Lưu ý: Phiếu nhập kho cần Admin phê duyệt. Phiếu xuất kho không thể sửa/xóa sau khi lưu.
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="table-container">
-            <div class="card-header">
-                <h2 class="card-title"><span class="material-icons">inventory</span> Danh sách vật phẩm</h2>
-            </div>
-
-            <div class="form-row" style="margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <input type="text" id="itemSearch" placeholder="Tìm kiếm theo tên hoặc mã vật phẩm...">
-                </div>
-                <div class="form-group">
-                    <select id="filterLoaiVatPham">
-                        <option value="">Tất cả loại vật phẩm</option>
-                        <option value="Amenities">Amenities</option>
-                        <option value="Cleaning">Cleaning</option>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Food">Food</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button onclick="searchItems()" class="btn btn-primary">
-                        <span class="material-icons">search</span>Tìm kiếm
-                    </button>
-                    <button onclick="resetSearch()" class="btn btn-secondary">
-                        <span class="material-icons">refresh</span>Làm mới
-                    </button>
-                </div>
-            </div>
-
-            <table class="table" id="itemTable">
-                <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Tên</th>
-                    <th>Loại</th>
-                    <th>Tồn kho</th>
-                    <th>Giá nhập</th>
-                    <th>Nhà cung cấp</th>
-                    <th>Hạn dùng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item : ${items}">
-                    <td th:text="${item.maVatPham}"></td>
-                    <td th:text="${item.tenVatPham}"></td>
-                    <td th:text="${item.loaiVatPham}"></td>
-                    <td th:text="${item.soLuongTon}"></td>
-                    <td th:text="${#numbers.formatDecimal(item.giaNhap, 0, 'COMMA', 0, 'POINT')}">
-                    </td>
-                    <td th:text="${item.nhaCungCap}"></td>
-                    <td th:text="${item.hanSuDung != null ? #temporals.format(item.hanSuDung, 'yyyy-MM-dd') : 'N/A'}"></td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div class="pagination-container">
-                <div class="pagination-info">
-                    <span id="pagination-info">Hiển thị 1-10 của 0 kết quả</span>
-                </div>
-                <div class="pagination-controls">
-                    <button class="btn btn-secondary" id="prev-page" onclick="changePage(-1)" disabled>
-                        <i class="fas fa-chevron-left"></i> Trước
-                    </button>
-                    <span class="page-numbers" id="page-numbers"></span>
-                    <button class="btn btn-secondary" id="next-page" onclick="changePage(1)" disabled>
-                        Sau <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                <div class="page-size-selector">
-                    <label for="page-size">Hiển thị:</label>
-                    <select id="page-size" onchange="changePageSize()">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                    <span>mục/trang</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <div class="card-header">
-                <h2 class="card-title"><span class="material-icons">history</span> Lịch sử giao dịch kho</h2>
-            </div>
-            
-            <div class="form-row" style="margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <input type="text" id="transactionSearch" placeholder="Tìm kiếm giao dịch...">
-                </div>
-            </div>
-            
-            <table class="table" id="transactionTable">
-                <thead>
-                <tr>
-                    <th>Ngày</th>
-                    <th>Vật phẩm</th>
-                    <th>Loại</th>
-                    <th>Số lượng</th>
-                    <th>Giá trị</th>
-                    <th>Lý do</th>
-                    <th>Trạng thái</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="tran : ${transactions}">
-                    <td th:text="${tran.ngayGiaoDich != null ? #temporals.format(tran.ngayGiaoDich, 'yyyy-MM-dd') : 'N/A'}"></td>
-                    <td th:text="${tran.inventoryItem != null ? tran.inventoryItem.tenVatPham : 'N/A'}"></td>
-                    <td th:text="${tran.loaiGiaoDich != null ? tran.loaiGiaoDich.value : 'N/A'}"></td>
-                    <td th:text="${tran.soLuong}"></td>
-                    <td th:text="${tran.giaTri != null ? #numbers.formatDecimal(tran.giaTri, 0, 'COMMA', 0, 'POINT') : 'N/A'}">
-                    </td>
-                    <td th:text="${tran.lyDo != null ? tran.lyDo : 'N/A'}"></td>
-                    <td>
-                                <span th:class="'badge ' + ${tran.trangThaiDuyet != null ? (tran.trangThaiDuyet.name() == 'CHO_DUYET' ? 'warning' : (tran.trangThaiDuyet.name() == 'DA_DUYET' ? 'success' : 'danger')) : 'secondary'}"
-                                      th:text="${tran.trangThaiDuyet != null ? tran.trangThaiDuyet.value : 'N/A'}"></span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div id="transactionPagination" class="pagination-container">
-                <!-- Pagination sẽ được tạo bởi JavaScript -->
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title"><span class="material-icons">assessment</span> Báo cáo và Thống kê</h2>
-            </div>
-
-            <div class="reports-container">
-                <div class="form-row">
                     <div class="form-group">
-                        <label for="report-type">Loại báo cáo:</label>
-                        <select id="report-type" onchange="updateReportType()">
-                            <option value="inventory">Tồn kho</option>
-                            <option value="transactions">Giao dịch</option>
-                            <option value="expiry">Hạn sử dụng</option>
-                            <option value="value">Giá trị kho</option>
-                        </select>
+                        <input type="text" id="bookingSearch" placeholder="Tìm kiếm theo mã đặt phòng...">
                     </div>
-
                     <div class="form-group">
-                        <label for="report-period">Thời gian:</label>
-                        <select id="report-period" onchange="updateReportPeriod()">
-                            <option value="today">Hôm nay</option>
-                            <option value="week">Tuần này</option>
-                            <option value="month">Tháng này</option>
-                            <option value="quarter">Quý này</option>
-                            <option value="year">Năm này</option>
-                            <option value="custom">Tùy chọn</option>
-                        </select>
+                        <input type="text" id="customerSearch" placeholder="Tìm kiếm theo tên khách hàng...">
                     </div>
-
-                    <div class="form-group" id="custom-date-range" style="display: none;">
-                        <label for="start-date">Từ ngày:</label>
-                        <input type="date" id="start-date">
-                        <label for="end-date">Đến ngày:</label>
-                        <input type="date" id="end-date">
-                    </div>
-
-                    <button class="btn btn-primary" onclick="generateReport()">
-                        <span class="material-icons">assessment</span> Tạo báo cáo
-                    </button>
-
-                    <button class="btn btn-secondary" onclick="exportReport()">
-                        <span class="material-icons">download</span> Xuất Excel
-                    </button>
-                </div>
-
-                <div class="report-summary">
-                    <div class="summary-card">
-                        <div class="summary-icon">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <div class="summary-content">
-                            <h3 id="total-items">0</h3>
-                            <p>Tổng số vật phẩm</p>
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-icon">
-                            <i class="fas fa-warehouse"></i>
-                        </div>
-                        <div class="summary-content">
-                            <h3 id="total-stock">0</h3>
-                            <p>Tổng tồn kho</p>
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="summary-content">
-                            <h3 id="low-stock-items">0</h3>
-                            <p>Vật phẩm sắp hết</p>
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="summary-content">
-                            <h3 id="expiring-items">0</h3>
-                            <p>Sắp hết hạn</p>
-                        </div>
+                    <div class="form-group">
+                        <button onclick="searchRoomUsage()" class="btn btn-primary">
+                            <span class="material-icons">search</span>Tìm kiếm
+                        </button>
+                        <button onclick="resetRoomUsageSearch()" class="btn btn-secondary">
+                            <span class="material-icons">refresh</span>Làm mới
+                        </button>
                     </div>
                 </div>
 
-                <div class="report-content">
-                    <div class="chart-container">
-                        <canvas id="reportChart" width="400" height="200"></canvas>
+                <table class="table" id="roomUsageTable">
+                    <thead>
+                        <tr>
+                            <th>Mã đặt phòng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số phòng</th>
+                            <th>Vật phẩm</th>
+                            <th>Loại sử dụng</th>
+                            <th>Số lượng</th>
+                            <th>Đơn vị</th>
+                            <th>Ngày sử dụng</th>
+                            <th>Nhân viên ghi nhận</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="usage : ${roomUsageHistory}">
+                            <td th:text="${usage.maDatPhong != null ? usage.maDatPhong : 'N/A'}"></td>
+                            <td th:text="${usage.tenKhachHang != null ? usage.tenKhachHang : 'N/A'}"></td>
+                            <td th:text="${usage.soPhong}"></td>
+                            <td th:text="${usage.tenVatPham}"></td>
+                            <td th:text="${usage.loaiSuDung}"></td>
+                            <td th:text="${usage.soLuongSuDung}"></td>
+                            <td th:text="${usage.donViTinh != null ? usage.donViTinh : 'N/A'}"></td>
+                            <td
+                                th:text="${usage.ngaySuDung != null ? #temporals.format(usage.ngaySuDung, 'yyyy-MM-dd HH:mm') : 'N/A'}">
+                            </td>
+                            <td th:text="${usage.nhanVienGhiNhan}"></td>
+                            <td th:text="${usage.ghiChu != null ? usage.ghiChu : 'N/A'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="roomUsagePagination" class="pagination-container">
+                    <!-- Pagination sẽ được tạo bởi JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><span class="material-icons">assessment</span> Báo cáo và Thống kê</h2>
+                </div>
+
+                <div class="reports-container">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="report-type">Loại báo cáo:</label>
+                            <select id="report-type" onchange="updateReportType()">
+                                <option value="inventory">Tồn kho</option>
+                                <option value="transactions">Giao dịch</option>
+                                <option value="expiry">Hạn sử dụng</option>
+                                <option value="value">Giá trị kho</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="report-period">Thời gian:</label>
+                            <select id="report-period" onchange="updateReportPeriod()">
+                                <option value="today">Hôm nay</option>
+                                <option value="week">Tuần này</option>
+                                <option value="month">Tháng này</option>
+                                <option value="quarter">Quý này</option>
+                                <option value="year">Năm này</option>
+                                <option value="custom">Tùy chọn</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="custom-date-range" style="display: none;">
+                            <label for="start-date">Từ ngày:</label>
+                            <input type="date" id="start-date">
+                            <label for="end-date">Đến ngày:</label>
+                            <input type="date" id="end-date">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="generateReport()">
+                            <span class="material-icons">assessment</span> Tạo báo cáo
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="exportReport()">
+                            <span class="material-icons">download</span> Xuất Excel
+                        </button>
                     </div>
 
-                    <div class="table-container">
-                        <table id="reportTable" class="table">
-                            <thead>
-                            <tr id="reportTableHeader">
-                            </tr>
-                            </thead>
-                            <tbody id="reportTableBody">
-                            </tbody>
-                        </table>
+                    <div class="report-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="total-items">0</h3>
+                                <p>Tổng số vật phẩm</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="total-stock">0</h3>
+                                <p>Tổng tồn kho</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="low-stock-items">0</h3>
+                                <p>Vật phẩm sắp hết</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="expiring-items">0</h3>
+                                <p>Sắp hết hạn</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-content">
+                        <div class="chart-container">
+                            <canvas id="reportChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="reportTable" class="table">
+                                <thead>
+                                    <tr id="reportTableHeader">
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<script th:src="@{/js/NhanVien/quanlykho.js}"></script>
+    <script th:src="@{/js/NhanVien/quanlykho.js}"></script>
+    <script th:src="@{/js/NhanVien/room-usage.js}"></script>
 </body>
 
 </html>

@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 // Controller thanh toán cho nhân viên
 @Controller
@@ -24,7 +23,7 @@ import java.util.HashMap;
 public class ThanhToanController {
     
     @Autowired
-    private ThanhToanService thanhToanService;
+    private final ThanhToanService thanhToanService;
     
     public ThanhToanController(ThanhToanService thanhToanService) {
         this.thanhToanService = thanhToanService;
@@ -53,7 +52,7 @@ public class ThanhToanController {
             model.addAttribute("phuongThucList", thanhToanService.getPaymentMethods());
             return "NhanVien/ThanhToan";
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error loading payment page: " + e.getMessage());
             model.addAttribute("error", "Có lỗi xảy ra khi tải trang thanh toán");
             return "NhanVien/ThanhToan";
         }
@@ -142,7 +141,7 @@ public class ThanhToanController {
             errorResponse.put("message", "Dữ liệu số không hợp lệ");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error creating payment: " + e.getMessage());
             Map<String, Object> errorResponse = new java.util.HashMap<>();
             errorResponse.put("error", true);
             errorResponse.put("message", "Lỗi: " + e.getMessage());
@@ -253,23 +252,37 @@ public class ThanhToanController {
     private PaymentDTO convertToDTO(Payment payment) {
         PaymentDTO dto = new PaymentDTO();
         dto.setId(payment.getId());
-         dto.setSoTien(payment.getSoTien());
-         dto.setAmount(payment.getSoTien());
-         dto.setHinhThucThanhToan(payment.getPhuongThuc());
-         dto.setPaymentMethod(payment.getPhuongThuc());
-         dto.setThoiGianThanhToan(payment.getNgayThanhToan());
-         dto.setPaymentDate(payment.getNgayThanhToan());
-         
-         String statusValue = payment.getTrangThai() != null ? payment.getTrangThai().getValue() : null;
-         dto.setTrangThai(statusValue);
-         dto.setStatus(statusValue);
-         
-         dto.setUuidId(payment.getUuidId());
-         dto.setCreatedDate(payment.getCreatedDate());
-         
-         if (payment.getBooking() != null) {
+        dto.setSoTien(payment.getSoTien());
+        dto.setAmount(payment.getSoTien());
+        dto.setHinhThucThanhToan(payment.getPhuongThuc());
+        dto.setPaymentMethod(payment.getPhuongThuc());
+        dto.setThoiGianThanhToan(payment.getNgayThanhToan());
+        dto.setPaymentDate(payment.getNgayThanhToan());
+        
+        String statusValue = payment.getTrangThai() != null ? payment.getTrangThai().getValue() : null;
+        dto.setTrangThai(statusValue);
+        dto.setStatus(statusValue);
+        
+        dto.setUuidId(payment.getUuidId());
+        dto.setCreatedDate(payment.getCreatedDate());
+        
+        // Thêm các field mới
+        dto.setNoiDung(payment.getNoiDung());
+        dto.setMaGiaoDich(payment.getMaGiaoDich());
+        // Sử dụng ngayThanhToan thay vì ngayTao (không tồn tại)
+        dto.setNgayTao(payment.getNgayThanhToan());
+        
+        if (payment.getBooking() != null) {
             dto.setBookingId(payment.getBooking().getId());
+            
+            // Thêm thông tin khách hàng
+            if (payment.getBooking().getKhachHang() != null) {
+                String customerName = payment.getBooking().getKhachHang().getHo() + " " + 
+                                    payment.getBooking().getKhachHang().getTen();
+                dto.setCustomerName(customerName.trim());
+            }
         }
-         return dto;
-     }
+        
+        return dto;
+    }
 }

@@ -6,13 +6,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
 import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
 import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
 import panacea.website_dat_lich_khach_san.entity.Staff;
+import panacea.website_dat_lich_khach_san.entity.RoomUsage;
+import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
 import panacea.website_dat_lich_khach_san.repository.StaffRepository;
+import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 // Controller quản lý kho cho nhân viên
 @Controller
@@ -30,6 +33,9 @@ public class QuanLyKhoController {
     
     @Autowired
     private StaffRepository staffRepository;
+    
+    @Autowired
+    private BookingRepository bookingRepository;
     
     public QuanLyKhoController(QuanLyKhoService quanLyKhoService) {
         this.quanLyKhoService = quanLyKhoService;
@@ -48,8 +54,14 @@ public class QuanLyKhoController {
             model.addAttribute("staffName", staffName);
             model.addAttribute("items", quanLyKhoService.getAllItems());
             model.addAttribute("transactions", quanLyKhoService.getAllTransactions());
+            model.addAttribute("roomUsageHistory", quanLyKhoService.getAllRoomUsageHistory());
             model.addAttribute("vatPhams", quanLyKhoService.getAllItems());
             model.addAttribute("loaiGiaoDichList", Arrays.asList(LoaiGiaoDich.values()));
+            
+            // Thêm danh sách booking cho dropdown (chỉ lấy booking gần đây)
+            List<Booking> bookings = bookingRepository.findAll();
+            // Có thể thêm filter để chỉ lấy booking gần đây nếu cần
+            model.addAttribute("bookings", bookings);
             
             // Add status list for items
             List<String> trangThaiList = Arrays.asList("Hoạt động", "Tạm ngưng", "Hết hàng");
@@ -504,6 +516,191 @@ public class QuanLyKhoController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Lỗi khi lấy danh sách giao dịch chờ duyệt: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // ==================== QUẢN LÝ LỊCH SỬ SỬ DỤNG PHÒNG ====================
+    
+    // Hiển thị trang lịch sử sử dụng phòng
+    @GetMapping("/room-usage")
+    public String roomUsageHistory(Model model, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return "redirect:/login";
+            }
+            
+            String staffName = authentication.getName();
+            model.addAttribute("staffName", staffName);
+            model.addAttribute("roomUsageHistory", quanLyKhoService.getAllRoomUsageHistory());
+            model.addAttribute("items", quanLyKhoService.getAllItems());
+            
+            return "NhanVien/RoomUsageHistory";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi tải dữ liệu: " + e.getMessage());
+            return "NhanVien/RoomUsageHistory";
+        }
+    }
+    
+    // API lấy lịch sử sử dụng theo phòng
+    @GetMapping("/api/room-usage/{soPhong}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRoomUsageHistory(@PathVariable String soPhong) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<RoomUsage> usageHistory = quanLyKhoService.getRoomUsageHistory(soPhong);
+            response.put("success", true);
+            response.put("data", usageHistory);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy lịch sử sử dụng: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy tất cả lịch sử sử dụng
+    @GetMapping("/api/room-usage")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAllRoomUsageHistory() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<RoomUsage> usageHistory = quanLyKhoService.getAllRoomUsageHistory();
+            response.put("success", true);
+            response.put("data", usageHistory);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy lịch sử sử dụng: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API ghi nhận sử dụng đồ của phòng
+    @PostMapping("/api/room-usage")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> recordRoomUsage(@RequestBody Map<String, Object> request, Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                response.put("success", false);
+                response.put("message", "Unauthorized access");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            RoomUsage roomUsage = new RoomUsage();
+            roomUsage.setSoPhong((String) request.get("soPhong"));
+            roomUsage.setTenVatPham((String) request.get("tenVatPham"));
+            roomUsage.setMaVatPham((String) request.get("maVatPham"));
+            roomUsage.setSoLuongSuDung((Integer) request.get("soLuongSuDung"));
+            roomUsage.setDonViTinh((String) request.get("donViTinh"));
+            roomUsage.setLoaiSuDung((String) request.get("loaiSuDung"));
+            roomUsage.setGhiChu((String) request.get("ghiChu"));
+            roomUsage.setNhanVienGhiNhan(authentication.getName());
+            
+            // Thông tin booking
+            roomUsage.setMaDatPhong((String) request.get("maDatPhong"));
+            roomUsage.setTenKhachHang((String) request.get("tenKhachHang"));
+            roomUsage.setSoDienThoai((String) request.get("soDienThoai"));
+            
+            // Note: bookingId sẽ được lấy thông qua relationship với Booking entity
+            // Nếu cần set booking relationship, cần inject BookingRepository và tìm Booking entity
+            
+            // Parse ngày sử dụng nếu có
+            if (request.get("ngaySuDung") != null) {
+                String ngaySuDungStr = (String) request.get("ngaySuDung");
+                roomUsage.setNgaySuDung(LocalDateTime.parse(ngaySuDungStr));
+            }
+            
+            RoomUsage savedUsage = quanLyKhoService.recordRoomUsage(roomUsage);
+            response.put("success", true);
+            response.put("message", "Ghi nhận sử dụng đồ thành công");
+            response.put("data", savedUsage);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi ghi nhận sử dụng: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API tìm kiếm lịch sử sử dụng theo tên vật phẩm
+    @GetMapping("/api/room-usage/search")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> searchRoomUsage(
+            @RequestParam(required = false) String tenVatPham,
+            @RequestParam(required = false) String soPhong,
+            @RequestParam(required = false) String maDatPhong,
+            @RequestParam(required = false) String tenKhachHang) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<RoomUsage> usageHistory = quanLyKhoService.searchRoomUsage(tenVatPham, soPhong, maDatPhong, tenKhachHang);
+            response.put("success", true);
+            response.put("data", usageHistory);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tìm kiếm: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy thống kê sử dụng theo phòng
+    @GetMapping("/api/room-usage/statistics/{soPhong}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRoomUsageStatistics(@PathVariable String soPhong) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Object[]> statistics = quanLyKhoService.getRoomUsageStatistics(soPhong);
+            response.put("success", true);
+            response.put("data", statistics);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy thống kê: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy thông tin booking theo mã đặt phòng
+    @GetMapping("/api/booking/{maDatPhong}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getBookingByMaDatPhong(@PathVariable String maDatPhong) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<Booking> booking = bookingRepository.findByMaDatPhong(maDatPhong);
+            if (booking.isPresent()) {
+                response.put("success", true);
+                response.put("data", booking.get());
+            } else {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy booking với mã: " + maDatPhong);
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy thông tin booking: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // API lấy lịch sử sử dụng theo khoảng thời gian
+    @GetMapping("/api/room-usage/date-range")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRoomUsageByDateRange(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            LocalDateTime start = LocalDateTime.parse(startDate);
+            LocalDateTime end = LocalDateTime.parse(endDate);
+            List<RoomUsage> usageHistory = quanLyKhoService.getRoomUsageHistoryByDateRange(start, end);
+            response.put("success", true);
+            response.put("data", usageHistory);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi lấy lịch sử theo khoảng thời gian: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

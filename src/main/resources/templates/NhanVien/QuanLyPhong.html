@@ -50,7 +50,8 @@
                             <td th:text="${room.roomTypeName}">Standard</td>
                             <td th:text="${room.tang}">1</td>
                             <td th:text="${room.viewPhong}">City</td>
-                            <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'" style="display: none;">
+                            <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                                style="display: none;">
                                 1,200,000 VNĐ</td>
                             <td>
                                 <span
@@ -66,14 +67,11 @@
                                 </span>
                             </td>
                             <td>
-                                <a th:href="@{/nhanvien/quanlyphong/edit/{id}(id=${room.id})}" class="btn-edit"
-                                    title="Sửa">
-                                    <span class="material-icons">edit</span>
-                                </a>
-                                <a th:href="@{/nhanvien/quanlyphong/delete-room/{id}(id=${room.id})}" class="btn-delete"
-                                    title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa phòng này?')">
-                                    <span class="material-icons">delete</span>
-                                </a>
+                                <button class="btn-status-change" th:data-room-id="${room.id}"
+                                    th:data-current-status="${room.trangThai}" th:data-room-number="${room.soPhong}"
+                                    title="Thay đổi trạng thái phòng">
+                                    <span class="material-icons">swap_horiz</span>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -81,11 +79,54 @@
             </section>
         </main>
 
+        <!-- Modal thay đổi trạng thái phòng -->
+        <div id="statusChangeModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Thay đổi trạng thái phòng</h3>
+                    <span class="close" id="closeModal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="statusChangeForm">
+                        <input type="hidden" id="roomId" name="roomId">
+                        <div class="form-group">
+                            <label for="roomNumber">Số phòng:</label>
+                            <input type="text" id="roomNumber" name="roomNumber" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="currentStatus">Trạng thái hiện tại:</label>
+                            <input type="text" id="currentStatus" name="currentStatus" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="newStatus">Trạng thái mới:</label>
+                            <select id="newStatus" name="newStatus" required>
+                                <option value="">Chọn trạng thái mới...</option>
+                                <option value="SAN_SANG">Sẵn sàng</option>
+                                <option value="DANG_SU_DUNG">Đang sử dụng</option>
+                                <option value="BAO_TRI">Bảo trì</option>
+                                <option value="DON_DEP">Dọn dẹp</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="statusNote">Ghi chú (tùy chọn):</label>
+                            <textarea id="statusNote" name="statusNote" rows="3"
+                                placeholder="Nhập ghi chú về việc thay đổi trạng thái..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelStatusChange">Hủy</button>
+                    <button type="button" class="btn-confirm" id="confirmStatusChange">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
         <footer>
             &copy; 2024 Panacea Hotel Booking System - All rights reserved.
         </footer>
     </div>
 
+    <script th:src="@{/js/NhanVien/room-status.js}"></script>
 </body>
 
 </html>
