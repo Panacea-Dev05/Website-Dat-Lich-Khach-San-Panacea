@@ -9,6 +9,7 @@ import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
 import panacea.website_dat_lich_khach_san.repository.BookingRepository;
 import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
@@ -312,16 +313,56 @@ public class KhachHangService {
     }
 
     public RoomTypeDTO getRoomTypeDTOById(Integer id) {
+        System.out.println("[DEBUG] ===== getRoomTypeDTOById called with ID: " + id + " =====");
+        System.out.println("[DEBUG] Service method is being called!");
         var rtOpt = roomTypeRepository.findById(id);
-        if (rtOpt.isEmpty()) return null;
+        if (rtOpt.isEmpty()) {
+            System.out.println("[ERROR] RoomType not found for ID: " + id);
+            return null;
+        }
         var rt = rtOpt.get();
+        System.out.println("[DEBUG] RoomType found: " + rt.getTenLoaiPhong());
         
         // Debug log để kiểm tra dienTich
         System.out.println("[DEBUG] Single RoomType ID: " + rt.getId() + ", Ten: " + rt.getTenLoaiPhong() + ", DienTich: " + rt.getDienTich());
         
-        // Lấy giá BASE
-        RoomPricing pricing = roomPricingRepositoty.findFirstByRoomType_IdAndLoaiGia(rt.getId(), panacea.website_dat_lich_khach_san.entity.RoomPricing.LoaiGia.BASE);
-        List<RoomPricing> pricings = pricing != null ? List.of(pricing) : new ArrayList<>();
+        // Lấy tất cả các loại giá (NGAY, GIO, QUA_DEM)
+        System.out.println("[DEBUG] Querying pricing for room type ID: " + rt.getId());
+        List<RoomPricing> pricings = roomPricingRepositoty.findByRoomTypeId(rt.getId());
+        System.out.println("[DEBUG] Found " + pricings.size() + " pricing records for room type " + rt.getId());
+        
+        // Debug thêm về repository
+        System.out.println("[DEBUG] Repository class: " + roomPricingRepositoty.getClass().getName());
+        
+        // Debug từng loại giá
+        for (RoomPricing pricing : pricings) {
+            System.out.println("[DEBUG] Pricing ID: " + pricing.getId() + 
+                             ", LoaiGia: " + pricing.getLoaiGia() + 
+                             ", giaGio=" + pricing.getGiaGio() + 
+                             ", giaNgay=" + pricing.getGiaNgay() + 
+                             ", giaQuaDem=" + pricing.getGiaQuaDem() +
+                             ", giaTri=" + pricing.getGiaTri());
+        }
+        
+        // Nếu không có dữ liệu, tạo dữ liệu fallback
+        if (pricings.isEmpty()) {
+            System.out.println("[ERROR] No pricing data found for room type " + rt.getId() + " in database!");
+            System.out.println("[ERROR] Creating fallback pricing data...");
+            
+            // Tạo RoomPricing fallback
+            RoomPricing fallbackPricing = new RoomPricing();
+            fallbackPricing.setRoomType(rt);
+            fallbackPricing.setLoaiGia(RoomPricing.LoaiGia.BASE);
+            fallbackPricing.setGiaGio(new BigDecimal("1200"));
+            fallbackPricing.setGiaNgay(new BigDecimal("14000"));
+            fallbackPricing.setGiaQuaDem(new BigDecimal("15000"));
+            fallbackPricing.setGiaTri(new BigDecimal("14000"));
+            fallbackPricing.setNgayBatDau(java.time.LocalDate.now());
+            fallbackPricing.setNgayKetThuc(java.time.LocalDate.now().plusYears(1));
+            
+            pricings = List.of(fallbackPricing);
+            System.out.println("[DEBUG] Created fallback pricing: giaGio=1200, giaNgay=14000, giaQuaDem=15000");
+        }
         
         RoomTypeDTO dto = RoomTypeDTO.fromEntityWithPricing(rt, pricings);
         

@@ -1,8 +1,10 @@
+/* --- RESET & BASE --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: 'Inter', sans-serif;
     background: #f4f7fc;
@@ -14,32 +16,21 @@ body {
     flex-direction: column;
     height: 100vh;
 }
+
 a {
     text-decoration: none;
     color: inherit;
 }
+
 ul {
     list-style: none;
 }
+
 button {
     cursor: pointer;
     border: none;
     background: none;
     font-family: inherit;
-}
-/* Header Styles */
-header {
-    grid-area: header;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-    color: #fff;
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 0;
-    z-index: 100;
 }
 
 /* Scrollbar */
@@ -47,13 +38,16 @@ header {
     width: 8px;
     height: 8px;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-track {
     background: #f4f7fc;
 }
+
 /* Layout */
 .app {
     display: grid;
@@ -66,6 +60,7 @@ header {
     height: 100vh;
     overflow: hidden;
 }
+
 header {
     grid-area: header;
     background: linear-gradient(90deg, #10b981 0%, #059669 100%);
@@ -82,23 +77,28 @@ header {
     box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
     user-select: none;
 }
+
 header .logo {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
+
 header .logo .material-icons {
     font-size: 32px;
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
 }
+
 header .hotel-name {
     font-size: 1.2rem;
     font-weight: 600;
 }
+
 header .mobile-toggle {
     display: none;
     font-size: 36px;
 }
+
 aside.sidebar {
     grid-area: sidebar;
     background: white;
@@ -109,14 +109,17 @@ aside.sidebar {
     overflow-y: auto;
     box-shadow: inset -3px 0 8px -6px rgb(0 0 0 / 0.1);
 }
+
 aside.sidebar nav {
     flex-grow: 1;
 }
+
 aside.sidebar nav ul {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
+
 aside.sidebar nav ul li a {
     padding: 10px 14px;
     border-radius: 12px;
@@ -127,16 +130,19 @@ aside.sidebar nav ul li a {
     color: #334155;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 aside.sidebar nav ul li a:hover,
 aside.sidebar nav ul li a.active {
     background: #10b981;
     color: white;
     box-shadow: 0 8px 16px rgb(16 185 129 / 0.2);
 }
+
 aside.sidebar nav ul li a .material-icons {
     font-size: 20px;
     flex-shrink: 0;
 }
+
 main {
     grid-area: main;
     background: #f9fafb;
@@ -146,6 +152,7 @@ main {
     flex-direction: column;
     min-height: 0;
 }
+
 main > h1 {
     font-size: 2rem;
     font-weight: 700;
@@ -154,6 +161,7 @@ main > h1 {
     text-shadow: 0 0 6px rgb(6 78 59 / 0.1);
     user-select: none;
 }
+
 section.content-section {
     background: white;
     border-radius: 16px;
@@ -162,13 +170,16 @@ section.content-section {
     max-width: 100%;
     overflow-x: auto;
 }
+
 section.content-section + section.content-section {
     margin-top: 2rem;
 }
+
 /* Table */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate; /* Sử dụng separate để bo góc cho table */
+    border-spacing: 0;
     table-layout: fixed;
     word-wrap: break-word;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -176,21 +187,11 @@ table {
     overflow: hidden;
 }
 
-/* Cập nhật các cột của bảng - Đã đồng bộ với quản lý khách hàng */
-table th:nth-child(1), table td:nth-child(1) { width: 5%; } /* STT */
-table th:nth-child(2), table td:nth-child(2) { width: 10%; } /* Mã thanh toán */
-table th:nth-child(3), table td:nth-child(3) { width: 10%; } /* Mã đặt phòng */
-table th:nth-child(4), table td:nth-child(4) { width: 15%; } /* Khách hàng */
-table th:nth-child(5), table td:nth-child(5) { width: 12%; } /* Số tiền */
-table th:nth-child(6), table td:nth-child(6) { width: 12%; } /* Phương thức */
-table th:nth-child(7), table td:nth-child(7) { width: 14%; } /* Ngày thanh toán */
-table th:nth-child(8), table td:nth-child(8) { width: 12%; } /* Trạng thái */
-table th:nth-child(9), table td:nth-child(9) { width: 10%; } /* Thao tác - Đủ chỗ cho 3 nút */
-
 thead {
     background: #d1fae5;
     color: #064e3b;
 }
+
 th, td {
     padding: 12px 16px;
     text-align: left;
@@ -198,6 +199,21 @@ th, td {
     font-weight: 500;
     font-size: 0.95rem;
 }
+
+th:first-child { border-top-left-radius: 8px; }
+th:last-child { border-top-right-radius: 8px; }
+td:last-child { border-bottom: none; }
+
+/* Cập nhật các cột của bảng - Đã đồng bộ với quản lý khách hàng và nhân viên */
+table th:nth-child(1), table td:nth-child(1) { width: 5%; } /* STT */
+table th:nth-child(2), table td:nth-child(2) { width: 10%; } /* Mã thanh toán */
+table th:nth-child(3), table td:nth-child(3) { width: 10%; } /* Mã đặt phòng */
+table th:nth-child(4), table td:nth-child(4) { width: 15%; } /* Khách hàng */
+table th:nth-child(5), table td:nth-child(5) { width: 10%; } /* Số tiền */
+table th:nth-child(6), table td:nth-child(6) { width: 10%; } /* Phương thức */
+table th:nth-child(7), table td:nth-child(7) { width: 14%; } /* Ngày thanh toán */
+table th:nth-child(8), table td:nth-child(8) { width: 10%; } /* Trạng thái */
+table th:nth-child(9), table td:nth-child(9) { width: 10%; } /* Thao tác - Đủ chỗ cho 3 nút */
 
 /* Đảm bảo tiêu đề không bị xuống dòng */
 th {
@@ -220,8 +236,9 @@ td:nth-child(9) .btn-delete {
 }
 
 tbody tr:hover {
-    background: #a7f3d0;
+    background: #f0fdf9;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 /* Status styles - Tinh chỉnh để hiển thị tốt hơn */
@@ -241,19 +258,64 @@ tbody tr:hover {
     color: #065f46;
 }
 
+.status-completed::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+}
+
 .status-pending {
     background-color: #fef3c7;
     color: #92400e;
+}
+.status-pending::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #f59e0b;
+    margin-right: 6px;
 }
 
 .status-failed {
     background-color: #fee2e2;
     color: #b91c1c;
 }
-
+.status-failed::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    margin-right: 6px;
+}
 .status-refunded {
     background-color: #e0e7ff;
     color: #4338ca;
+}
+.status-refunded::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6366f1;
+    margin-right: 6px;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
 }
 
 /* Action buttons in table - Sửa lại để hiển thị đầy đủ và đồng bộ */
@@ -261,49 +323,49 @@ tbody tr:hover {
     background: none;
     border: none;
     padding: 8px;
-    border-radius: 6px;
+    border-radius: 50%; /* Dùng bo tròn thay vì góc vuông */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    margin: 0 3px;
-    min-width: 32px;
-    min-height: 32px;
+    margin: 0 2px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-view {
-    color: #059669;
+    color: #fff;
+    background-color: #3b82f6;
 }
 
 .btn-edit {
-    color: #0284c7;
+    color: #fff;
+    background-color: #f59e0b;
 }
 
 .btn-delete {
-    color: #dc2626;
-    background-color: rgba(220, 38, 38, 0.05);
-}
-
-.btn-view:hover, .btn-edit:hover, .btn-delete:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: scale(1.1);
+    color: #fff;
+    background-color: #ef4444;
 }
 
 .btn-view:hover {
-    color: #10b981;
-    background-color: rgba(16, 185, 129, 0.1);
+    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
 }
 
 .btn-edit:hover {
-    color: #0ea5e9;
-    background-color: rgba(14, 165, 233, 0.1);
+    background-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25);
 }
 
 .btn-delete:hover {
-    color: #ffffff;
     background-color: #dc2626;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25);
 }
 
 /* Đảm bảo Material Icons hiển thị đúng trong button */
@@ -314,6 +376,7 @@ tbody tr:hover {
     line-height: 1;
     display: block;
 }
+
 /* Buttons */
 .btn {
     padding: 10px 20px;
@@ -326,15 +389,18 @@ tbody tr:hover {
     transition: all 0.25s ease;
     user-select: none;
 }
+
 .btn:hover {
     background: #059669;
     box-shadow: 0 12px 25px rgb(5 150 105 / 0.35);
     transform: translateY(-2px);
 }
+
 .btn:active {
     transform: translateY(0);
     box-shadow: 0 4px 9px rgb(5 150 105 / 0.35);
 }
+
 /* Form */
 form {
     display: grid;
@@ -376,12 +442,14 @@ form {
     margin-top: 1rem;
     user-select: none;
 }
+
 label {
     font-weight: 600;
     font-size: 0.95rem;
     color: #064e3b;
     align-self: center;
 }
+
 input[type="text"],
 input[type="number"],
 select,
@@ -394,12 +462,14 @@ input[type="date"] {
     outline-color: #10b981;
     transition: border-color 0.3s ease;
 }
+
 input[type="text"]:focus,
 input[type="number"]:focus,
 select:focus,
 input[type="date"]:focus {
     border-color: #059669;
 }
+
 /* Responsive */
 @media (max-width: 1024px) {
     .app {
@@ -414,6 +484,40 @@ input[type="date"]:focus {
         grid-template-columns: 140px 1fr;
     }
 }
+
+@media (max-width: 768px) {
+    aside.sidebar {
+        width: 240px;
+        transform: translateX(-100%);
+    }
+    aside.sidebar.open {
+        transform: translateX(0);
+    }
+    main {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    label {
+        align-self: flex-start;
+    }
+    /* Mobile table column widths */
+    table th:nth-child(1), table td:nth-child(1) { width: 8%; } /* STT */
+    table th:nth-child(2), table td:nth-child(2) { width: 12%; } /* Mã TT */
+    table th:nth-child(3), table td:nth-child(3) { width: 12%; } /* Mã ĐP */
+    table th:nth-child(4), table td:nth-child(4) { width: 20%; } /* Khách hàng */
+    table th:nth-child(5), table td:nth-child(5) { width: 15%; } /* Số tiền */
+    table th:nth-child(6), table td:nth-child(6) { display: none; } /* Ẩn Phương thức */
+    table th:nth-child(7), table td:nth-child(7) { display: none; } /* Ẩn Ngày thanh toán */
+    table th:nth-child(8), table td:nth-child(8) { width: 15%; } /* Trạng thái */
+    table th:nth-child(9), table td:nth-child(9) { width: 18%; } /* Thao tác */
+}
+
+
 @media (max-width: 480px) {
     form {
         display: flex;
@@ -424,6 +528,7 @@ input[type="date"]:focus {
         align-self: flex-start;
     }
 }
+
 footer {
     grid-area: footer;
     background: #e6f4ea;
@@ -437,27 +542,35 @@ footer {
     border-top: 1px solid #c4e1cc;
     user-select: none;
 }
+
 main::-webkit-scrollbar {
     width: 8px;
 }
+
 main::-webkit-scrollbar-thumb {
     background: #10b981aa;
     border-radius: 5px;
 }
+
 /* Modal overlay cho form thêm/sửa thanh toán */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0,0,0,0.4);
     z-index: 1000;
     display: none;
     align-items: center;
     justify-content: center;
 }
+
 .modal-overlay.active,
 .modal-overlay[style*="display: flex"] {
     display: flex !important;
 }
+
 .modal-content {
     background: #fff;
     border-radius: 18px;
@@ -472,9 +585,16 @@ main::-webkit-scrollbar-thumb {
     align-items: stretch;
     animation: modalFadeIn 0.25s;
 }
+
 @keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: none; }
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Form layout 2 cột */
@@ -484,14 +604,17 @@ main::-webkit-scrollbar-thumb {
     gap: 1.2rem 2.2rem;
     align-items: end;
 }
+
 #paymentForm h2 {
     grid-column: 1 / span 2;
 }
+
 .form-group {
     display: flex;
     flex-direction: column;
     margin-bottom: 0.2rem;
 }
+
 .form-group label {
     font-weight: 600;
     margin-bottom: 0.4rem;
@@ -499,6 +622,7 @@ main::-webkit-scrollbar-thumb {
     text-align: left;
     font-size: 1rem;
 }
+
 .form-control {
     border: 1.5px solid #1abc9c;
     border-radius: 8px;
@@ -509,6 +633,7 @@ main::-webkit-scrollbar-thumb {
     background: #f8fdfc;
     margin-bottom: 0.1rem;
 }
+
 .form-control:focus {
     border-color: #176c4b;
     background: #fff;
@@ -522,21 +647,24 @@ main::-webkit-scrollbar-thumb {
     justify-content: flex-end;
     margin-top: 1.2rem;
 }
+
 .btn-success {
-    background: linear-gradient(90deg,#1abc9c,#16a085);
+    background: linear-gradient(90deg, #1abc9c, #16a085);
     color: #fff;
     border: none;
     border-radius: 8px;
     padding: 0.6rem 1.5rem;
     font-size: 1.08rem;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(26,188,156,0.08);
+    box-shadow: 0 2px 8px rgba(26, 188, 156, 0.08);
     transition: background 0.2s, box-shadow 0.2s;
 }
+
 .btn-success:hover {
-    background: linear-gradient(90deg,#16a085,#1abc9c);
-    box-shadow: 0 4px 16px rgba(26,188,156,0.13);
+    background: linear-gradient(90deg, #16a085, #1abc9c);
+    box-shadow: 0 4px 16px rgba(26, 188, 156, 0.13);
 }
+
 .btn-danger {
     background: #ee3d3d;
     color: #fff;
@@ -545,12 +673,13 @@ main::-webkit-scrollbar-thumb {
     padding: 0.6rem 1.5rem;
     font-size: 1.08rem;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(238,61,61,0.08);
+    box-shadow: 0 2px 8px rgba(238, 61, 61, 0.08);
     transition: background 0.2s, box-shadow 0.2s;
 }
+
 .btn-danger:hover {
     background: #c82333;
-    box-shadow: 0 4px 16px rgba(238,61,61,0.13);
+    box-shadow: 0 4px 16px rgba(238, 61, 61, 0.13);
 }
 
 /* Nút đóng modal */
@@ -566,12 +695,23 @@ main::-webkit-scrollbar-thumb {
     transition: color 0.2s;
     z-index: 10;
 }
+
 #closePaymentModal:hover {
     color: #176c4b;
 }
 
 @media (max-width: 700px) {
-    .modal-content { padding: 1rem; min-width: 90vw; max-width: 98vw; }
-    #paymentForm { grid-template-columns: 1fr; gap: 1rem; }
-    #paymentForm .form-actions { grid-column: 1; justify-content: stretch; }
+    .modal-content {
+        padding: 1rem;
+        min-width: 90vw;
+        max-width: 98vw;
+    }
+    #paymentForm {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    #paymentForm .form-actions {
+        grid-column: 1;
+        justify-content: stretch;
+    }
 }

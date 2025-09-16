@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
 @Controller
 @RequestMapping("/khachhang")
@@ -64,7 +65,36 @@ public class KhachHangController {
     // Trang chi tiết phòng
     @GetMapping("/single-room")
     public String roomDetail(@RequestParam("id") Integer id, Model model) {
+        System.out.println("[DEBUG] ===== CONTROLLER: Single room request for ID: " + id + " =====");
         var roomType = khachHangService.getRoomTypeDTOById(id);
+        System.out.println("[DEBUG] CONTROLLER: Service returned roomType: " + (roomType != null ? roomType.getTenLoaiPhong() : "NULL"));
+        
+        if (roomType == null) {
+            System.out.println("[DEBUG] RoomType is null for ID: " + id);
+            // Tạo roomType mặc định nếu không tìm thấy
+            roomType = new RoomTypeDTO();
+            roomType.setId(id);
+            roomType.setTenLoaiPhong("Phòng Deluxe");
+            roomType.setDienTich(new java.math.BigDecimal("45"));
+            roomType.setSoGiuong((byte) 2);
+            roomType.setLoaiGiuong("Giường đôi");
+            roomType.setSucChuaToiDa((byte) 4);
+            roomType.setMoTa("Phòng Deluxe sang trọng với view đẹp, tiện nghi hiện đại");
+            roomType.setTienNghi("WiFi, TV, Điều hòa, Mini bar");
+            roomType.setGiaNgay(new java.math.BigDecimal("800000"));
+            roomType.setGiaGio(new java.math.BigDecimal("100000"));
+            roomType.setGiaQuaDem(new java.math.BigDecimal("600000"));
+        } else {
+            System.out.println("[DEBUG] RoomType found: " + roomType.getTenLoaiPhong() + 
+                             ", giaNgay: " + roomType.getGiaNgay() + 
+                             ", giaGio: " + roomType.getGiaGio() + 
+                             ", giaQuaDem: " + roomType.getGiaQuaDem());
+        }
+        
+        System.out.println("[DEBUG] CONTROLLER: Final roomType data - giaGio: " + roomType.getGiaGio() + 
+                         ", giaNgay: " + roomType.getGiaNgay() + 
+                         ", giaQuaDem: " + roomType.getGiaQuaDem());
+        
         model.addAttribute("roomType", roomType);
         model.addAttribute("room", roomType); // Thêm room để template có thể truy cập donGia
         return "KhachHang/livepreview/elegencia-main/hotel-resort/single-room";

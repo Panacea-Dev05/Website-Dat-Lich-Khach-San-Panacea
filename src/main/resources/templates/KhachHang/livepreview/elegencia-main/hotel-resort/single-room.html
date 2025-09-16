@@ -318,8 +318,11 @@
                                 </div>
                             </div>
                             <div class="text-btn mt-5 mt-lg-0">
-                                <span class="text-btn1 text-uppercase">
-                                    Giá ngày: <span th:text="${#numbers.formatDecimal(roomType.giaNgay, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
+                                <span class="text-btn1 text-uppercase" id="roomPriceDisplay" 
+                                      data-gia-gio="${roomType.giaGio}" 
+                                      data-gia-ngay="${roomType.giaNgay}" 
+                                      data-gia-dem="${roomType.giaQuaDem}">
+                                    Đang tải giá...
                                 </span>
                             </div>
                         </div>
@@ -647,21 +650,11 @@
                                 </div>
                                 <div class="ak-height-30 ak-height-lg-20"></div>
                                 
-                                <!-- Chọn loại giá -->
-                                <div class="form-group">
-                                    <h5 class="ak-white-color">Loại giá:</h5>
-                                    <div class="ak-height-15 ak-height-lg-10"></div>
-                                    <select name="loaiGia" id="priceType" class="form-control booking-now-input custom-input-separated" onchange="updatePrice()">
-                                        <option value="giaNgay" selected>Theo ngày</option>
-                                        <option value="giaGio">Theo giờ</option>
-                                        <option value="giaQuaDem">Qua đêm</option>
-                                    </select>
-                                </div>
                                 <div class="ak-height-20 ak-height-lg-10"></div>
                                 
                                 <div class="total">
                                     <p class="text-total">Giá phòng:</p>
-                                    <h4 class="price" id="roomPrice" th:text="${#numbers.formatDecimal(room.giaNgay, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</h4>
+                                    <h4 class="price" id="roomPrice">Đang tính...</h4>
                                 </div>
                                 <div class="ak-height-35 ak-height-lg-20"></div>
                                 <div class="ak-center">
@@ -1124,34 +1117,6 @@ function updateQuantityFromDate() {
         document.getElementById('bookingQuantity').value = diff;
     }
 }
-function updatePrice() {
-    const typeElement = document.getElementById('bookingType');
-    if (!typeElement) return;
-    
-    const type = typeElement.value;
-    let deposit = 0;
-    if (type === 'ngay') {
-        const qtyElement = document.getElementById('bookingQuantity');
-        if (!qtyElement) return;
-        
-        const qty = parseInt(qtyElement.value) || 1;
-        const total = (typeof giaNgay !== 'undefined' ? giaNgay : 0) * qty;
-        deposit = Math.round(total / 2);
-    }
-    
-    const depositElement = document.getElementById('depositPrice');
-    if (depositElement && typeof formatVND === 'function') {
-        depositElement.innerText = formatVND(deposit);
-    }
-    
-    // Ẩn cảnh báo nếu giá đã đúng
-    const warn = document.getElementById('price-warning');
-    if (warn && (typeof giaNgay !== 'undefined' && giaNgay > 0 || 
-                 typeof giaGio !== 'undefined' && giaGio > 0 || 
-                 typeof giaDem !== 'undefined' && giaDem > 0)) {
-        warn.style.display = 'none';
-    }
-}
 window.addEventListener('DOMContentLoaded', function() {
     if (typeof setDefaultDates === 'function') setDefaultDates();
     
@@ -1268,22 +1233,70 @@ function closeLoginModal() {
   document.getElementById('loginModal').style.display = 'none';
 }
 
-// Dữ liệu giá từ server
-const roomPrices = {
-    giaGio: /*[[${room.giaGio}]]*/ 0,
-    giaNgay: /*[[${room.giaNgay}]]*/ 0,
-    giaQuaDem: /*[[${room.giaQuaDem}]]*/ 0
-};
-
+<script>
+// Giải pháp đột phá - sử dụng data attributes
 function updatePrice() {
-    const priceType = document.getElementById('priceType').value;
-    const priceElement = document.getElementById('roomPrice');
-    const price = roomPrices[priceType] || 0;
+    console.log('updatePrice function called');
     
-    // Format số theo định dạng Việt Nam
-    const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
-    priceElement.textContent = formattedPrice + ' VNĐ';
+    var bookingTypeElement = document.getElementById('bookingType');
+    var priceDisplayElement = document.getElementById('roomPriceDisplay');
+    
+    if (!bookingTypeElement || !priceDisplayElement) {
+        console.log('Missing elements for price calculation');
+        return;
+    }
+    
+    var bookingType = bookingTypeElement.value;
+    console.log('Booking type:', bookingType);
+    
+    // Lấy giá từ data attributes
+    var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
+    var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
+    var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
+    
+    console.log('Prices from data attributes:', { giaGio: giaGio, giaNgay: giaNgay, giaDem: giaDem });
+    
+    // Map booking type to price
+    var basePrice;
+    var priceLabel;
+    if (bookingType === 'gio') {
+        basePrice = giaGio;
+        priceLabel = 'Giá giờ';
+    } else if (bookingType === 'dem') {
+        basePrice = giaDem;
+        priceLabel = 'Giá đêm';
+    } else {
+        basePrice = giaNgay;
+        priceLabel = 'Giá ngày';
+    }
+    
+    console.log('Price calculation:', { priceLabel: priceLabel, basePrice: basePrice });
+    
+    var formattedBasePrice = new Intl.NumberFormat('vi-VN').format(basePrice);
+    priceDisplayElement.innerHTML = priceLabel + ': <span class="price-value">' + formattedBasePrice + '</span> VNĐ';
+    
+    console.log('Final price set:', priceDisplayElement.innerHTML);
 }
+
+// Khởi tạo giá khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing pricing...');
+    
+    // Cập nhật giá ban đầu
+    updatePrice();
+    
+    // Thêm event listener cho booking type
+    var bookingTypeElement = document.getElementById('bookingType');
+    
+    if (bookingTypeElement) {
+        bookingTypeElement.addEventListener('change', function() {
+            console.log('Booking type changed to:', this.value);
+            updatePrice();
+        });
+    }
+    
+    console.log('Pricing system initialized successfully!');
+});
 </script>
 </body>
 
