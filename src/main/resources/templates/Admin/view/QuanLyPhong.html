@@ -11,6 +11,85 @@
     <link rel="stylesheet" th:href="@{/css/Admin/admin-modal.css}">
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
+    <style>
+        /* Responsive cho thanh tìm kiếm */
+        @media (max-width: 1024px) {
+          .search-filter-section > div {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 15px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .search-filter-section > div {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+          }
+        }
+        
+        /* Focus states cho input và select */
+        .search-filter-section input:focus,
+        .search-filter-section select:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Pagination button hover effects */
+        .pagination-btn:hover:not(:disabled) {
+          background: #f1f5f9 !important;
+          border-color: #94a3b8 !important;
+          transform: translateY(-1px);
+        }
+        
+        .pagination-btn:disabled {
+          background: #f8fafc !important;
+          color: #cbd5e1 !important;
+          border-color: #e2e8f0 !important;
+          cursor: not-allowed !important;
+        }
+        
+        .pagination-btn.active {
+          background: #3b82f6 !important;
+          color: white !important;
+          border-color: #3b82f6 !important;
+          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Responsive pagination */
+        @media (max-width: 1024px) {
+          .pagination-controls {
+            flex-direction: column !important;
+            gap: 15px !important;
+            align-items: center !important;
+          }
+          
+          .pagination-buttons {
+            order: 2;
+          }
+          
+          .items-per-page {
+            order: 3;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .pagination-controls {
+            padding: 15px !important;
+          }
+          
+          .pagination-info {
+            font-size: 12px !important;
+            text-align: center;
+          }
+          
+          .pagination-btn {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+          }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -182,42 +261,45 @@
                 </div>
             </div>
 
-            <form method="get" class="filter-form">
+            <!-- Thanh tìm kiếm và lọc -->
+            <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+                <!-- Tìm kiếm theo từ khóa -->
                 <div>
-                    <label for="keyword">Tìm kiếm</label><br>
-                    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Nhập số phòng..."
-                        class="filter-input">
+                  <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
+                  <input type="text" id="searchInput" placeholder="Số phòng, tên phòng... (tự động tìm kiếm)" 
+                         style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 </div>
+                
+                <!-- Lọc theo hạng phòng -->
                 <div>
-                    <label for="roomTypeId">Hạng phòng</label><br>
-                    <select id="roomTypeId" name="roomTypeId" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option th:each="type : ${roomTypes}" th:value="${type.id}" th:text="${type.tenLoaiPhong}"
-                            th:selected="${type.id} == ${roomTypeId}"></option>
+                  <label for="roomTypeFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Hạng phòng:</label>
+                  <select id="roomTypeFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                    <option value="">Tất cả hạng phòng</option>
+                    <option th:each="type : ${roomTypes}" th:value="${type.tenLoaiPhong}" th:text="${type.tenLoaiPhong}"></option>
                     </select>
                 </div>
+                
+                <!-- Lọc theo trạng thái -->
                 <div>
-                    <label for="status">Trạng thái</label><br>
-                    <select id="status" name="status" class="filter-select">
-                        <option value="">Tất cả</option>
-                        <option th:each="st : ${roomStatuses}" th:value="${st}" th:text="${st}"
-                            th:selected="${st} == ${status}"></option>
+                  <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
+                  <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Sẵn sàng">Sẵn sàng</option>
+                    <option value="Bảo trì">Bảo trì</option>
+                    <option value="Đang sử dụng">Đang sử dụng</option>
+                    <option value="Dọn dẹp">Dọn dẹp</option>
                     </select>
                 </div>
+                
+                <!-- Lọc theo tầng -->
                 <div>
-                    <label for="area">Khu vực (Tầng)</label><br>
-                    <input type="text" id="area" name="area" th:value="${area}" placeholder="Nhập tầng..."
-                        class="filter-input">
+                  <label for="floorFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tầng:</label>
+                  <input type="text" id="floorFilter" placeholder="Nhập tầng... (tự động lọc)" 
+                         style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 </div>
-                <div>
-                    <label for="branch">Chi nhánh</label><br>
-                    <input type="text" id="branch" name="branch" th:value="${branch}"
-                        placeholder="Nhập tên chi nhánh..." class="filter-input">
                 </div>
-                <div>
-                    <button type="submit" class="btn-filter">Lọc</button>
-                </div>
-            </form>
+            </section>
 
             <section class="content-section" id="contentSection">
                 <table aria-label="Danh sách phòng khách sạn" id="roomTable">
@@ -276,36 +358,31 @@
                     </tbody>
                 </table>
 
-                <div th:if="${totalItems > 0}" id="room-pagination-container" class="pagination-container">
-                    <div class="pagination-buttons">
-                        <a th:if="${hasPrevious}"
-                           th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage - 1}, size=${pageSize})}"
-                           class="pagination-btn">
-                            &laquo; Trước
-                        </a>
-                        <span th:unless="${hasPrevious}" class="pagination-btn disabled">
-                &laquo; Trước
-            </span>
-                        <div class="pagination-numbers">
-                            <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                               th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${pageNum}, size=${pageSize})}"
-                               th:text="${pageNum + 1}"
-                               th:class="${pageNum == currentPage ? 'pagination-btn active' : 'pagination-btn'}">
-                            </a>
+                <!-- Phân trang -->
+                <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+                        Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> (<span id="totalItemsDisplay">0</span> phòng)
                         </div>
-                        <a th:if="${hasNext}"
-                           th:href="@{/admin/rooms(keyword=${keyword}, roomTypeId=${roomTypeId}, status=${status}, area=${area}, branch=${branch}, page=${currentPage + 1}, size=${pageSize})}"
-                           class="pagination-btn">
-                            Sau &raquo;
-                        </a>
-                        <span th:unless="${hasNext}" class="pagination-btn disabled">
-                Sau &raquo;
-            </span>
+                    <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+                        <button id="prevPageBtn" class="pagination-btn" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <span class="material-icons" style="font-size: 16px;">chevron_left</span>
+                            Trước
+                        </button>
+                        <div id="pageNumbers" style="display: flex; gap: 4px; align-items: center;"></div>
+                        <button id="nextPageBtn" class="pagination-btn" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            Sau
+                            <span class="material-icons" style="font-size: 16px;">chevron_right</span>
+                        </button>
                     </div>
-                    <div class="pagination-info">
-                        Hiển thị <span th:text="${#numbers.formatInteger(currentPage * pageSize + 1, 1, 'COMMA')}">1</span> -
-                        <span th:text="${#numbers.formatInteger(T(java.lang.Math).min(((currentPage + 1) * pageSize).longValue(), totalItems), 1, 'COMMA')}">5</span>
-                        của <span th:text="${#numbers.formatInteger(totalItems, 1, 'COMMA')}">10</span> phòng
+                    <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+                        <select id="itemsPerPageSelect" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
                     </div>
                 </div>
             </section>
@@ -614,6 +691,229 @@
                     });
             };
         })();
+
+        // ===== TÌM KIẾM TỰ ĐỘNG VÀ LỌC =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy các element
+            const searchInput = document.getElementById('searchInput');
+            const roomTypeFilter = document.getElementById('roomTypeFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const floorFilter = document.getElementById('floorFilter');
+            const roomTable = document.getElementById('roomTable');
+            const roomTableBody = document.getElementById('roomTableBody');
+            
+            // Lưu trữ dữ liệu gốc
+            let originalData = [];
+            let filteredData = [];
+            let currentPage = 1;
+            let itemsPerPage = 10;
+            
+            // Lấy các element phân trang
+            const currentPageDisplay = document.getElementById('currentPageDisplay');
+            const totalPagesDisplay = document.getElementById('totalPagesDisplay');
+            const totalItemsDisplay = document.getElementById('totalItemsDisplay');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
+            
+            // Khởi tạo dữ liệu
+            function initializeData() {
+                originalData = getOriginalData();
+                filteredData = [...originalData];
+                updatePagination();
+            }
+            
+            // Lấy dữ liệu từ bảng
+            function getOriginalData() {
+                const rows = roomTableBody.querySelectorAll('tr[data-id]');
+                return Array.from(rows).map(row => {
+                    const cells = row.querySelectorAll('td');
+                    return {
+                        id: row.getAttribute('data-id'),
+                        roomNumber: cells[1]?.textContent?.trim() || '', // Số phòng
+                        roomType: cells[2]?.textContent?.trim() || '', // Hạng phòng
+                        floor: cells[3]?.textContent?.trim() || '', // Tầng
+                        status: cells[8]?.textContent?.trim() || '', // Trạng thái
+                        element: row
+                    };
+                });
+            }
+            
+            // Tìm kiếm và lọc
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const selectedRoomType = roomTypeFilter.value;
+                const selectedStatus = statusFilter.value;
+                const floorTerm = floorFilter.value.toLowerCase().trim();
+                
+                filteredData = originalData.filter(item => {
+                    // Tìm kiếm theo từ khóa
+                    const matchesSearch = !searchTerm || 
+                        item.roomNumber.toLowerCase().includes(searchTerm) ||
+                        item.roomType.toLowerCase().includes(searchTerm);
+                    
+                    // Lọc theo hạng phòng - so sánh với tên loại phòng
+                    const matchesRoomType = !selectedRoomType || 
+                        item.roomType.toLowerCase() === selectedRoomType.toLowerCase();
+                    
+                    // Lọc theo trạng thái - so sánh với text hiển thị
+                    const matchesStatus = !selectedStatus || 
+                        item.status.toLowerCase() === selectedStatus.toLowerCase();
+                    
+                    // Lọc theo tầng
+                    const matchesFloor = !floorTerm || 
+                        item.floor.toLowerCase().includes(floorTerm);
+                    
+                    return matchesSearch && matchesRoomType && matchesStatus && matchesFloor;
+                });
+                
+                updatePagination();
+            }
+            
+            // Cập nhật phân trang
+            function updatePagination() {
+                const totalItems = filteredData.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                
+                // Cập nhật thông tin phân trang
+                currentPageDisplay.textContent = currentPage;
+                totalPagesDisplay.textContent = totalPages;
+                totalItemsDisplay.textContent = totalItems;
+                
+                // Enable/disable nút Previous/Next
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= totalPages;
+                
+                // Tạo nút trang
+                createPageNumbers(totalPages);
+                
+                // Hiển thị dữ liệu cho trang hiện tại
+                displayCurrentPage();
+            }
+            
+            // Tạo nút trang
+            function createPageNumbers(totalPages) {
+                pageNumbers.innerHTML = '';
+                
+                const startPage = Math.max(1, currentPage - 1);
+                const endPage = Math.min(totalPages, currentPage + 1);
+                
+                // Nút trang đầu
+                if (startPage > 1) {
+                    createPageButton(1);
+                    if (startPage > 2) {
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+                    }
+                }
+                
+                // Các nút trang xung quanh trang hiện tại
+                for (let i = startPage; i <= endPage; i++) {
+                    createPageButton(i);
+                }
+                
+                // Nút trang cuối
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+                    }
+                    createPageButton(totalPages);
+                }
+            }
+            
+            // Tạo nút trang
+            function createPageButton(pageNum) {
+                const button = document.createElement('button');
+                button.textContent = pageNum;
+                button.className = 'pagination-btn';
+                button.style.cssText = 'padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; min-width: 32px; text-align: center; cursor: pointer;';
+                
+                if (pageNum === currentPage) {
+                    button.style.background = '#3b82f6';
+                    button.style.color = 'white';
+                    button.style.borderColor = '#3b82f6';
+                }
+                
+                button.addEventListener('click', () => {
+                    currentPage = pageNum;
+                    updatePagination();
+                });
+                
+                pageNumbers.appendChild(button);
+            }
+            
+            // Hiển thị dữ liệu cho trang hiện tại
+            function displayCurrentPage() {
+                // Ẩn tất cả các dòng
+                originalData.forEach(item => {
+                    item.element.style.display = 'none';
+                });
+                
+                // Hiển thị dữ liệu cho trang hiện tại
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const currentPageData = filteredData.slice(startIndex, endIndex);
+                
+                currentPageData.forEach(item => {
+                    item.element.style.display = '';
+                });
+            }
+            
+            // Auto-search với debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    performSearch();
+                }
+            });
+            
+            // Auto-search cho các filter
+            roomTypeFilter.addEventListener('change', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            statusFilter.addEventListener('change', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            floorFilter.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            // Event listeners cho phân trang
+            prevPageBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', function() {
+                const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+            
+            itemsPerPageSelect.addEventListener('change', function() {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Khởi tạo
+            initializeData();
+        });
     </script>
 
 <script th:src="@{/js/responsive.js}"></script>

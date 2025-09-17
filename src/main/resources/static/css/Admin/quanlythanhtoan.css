@@ -318,54 +318,49 @@ tbody tr:hover {
     }
 }
 
-/* Action buttons in table - Sửa lại để hiển thị đầy đủ và đồng bộ */
+/* Action buttons in table - Đơn giản như quản lý khuyến mãi */
 .btn-view, .btn-edit, .btn-delete {
-    background: none;
-    border: none;
-    padding: 8px;
-    border-radius: 50%; /* Dùng bo tròn thay vì góc vuông */
+    background: transparent;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    margin: 0 2px;
-    width: 32px;
-    height: 32px;
+    margin: 0 4px;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .btn-view {
-    color: #fff;
-    background-color: #3b82f6;
+    color: #6b7280;
 }
 
 .btn-edit {
-    color: #fff;
-    background-color: #f59e0b;
+    color: #6b7280;
 }
 
 .btn-delete {
-    color: #fff;
-    background-color: #ef4444;
+    color: #6b7280;
 }
 
 .btn-view:hover {
-    background-color: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+    background: #f9fafb;
+    color: #374151;
+    border-color: #9ca3af;
 }
 
 .btn-edit:hover {
-    background-color: #d97706;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25);
+    background: #f9fafb;
+    color: #374151;
+    border-color: #9ca3af;
 }
 
 .btn-delete:hover {
-    background-color: #dc2626;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25);
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
 }
 
 /* Đảm bảo Material Icons hiển thị đúng trong button */
@@ -515,6 +510,15 @@ input[type="date"]:focus {
     table th:nth-child(7), table td:nth-child(7) { display: none; } /* Ẩn Ngày thanh toán */
     table th:nth-child(8), table td:nth-child(8) { width: 15%; } /* Trạng thái */
     table th:nth-child(9), table td:nth-child(9) { width: 18%; } /* Thao tác */
+    .btn-view, .btn-edit, .btn-delete {
+        padding: 6px 8px;
+        margin: 0 2px;
+    }
+    .btn-view .material-icons,
+    .btn-edit .material-icons,
+    .btn-delete .material-icons {
+        font-size: 16px;
+    }
 }
 
 

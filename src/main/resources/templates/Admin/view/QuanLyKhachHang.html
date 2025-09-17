@@ -9,6 +9,269 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/css/Admin/quanlykhachhang.css}">
   <link rel="stylesheet" th:href="@{/css/responsive.css}">
+  
+  <style>
+    /* Cải thiện hiển thị bảng */
+    #customerTable {
+      font-size: 14px;
+      line-height: 1.4;
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    #customerTable th {
+      padding: 12px 8px !important;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f8fafc;
+      border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    #customerTable td {
+      padding: 12px 8px !important;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      color: #4b5563;
+    }
+    
+    #customerTable tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    
+    #customerTable tbody tr:nth-child(odd) {
+      background: white;
+    }
+    
+    #customerTable tbody tr:hover {
+      background: #f8fafc;
+      transition: background-color 0.2s ease;
+    }
+    
+    /* Container bảng với chiều cao cố định */
+    .table-container {
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    /* Custom scrollbar cho table container */
+    .table-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .table-container::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Header Layout Styles */
+    .header-layout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .header-layout h1 {
+      margin: 0;
+      color: #1f2937;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    .header-layout button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      background: #10b981;
+    }
+    
+    .header-layout button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* Content Section Styles */
+    .content-section {
+      width: 100%;
+      max-width: none;
+    }
+    
+    /* Search and Filter Section */
+    .search-filter-section {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    
+    .search-filter-section > div {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 15px;
+      align-items: end;
+      width: 100%;
+    }
+    
+    .search-filter-section label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .search-filter-section input,
+    .search-filter-section select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .search-filter-section input:focus,
+    .search-filter-section select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Server Pagination Styles */
+    .pagination-btn:hover:not(:disabled) {
+      background: #f1f5f9 !important;
+      border-color: #94a3b8 !important;
+      transform: translateY(-1px);
+    }
+    
+    .pagination-btn:disabled {
+      background: #f8fafc !important;
+      color: #cbd5e1 !important;
+      border-color: #e2e8f0 !important;
+      cursor: not-allowed !important;
+    }
+    
+    .pagination-btn.active {
+      background: #3b82f6 !important;
+      color: white !important;
+      border-color: #3b82f6 !important;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+    
+    .pagination-controls {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .pagination-controls select {
+      cursor: pointer;
+    }
+    
+    .pagination-controls select:hover {
+      border-color: #94a3b8 !important;
+    }
+    
+    /* Responsive cho pagination */
+    @media (max-width: 1024px) {
+      .pagination-controls {
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: center !important;
+        text-align: center !important;
+      }
+      
+      .pagination-buttons {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+      }
+      
+      .items-per-page {
+        justify-content: center !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .pagination-controls {
+        padding: 12px 15px !important;
+      }
+      
+      .pagination-btn {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+      }
+      
+      .pagination-info {
+        font-size: 13px !important;
+      }
+      
+      .items-per-page span {
+        font-size: 12px !important;
+      }
+      
+      .items-per-page select {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+      }
+      
+      #customerTable th {
+        font-size: 12px !important;
+        padding: 8px 6px !important;
+      }
+      
+      #customerTable td {
+        font-size: 12px !important;
+        padding: 8px 6px !important;
+      }
+      
+      .header-layout {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+      }
+      
+      .header-layout button {
+        align-self: flex-start !important;
+      }
+      
+      .search-filter-section > div {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -26,25 +289,65 @@
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
-      <h1>Quản lý khách hàng</h1>
-      <section class="content-section" id="contentSection">
-        <button class="btn btn-primary" id="btnAddCustomer">
+      <!-- Header Layout -->
+      <div class="header-layout" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700;">Quản lý khách hàng</h1>
+        <button class="btn btn-primary" id="btnAddCustomer" style="background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 8px;">
           <span class="material-icons">person_add</span>
           Thêm khách hàng mới
         </button>
-        <table aria-label="Danh sách khách hàng" id="customerTable">
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>ID</th>
-              <th>Tên</th>
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th>Địa chỉ</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
+      </div>
+      
+      <section class="content-section" id="contentSection">
+        <!-- Search and Filter Section -->
+        <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+            <!-- Tìm kiếm -->
+            <div>
+              <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
+              <input type="text" id="searchInput" placeholder="ID, tên, email, số điện thoại... (tự động tìm kiếm)" 
+                     style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            </div>
+            
+            <!-- Lọc theo địa chỉ -->
+            <div>
+              <label for="addressFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Địa chỉ:</label>
+              <select id="addressFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Tất cả địa chỉ</option>
+                <option value="Hà Nội">Hà Nội</option>
+                <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                <option value="Đà Nẵng">Đà Nẵng</option>
+                <option value="Hải Phòng">Hải Phòng</option>
+                <option value="Khác">Khác</option>
+              </select>
+            </div>
+            
+            <!-- Lọc theo trạng thái -->
+            <div>
+              <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
+              <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Hoạt động">Hoạt động</option>
+                <option value="Khóa">Khóa</option>
+                <option value="Tạm khóa">Tạm khóa</option>
+              </select>
+            </div>
+          </div>
+        </section>
+        <div class="table-container">
+          <table aria-label="Danh sách khách hàng" id="customerTable">
+            <thead>
+              <tr>
+                <th style="width: 60px; text-align: center;">STT</th>
+                <th style="width: 80px;">ID</th>
+                <th style="width: 150px;">Tên</th>
+                <th style="width: 200px;">Email</th>
+                <th style="width: 120px;">Số điện thoại</th>
+                <th style="width: 150px;">Địa chỉ</th>
+                <th style="width: 100px; text-align: center;">Trạng thái</th>
+                <th style="width: 120px; text-align: center;">Thao tác</th>
+              </tr>
+            </thead>
           <tbody id="customerTableBody">
             <!-- Dữ liệu khách hàng từ controller -->
             <tr th:each="customer, stat : ${customers}">
@@ -73,7 +376,51 @@
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
+
+        <!-- Server Pagination Controls -->
+        <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <!-- Pagination Info -->
+          <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+            (<span id="totalItemsDisplay">0</span> khách hàng)
+          </div>
+          
+          <!-- Pagination Buttons -->
+          <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+            <!-- Previous Button -->
+            <button id="prevPageBtn" class="pagination-btn" disabled
+                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              <span>◀</span> Trước
+            </button>
+            
+            <!-- Page Numbers -->
+            <div id="pageNumbers" style="display: flex; gap: 4px;">
+              <!-- Sẽ được tạo bởi JavaScript -->
+            </div>
+            
+            <!-- Next Button -->
+            <button id="nextPageBtn" class="pagination-btn" disabled
+                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              Sau <span>▶</span>
+            </button>
+          </div>
+          
+          <!-- Items per page selector -->
+          <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+            <select id="itemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+          </div>
+        </div>
+      </section>
 
         <!-- Modal form thêm/sửa khách hàng (ẩn mặc định) -->
         <div class="modal-overlay" id="customerModal" style="display:none;">
@@ -258,6 +605,252 @@
       document.getElementById('customerId').value = '';
       form.setAttribute('data-mode', 'add');
     }
+
+    // Search and Filter Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Global variables
+      let originalData = [];
+      let filteredData = [];
+      let currentPage = 1;
+      let itemsPerPage = 25;
+
+      // Search and filter elements
+      const searchInput = document.getElementById('searchInput');
+      const addressFilter = document.getElementById('addressFilter');
+      const statusFilter = document.getElementById('statusFilter');
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const pageNumbers = document.getElementById('pageNumbers');
+      const currentPageDisplay = document.getElementById('currentPageDisplay');
+      const totalPagesDisplay = document.getElementById('totalPagesDisplay');
+      const totalItemsDisplay = document.getElementById('totalItemsDisplay');
+      const itemsPerPageSelect = document.getElementById('itemsPerPage');
+
+      // Initialize
+      function initializeData() {
+        originalData = getOriginalData();
+        filteredData = [...originalData];
+        updatePagination();
+      }
+
+      // Get original data from table
+      function getOriginalData() {
+        const rows = document.querySelectorAll('#customerTableBody tr');
+        return Array.from(rows).map(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length < 7) return null; // Skip invalid rows
+          
+          return {
+            element: row,
+            id: cells[1]?.textContent?.trim() || '',
+            name: cells[2]?.textContent?.trim() || '',
+            email: cells[3]?.textContent?.trim() || '',
+            phone: cells[4]?.textContent?.trim() || '',
+            address: cells[5]?.textContent?.trim() || '',
+            status: cells[6]?.textContent?.trim() || ''
+          };
+        }).filter(item => item !== null);
+      }
+
+      // Extract address from full address
+      function extractAddress(fullAddress) {
+        if (!fullAddress) return '';
+        // Extract city from address (last part after comma)
+        const parts = fullAddress.split(',');
+        return parts[parts.length - 1]?.trim() || fullAddress;
+      }
+
+      // Extract status from HTML
+      function extractStatus(statusCell) {
+        if (!statusCell) return '';
+        const statusText = statusCell.textContent?.trim() || '';
+        return statusText;
+      }
+
+      // Tìm kiếm và lọc
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedAddress = addressFilter.value;
+        const selectedStatus = statusFilter.value;
+
+        filteredData = originalData.filter(item => {
+          // Search term matching
+          const matchesSearch = !searchTerm || 
+            item.id.toLowerCase().includes(searchTerm) ||
+            item.name.toLowerCase().includes(searchTerm) ||
+            item.email.toLowerCase().includes(searchTerm) ||
+            item.phone.toLowerCase().includes(searchTerm);
+
+          // Address filter
+          const itemAddress = extractAddress(item.address);
+          const matchesAddress = !selectedAddress || 
+            itemAddress.includes(selectedAddress) ||
+            (selectedAddress === 'Khác' && !['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng'].some(city => itemAddress.includes(city)));
+
+          // Status filter
+          const matchesStatus = !selectedStatus || 
+            item.status === selectedStatus;
+
+          return matchesSearch && matchesAddress && matchesStatus;
+        });
+
+        currentPage = 1;
+        updatePagination();
+      }
+
+      // Update pagination display
+      function updatePagination() {
+        const totalItems = filteredData.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // Update pagination info
+        currentPageDisplay.textContent = currentPage;
+        totalPagesDisplay.textContent = totalPages;
+        totalItemsDisplay.textContent = totalItems;
+
+        // Update pagination buttons
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+
+        // Create page numbers
+        createPageNumbers(totalPages);
+
+        // Show/hide rows based on current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        // Hide all rows first
+        originalData.forEach(item => {
+          item.element.style.display = 'none';
+        });
+
+        // Show filtered rows for current page
+        filteredData.slice(startIndex, endIndex).forEach(item => {
+          item.element.style.display = '';
+        });
+
+        // Update row numbers
+        updateRowNumbers();
+      }
+
+      // Create page number buttons
+      function createPageNumbers(totalPages) {
+        pageNumbers.innerHTML = '';
+        
+        if (totalPages <= 1) return;
+
+        const startPage = Math.max(1, currentPage - 1);
+        const endPage = Math.min(totalPages, currentPage + 1);
+
+        // Previous pages
+        if (startPage > 1) {
+          createPageButton(1);
+          if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '6px 8px';
+            ellipsis.style.color = '#64748b';
+            pageNumbers.appendChild(ellipsis);
+          }
+        }
+
+        // Current page range
+        for (let i = startPage; i <= endPage; i++) {
+          createPageButton(i);
+        }
+
+        // Next pages
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '6px 8px';
+            ellipsis.style.color = '#64748b';
+            pageNumbers.appendChild(ellipsis);
+          }
+          createPageButton(totalPages);
+        }
+      }
+
+      // Create individual page button
+      function createPageButton(pageNum) {
+        const button = document.createElement('button');
+        button.textContent = pageNum;
+        button.className = 'pagination-btn';
+        if (pageNum === currentPage) {
+          button.classList.add('active');
+        }
+        
+        button.style.cssText = `
+          padding: 6px 10px;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          background: white;
+          color: #475569;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 500;
+          transition: all 0.2s;
+          min-width: 32px;
+          text-align: center;
+          cursor: pointer;
+        `;
+
+        button.addEventListener('click', () => {
+          currentPage = pageNum;
+          updatePagination();
+        });
+
+        pageNumbers.appendChild(button);
+      }
+
+      // Update row numbers (STT)
+      function updateRowNumbers() {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        filteredData.slice(startIndex, startIndex + itemsPerPage).forEach((item, index) => {
+          const sttCell = item.element.querySelector('td:first-child');
+          if (sttCell) {
+            sttCell.textContent = startIndex + index + 1;
+          }
+        });
+      }
+
+      // Event listeners
+      let searchTimeout;
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          performSearch();
+        }, 300);
+      });
+
+      addressFilter.addEventListener('change', performSearch);
+      statusFilter.addEventListener('change', performSearch);
+
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePagination();
+        }
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePagination();
+        }
+      });
+
+      itemsPerPageSelect.addEventListener('change', function() {
+        itemsPerPage = parseInt(this.value);
+        currentPage = 1;
+        updatePagination();
+      });
+
+      // Initialize on page load
+      initializeData();
+    });
   </script>
 <script th:src="@{/js/responsive.js}"></script>
 </body>

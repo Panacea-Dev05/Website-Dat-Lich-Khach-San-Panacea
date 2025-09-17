@@ -10,6 +10,269 @@
     <link rel="stylesheet" th:href="@{/css/Admin/quanlynhanvien.css}">
     <link rel="stylesheet" th:href="@{/css/Admin/quanlynhanvien-status.css}">
     <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    
+    <style>
+        /* Cải thiện hiển thị bảng */
+        #staffTable {
+          font-size: 14px;
+          line-height: 1.4;
+          width: 100%;
+          border-collapse: collapse;
+          background: white;
+        }
+        
+        #staffTable th {
+          padding: 12px 8px !important;
+          font-size: 13px;
+          font-weight: 600;
+          background: #f8fafc;
+          border-bottom: 2px solid #e5e7eb;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          color: #374151;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        #staffTable td {
+          padding: 12px 8px !important;
+          font-size: 13px;
+          border-bottom: 1px solid #f1f5f9;
+          vertical-align: middle;
+          color: #4b5563;
+        }
+        
+        #staffTable tbody tr:nth-child(even) {
+          background: #fafbfc;
+        }
+        
+        #staffTable tbody tr:nth-child(odd) {
+          background: white;
+        }
+        
+        #staffTable tbody tr:hover {
+          background: #f8fafc;
+          transition: background-color 0.2s ease;
+        }
+        
+        /* Container bảng với chiều cao cố định */
+        .table-container {
+          max-height: 70vh;
+          overflow-y: auto;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          margin-bottom: 20px;
+        }
+        
+        /* Custom scrollbar cho table container */
+        .table-container::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        
+        /* Header Layout Styles */
+        .header-layout {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        
+        .header-layout h1 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 28px;
+          font-weight: 700;
+        }
+        
+        .header-layout button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 600;
+          box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+          transition: all 0.2s;
+          border: none;
+          cursor: pointer;
+          background: #10b981;
+        }
+        
+        .header-layout button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Content Section Styles */
+        .content-section {
+          width: 100%;
+          max-width: none;
+        }
+        
+        /* Search and Filter Section */
+        .search-filter-section {
+          background: #f8fafc;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          width: 100%;
+        }
+        
+        .search-filter-section > div {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+          gap: 15px;
+          align-items: end;
+          width: 100%;
+        }
+        
+        .search-filter-section label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: 600;
+          color: #374151;
+        }
+        
+        .search-filter-section input,
+        .search-filter-section select {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          font-size: 14px;
+          background: white;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .search-filter-section input:focus,
+        .search-filter-section select:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Server Pagination Styles */
+        .pagination-btn:hover:not(:disabled) {
+          background: #f1f5f9 !important;
+          border-color: #94a3b8 !important;
+          transform: translateY(-1px);
+        }
+        
+        .pagination-btn:disabled {
+          background: #f8fafc !important;
+          color: #cbd5e1 !important;
+          border-color: #e2e8f0 !important;
+          cursor: not-allowed !important;
+        }
+        
+        .pagination-btn.active {
+          background: #3b82f6 !important;
+          color: white !important;
+          border-color: #3b82f6 !important;
+          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .pagination-controls {
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+        }
+        
+        .pagination-controls select {
+          cursor: pointer;
+        }
+        
+        .pagination-controls select:hover {
+          border-color: #94a3b8 !important;
+        }
+        
+        /* Responsive cho pagination */
+        @media (max-width: 1024px) {
+          .pagination-controls {
+            flex-direction: column !important;
+            gap: 15px !important;
+            align-items: center !important;
+            text-align: center !important;
+          }
+          
+          .pagination-buttons {
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+          }
+          
+          .items-per-page {
+            justify-content: center !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .pagination-controls {
+            padding: 12px 15px !important;
+          }
+          
+          .pagination-btn {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+          }
+          
+          .pagination-info {
+            font-size: 13px !important;
+          }
+          
+          .items-per-page span {
+            font-size: 12px !important;
+          }
+          
+          .items-per-page select {
+            font-size: 12px !important;
+            padding: 3px 6px !important;
+          }
+          
+          #staffTable th {
+            font-size: 12px !important;
+            padding: 8px 6px !important;
+          }
+          
+          #staffTable td {
+            font-size: 12px !important;
+            padding: 8px 6px !important;
+          }
+          
+          .header-layout {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 15px !important;
+          }
+          
+          .header-layout button {
+            align-self: flex-start !important;
+          }
+          
+          .search-filter-section > div {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+          }
+        }
+    </style>
 </head>
 
 <body>
@@ -27,23 +290,63 @@
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
         <main role="main" tabindex="0">
-            <h1>Quản lý nhân viên</h1>
+            <!-- Header Layout -->
+            <div class="header-layout" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h1 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700;">Quản lý nhân viên</h1>
+              <button class="btn btn-primary" id="btnAddStaff" style="background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons">person_add</span>
+                Thêm nhân viên mới
+              </button>
+            </div>
+            
             <section class="content-section" id="contentSection">
-                <button class="btn btn-primary" id="btnAddStaff">
-          <span class="material-icons">person_add</span>
-          Thêm nhân viên mới
-        </button>
+              <!-- Search and Filter Section -->
+              <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+                  <!-- Tìm kiếm -->
+                  <div>
+                    <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
+                    <input type="text" id="searchInput" placeholder="Mã nhân viên, họ tên, email... (tự động tìm kiếm)" 
+                           style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                  </div>
+                  
+                  <!-- Lọc theo chức vụ -->
+                  <div>
+                    <label for="positionFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Chức vụ:</label>
+                    <select id="positionFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                      <option value="">Tất cả chức vụ</option>
+                      <option value="Quản lý">Quản lý</option>
+                      <option value="Nhân viên">Nhân viên</option>
+                      <option value="Bảo vệ">Bảo vệ</option>
+                      <option value="Lễ tân">Lễ tân</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Lọc theo trạng thái -->
+                  <div>
+                    <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
+                    <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                      <option value="">Tất cả trạng thái</option>
+                      <option value="Hoạt động">Hoạt động</option>
+                      <option value="Nghỉ việc">Nghỉ việc</option>
+                      <option value="Tạm nghỉ">Tạm nghỉ</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+                <div class="table-container">
                 <table aria-label="Danh sách nhân viên" id="staffTable">
                     <thead>
                         <tr>
-                            <th>STT</th>
-                            <th>Mã NV</th>
-                            <th>Họ và tên</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Chức vụ</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th style="width: 60px; text-align: center;">STT</th>
+                            <th style="width: 100px;">Mã NV</th>
+                            <th style="width: 150px;">Họ và tên</th>
+                            <th style="width: 200px;">Email</th>
+                            <th style="width: 120px;">Số điện thoại</th>
+                            <th style="width: 120px;">Chức vụ</th>
+                            <th style="width: 100px; text-align: center;">Trạng thái</th>
+                            <th style="width: 120px; text-align: center;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="staffTableBody">
@@ -75,6 +378,49 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
+                
+                <!-- Server Pagination Controls -->
+                <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                  <!-- Pagination Info -->
+                  <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+                    Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+                    (<span id="totalItemsDisplay">0</span> nhân viên)
+                  </div>
+                  
+                  <!-- Pagination Buttons -->
+                  <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+                    <!-- Previous Button -->
+                    <button id="prevPageBtn" class="pagination-btn" disabled
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                      <span>◀</span> Trước
+                    </button>
+                    
+                    <!-- Page Numbers -->
+                    <div id="pageNumbers" style="display: flex; gap: 4px;">
+                      <!-- Sẽ được tạo bởi JavaScript -->
+                    </div>
+                    
+                    <!-- Next Button -->
+                    <button id="nextPageBtn" class="pagination-btn" disabled
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                      Sau <span>▶</span>
+                    </button>
+                  </div>
+                  
+                  <!-- Items per page selector -->
+                  <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+                    <select id="bottomItemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="25" selected>25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+                  </div>
+                </div>
 
                 <!-- Modal form thêm/sửa nhân viên (ẩn mặc định) -->
                 <div class="modal-overlay" id="staffModal" style="display:none;">
@@ -89,33 +435,33 @@
 
                             <label for="maNhanVien">Mã nhân viên</label>
                             <input type="text" id="maNhanVien" name="maNhanVien" required placeholder="NV001" />
-                            
+
                             <label for="ho">Họ</label>
                             <input type="text" id="ho" name="ho" required placeholder="Nguyễn" />
-                            
+
                             <label for="ten">Tên</label>
                             <input type="text" id="ten" name="ten" required placeholder="Văn A" />
-                            
+
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" required placeholder="nguyenvana@panacea.com" />
-                            
+
                             <label for="soDienThoai">Số điện thoại</label>
                             <input type="text" id="soDienThoai" name="soDienThoai" required placeholder="0903123456"
                                 pattern="^[0-9()+\- ]{7,15}$" title="Chỉ nhập số, dấu + - ( )" />
-                            
+
                             <label for="chucVu">Chức vụ</label>
                             <select id="chucVu" name="chucVu" required>
                                 <option value="" disabled selected>Chọn chức vụ</option>
                                 <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
                             </select>
-                            
+
                             <label for="trangThai">Trạng thái</label>
                             <select id="trangThai" name="trangThai" required>
                                 <option value="" disabled selected>Chọn trạng thái</option>
                                 <option th:each="status : ${staffStatuses}" th:value="${status}"
                                     th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : 'Nghỉ việc'}"></option>
                             </select>
-                            
+
                             <div class="form-footer">
                                 <button type="submit" class="btn btn-primary" id="submitBtn">Lưu nhân viên</button>
                                 <button type="button" class="btn btn-danger" id="cancelBtn">Hủy</button>
@@ -183,7 +529,6 @@
     </div>
 
     <script th:src="@{/js/Admin/quanlynhanvien.js}"></script>
-    <script th:src="@{/js/Admin/quanlynhanvien-search.js}"></script>
     <script th:inline="javascript">
         // Hiển thị chi tiết nhân viên
         function viewStaff(staffId) {
@@ -274,6 +619,221 @@
             document.getElementById('staffId').value = '';
             form.setAttribute('data-mode', 'add');
         }
+        
+        // ===== PHÂN TRANG =====
+        document.addEventListener('DOMContentLoaded', function() {
+          // Lấy các element
+          const staffTable = document.getElementById('staffTable');
+          const staffTableBody = document.getElementById('staffTableBody');
+          
+          // Search and filter elements
+          const searchInput = document.getElementById('searchInput');
+          const positionFilter = document.getElementById('positionFilter');
+          const statusFilter = document.getElementById('statusFilter');
+          
+          // Phân trang ở cuối bảng
+          const bottomItemsPerPageSelect = document.getElementById('bottomItemsPerPage');
+          
+          // Lưu trữ dữ liệu gốc
+          let originalData = [];
+          let filteredData = [];
+          let currentPage = 1;
+          let itemsPerPage = 25;
+          
+          // Lấy dữ liệu gốc từ bảng
+          function getOriginalData() {
+            const rows = staffTableBody.querySelectorAll('tr');
+            originalData = Array.from(rows).map(row => {
+              const cells = row.querySelectorAll('td');
+              return {
+                element: row,
+                id: cells[1]?.textContent?.trim() || '',
+                name: cells[2]?.textContent?.trim() || '',
+                email: cells[3]?.textContent?.trim() || '',
+                phone: cells[4]?.textContent?.trim() || '',
+                position: cells[5]?.textContent?.trim() || '',
+                status: cells[6]?.textContent?.trim() || ''
+              };
+            });
+          }
+          
+          // Tìm kiếm và lọc
+          function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedPosition = positionFilter.value;
+            const selectedStatus = statusFilter.value;
+            
+            filteredData = originalData.filter(item => {
+              // Tìm kiếm theo từ khóa
+              const matchesSearch = !searchTerm || 
+                item.id.toLowerCase().includes(searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.email.toLowerCase().includes(searchTerm);
+              
+              // Lọc theo chức vụ
+              const matchesPosition = !selectedPosition || 
+                item.position === selectedPosition;
+              
+              // Lọc theo trạng thái
+              const matchesStatus = !selectedStatus || 
+                item.status === selectedStatus;
+              
+              return matchesSearch && matchesPosition && matchesStatus;
+            });
+            
+            // Reset về trang đầu
+            currentPage = 1;
+            
+            // Cập nhật phân trang
+            updatePagination();
+          }
+          
+          // Event listeners cho search và filter
+          let searchTimeout;
+          searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+              performSearch();
+            }, 300);
+          });
+          
+          positionFilter.addEventListener('change', function() {
+            performSearch();
+          });
+          
+          statusFilter.addEventListener('change', function() {
+            performSearch();
+          });
+          
+          // Khởi tạo dữ liệu gốc
+          getOriginalData();
+          filteredData = [...originalData];
+          
+          // Cập nhật phân trang
+          updatePagination();
+          
+          // Cập nhật phân trang
+          function updatePagination() {
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            
+            // Ẩn tất cả dòng
+            originalData.forEach(item => {
+              item.element.style.display = 'none';
+            });
+            
+            // Hiển thị dòng trong trang hiện tại
+            for (let i = startIndex; i < endIndex; i++) {
+              if (filteredData[i]) {
+                filteredData[i].element.style.display = '';
+                // Cập nhật STT
+                const sttCell = filteredData[i].element.querySelector('td:first-child');
+                if (sttCell) {
+                  sttCell.textContent = i + 1;
+                }
+              }
+            }
+            
+            // Cập nhật thông tin phân trang
+            document.getElementById('currentPageDisplay').textContent = currentPage;
+            document.getElementById('totalPagesDisplay').textContent = totalPages;
+            document.getElementById('totalItemsDisplay').textContent = totalItems;
+            
+            // Cập nhật nút Previous/Next
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+            
+            // Tạo nút phân trang
+            createPageNumbers(totalPages);
+          }
+          
+          // Tạo số trang
+          function createPageNumbers(totalPages) {
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Chỉ hiển thị trang hiện tại ± 1
+            const startPage = Math.max(1, currentPage - 1);
+            const endPage = Math.min(totalPages, currentPage + 1);
+            
+            for (let i = startPage; i <= endPage; i++) {
+              const pageBtn = document.createElement('button');
+              pageBtn.textContent = i;
+              pageBtn.className = i === currentPage ? 'pagination-btn active' : 'pagination-btn';
+              pageBtn.style.cssText = `
+                padding: 6px 10px; 
+                border: 1px solid #cbd5e1; 
+                border-radius: 6px; 
+                background: white; 
+                color: #475569; 
+                text-decoration: none; 
+                font-size: 13px; 
+                font-weight: 500; 
+                transition: all 0.2s; 
+                min-width: 32px; 
+                text-align: center;
+                cursor: pointer;
+              `;
+              
+              if (i === currentPage) {
+                pageBtn.style.background = '#3b82f6';
+                pageBtn.style.color = 'white';
+                pageBtn.style.borderColor = '#3b82f6';
+                pageBtn.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)';
+              }
+              
+              pageBtn.addEventListener('click', function() {
+                currentPage = i;
+                updatePagination();
+              });
+              
+              pageNumbers.appendChild(pageBtn);
+            }
+            
+            // Thêm dấu "..." nếu có nhiều trang hơn
+            if (totalPages > 3 && currentPage < totalPages - 1) {
+              const dots = document.createElement('span');
+              dots.textContent = '...';
+              dots.style.cssText = 'color: #94a3b8; font-size: 13px; padding: 0 4px;';
+              pageNumbers.appendChild(dots);
+            }
+          }
+          
+          // Event listeners cho nút Previous/Next
+          document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+              currentPage--;
+              updatePagination();
+            }
+          });
+          
+          document.getElementById('nextPageBtn').addEventListener('click', function() {
+            if (currentPage < totalPages) {
+              currentPage++;
+              updatePagination();
+            }
+          });
+          
+          // Thay đổi số mục/trang ở cuối
+          bottomItemsPerPageSelect.addEventListener('change', function() {
+            itemsPerPage = parseInt(this.value);
+            currentPage = 1;
+            updatePagination();
+          });
+          
+          // Khởi tạo dữ liệu gốc
+          getOriginalData();
+          
+          // Khởi tạo phân trang
+          updatePagination();
+        });
+        
     </script>
     <script th:src="@{/js/responsive.js}"></script>
 </body>

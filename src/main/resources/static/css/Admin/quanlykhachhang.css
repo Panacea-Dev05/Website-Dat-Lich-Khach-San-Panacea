@@ -273,91 +273,27 @@ button {
     }
 }
 
-/* Search and filter container */
-.search-filter-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin: 1.5rem 0;
-    align-items: center;
-    background-color: #f9fafb;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.search-container {
-    flex: 1;
-    min-width: 300px;
-    position: relative;
-}
-
-.search-container input {
-    width: 100%;
-    padding: 0.75rem 0.75rem 0.75rem 3rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.search-container input:focus {
-    border-color: #10b981;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-}
-
-.search-container .material-icons {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
-    font-size: 1.25rem;
-}
-
-.filter-container {
-    min-width: 200px;
-    display: flex;
-    align-items: center;
-}
-
-.filter-container select {
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background-color: white;
-    background-position: right 0.75rem center;
-    appearance: none;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.filter-container select:focus {
-    border-color: #10b981;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-}
 
 /* Action button styling - Target buttons directly in table cells */
 td .btn-view,
 td .btn-edit,
 td .btn-delete {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    border: none;
+    border: none !important;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
-    margin: 0 2px;
-    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 2px !important;
+    border-radius: 50% !important;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    font-size: 0.8rem !important;
     vertical-align: middle;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: transparent !important;
 }
 
 /* Action buttons container - for cells containing buttons */
@@ -366,42 +302,155 @@ td:has(.btn-view) {
     white-space: nowrap;
 }
 
+/* Override any conflicting styles */
+#customerTable td .btn-view,
+#customerTable td .btn-edit,
+#customerTable td .btn-delete {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: transparent !important;
+}
+
+#customerTable .btn-view {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+#customerTable .btn-edit {
+    background-color: #f59e0b !important;
+    color: white !important;
+}
+
+#customerTable .btn-delete {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* Override any green color that might be applied */
+#customerTable td .btn-view,
+#customerTable td .btn-edit,
+#customerTable td .btn-delete {
+    background-color: transparent !important;
+}
+
+#customerTable td .btn-view {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+#customerTable td .btn-edit {
+    background-color: #f59e0b !important;
+    color: white !important;
+}
+
+#customerTable td .btn-delete {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* Force override any inherited green colors */
+#customerTable tr td .btn-view,
+#customerTable tr td .btn-edit,
+#customerTable tr td .btn-delete {
+    background-color: transparent !important;
+}
+
+#customerTable tr td .btn-view {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+#customerTable tr td .btn-edit {
+    background-color: #f59e0b !important;
+    color: white !important;
+}
+
+#customerTable tr td .btn-delete {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* Override .btn class that might be applying green color */
+#customerTable .btn-view.btn,
+#customerTable .btn-edit.btn,
+#customerTable .btn-delete.btn {
+    background-color: transparent !important;
+}
+
+#customerTable .btn-view.btn {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+#customerTable .btn-edit.btn {
+    background-color: #f59e0b !important;
+    color: white !important;
+}
+
+#customerTable .btn-delete.btn {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
 .btn-view {
-    color: white;
-    background-color: #3b82f6;
+    color: white !important;
+    background-color: #3b82f6 !important;
 }
 
 .btn-view:hover {
-    background-color: #2563eb;
+    background-color: #2563eb !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25) !important;
 }
 
 .btn-edit {
-    color: white;
-    background-color: #f59e0b;
+    color: white !important;
+    background-color: #f59e0b !important;
 }
 
 .btn-edit:hover {
-    background-color: #d97706;
+    background-color: #d97706 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25) !important;
 }
 
 .btn-delete {
-    color: white;
-    background-color: #ef4444;
+    color: white !important;
+    background-color: #ef4444 !important;
 }
 
 .btn-delete:hover {
-    background-color: #dc2626;
+    background-color: #dc2626 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25);
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25) !important;
 }
 
 .btn-view:active, .btn-edit:active, .btn-delete:active {
     transform: translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Material Icons trong button */
+.btn-view .material-icons,
+.btn-edit .material-icons,
+.btn-delete .material-icons {
+    font-size: 18px !important;
+    line-height: 1 !important;
+    display: block !important;
+    color: inherit !important;
+    font-family: 'Material Icons' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    word-wrap: normal !important;
+    white-space: nowrap !important;
+    direction: ltr !important;
+    -webkit-font-smoothing: antialiased !important;
+    text-rendering: optimizeLegibility !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    font-feature-settings: 'liga' !important;
 }
 /* Layout - Fixed Structure */
 .app {
@@ -610,15 +659,15 @@ td .btn-delete {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: none;
+    background: transparent;
+    border: 1px solid #d1d5db;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
-    margin: 0 2px;
-    border-radius: 50%;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 0.8rem;
+    box-shadow: none;
+    font-size: 14px;
     vertical-align: middle;
 }
 
@@ -907,19 +956,6 @@ textarea {
     }
 
     /* Mobile table adjustments */
-    .search-filter-container {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .search-container {
-        min-width: auto;
-    }
-
-    .filter-container {
-        min-width: auto;
-    }
 
     /* Mobile table column widths */
     table th:nth-child(1), table td:nth-child(1) { width: 8%; }

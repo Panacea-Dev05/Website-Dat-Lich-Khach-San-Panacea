@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDTO;
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminServiceService;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -138,6 +141,105 @@ public class AdminServiceController {
     public String deleteService(@PathVariable Integer id) {
         adminServiceService.deleteService(id);
         return "redirect:/admin/services";
+    }
+    
+    // Thêm dịch vụ (AJAX)
+    @PostMapping("/add-ajax")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addServiceAjax(@ModelAttribute("serviceForm") ServiceDTO dto) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Validation
+            if (dto.getMaDichVu() == null || dto.getMaDichVu().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Mã dịch vụ không được để trống");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (dto.getTenDichVu() == null || dto.getTenDichVu().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Tên dịch vụ không được để trống");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (dto.getDonGia() == null || dto.getDonGia().doubleValue() < 0) {
+                response.put("success", false);
+                response.put("message", "Đơn giá không hợp lệ");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            ServiceDTO created = adminServiceService.createService(dto);
+            if (created != null) {
+                response.put("success", true);
+                response.put("message", "Thêm dịch vụ thành công");
+                response.put("data", created);
+            } else {
+                response.put("success", false);
+                response.put("message", "Không thể tạo dịch vụ");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi thêm dịch vụ: " + e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+    
+    // Cập nhật dịch vụ (AJAX)
+    @PostMapping("/edit-ajax/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> editServiceAjax(@PathVariable Integer id, @ModelAttribute("serviceForm") ServiceDTO dto) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Validation
+            if (dto.getMaDichVu() == null || dto.getMaDichVu().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Mã dịch vụ không được để trống");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (dto.getTenDichVu() == null || dto.getTenDichVu().trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Tên dịch vụ không được để trống");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (dto.getDonGia() == null || dto.getDonGia().doubleValue() < 0) {
+                response.put("success", false);
+                response.put("message", "Đơn giá không hợp lệ");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            ServiceDTO updated = adminServiceService.updateService(id, dto);
+            if (updated != null) {
+                response.put("success", true);
+                response.put("message", "Cập nhật dịch vụ thành công");
+                response.put("data", updated);
+            } else {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy dịch vụ để cập nhật");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi cập nhật dịch vụ: " + e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+    
+    // Xóa dịch vụ (AJAX)
+    @PostMapping("/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteServiceAjax(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            boolean success = adminServiceService.deleteService(id);
+            if (success) {
+                response.put("success", true);
+                response.put("message", "Xóa dịch vụ thành công");
+            } else {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy dịch vụ để xóa");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi xóa dịch vụ: " + e.getMessage());
+        }
+        return ResponseEntity.ok(response);
     }
 
     // Xem chi tiết dịch vụ (JSON)

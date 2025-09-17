@@ -8,6 +8,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/Admin/quanlyhangphong.css}">
+    
+    <style>
+        /* Responsive cho thanh tìm kiếm */
+        @media (max-width: 768px) {
+          .search-filter-section > div {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+          }
+        }
+        
+        /* Focus states cho input */
+        .search-filter-section input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Pagination button hover effects */
+        .pagination-btn:hover:not(:disabled) {
+          background: #f1f5f9 !important;
+          border-color: #94a3b8 !important;
+          transform: translateY(-1px);
+        }
+        
+        .pagination-btn:disabled {
+          background: #f8fafc !important;
+          color: #cbd5e1 !important;
+          border-color: #e2e8f0 !important;
+          cursor: not-allowed !important;
+        }
+        
+        .pagination-btn.active {
+          background: #3b82f6 !important;
+          color: white !important;
+          border-color: #3b82f6 !important;
+          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Responsive pagination */
+        @media (max-width: 1024px) {
+          .pagination-controls {
+            flex-direction: column !important;
+            gap: 15px !important;
+            align-items: center !important;
+          }
+          
+          .pagination-buttons {
+            order: 2;
+          }
+          
+          .items-per-page {
+            order: 3;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .pagination-controls {
+            padding: 15px !important;
+          }
+          
+          .pagination-info {
+            font-size: 12px !important;
+            text-align: center;
+          }
+          
+          .pagination-btn {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+          }
+        }
+    </style>
 
 </head>
 
@@ -289,48 +360,17 @@
                         <a href="/admin/rooms/room-types" class="tab active" style="font-weight: bold; text-decoration: none; list-style: none;">Hạng phòng</a>
                         <a href="/admin/rooms" class="tab" style="font-weight: bold; text-decoration: none; list-style: none;">Danh sách phòng</a>
                     </div>
-                    <!-- Filter bar hợp nhất -->
-                    <form method="get" class="filter-bar"
-                        style="display: flex; gap: 24px; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap;">
+                    <!-- Thanh tìm kiếm và lọc -->
+                    <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                      <div style="display: grid; grid-template-columns: 1fr; gap: 15px; align-items: end; width: 100%;">
+                        <!-- Tìm kiếm theo từ khóa -->
                         <div>
-                            <label for="keyword">Tìm kiếm</label>
-                            <input type="text" id="keyword" name="keyword" th:value="${keyword}"
-                                placeholder="Tìm kiếm hạng phòng"
-                                style="width: 180px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
+                          <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
+                          <input type="text" id="searchInput" placeholder="Tên hạng phòng, mô tả... (tự động tìm kiếm)" 
+                                 style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                         </div>
-                        <div>
-                            <label for="sortBy">Sắp xếp theo</label>
-                            <select id="sortBy" name="sortBy"
-                                style="width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
-                                <option value="">Mặc định</option>
-                                <option value="name">Tên hạng phòng</option>
-                                <option value="price">Giá phòng</option>
-                                <option value="capacity">Số lượng</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="branch">Chi nhánh</label>
-                            <select id="branch" name="branch"
-                                style="width: 140px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
-                                <option value="">Tất cả</option>
-                                <option th:each="b : ${branches}" th:value="${b}" th:text="${b}"
-                                    th:selected="${b} == ${branch}"></option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="pageSize">Số bản ghi:</label>
-                            <select id="pageSize" name="pageSize"
-                                style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid #ccc;">
-                                <option>15</option>
-                                <option>30</option>
-                                <option>50</option>
-                            </select>
-                        </div>
-                        <div>
-                            <button type="submit"
-                                style="padding: 8px 20px; border-radius: 6px; background: #009966; color: #fff; border: none; font-weight: 600; cursor: pointer;">Lọc</button>
-                        </div>
-                    </form>
+                      </div>
+                    </section>
                     <table
                         style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden;">
                         <thead style="background: #f4f7fc;">
@@ -373,6 +413,34 @@
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <!-- Phân trang -->
+                    <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+                            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> (<span id="totalItemsDisplay">0</span> hạng phòng)
+                        </div>
+                        <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+                            <button id="prevPageBtn" class="pagination-btn" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                <span class="material-icons" style="font-size: 16px;">chevron_left</span>
+                                Trước
+                            </button>
+                            <div id="pageNumbers" style="display: flex; gap: 4px; align-items: center;"></div>
+                            <button id="nextPageBtn" class="pagination-btn" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                Sau
+                                <span class="material-icons" style="font-size: 16px;">chevron_right</span>
+                            </button>
+                        </div>
+                        <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+                            <select id="itemsPerPageSelect" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
             </section>
         </main>
         <footer>
@@ -937,6 +1005,193 @@
         // Expose functions globally
         window.loadRoomsByRoomType = loadRoomsByRoomType;
         window.loadRoomsForEdit = loadRoomsForEdit;
+
+        // ===== TÌM KIẾM TỰ ĐỘNG VÀ PHÂN TRANG =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy các element
+            const searchInput = document.getElementById('searchInput');
+            const roomTypeTable = document.querySelector('table tbody');
+            const currentPageDisplay = document.getElementById('currentPageDisplay');
+            const totalPagesDisplay = document.getElementById('totalPagesDisplay');
+            const totalItemsDisplay = document.getElementById('totalItemsDisplay');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
+            
+            // Lưu trữ dữ liệu gốc
+            let originalData = [];
+            let filteredData = [];
+            let currentPage = 1;
+            let itemsPerPage = 10;
+            
+            // Khởi tạo dữ liệu
+            function initializeData() {
+                originalData = getOriginalData();
+                filteredData = [...originalData];
+                updatePagination();
+            }
+            
+            // Lấy dữ liệu từ bảng
+            function getOriginalData() {
+                const rows = roomTypeTable.querySelectorAll('tr[data-id]');
+                return Array.from(rows).map(row => {
+                    const cells = row.querySelectorAll('td');
+                    return {
+                        id: row.getAttribute('data-id'),
+                        maLoaiPhong: cells[0]?.textContent?.trim() || '',
+                        tenLoaiPhong: cells[1]?.textContent?.trim() || '',
+                        soLuongPhong: cells[2]?.textContent?.trim() || '',
+                        giaGio: cells[3]?.textContent?.trim() || '',
+                        giaNgay: cells[4]?.textContent?.trim() || '',
+                        giaQuaDem: cells[5]?.textContent?.trim() || '',
+                        element: row
+                    };
+                });
+            }
+            
+            // Tìm kiếm
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                
+                filteredData = originalData.filter(item => {
+                    return !searchTerm || 
+                        item.maLoaiPhong.toLowerCase().includes(searchTerm) ||
+                        item.tenLoaiPhong.toLowerCase().includes(searchTerm);
+                });
+                
+                currentPage = 1;
+                updatePagination();
+            }
+            
+            // Cập nhật phân trang
+            function updatePagination() {
+                const totalItems = filteredData.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                
+                // Cập nhật thông tin phân trang
+                currentPageDisplay.textContent = currentPage;
+                totalPagesDisplay.textContent = totalPages;
+                totalItemsDisplay.textContent = totalItems;
+                
+                // Enable/disable nút Previous/Next
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= totalPages;
+                
+                // Tạo nút trang
+                createPageNumbers(totalPages);
+                
+                // Hiển thị dữ liệu cho trang hiện tại
+                displayCurrentPage();
+            }
+            
+            // Tạo nút trang
+            function createPageNumbers(totalPages) {
+                pageNumbers.innerHTML = '';
+                
+                const startPage = Math.max(1, currentPage - 1);
+                const endPage = Math.min(totalPages, currentPage + 1);
+                
+                // Nút trang đầu
+                if (startPage > 1) {
+                    createPageButton(1);
+                    if (startPage > 2) {
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+                    }
+                }
+                
+                // Các nút trang xung quanh trang hiện tại
+                for (let i = startPage; i <= endPage; i++) {
+                    createPageButton(i);
+                }
+                
+                // Nút trang cuối
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+                    }
+                    createPageButton(totalPages);
+                }
+            }
+            
+            // Tạo nút trang
+            function createPageButton(pageNum) {
+                const button = document.createElement('button');
+                button.textContent = pageNum;
+                button.className = 'pagination-btn';
+                button.style.cssText = 'padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; min-width: 32px; text-align: center; cursor: pointer;';
+                
+                if (pageNum === currentPage) {
+                    button.style.background = '#3b82f6';
+                    button.style.color = 'white';
+                    button.style.borderColor = '#3b82f6';
+                }
+                
+                button.addEventListener('click', () => {
+                    currentPage = pageNum;
+                    updatePagination();
+                });
+                
+                pageNumbers.appendChild(button);
+            }
+            
+            // Hiển thị dữ liệu cho trang hiện tại
+            function displayCurrentPage() {
+                // Ẩn tất cả các dòng
+                originalData.forEach(item => {
+                    item.element.style.display = 'none';
+                });
+                
+                // Hiển thị dữ liệu cho trang hiện tại
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const currentPageData = filteredData.slice(startIndex, endIndex);
+                
+                currentPageData.forEach(item => {
+                    item.element.style.display = '';
+                });
+            }
+            
+            // Event listeners
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    performSearch();
+                }
+            });
+            
+            prevPageBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', function() {
+                const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+            
+            itemsPerPageSelect.addEventListener('change', function() {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1;
+                updatePagination();
+            });
+            
+            // Auto-search với debounce
+            let searchTimeout;
+            
+            // Khởi tạo
+            initializeData();
+        });
     </script>
 </body>
 </html>

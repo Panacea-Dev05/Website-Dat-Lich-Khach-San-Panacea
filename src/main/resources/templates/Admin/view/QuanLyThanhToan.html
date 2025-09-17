@@ -63,6 +63,331 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     
+    /* Cải thiện hiển thị bảng */
+    #paymentTable {
+      font-size: 14px;
+      line-height: 1.4;
+      width: 100%;
+      min-width: 100%;
+      border-collapse: collapse;
+      background: white;
+      table-layout: auto;
+    }
+    
+    #paymentTable th {
+      padding: 12px 8px !important;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f8fafc;
+      border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    #paymentTable td {
+      padding: 12px 8px !important;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      color: #4b5563;
+    }
+    
+    #paymentTable tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    
+    #paymentTable tbody tr:nth-child(odd) {
+      background: white;
+    }
+    
+    #paymentTable tbody tr:hover {
+      background: #f8fafc;
+      transition: background-color 0.2s ease;
+    }
+    
+    /* Container bảng với chiều cao cố định */
+    .table-container {
+      max-height: 70vh;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      width: 100%;
+      min-width: 100%;
+    }
+    
+    /* Custom scrollbar cho table container */
+    .table-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .table-container::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Header Layout Styles */
+    .header-layout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .header-layout h1 {
+      margin: 0;
+      color: #1f2937;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    .header-layout button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      background: #10b981;
+    }
+    
+    .header-layout button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* Content Section Styles */
+    .content-section {
+      width: 100%;
+      max-width: none;
+      overflow-x: hidden;
+    }
+    
+    /* Đảm bảo bảng sử dụng toàn bộ chiều rộng */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      min-width: 100%;
+    }
+    
+    #paymentTable {
+      width: 100% !important;
+      min-width: 1200px !important;
+    }
+    
+    #paymentTable th,
+    #paymentTable td {
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: ellipsis;
+    }
+    
+    /* Đảm bảo cột thao tác có đủ không gian */
+    #paymentTable th:last-child,
+    #paymentTable td:last-child {
+      min-width: 120px;
+      white-space: nowrap;
+    }
+    
+    /* Đảm bảo các button trong cột thao tác hiển thị đầy đủ */
+    #paymentTable td:last-child {
+      padding: 8px 4px !important;
+    }
+    
+    #paymentTable td:last-child .btn {
+      margin: 0 2px;
+      min-width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Đảm bảo không bị cắt nội dung */
+    #paymentTable td {
+      overflow: visible !important;
+    }
+    
+    /* Search and Filter Section */
+    .search-filter-section {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    
+    .search-filter-section > div {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 15px;
+      align-items: end;
+      width: 100%;
+    }
+    
+    .search-filter-section label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .search-filter-section input,
+    .search-filter-section select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .search-filter-section input:focus,
+    .search-filter-section select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Responsive cho thanh tìm kiếm */
+    @media (max-width: 768px) {
+      .search-filter-section > div {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+      }
+      
+      .header-layout {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+      }
+      
+      .header-layout button {
+        align-self: flex-start !important;
+      }
+      
+      #paymentTable th {
+        font-size: 12px !important;
+        padding: 8px 4px !important;
+      }
+      
+      #paymentTable td {
+        font-size: 12px !important;
+        padding: 8px 4px !important;
+      }
+      
+      /* Điều chỉnh column widths cho mobile */
+      #paymentTable th:nth-child(1), #paymentTable td:nth-child(1) { width: 6%; }
+      #paymentTable th:nth-child(2), #paymentTable td:nth-child(2) { width: 14%; }
+      #paymentTable th:nth-child(3), #paymentTable td:nth-child(3) { width: 10%; }
+      #paymentTable th:nth-child(4), #paymentTable td:nth-child(4) { width: 20%; }
+      #paymentTable th:nth-child(5), #paymentTable td:nth-child(5) { width: 12%; }
+      #paymentTable th:nth-child(6), #paymentTable td:nth-child(6) { width: 12%; }
+      #paymentTable th:nth-child(7), #paymentTable td:nth-child(7) { width: 14%; }
+      #paymentTable th:nth-child(8), #paymentTable td:nth-child(8) { width: 8%; }
+      #paymentTable th:nth-child(9), #paymentTable td:nth-child(9) { width: 12%; }
+      
+      /* Responsive cho phân trang */
+      /* Server Pagination Styles */
+      .pagination-btn:hover:not(:disabled) {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        transform: translateY(-1px);
+      }
+      
+      .pagination-btn:disabled {
+        background: #f8fafc !important;
+        color: #cbd5e1 !important;
+        border-color: #e2e8f0 !important;
+        cursor: not-allowed !important;
+      }
+      
+      .pagination-btn.active {
+        background: #3b82f6 !important;
+        color: white !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+      }
+      
+      .pagination-controls {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .pagination-controls select {
+        cursor: pointer;
+      }
+      
+      .pagination-controls select:hover {
+        border-color: #94a3b8 !important;
+      }
+      
+      /* Responsive cho pagination */
+      @media (max-width: 1024px) {
+        .pagination-controls {
+          flex-direction: column !important;
+          gap: 15px !important;
+          align-items: center !important;
+          text-align: center !important;
+        }
+        
+        .pagination-buttons {
+          flex-wrap: wrap !important;
+          justify-content: center !important;
+        }
+        
+        .items-per-page {
+          justify-content: center !important;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .pagination-controls {
+          padding: 12px 15px !important;
+        }
+        
+        .pagination-btn {
+          padding: 4px 8px !important;
+          font-size: 12px !important;
+        }
+        
+        .pagination-info {
+          font-size: 13px !important;
+        }
+        
+        .items-per-page span {
+          font-size: 12px !important;
+        }
+        
+        .items-per-page select {
+          font-size: 12px !important;
+          padding: 3px 6px !important;
+        }
+      }
+    }
+    
     /* Form group styling */
     .form-group {
       margin-bottom: 0;
@@ -112,24 +437,81 @@
     <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
     <main role="main" tabindex="0">
-      <h1>Quản lý thanh toán</h1>
+      <!-- Header Layout -->
+      <div class="header-layout" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700;">Quản lý thanh toán</h1>
+      </div>
+      
+      <!-- Content Section -->
       <section class="content-section" id="contentSection">
-        <button class="btn" id="btnAddPayment">Thêm thanh toán mới</button>
+      
+      <!-- Thanh tìm kiếm và lọc -->
+      <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+          <!-- Tìm kiếm -->
+          <div>
+            <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Tìm kiếm:</label>
+            <input type="text" id="searchInput" placeholder="Mã thanh toán, tên khách hàng... (tự động tìm kiếm)" 
+                   style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+          </div>
+          
+          <!-- Lọc theo trạng thái -->
+          <div>
+            <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Trạng thái:</label>
+            <select id="statusFilter" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <option value="">Tất cả trạng thái</option>
+              <option value="DANG_XU_LY">Đang xử lý</option>
+              <option value="THANH_CONG">Thành công</option>
+              <option value="THAT_BAI">Thất bại</option>
+              <option value="HOAN_TIEN">Hoàn tiền</option>
+            </select>
+          </div>
+          
+          <!-- Lọc theo phương thức thanh toán -->
+          <div>
+            <label for="methodFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Phương thức:</label>
+            <select id="methodFilter" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <option value="">Tất cả phương thức</option>
+              <option value="Cash">Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="E-wallet">E-wallet</option>
+            </select>
+          </div>
+          
+          <!-- Lọc theo ngày từ -->
+          <div>
+            <label for="dateFrom" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Từ ngày:</label>
+            <input type="date" id="dateFrom" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+          </div>
+          
+          <!-- Lọc theo ngày đến -->
+          <div>
+            <label for="dateTo" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Đến ngày:</label>
+            <input type="date" id="dateTo" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+          </div>
+        </div>
+        
+      </section>
+      
+      <section class="content-section" id="contentSection">
         <button class="btn" id="btnCreateRefund" style="background:#f59e0b; margin-left: 12px;">Tạo hoàn tiền</button>
-        <table aria-label="Danh sách thanh toán" id="paymentTable">
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Mã thanh toán</th>
-              <th>Mã đặt phòng</th>
-              <th>Khách hàng</th>
-              <th>Số tiền</th>
-              <th>Phương thức</th>
-              <th>Ngày thanh toán</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
+        <div class="table-container">
+          <table aria-label="Danh sách thanh toán" id="paymentTable">
+            <thead>
+              <tr>
+                <th style="width: 60px; text-align: center;">STT</th>
+                <th style="width: 120px;">Mã thanh toán</th>
+                <th style="width: 100px;">Mã đặt phòng</th>
+                <th style="width: 180px;">Khách hàng</th>
+                <th style="width: 120px; text-align: right;">Số tiền</th>
+                <th style="width: 120px; text-align: center;">Phương thức</th>
+                <th style="width: 160px; text-align: center;">Ngày thanh toán</th>
+                <th style="width: 120px; text-align: center;">Trạng thái</th>
+                <th style="width: 140px; text-align: center;">Thao tác</th>
+              </tr>
+            </thead>
           <tbody id="paymentTableBody">
             <!-- Dữ liệu thanh toán từ controller -->
             <tr th:each="payment, stat : ${payments}">
@@ -161,14 +543,58 @@
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
+
+        <!-- Server Pagination Controls -->
+        <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <!-- Pagination Info -->
+          <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+            (<span id="totalItemsDisplay">0</span> thanh toán)
+          </div>
+          
+          <!-- Pagination Buttons -->
+          <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+            <!-- Previous Button -->
+            <button id="prevPageBtn" class="pagination-btn" disabled
+                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              <span>◀</span> Trước
+            </button>
+            
+            <!-- Page Numbers -->
+            <div id="pageNumbers" style="display: flex; gap: 4px;">
+              <!-- Sẽ được tạo bởi JavaScript -->
+            </div>
+            
+            <!-- Next Button -->
+            <button id="nextPageBtn" class="pagination-btn" disabled
+                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              Sau <span>▶</span>
+            </button>
+          </div>
+          
+          <!-- Items per page selector -->
+          <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+            <select id="itemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+          </div>
+        </div>
+      </section>
 
         <!-- Modal form thêm/sửa thanh toán (ẩn mặc định) -->
         <div class="modal-overlay" id="paymentModal" style="display:none;">
           <div class="modal-content">
             <button type="button" class="modal-close" id="closePaymentModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
             <form id="paymentForm">
-              <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm thanh toán mới</h2>
+              <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo hoàn tiền</h2>
               <input type="hidden" id="paymentId" name="paymentId" />
 
               <label for="bookingId">Mã đặt phòng</label>
@@ -324,22 +750,11 @@
 
   <script th:src="@{/js/Admin/quanlythanhtoan.js}"></script>
   <script th:inline="javascript">
-    // Hiển thị form thêm thanh toán mới
-    function showAddPaymentForm() {
-      var modal = document.getElementById('paymentModal');
-      var form = document.getElementById('paymentForm');
-      modal.style.display = 'flex';
-      form.reset();
-      document.getElementById('formTitle').innerText = 'Thêm thanh toán mới';
-      document.getElementById('paymentId').value = '';
-      
-      // Set default values
-      document.getElementById('status').value = 'DANG_XU_LY'; // Default to "Đang xử lý"
-      document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 16); // Current datetime
-      
-      form.setAttribute('data-mode', 'add');
-      form.setAttribute('action', '/admin/payments');
-    }
+    // Biến global cho search và pagination
+    let originalData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    let itemsPerPage = 25;
 
     // Hiển thị form sửa thanh toán
     function showEditPaymentForm(payment) {
@@ -587,17 +1002,316 @@
       });
     }
 
+    // Chức năng tìm kiếm và lọc
+    function setupSearchAndFilter() {
+      const searchInput = document.getElementById('searchInput');
+      const statusFilter = document.getElementById('statusFilter');
+      const methodFilter = document.getElementById('methodFilter');
+      const dateFrom = document.getElementById('dateFrom');
+      const dateTo = document.getElementById('dateTo');
+      // searchBtn và resetBtn đã được xóa khỏi HTML
+      // searchResults và resultCount đã được xóa khỏi HTML
+      const paymentTable = document.getElementById('paymentTable');
+      const paymentTableBody = document.getElementById('paymentTableBody');
+      
+      // Phân trang
+      const itemsPerPageSelect = document.getElementById('itemsPerPage');
+      
+      // Sử dụng biến global đã khai báo ở ngoài
+      
+      // Lấy dữ liệu gốc từ bảng
+      function getOriginalData() {
+        const rows = paymentTableBody.querySelectorAll('tr');
+        originalData = Array.from(rows).map(row => {
+          const cells = row.querySelectorAll('td');
+          return {
+            element: row,
+            id: cells[1]?.textContent?.trim() || '',
+            bookingId: cells[2]?.textContent?.trim() || '',
+            customerName: cells[3]?.textContent?.trim() || '',
+            amount: cells[4]?.textContent?.trim() || '',
+            method: cells[5]?.textContent?.trim() || '',
+            date: cells[6]?.textContent?.trim() || '',
+            status: cells[7]?.textContent?.trim() || ''
+          };
+        });
+      }
+      
+      // Tìm kiếm và lọc
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedStatus = statusFilter.value;
+        const selectedMethod = methodFilter.value;
+        const fromDate = dateFrom.value;
+        const toDate = dateTo.value;
+        
+        filteredData = originalData.filter(item => {
+          // Tìm kiếm theo từ khóa
+          const matchesSearch = !searchTerm || 
+            item.id.toLowerCase().includes(searchTerm) ||
+            item.bookingId.toLowerCase().includes(searchTerm) ||
+            item.customerName.toLowerCase().includes(searchTerm);
+          
+          // Lọc theo trạng thái
+          let matchesStatus = true;
+          if (selectedStatus) {
+            const statusMap = {
+              'DANG_XU_LY': 'Đang xử lý',
+              'THANH_CONG': 'Thành công', 
+              'THAT_BAI': 'Thất bại',
+              'HOAN_TIEN': 'Hoàn tiền'
+            };
+            const expectedStatus = statusMap[selectedStatus];
+            matchesStatus = item.status === expectedStatus;
+          }
+          
+          // Lọc theo phương thức
+          let matchesMethod = true;
+          if (selectedMethod) {
+            const itemMethod = item.method ? item.method.trim() : '';
+            matchesMethod = itemMethod === selectedMethod;
+          }
+          
+          // Lọc theo ngày
+          let matchesDate = true;
+          if (fromDate || toDate) {
+            // Chuyển đổi ngày từ định dạng dd/MM/yyyy HH:mm sang Date object
+            const parseVietnameseDate = (dateStr) => {
+              if (!dateStr) return null;
+              const parts = dateStr.split(' ');
+              if (parts.length >= 1) {
+                const datePart = parts[0]; // dd/MM/yyyy
+                const [day, month, year] = datePart.split('/');
+                return new Date(year, month - 1, day);
+              }
+              return null;
+            };
+            
+            const itemDate = parseVietnameseDate(item.date);
+            if (itemDate) {
+              if (fromDate) {
+                const from = new Date(fromDate);
+                matchesDate = matchesDate && itemDate >= from;
+              }
+              if (toDate) {
+                const to = new Date(toDate);
+                to.setHours(23, 59, 59, 999); // Đến cuối ngày
+                matchesDate = matchesDate && itemDate <= to;
+              }
+            } else {
+              matchesDate = false;
+            }
+          }
+          
+          return matchesSearch && matchesStatus && matchesMethod && matchesDate;
+        });
+        
+        // Reset về trang đầu
+        currentPage = 1;
+        
+        // Auto-search không cần hiển thị kết quả tìm kiếm
+        
+        // Cập nhật phân trang
+        updatePagination();
+      }
+      
+      // Cập nhật phân trang
+      function updatePagination() {
+        const totalItems = filteredData.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // Ẩn tất cả hàng
+        originalData.forEach(item => {
+          item.element.style.display = 'none';
+        });
+        
+        // Hiển thị hàng cho trang hiện tại
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        
+        for (let i = startIndex; i < endIndex; i++) {
+          if (filteredData[i]) {
+            filteredData[i].element.style.display = '';
+          }
+        }
+        
+        // Cập nhật số thứ tự
+        let stt = startIndex + 1;
+        for (let i = startIndex; i < endIndex; i++) {
+          if (filteredData[i]) {
+            const sttCell = filteredData[i].element.querySelector('td:first-child');
+            if (sttCell) {
+              sttCell.textContent = stt++;
+            }
+          }
+        }
+        
+        // Cập nhật thông tin phân trang
+        document.getElementById('currentPageDisplay').textContent = currentPage;
+        document.getElementById('totalPagesDisplay').textContent = totalPages;
+        document.getElementById('totalItemsDisplay').textContent = totalItems;
+        
+        // Cập nhật nút Previous/Next
+        const prevBtn = document.getElementById('prevPageBtn');
+        const nextBtn = document.getElementById('nextPageBtn');
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+        
+        // Tạo nút phân trang
+        createPageNumbers(totalPages);
+      }
+      
+      // Tạo số trang
+      function createPageNumbers(totalPages) {
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+        
+        if (totalPages <= 1) return;
+        
+        // Chỉ hiển thị trang hiện tại ± 1
+        const startPage = Math.max(1, currentPage - 1);
+        const endPage = Math.min(totalPages, currentPage + 1);
+        
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.textContent = i;
+          pageBtn.className = i === currentPage ? 'pagination-btn active' : 'pagination-btn';
+          pageBtn.style.cssText = `
+            padding: 6px 10px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            background: white; 
+            color: #475569; 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 500; 
+            transition: all 0.2s; 
+            min-width: 32px; 
+            text-align: center;
+            cursor: pointer;
+          `;
+          
+          if (i === currentPage) {
+            pageBtn.style.background = '#3b82f6';
+            pageBtn.style.color = 'white';
+            pageBtn.style.borderColor = '#3b82f6';
+            pageBtn.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)';
+          }
+          
+          pageBtn.addEventListener('click', function() {
+            currentPage = i;
+            updatePagination();
+          });
+          
+          pageNumbers.appendChild(pageBtn);
+        }
+        
+        // Thêm dấu "..." nếu có nhiều trang hơn
+        if (totalPages > 3 && currentPage < totalPages - 1) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.cssText = 'color: #94a3b8; font-size: 13px; padding: 0 4px;';
+          pageNumbers.appendChild(dots);
+        }
+      }
+      
+      // Event listeners cho nút Previous/Next
+      document.getElementById('prevPageBtn').addEventListener('click', function() {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePagination();
+        }
+      });
+      
+      document.getElementById('nextPageBtn').addEventListener('click', function() {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePagination();
+        }
+      });
+      
+      // Reset tìm kiếm
+      function resetSearch() {
+        searchInput.value = '';
+        statusFilter.value = '';
+        methodFilter.value = '';
+        dateFrom.value = '';
+        dateTo.value = '';
+        
+        // Reset về dữ liệu gốc
+        filteredData = [...originalData];
+        currentPage = 1;
+        
+        // Cập nhật phân trang
+        updatePagination();
+      }
+      
+      // Auto-search đã được thiết lập ở trên
+      
+      // Tìm kiếm real-time khi gõ
+      // Auto-search với debounce
+      let searchTimeout;
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          performSearch();
+        }, 300);
+      });
+      
+      // Auto-search cho các filter
+      statusFilter.addEventListener('change', function() {
+        performSearch();
+      });
+      
+      methodFilter.addEventListener('change', function() {
+        performSearch();
+      });
+      
+      dateFrom.addEventListener('change', function() {
+        performSearch();
+      });
+      
+      dateTo.addEventListener('change', function() {
+        performSearch();
+      });
+      
+      // Auto-search cho date inputs
+      dateFrom.addEventListener('input', function() {
+        performSearch();
+      });
+      
+      dateTo.addEventListener('input', function() {
+        performSearch();
+      });
+      
+      // Auto-search đã được thiết lập ở trên
+      
+      // Thay đổi số mục/trang
+      itemsPerPageSelect.addEventListener('change', function() {
+        itemsPerPage = parseInt(this.value);
+        currentPage = 1;
+        updatePagination();
+      });
+      
+      // Khởi tạo dữ liệu gốc
+      getOriginalData();
+      
+      // Khởi tạo phân trang
+      filteredData = [...originalData];
+      updatePagination();
+    }
+
     // Gắn sự kiện cho các nút
     document.addEventListener('DOMContentLoaded', function() {
-      // Nút thêm thanh toán mới
-      document.getElementById('btnAddPayment').onclick = showAddPaymentForm;
-      
       // Nút tạo hoàn tiền
       document.getElementById('btnCreateRefund').onclick = function() {
         document.getElementById('refundModal').style.display = 'flex';
         document.getElementById('refundInfo').style.display = 'none';
         document.getElementById('refundForm').reset();
       };
+      
+      // Chức năng tìm kiếm và lọc
+      setupSearchAndFilter();
       
       // Đóng modal hoàn tiền
       document.getElementById('closeRefundModal').onclick = function() {

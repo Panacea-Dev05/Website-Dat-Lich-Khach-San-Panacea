@@ -10,6 +10,157 @@
     <link rel="stylesheet" th:href="@{/css/Admin/quanlydanhgia.css}">
     
     <style>
+        /* Responsive cho thanh tìm kiếm */
+        @media (max-width: 768px) {
+          .search-filter-section > div {
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          
+          .search-filter-section > div > div {
+            min-width: unset !important;
+            margin-bottom: 10px;
+          }
+          
+          .search-filter-section > div > div:last-child {
+            margin-bottom: 0;
+          }
+          
+          /* Server Pagination Styles */
+          .pagination-btn:hover:not(:disabled) {
+            background: #f1f5f9 !important;
+            border-color: #94a3b8 !important;
+            transform: translateY(-1px);
+          }
+          
+          .pagination-btn:disabled {
+            background: #f8fafc !important;
+            color: #cbd5e1 !important;
+            border-color: #e2e8f0 !important;
+            cursor: not-allowed !important;
+          }
+          
+          .pagination-btn.active {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+          }
+          
+          .pagination-controls {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          }
+          
+          .pagination-controls select {
+            cursor: pointer;
+          }
+          
+          .pagination-controls select:hover {
+            border-color: #94a3b8 !important;
+          }
+          
+          /* Responsive cho pagination */
+          @media (max-width: 1024px) {
+            .pagination-controls {
+              flex-direction: column !important;
+              gap: 15px !important;
+              align-items: center !important;
+              text-align: center !important;
+            }
+            
+            .pagination-buttons {
+              flex-wrap: wrap !important;
+              justify-content: center !important;
+            }
+            
+            .items-per-page {
+              justify-content: center !important;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .pagination-controls {
+              padding: 12px 15px !important;
+            }
+            
+            .pagination-btn {
+              padding: 4px 8px !important;
+              font-size: 12px !important;
+            }
+            
+            .pagination-info {
+              font-size: 13px !important;
+            }
+            
+            .items-per-page span {
+              font-size: 12px !important;
+            }
+            
+            .items-per-page select {
+              font-size: 12px !important;
+              padding: 3px 6px !important;
+            }
+          }
+        }
+        
+        /* Cải thiện hiển thị bảng */
+        #reviewTable {
+          font-size: 14px;
+          line-height: 1.4;
+        }
+        
+        #reviewTable th {
+          padding: 12px 8px !important;
+          font-size: 13px;
+          font-weight: 600;
+          background: #f8fafc;
+          border-bottom: 2px solid #e5e7eb;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+        
+        #reviewTable td {
+          padding: 10px 8px !important;
+          font-size: 13px;
+          border-bottom: 1px solid #f1f5f9;
+          vertical-align: middle;
+        }
+        
+        #reviewTable tbody tr:hover {
+          background: #f8fafc;
+          transition: background-color 0.2s ease;
+        }
+        
+        /* Container bảng với chiều cao cố định */
+        .table-container {
+          max-height: 70vh;
+          overflow-y: auto;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Scrollbar tùy chỉnh */
+        .table-container::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        
         /* Modal Overlay - Professional Overlay */
         .modal-overlay {
             position: fixed;
@@ -391,8 +542,48 @@
 
         <main role="main" tabindex="0">
             <h1>Quản lý đánh giá</h1>
+            
+            <!-- Thanh tìm kiếm và lọc -->
+            <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <!-- Tìm kiếm theo từ khóa -->
+                <div style="flex: 1; min-width: 200px;">
+                  <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
+                  <input type="text" id="searchInput" placeholder="Tên khách hàng, email, nội dung đánh giá... (tự động tìm kiếm)" 
+                         style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                </div>
+                
+                <!-- Lọc theo điểm đánh giá -->
+                <div style="min-width: 150px;">
+                  <label for="ratingFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Điểm đánh giá:</label>
+                  <select id="ratingFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                    <option value="">Tất cả điểm</option>
+                    <option value="5">5 sao</option>
+                    <option value="4">4 sao</option>
+                    <option value="3">3 sao</option>
+                    <option value="2">2 sao</option>
+                    <option value="1">1 sao</option>
+                  </select>
+                </div>
+                
+                <!-- Lọc theo trạng thái -->
+                <div style="min-width: 150px;">
+                  <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
+                  <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="CHO_DUYET">Chờ duyệt</option>
+                    <option value="DA_DUYET">Đã duyệt</option>
+                    <option value="TU_CHOI">Từ chối</option>
+                  </select>
+                </div>
+                
+              </div>
+              
+            </section>
+            
             <section class="content-section" id="contentSection">
                 <!-- Admin không thể thêm đánh giá mới, chỉ quản lý đánh giá có sẵn -->
+                <div class="table-container">
                 <table aria-label="Danh sách đánh giá" id="reviewTable">
                     <thead>
                         <tr>
@@ -457,6 +648,49 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
+                
+                <!-- Server Pagination Controls -->
+                <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                  <!-- Pagination Info -->
+                  <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+                    Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+                    (<span id="totalItemsDisplay">0</span> đánh giá)
+                  </div>
+                  
+                  <!-- Pagination Buttons -->
+                  <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+                    <!-- Previous Button -->
+                    <button id="prevPageBtn" class="pagination-btn" disabled
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                      <span>◀</span> Trước
+                    </button>
+                    
+                    <!-- Page Numbers -->
+                    <div id="pageNumbers" style="display: flex; gap: 4px;">
+                      <!-- Sẽ được tạo bởi JavaScript -->
+                    </div>
+                    
+                    <!-- Next Button -->
+                    <button id="nextPageBtn" class="pagination-btn" disabled
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                      Sau <span>▶</span>
+                    </button>
+                  </div>
+                  
+                  <!-- Items per page selector -->
+                  <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+                    <select id="bottomItemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="25" selected>25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+                        </div>
+                    </div>
 
                 <!-- Modal xem chi tiết đánh giá -->
                 <div class="modal-overlay" id="viewReviewModal" style="display:none;">
@@ -492,7 +726,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                    </div>
             </section>
         </main>
 
@@ -661,6 +895,248 @@
                 this.style.display = 'none';
             }
         };
+        
+        // ===== TÌM KIẾM, LỌC VÀ PHÂN TRANG =====
+        document.addEventListener('DOMContentLoaded', function() {
+          // Lấy các element
+          const searchInput = document.getElementById('searchInput');
+          const ratingFilter = document.getElementById('ratingFilter');
+          const statusFilter = document.getElementById('statusFilter');
+          const reviewTable = document.getElementById('reviewTable');
+          const reviewTableBody = document.getElementById('reviewTableBody');
+          
+          // Phân trang ở cuối bảng
+          const bottomItemsPerPageSelect = document.getElementById('bottomItemsPerPage');
+          
+          // Lưu trữ dữ liệu gốc
+          let originalData = [];
+          let filteredData = [];
+          let currentPage = 1;
+          let itemsPerPage = 25;
+          
+          // Lấy dữ liệu gốc từ bảng
+          function getOriginalData() {
+            const rows = Array.from(reviewTableBody.querySelectorAll('tr'));
+            originalData = rows.map((row, index) => {
+              const cells = row.querySelectorAll('td');
+              if (cells.length === 0) return null;
+              
+              return {
+                index: index + 1,
+                customerName: cells[1]?.textContent?.trim() || '',
+                roomType: cells[2]?.textContent?.trim() || '',
+                rating: extractRating(cells[3]),
+                comment: cells[4]?.textContent?.trim() || '',
+                date: cells[5]?.textContent?.trim() || '',
+                status: extractStatus(cells[6]),
+                actions: cells[7]?.innerHTML || '',
+                element: row
+              };
+            }).filter(item => item !== null);
+            
+            filteredData = [...originalData];
+            updatePagination();
+          }
+          
+          // Trích xuất điểm đánh giá từ HTML
+          function extractRating(cell) {
+            const ratingText = cell?.textContent?.trim() || '';
+            const match = ratingText.match(/(\d+)\/5/);
+            return match ? parseInt(match[1]) : 0;
+          }
+          
+          // Trích xuất trạng thái từ HTML
+          function extractStatus(cell) {
+            const statusText = cell?.textContent?.trim() || '';
+            if (statusText.includes('Đã duyệt')) return 'DA_DUYET';
+            if (statusText.includes('Chờ duyệt')) return 'CHO_DUYET';
+            if (statusText.includes('Đã ẩn')) return 'TU_CHOI';
+            return '';
+          }
+          
+          // Tìm kiếm và lọc
+          function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const ratingValue = ratingFilter.value;
+            const statusValue = statusFilter.value;
+            
+            filteredData = originalData.filter(item => {
+              // Tìm kiếm theo từ khóa
+              const matchesSearch = !searchTerm || 
+                item.customerName.toLowerCase().includes(searchTerm) ||
+                item.comment.toLowerCase().includes(searchTerm) ||
+                item.roomType.toLowerCase().includes(searchTerm);
+              
+              // Lọc theo điểm đánh giá
+              const matchesRating = !ratingValue || item.rating == ratingValue;
+              
+              // Lọc theo trạng thái
+              const matchesStatus = !statusValue || item.status === statusValue;
+              
+              return matchesSearch && matchesRating && matchesStatus;
+            });
+            
+            currentPage = 1;
+            updatePagination();
+            
+          }
+          
+          // Cập nhật phân trang
+          function updatePagination() {
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            
+            // Ẩn tất cả dòng
+            originalData.forEach(item => {
+              item.element.style.display = 'none';
+            });
+            
+            // Hiển thị dòng trong trang hiện tại
+            for (let i = startIndex; i < endIndex; i++) {
+              if (filteredData[i]) {
+                filteredData[i].element.style.display = '';
+                // Cập nhật STT
+                const sttCell = filteredData[i].element.querySelector('td:first-child');
+                if (sttCell) {
+                  sttCell.textContent = i + 1;
+                }
+              }
+            }
+            
+          // Cập nhật thông tin phân trang
+          document.getElementById('currentPageDisplay').textContent = currentPage;
+          document.getElementById('totalPagesDisplay').textContent = totalPages;
+          document.getElementById('totalItemsDisplay').textContent = totalItems;
+          
+          // Cập nhật nút Previous/Next
+          const prevBtn = document.getElementById('prevPageBtn');
+          const nextBtn = document.getElementById('nextPageBtn');
+          prevBtn.disabled = currentPage <= 1;
+          nextBtn.disabled = currentPage >= totalPages;
+          
+          // Tạo nút phân trang
+          createPageNumbers(totalPages);
+          }
+          
+          // Tạo số trang
+          function createPageNumbers(totalPages) {
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Chỉ hiển thị trang hiện tại ± 1
+            const startPage = Math.max(1, currentPage - 1);
+            const endPage = Math.min(totalPages, currentPage + 1);
+            
+            for (let i = startPage; i <= endPage; i++) {
+              const pageBtn = document.createElement('button');
+              pageBtn.textContent = i;
+              pageBtn.className = i === currentPage ? 'pagination-btn active' : 'pagination-btn';
+              pageBtn.style.cssText = `
+                padding: 6px 10px; 
+                border: 1px solid #cbd5e1; 
+                border-radius: 6px; 
+                background: white; 
+                color: #475569; 
+                text-decoration: none; 
+                font-size: 13px; 
+                font-weight: 500; 
+                transition: all 0.2s; 
+                min-width: 32px; 
+                text-align: center;
+                cursor: pointer;
+              `;
+              
+              if (i === currentPage) {
+                pageBtn.style.background = '#3b82f6';
+                pageBtn.style.color = 'white';
+                pageBtn.style.borderColor = '#3b82f6';
+                pageBtn.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)';
+              }
+              
+              pageBtn.addEventListener('click', function() {
+                currentPage = i;
+                updatePagination();
+              });
+              
+              pageNumbers.appendChild(pageBtn);
+            }
+            
+            // Thêm dấu "..." nếu có nhiều trang hơn
+            if (totalPages > 3 && currentPage < totalPages - 1) {
+              const dots = document.createElement('span');
+              dots.textContent = '...';
+              dots.style.cssText = 'color: #94a3b8; font-size: 13px; padding: 0 4px;';
+              pageNumbers.appendChild(dots);
+            }
+          }
+          
+          // Event listeners cho nút Previous/Next
+          document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+              currentPage--;
+              updatePagination();
+            }
+          });
+          
+          document.getElementById('nextPageBtn').addEventListener('click', function() {
+            if (currentPage < totalPages) {
+              currentPage++;
+              updatePagination();
+            }
+          });
+          
+          // Reset tìm kiếm
+          function resetSearch() {
+            searchInput.value = '';
+            ratingFilter.value = '';
+            statusFilter.value = '';
+            filteredData = [...originalData];
+            currentPage = 1;
+            updatePagination();
+          }
+          
+          // Auto-search với debounce
+          let searchTimeout;
+          searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
+          });
+          
+          searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              clearTimeout(searchTimeout);
+              performSearch();
+            }
+          });
+          
+          // Auto-search cho các filter
+          ratingFilter.addEventListener('change', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
+          });
+          
+          statusFilter.addEventListener('change', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
+          });
+          
+          // Thay đổi số mục/trang ở cuối
+          bottomItemsPerPageSelect.addEventListener('change', function() {
+            itemsPerPage = parseInt(this.value);
+            currentPage = 1;
+            updatePagination();
+          });
+          
+          // Khởi tạo dữ liệu gốc
+          getOriginalData();
+          
+          // Khởi tạo phân trang
+          updatePagination();
+        });
     </script>
 </body>
 

@@ -18,9 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
  * Khởi tạo các chức năng quản lý khách hàng
  */
 function initCustomerManagement() {
-  // Tạo phần tử tìm kiếm và lọc
-  createSearchAndFilterElements();
-  
   // Gắn sự kiện cho form thêm/sửa khách hàng
   const customerForm = document.getElementById('customerForm');
   if (customerForm) {
@@ -40,101 +37,6 @@ function initCustomerManagement() {
   }
 }
 
-/**
- * Tạo phần tử tìm kiếm và lọc
- */
-function createSearchAndFilterElements() {
-  const btnAddCustomer = document.getElementById('btnAddCustomer');
-  if (!btnAddCustomer) return;
-  
-  // Tạo container cho tìm kiếm và lọc
-  const searchFilterContainer = document.createElement('div');
-  searchFilterContainer.className = 'search-filter-container';
-  
-  // Tạo container cho tìm kiếm
-  const searchContainer = document.createElement('div');
-  searchContainer.className = 'search-container';
-  
-  // Tạo icon tìm kiếm
-  const searchIcon = document.createElement('span');
-  searchIcon.className = 'material-icons search-icon';
-  searchIcon.textContent = 'search';
-  searchContainer.appendChild(searchIcon);
-  
-  // Tạo phần tử tìm kiếm
-  const searchInput = document.createElement('input');
-  searchInput.type = 'text';
-  searchInput.placeholder = 'Tìm kiếm theo tên, email, số điện thoại...';
-  searchInput.className = 'search-input';
-  searchContainer.appendChild(searchInput);
-  
-  // Tạo container cho lọc
-  const filterContainer = document.createElement('div');
-  filterContainer.className = 'filter-container';
-  
-  // Tạo icon lọc
-  const filterIcon = document.createElement('span');
-  filterIcon.className = 'material-icons filter-icon';
-  filterIcon.textContent = 'filter_list';
-  filterContainer.appendChild(filterIcon);
-  
-  // Tạo phần tử lọc trạng thái
-  const filterSelect = document.createElement('select');
-  filterSelect.className = 'filter-select';
-  
-  const filterOptions = [
-    { value: '', text: 'Tất cả trạng thái' },
-    { value: 'HOAT_DONG', text: 'Hoạt động' },
-    { value: 'LOCKED', text: 'Khóa' }
-  ];
-  
-  filterOptions.forEach(option => {
-    const optionElement = document.createElement('option');
-    optionElement.value = option.value;
-    optionElement.textContent = option.text;
-    filterSelect.appendChild(optionElement);
-  });
-  
-  filterContainer.appendChild(filterSelect);
-  
-  // Thêm các phần tử vào container chính
-  searchFilterContainer.appendChild(searchContainer);
-  searchFilterContainer.appendChild(filterContainer);
-  
-  // Thêm container vào DOM
-  btnAddCustomer.parentNode.insertBefore(searchFilterContainer, btnAddCustomer.nextSibling);
-  
-  // Gắn sự kiện tìm kiếm và lọc
-  searchInput.addEventListener('input', filterTable);
-  filterSelect.addEventListener('change', filterTable);
-  
-  // Xử lý tìm kiếm và lọc
-  function filterTable() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const filterValue = filterSelect.value;
-    const rows = document.querySelectorAll('#customerTableBody tr');
-    
-    rows.forEach(row => {
-      const customerId = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-      const customerName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-      const customerEmail = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-      const customerPhone = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-      const statusElement = row.querySelector('td:nth-child(7) span');
-      const statusClass = statusElement ? statusElement.className : '';
-      
-      const matchesSearch = customerId.includes(searchTerm) || 
-                           customerName.includes(searchTerm) || 
-                           customerEmail.includes(searchTerm) ||
-                           customerPhone.includes(searchTerm);
-      
-      const matchesFilter = !filterValue || 
-                           (filterValue === 'HOAT_DONG' && statusClass.includes('active')) ||
-                           (filterValue === 'LOCKED' && statusClass.includes('locked'));
-      
-      row.style.display = matchesSearch && matchesFilter ? '' : 'none';
-    });
-  }
-}
 
 /**
  * Hiển thị form thêm khách hàng mới
