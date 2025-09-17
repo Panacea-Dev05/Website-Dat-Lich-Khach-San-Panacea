@@ -338,6 +338,28 @@
             color: #991b1b;
         }
 
+        /* Rating Stars */
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stars-display {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .star-filled {
+            color: #f59e0b;
+            font-size: 16px;
+        }
+        
+        .star-empty {
+            color: #d1d5db;
+            font-size: 16px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .review-info {
@@ -392,14 +414,12 @@
                             <td th:text="${review.roomNumber}">101</td>
                             <td>
                                 <div class="rating">
-                                    <span class="stars" th:style="'--rating: ' + ${review.rating} + ';'">
-                                        <span class="material-icons">star</span>
-                                        <span class="material-icons">star</span>
-                                        <span class="material-icons">star</span>
-                                        <span class="material-icons">star</span>
-                                        <span class="material-icons">star</span>
-                                    </span>
-                                    <span th:text="${review.rating} + '/5'">4.5/5</span>
+                                    <div class="stars-display">
+                                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                              th:class="${i <= review.diemTongQuan ? 'star-filled' : 'star-empty'}"
+                                              th:text="'★'">★</span>
+                                    </div>
+                                    <span th:text="${review.diemTongQuan} + '/5'">4/5</span>
                                 </div>
                             </td>
                             <td>
@@ -516,9 +536,13 @@
                             <div class="rating-info">
                                 <div class="info-label">Điểm đánh giá</div>
                                 <div class="rating-display">
-                                    <span class="rating-score">${data.diemDanhGia || data.rating || 0}</span>
+                                    <span class="rating-score">${data.diemTongQuan || data.diemDanhGia || data.rating || 0}</span>
                                     <span>/ 5</span>
-                                    <span class="rating-stars">${'★'.repeat(data.diemDanhGia || data.rating || 0)}${'☆'.repeat(5 - (data.diemDanhGia || data.rating || 0))}</span>
+                                    <div class="stars-display">
+                                        ${Array.from({length: 5}, (_, i) => 
+                                            `<span class="${i < (data.diemTongQuan || data.diemDanhGia || data.rating || 0) ? 'star-filled' : 'star-empty'}">★</span>`
+                                        ).join('')}
+                                    </div>
                                 </div>
                             </div>
 

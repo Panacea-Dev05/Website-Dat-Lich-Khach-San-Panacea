@@ -497,35 +497,117 @@
                         <!-- End Total Review -->
 
                         <div class="ak-height-75 ak-height-lg-30"></div>
-                        <div>
-                            <h3 class="anim-title-2 ak-white-color">Review (0)</h3>
-                            <p>No Review Yet! Review box is empty</p>
-
+                        <!-- Hiển thị đánh giá hiện có -->
+                        <div id="reviews-section">
+                            <h3 class="anim-title-2 ak-white-color">Đánh giá (<span id="review-count">0</span>)</h3>
+                            <div id="average-rating" class="mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h4 id="avg-rating-display">0.0</h4>
+                                    <div class="stars" id="avg-stars">
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
+                                        <span class="material-icons">star</span>
                         </div>
+                                </div>
+                            </div>
+                            <div id="reviews-list">
+                                <p>Chưa có đánh giá nào!</p>
+                            </div>
+                        </div>
+                        
                         <div class="ak-height-100 ak-height-lg-60"></div>
+                        
+                        <!-- Form đánh giá -->
                         <div class="contact-content">
                             <div class="contact-form lenght-exget">
-                                <h2 class="contact-form-title anim-title-2 ak-white-color">Post A Review</h2>
-                                <div>
-                                    <p>5 Reviews</p>
-                                    <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
-                                </div>
+                                <h2 class="contact-form-title anim-title-2 ak-white-color">Đánh giá phòng</h2>
                                 <div class="ak-height-25 ak-height-lg-20"></div>
-                                <form>
+                                <form id="reviewForm">
+                                    <!-- Thông tin khách hàng -->
                                     <div class="from-input">
-                                        <input placeholder="Name" class="col-md-5 col-12" type="text" name="fristname"
-                                            id="fristname">
-                                        <input placeholder="Email" class="col-md-5 col-12" type="email" name="email"
-                                            id="emailid">
+                                        <input placeholder="Họ và tên" class="col-md-5 col-12" type="text" 
+                                            name="customerName" id="customerName" required>
+                                        <input placeholder="Email" class="col-md-5 col-12" type="email" 
+                                            name="customerEmail" id="customerEmail" required>
                                     </div>
+                                    
+                                    <!-- Điểm đánh giá -->
+                                    <div class="rating-section mb-3">
+                                        <label class="ak-white-color">Điểm đánh giá:</label>
+                                        <div class="rating-inputs">
+                                            <div class="rating-item">
+                                                <label>Tổng quan:</label>
+                                                <select name="diemTongQuan" id="diemTongQuan" required>
+                                                    <option value="">Chọn điểm</option>
+                                                    <option value="1">1 sao</option>
+                                                    <option value="2">2 sao</option>
+                                                    <option value="3">3 sao</option>
+                                                    <option value="4">4 sao</option>
+                                                    <option value="5">5 sao</option>
+                                                </select>
+                                            </div>
+                                            <div class="rating-item">
+                                                <label>Sạch sẽ:</label>
+                                                <select name="diemSachSe" id="diemSachSe" required>
+                                                    <option value="">Chọn điểm</option>
+                                                    <option value="1">1 sao</option>
+                                                    <option value="2">2 sao</option>
+                                                    <option value="3">3 sao</option>
+                                                    <option value="4">4 sao</option>
+                                                    <option value="5">5 sao</option>
+                                                </select>
+                                            </div>
+                                            <div class="rating-item">
+                                                <label>Dịch vụ:</label>
+                                                <select name="diemDichVu" id="diemDichVu" required>
+                                                    <option value="">Chọn điểm</option>
+                                                    <option value="1">1 sao</option>
+                                                    <option value="2">2 sao</option>
+                                                    <option value="3">3 sao</option>
+                                                    <option value="4">4 sao</option>
+                                                    <option value="5">5 sao</option>
+                                                </select>
+                                            </div>
+                                            <div class="rating-item">
+                                                <label>Vị trí:</label>
+                                                <select name="diemViTri" id="diemViTri" required>
+                                                    <option value="">Chọn điểm</option>
+                                                    <option value="1">1 sao</option>
+                                                    <option value="2">2 sao</option>
+                                                    <option value="3">3 sao</option>
+                                                    <option value="4">4 sao</option>
+                                                    <option value="5">5 sao</option>
+                                                </select>
+                                            </div>
+                                            <div class="rating-item">
+                                                <label>Giá cả:</label>
+                                                <select name="diemGiaCa" id="diemGiaCa" required>
+                                                    <option value="">Chọn điểm</option>
+                                                    <option value="1">1 sao</option>
+                                                    <option value="2">2 sao</option>
+                                                    <option value="3">3 sao</option>
+                                                    <option value="4">4 sao</option>
+                                                    <option value="5">5 sao</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Bình luận -->
                                     <div class="col-md-12">
-                                        <textarea name="textarea" rows="5" class="col-12 col-md-10"
-                                            placeholder="Review"></textarea>
+                                        <textarea name="binhLuan" id="binhLuan" rows="5" class="col-12 col-md-10"
+                                            placeholder="Nhập bình luận của bạn về phòng..."></textarea>
                                     </div>
+                                    
+                                    <!-- Hidden fields -->
+                                    <input type="hidden" name="roomTypeId" id="roomTypeId" th:value="${roomType.id}">
+                                    <input type="hidden" name="bookingId" id="bookingId" value="">
+                                    
                                     <div class="ak-height-40 ak-height-lg-20"></div>
                                     <div class="ak-btn style-5">
-                                        <button type="submit">Post Review
-                                        </button>
+                                        <button type="submit" id="submitReviewBtn">Gửi đánh giá</button>
                                     </div>
                                 </form>
                             </div>
@@ -1216,6 +1298,87 @@ function decreaseValue() {
   position: relative;
   z-index: 2;
 }
+
+/* CSS cho form đánh giá */
+.rating-section {
+    margin: 20px 0;
+}
+
+.rating-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.rating-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rating-item label {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.rating-item select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+}
+
+.rating-item select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.review-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.review-item h6 {
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.review-item p {
+    color: #e0e0e0;
+    margin-bottom: 0;
+}
+
+.stars {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.stars .material-icons {
+    font-size: 16px;
+    color: #ddd;
+}
+
+.stars[style*="--rating"] .material-icons:nth-child(-n+var(--rating)) {
+    color: #ffc107;
+}
+
+#avg-stars .material-icons {
+    font-size: 20px;
+}
+
+#avg-rating-display {
+    color: #ffffff;
+    font-weight: bold;
+    margin-right: 10px;
+}
 </style>
 
 <script>
@@ -1344,7 +1507,182 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     console.log('Pricing system initialized successfully!');
+    
+    // ==================== XỬ LÝ ĐÁNH GIÁ ====================
+    
+    // Load đánh giá khi trang load
+    loadReviews();
+    
+    // Xử lý submit form đánh giá
+    var reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitReview();
+        });
+    }
 });
+
+// Hàm load đánh giá
+function loadReviews() {
+    var roomTypeId = document.getElementById('roomTypeId').value;
+    if (!roomTypeId) return;
+    
+    // Load danh sách đánh giá
+    fetch('/khachhang/reviews/room/' + roomTypeId)
+        .then(response => response.json())
+        .then(reviews => {
+            displayReviews(reviews);
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+        });
+    
+    // Load điểm trung bình
+    fetch('/khachhang/reviews/room/' + roomTypeId + '/average')
+        .then(response => response.json())
+        .then(data => {
+            displayAverageRating(data.averageRating);
+        })
+        .catch(error => {
+            console.error('Error loading average rating:', error);
+        });
+}
+
+// Hàm hiển thị đánh giá
+function displayReviews(reviews) {
+    var reviewsList = document.getElementById('reviews-list');
+    var reviewCount = document.getElementById('review-count');
+    
+    if (!reviewsList || !reviewCount) return;
+    
+    reviewCount.textContent = reviews.length;
+    
+    if (reviews.length === 0) {
+        reviewsList.innerHTML = '<p>Chưa có đánh giá nào!</p>';
+        return;
+    }
+    
+    var html = '';
+    reviews.forEach(function(review) {
+        html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px;">';
+        html += '<div class="d-flex justify-content-between align-items-start">';
+        html += '<div>';
+        html += '<h6 class="mb-1">' + (review.customerName || 'Khách hàng') + '</h6>';
+        html += '<div class="stars mb-2" style="--rating: ' + review.diemTongQuan + ';">';
+        for (var i = 0; i < 5; i++) {
+            html += '<span class="material-icons">star</span>';
+        }
+        html += '<span class="ms-2">' + review.diemTongQuan + '/5</span>';
+        html += '</div>';
+        html += '</div>';
+        html += '<small class="text-muted">' + formatDate(review.ngayDanhGia) + '</small>';
+        html += '</div>';
+        if (review.binhLuan) {
+            html += '<p class="mb-0">' + review.binhLuan + '</p>';
+        }
+        html += '</div>';
+    });
+    
+    reviewsList.innerHTML = html;
+}
+
+// Hàm hiển thị điểm trung bình
+function displayAverageRating(averageRating) {
+    var avgRatingDisplay = document.getElementById('avg-rating-display');
+    var avgStars = document.getElementById('avg-stars');
+    
+    if (avgRatingDisplay) {
+        avgRatingDisplay.textContent = averageRating.toFixed(1);
+    }
+    
+    if (avgStars) {
+        avgStars.style.setProperty('--rating', averageRating);
+    }
+}
+
+// Hàm submit đánh giá
+function submitReview() {
+    var form = document.getElementById('reviewForm');
+    var submitBtn = document.getElementById('submitReviewBtn');
+    
+    if (!form || !submitBtn) return;
+    
+    // Disable button để tránh double submit
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang gửi...';
+    
+    // Lấy dữ liệu form
+    var formData = new FormData(form);
+    var reviewData = {
+        customerName: formData.get('customerName'),
+        customerEmail: formData.get('customerEmail'),
+        diemTongQuan: parseInt(formData.get('diemTongQuan')),
+        diemSachSe: parseInt(formData.get('diemSachSe')),
+        diemDichVu: parseInt(formData.get('diemDichVu')),
+        diemViTri: parseInt(formData.get('diemViTri')),
+        diemGiaCa: parseInt(formData.get('diemGiaCa')),
+        binhLuan: formData.get('binhLuan'),
+        roomTypeId: parseInt(formData.get('roomTypeId')),
+        bookingId: parseInt(formData.get('bookingId')) || 1 // Fallback nếu không có booking ID
+    };
+    
+    // Validation
+    if (!reviewData.customerName || !reviewData.customerEmail) {
+        alert('Vui lòng nhập đầy đủ họ tên và email!');
+        resetSubmitButton();
+        return;
+    }
+    
+    if (!reviewData.diemTongQuan || !reviewData.diemSachSe || !reviewData.diemDichVu || 
+        !reviewData.diemViTri || !reviewData.diemGiaCa) {
+        alert('Vui lòng chọn đầy đủ điểm đánh giá!');
+        resetSubmitButton();
+        return;
+    }
+    
+    // Gửi request
+    fetch('/khachhang/reviews/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            form.reset();
+            loadReviews(); // Reload đánh giá
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting review:', error);
+        alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!');
+    })
+    .finally(() => {
+        resetSubmitButton();
+    });
+}
+
+// Hàm reset button submit
+function resetSubmitButton() {
+    var submitBtn = document.getElementById('submitReviewBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
+    }
+}
+
+// Hàm format ngày
+function formatDate(dateString) {
+    if (!dateString) return '';
+    var date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+}
 </script>
 </body>
 

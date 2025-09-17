@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.ReviewDTO;
+import panacea.website_dat_lich_khach_san.core.KhachHang.Service.KhachHangReviewService;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.time.LocalDate;
 
 // Controller chính cho khách hàng
@@ -30,6 +33,9 @@ public class KhachHangController {
     
     @Autowired
     private PricingService pricingService;
+    
+    @Autowired
+    private KhachHangReviewService khachHangReviewService;
 
     @GetMapping("/dashboard")
     public String dashboard() {
@@ -392,5 +398,58 @@ public class KhachHangController {
             result.put("error", e.getMessage());
         }
         return result;
+    }
+    
+    // ==================== XỬ LÝ ĐÁNH GIÁ ====================
+    
+    /**
+     * Lấy danh sách đánh giá của phòng
+     */
+    @GetMapping("/reviews/room/{roomTypeId}")
+    @ResponseBody
+    public List<ReviewDTO> getRoomReviews(@PathVariable Integer roomTypeId) {
+        return khachHangReviewService.getRoomReviews(roomTypeId);
+    }
+    
+    /**
+     * Lấy điểm trung bình của phòng
+     */
+    @GetMapping("/reviews/room/{roomTypeId}/average")
+    @ResponseBody
+    public Map<String, Object> getRoomAverageRating(@PathVariable Integer roomTypeId) {
+        Double averageRating = khachHangReviewService.getAverageRating(roomTypeId);
+        return Map.of(
+            "averageRating", averageRating,
+            "roomTypeId", roomTypeId
+        );
+    }
+    
+    /**
+     * Tạo đánh giá mới
+     */
+    @PostMapping("/reviews/create")
+    @ResponseBody
+    public Map<String, Object> createReview(@RequestBody ReviewDTO reviewDTO) {
+        boolean success = khachHangReviewService.createReview(reviewDTO);
+        if (success) {
+            return Map.of(
+                "success", true,
+                "message", "Đánh giá đã được gửi thành công! Vui lòng chờ admin duyệt."
+            );
+        } else {
+            return Map.of(
+                "success", false,
+                "message", "Không thể gửi đánh giá. Vui lòng kiểm tra lại thông tin."
+            );
+        }
+    }
+    
+    /**
+     * Lấy đánh giá của khách hàng theo email
+     */
+    @GetMapping("/reviews/customer")
+    @ResponseBody
+    public List<ReviewDTO> getCustomerReviews(@RequestParam String email) {
+        return khachHangReviewService.getCustomerReviews(email);
     }
 }

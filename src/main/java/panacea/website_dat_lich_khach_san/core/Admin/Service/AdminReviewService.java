@@ -100,6 +100,7 @@ public class AdminReviewService {
         dto.setCustomerId(review.getKhachHangId());
         dto.setRoomId(null); // No roomId in Review entity
         dto.setDiemDanhGia(review.getDiemTongQuan() != null ? review.getDiemTongQuan().intValue() : null);
+        dto.setDiemTongQuan(review.getDiemTongQuan());
         dto.setNoiDung(review.getBinhLuan());
         dto.setComment(review.getBinhLuan());
         dto.setTrangThai(review.getTrangThai() != null ? review.getTrangThai().name() : null);

@@ -29,6 +29,9 @@ public class Review {
     @Column(name = "khach_hang_id", nullable = false)
     private Integer khachHangId;
 
+    @Column(name = "khach_san_id", nullable = false)
+    private Integer khachSanId;
+
     @Column(name = "diem_tong_quan")
     private Byte diemTongQuan;
 
