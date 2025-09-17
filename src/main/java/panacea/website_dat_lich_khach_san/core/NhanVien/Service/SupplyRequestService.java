@@ -153,6 +153,7 @@ public class SupplyRequestService {
     private SupplyRequestDTO convertToDTO(SupplyRequest request) {
         SupplyRequestDTO dto = new SupplyRequestDTO();
         dto.setId(request.getId());
+        dto.setMaYeuCau(request.getMaYeuCau());
         dto.setVatPhamId(request.getVatPhamId());
         dto.setSoLuongYeuCau(request.getSoLuongYeuCau());
         dto.setLyDoYeuCau(request.getLyDoYeuCau());

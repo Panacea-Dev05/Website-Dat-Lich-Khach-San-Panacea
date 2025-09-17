@@ -23,6 +23,9 @@ public class SupplyRequest {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "ma_yeu_cau", nullable = false, unique = true)
+    private String maYeuCau;
+
     @Column(name = "vat_pham_id", nullable = false)
     private Integer vatPhamId;
 
@@ -89,6 +92,16 @@ public class SupplyRequest {
         }
         if (this.ngayYeuCau == null) {
             this.ngayYeuCau = LocalDateTime.now();
+        }
+        if (this.trangThai == null) {
+            System.out.println("[DEBUG] SupplyRequest.prePersist: trangThai is null, setting to CHO_DUYET");
+            this.trangThai = TrangThaiYeuCau.CHO_DUYET;
+        } else {
+            System.out.println("[DEBUG] SupplyRequest.prePersist: trangThai = " + this.trangThai);
+        }
+        if (this.maYeuCau == null) {
+            // Tạo mã yêu cầu theo format: YC + timestamp + random 3 số
+            this.maYeuCau = "YC" + System.currentTimeMillis() + String.format("%03d", (int)(Math.random() * 1000));
         }
     }
 

@@ -8,7 +8,13 @@ public class TrangThaiYeuCauJpaConverter implements AttributeConverter<TrangThai
     
     @Override
     public String convertToDatabaseColumn(TrangThaiYeuCau attribute) {
-        return attribute != null ? attribute.name() : null;
+        if (attribute == null) {
+            System.out.println("[DEBUG] TrangThaiYeuCauJpaConverter: attribute is null, returning CHO_DUYET");
+            return "CHO_DUYET"; // Default value thay vì null
+        }
+        String result = attribute.name();
+        System.out.println("[DEBUG] TrangThaiYeuCauJpaConverter: converting " + attribute + " to " + result);
+        return result;
     }
     
     @Override

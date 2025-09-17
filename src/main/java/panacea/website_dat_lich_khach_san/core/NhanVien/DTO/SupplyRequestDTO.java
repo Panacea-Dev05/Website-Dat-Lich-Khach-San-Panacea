@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class SupplyRequestDTO {
     private Integer id;
+    private String maYeuCau;
     private Integer vatPhamId;
     private String tenVatPham;
     private Integer soLuongTon;
@@ -61,6 +62,14 @@ public class SupplyRequestDTO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getMaYeuCau() {
+        return maYeuCau;
+    }
+
+    public void setMaYeuCau(String maYeuCau) {
+        this.maYeuCau = maYeuCau;
     }
 
     public Integer getVatPhamId() {
