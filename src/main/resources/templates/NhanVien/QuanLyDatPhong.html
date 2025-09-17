@@ -153,9 +153,15 @@
         }
 
         .app-layout {
-            display: flex;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "sidebar main";
+            grid-template-columns: 260px 1fr;
+            /* Độ rộng của sidebar và phần còn lại */
+            grid-template-rows: auto 1fr;
+            /* Chiều cao của header và phần còn lại */
             height: 100vh;
-            overflow: hidden;
         }
 
         .sidebar {
@@ -172,6 +178,8 @@
         }
 
         .main-content {
+            grid-area: main;
+            /* Thêm dòng này để chỉ định vùng cho main-content */
             flex: 1;
             overflow-y: auto;
             height: 100vh;
@@ -179,9 +187,20 @@
         }
 
         header {
+            grid-area: header;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            user-select: none;
         }
 
         /* Status styles */
@@ -315,6 +334,7 @@
                 min-width: 70px;
             }
         }
+
         #modal-room-select {
             max-width: 300px;
             width: 100%;
@@ -325,12 +345,12 @@
 
 <body>
     <div class="app-layout">
-<!--        <header>-->
-<!--            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">-->
-<!--                <span class="material-icons" aria-hidden="true">hotel</span>-->
-<!--                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>-->
-<!--            </div>-->
-<!--        </header>-->
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+        </header>
         <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
         <main class="main-content">
             <!-- Danh sách tất cả booking -->
@@ -341,7 +361,8 @@
                 <div
                     style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
                     <div style="display: flex; gap: 1rem; align-items: center;">
-                        <button class="btn" onclick="showAddCustomerModal()" style="background: #3b82f6;" id="addCustomerBtn">
+                        <button class="btn" onclick="showAddCustomerModal()" style="background: #3b82f6;"
+                            id="addCustomerBtn">
                             <span class="material-icons">login</span>Check-in trực tiếp
                         </button>
                         <button class="btn" style="background: #6366f1;" onclick="openHistoryModal()">
@@ -350,18 +371,18 @@
                     </div>
                     <!-- Filter form -->
                     <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                        <input type="text" name="keyword" 
-                               th:value="${keyword}"
-                               placeholder="Tìm kiếm theo tên khách hàng..."
-                               style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; min-width: 200px;" />
-                        <input type="date" name="ngayNhan" 
-                               th:value="${ngayNhan != null} ? ${#temporals.format(ngayNhan, 'yyyy-MM-dd')} : ''"
-                               style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
+                        <input type="text" name="keyword" th:value="${keyword}"
+                            placeholder="Tìm kiếm theo tên khách hàng..."
+                            style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; min-width: 200px;" />
+                        <input type="date" name="ngayNhan"
+                            th:value="${ngayNhan != null} ? ${#temporals.format(ngayNhan, 'yyyy-MM-dd')} : ''"
+                            style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />
                         <button class="btn"><span class="material-icons">search</span>Tìm kiếm</button>
                     </form>
                 </div>
 
-                <div style="max-height: 60vh; overflow-y: scroll; border: 1px solid #e5e7eb; border-radius: 8px; -webkit-overflow-scrolling: touch;">
+                <div
+                    style="max-height: 60vh; overflow-y: scroll; border: 1px solid #e5e7eb; border-radius: 8px; -webkit-overflow-scrolling: touch;">
                     <table>
                         <thead style="position: sticky; top: 0; background: #f9fafb; z-index: 10;">
                             <tr>
@@ -379,62 +400,70 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="booking : ${bookings}">
-                            <td>
-                                <span th:text="${booking.maDatPhong}"></span>
-                                <span th:if="${#strings.startsWith(booking.maDatPhong, 'COMBO')}" 
-                                      style="background: #10b981; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; margin-left: 5px;">COMBO</span>
-                            </td>
-                            <td>
-                                <a
-                                    style="color: #2563eb; text-decoration: underline; cursor: pointer;"
-                                    th:text="${booking.customerName}"
-                                    th:data-booking-id="${booking.id}"
-                                    onclick="viewBookingDetail(this)">
-                                </a>
-                            </td>
-                            <td>
-                                <div th:if="${booking.roomNumbers != null and !#lists.isEmpty(booking.roomNumbers)}">
-                                    <span th:each="roomNum, iterStat : ${booking.roomNumbers}" 
-                                          th:text="${roomNum + (iterStat.last ? '' : ', ')}"></span>
-                                </div>
-                                <span th:if="${booking.roomNumbers == null or #lists.isEmpty(booking.roomNumbers)}" th:text="'N/A'"></span>
-                            </td>
-                            <td>
-                                <div th:if="${booking.roomTypeNames != null and !#lists.isEmpty(booking.roomTypeNames)}">
-                                    <span th:each="roomType, iterStat : ${booking.roomTypeNames}" 
-                                          th:text="${roomType + (iterStat.last ? '' : ', ')}"></span>
-                                </div>
-                                <span th:if="${booking.roomTypeNames == null or #lists.isEmpty(booking.roomTypeNames)}" th:text="'N/A'"></span>
-                            </td>
-                            <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}"></td>
-                            <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}"></td>
-                            <td th:text="${booking.soNguoiLon + ' người lớn, ' + booking.soTreEm + ' trẻ em'}"></td>
-                            <td th:text="${booking.tienCoc != null ? #numbers.formatDecimal(booking.tienCoc, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}"></td>
-                            <td th:text="${booking.tongThanhToan != null ? #numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}"></td>
-                            <td>
-                                <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
+                            <tr th:each="booking : ${bookings}">
+                                <td>
+                                    <span th:text="${booking.maDatPhong}"></span>
+                                    <span th:if="${#strings.startsWith(booking.maDatPhong, 'COMBO')}"
+                                        style="background: #10b981; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; margin-left: 5px;">COMBO</span>
+                                </td>
+                                <td>
+                                    <a style="color: #2563eb; text-decoration: underline; cursor: pointer;"
+                                        th:text="${booking.customerName}" th:data-booking-id="${booking.id}"
+                                        onclick="viewBookingDetail(this)">
+                                    </a>
+                                </td>
+                                <td>
+                                    <div
+                                        th:if="${booking.roomNumbers != null and !#lists.isEmpty(booking.roomNumbers)}">
+                                        <span th:each="roomNum, iterStat : ${booking.roomNumbers}"
+                                            th:text="${roomNum + (iterStat.last ? '' : ', ')}"></span>
+                                    </div>
+                                    <span th:if="${booking.roomNumbers == null or #lists.isEmpty(booking.roomNumbers)}"
+                                        th:text="'N/A'"></span>
+                                </td>
+                                <td>
+                                    <div
+                                        th:if="${booking.roomTypeNames != null and !#lists.isEmpty(booking.roomTypeNames)}">
+                                        <span th:each="roomType, iterStat : ${booking.roomTypeNames}"
+                                            th:text="${roomType + (iterStat.last ? '' : ', ')}"></span>
+                                    </div>
+                                    <span
+                                        th:if="${booking.roomTypeNames == null or #lists.isEmpty(booking.roomTypeNames)}"
+                                        th:text="'N/A'"></span>
+                                </td>
+                                <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${booking.soNguoiLon + ' người lớn, ' + booking.soTreEm + ' trẻ em'}"></td>
+                                <td
+                                    th:text="${booking.tienCoc != null ? #numbers.formatDecimal(booking.tienCoc, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
+                                </td>
+                                <td
+                                    th:text="${booking.tongThanhToan != null ? #numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">
+                                </td>
+                                <td>
+                                    <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
                                        booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
                                        booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'status-checkin' : 
                                        booking.trangThaiDatPhong == 'DA_HUY' ? 'status-cancelled' : 'status-default'}"
-                                    th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
+                                        th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
                                        booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'Đã xác nhận' : 
                                        booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'Đã nhận phòng' : 
                                        booking.trangThaiDatPhong == 'DA_HUY' ? 'Đã hủy' : 'Hoàn thành'}">
-                                </span>
-                            </td>
-                            <td style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                                <button class="btn" th:data-booking-id="${booking.id}" onclick="viewBookingDetail(this)">
-                                    <span class="material-icons">visibility</span>Xem
-                                </button>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(bookings)}">
-                            <td colspan="9" style="text-align: center; padding: 2rem;">
-                                <span class="material-icons" style="font-size: 3rem; color: #9ca3af;">inbox</span>
-                                <p>Không có đặt phòng nào</p>
-                            </td>
-                        </tr>
+                                    </span>
+                                </td>
+                                <td style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                                    <button class="btn" th:data-booking-id="${booking.id}"
+                                        onclick="viewBookingDetail(this)">
+                                        <span class="material-icons">visibility</span>Xem
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(bookings)}">
+                                <td colspan="9" style="text-align: center; padding: 2rem;">
+                                    <span class="material-icons" style="font-size: 3rem; color: #9ca3af;">inbox</span>
+                                    <p>Không có đặt phòng nào</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -486,8 +515,10 @@
                     </label>
                     <div style="font-weight: 500; min-width: 200px;">
                         <label style="display: block; margin-bottom: 0.5rem;">Chọn phòng:</label>
-                        <div id="modal-room-select" class="room-selection-container" style="max-height: 120px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
-                            <div style="color: #6b7280; text-align: center; padding: 1rem;">Đang tải danh sách phòng...</div>
+                        <div id="modal-room-select" class="room-selection-container"
+                            style="max-height: 120px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+                            <div style="color: #6b7280; text-align: center; padding: 1rem;">Đang tải danh sách phòng...
+                            </div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -509,13 +540,14 @@
 
     <!-- Modal thêm khách hàng -->
     <div id="addCustomerModal" class="modal">
-        <div class="modal-content" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+        <div class="modal-content"
+            style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
             <!-- Header cố định -->
             <div style="flex-shrink: 0; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; background: white;">
                 <span class="close" onclick="closeAddCustomerModal()">&times;</span>
                 <h2><span class="material-icons">login</span> Check-in trực tiếp</h2>
             </div>
-            
+
             <!-- Nội dung có thể scroll -->
             <div style="flex: 1; overflow-y: auto; padding: 1.5rem; -webkit-overflow-scrolling: touch;">
                 <div style="margin-bottom: 1rem;">
@@ -524,32 +556,39 @@
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Họ:</label>
                             <input type="text" id="customerHo"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Tên:</label>
                             <input type="text" id="customerTen"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Email:</label>
                             <input type="email" id="customerEmail"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số điện thoại:</label>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số điện
+                                thoại:</label>
                             <input type="tel" id="customerPhone"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">CMND/CCCD:</label>
                             <input type="text" id="customerIdCard"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Địa chỉ:</label>
                             <input type="text" id="customerAddress"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                     </div>
                 </div>
@@ -559,20 +598,23 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Hạng phòng:</label>
-                            <select id="roomTypeSelect" onchange="loadRoomsByType()" 
+                            <select id="roomTypeSelect" onchange="loadRoomsByType()"
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 10px;">
                                 <option value="">Chọn hạng phòng</option>
                             </select>
-                            <div id="roomTypePricing" style="margin-bottom: 10px; padding: 8px; background: #f9fafb; border-radius: 6px; display: none;">
-                                <div style="font-size: 12px; color: #374151; font-weight: 500; margin-bottom: 4px;">Giá phòng:</div>
+                            <div id="roomTypePricing"
+                                style="margin-bottom: 10px; padding: 8px; background: #f9fafb; border-radius: 6px; display: none;">
+                                <div style="font-size: 12px; color: #374151; font-weight: 500; margin-bottom: 4px;">Giá
+                                    phòng:</div>
                                 <div style="display: flex; gap: 10px; font-size: 11px;">
                                     <span id="pricePerDay">Ngày: 0 VND</span>
                                     <span id="pricePerHour">Giờ: 0 VND</span>
                                     <span id="priceOvernight">Qua đêm: 0 VND</span>
                                 </div>
                             </div>
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng (có thể chọn nhiều):</label>
-                            <div id="roomSelect" class="room-selection-container" 
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Phòng (có thể chọn
+                                nhiều):</label>
+                            <div id="roomSelect" class="room-selection-container"
                                 style="width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px; background: white;">
                                 <div class="room-loading">Vui lòng chọn hạng phòng trước</div>
                             </div>
@@ -584,17 +626,22 @@
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày nhận
                                 phòng:</label>
                             <input type="date" id="checkInDate"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày trả phòng:</label>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Ngày trả
+                                phòng:</label>
                             <input type="date" id="checkOutDate"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Loại đặt phòng:</label>
-                            <select id="bookingType" onchange="toggleHourInput(); calculatePrice();" 
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Loại đặt
+                                phòng:</label>
+                            <select id="bookingType" onchange="toggleHourInput(); calculatePrice();"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                                 <option value="">Chọn loại đặt phòng</option>
                                 <option value="DAY">Theo ngày</option>
                                 <option value="HOUR">Theo giờ</option>
@@ -602,42 +649,49 @@
                             </select>
                         </div>
                         <div id="hourInputContainer" style="display: none;">
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số giờ thuê:</label>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số giờ
+                                thuê:</label>
                             <input type="number" id="hourCount" min="1" max="24" value="1" onchange="calculatePrice()"
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
                             <small style="color: #666; font-size: 12px;">Tối thiểu 1 giờ, tối đa 24 giờ</small>
                         </div>
                         <div id="dayInputContainer" style="display: none;">
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số ngày thuê:</label>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số ngày
+                                thuê:</label>
                             <input type="number" id="dayCount" min="1" max="30" value="1" onchange="calculatePrice()"
                                 style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
                             <small style="color: #666; font-size: 12px;">Tối thiểu 1 ngày, tối đa 30 ngày</small>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số người lớn:</label>
+                            <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số người
+                                lớn:</label>
                             <input type="number" id="adultCount" min="1" value="1"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.25rem; font-weight: 500;">Số trẻ em:</label>
                             <input type="number" id="childCount" min="0" value="0"
-                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" required>
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                required>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Hiển thị tổng giá tiền -->
-                <div id="totalPriceSection" style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px; display: none;">
+                <div id="totalPriceSection"
+                    style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px; display: none;">
                     <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">Tổng giá tiền</h4>
                     <div id="totalPrice" style="font-size: 18px; font-weight: bold; color: #0369a1;">0 VND</div>
                 </div>
             </div>
-            
+
             <!-- Footer cố định -->
             <div style="flex-shrink: 0; padding: 1.5rem; border-top: 1px solid #e5e7eb; background: white;">
                 <div style="display: flex; gap: 1rem; justify-content: flex-end;">
                     <button class="btn" onclick="closeAddCustomerModal()" style="background: #6b7280;">Hủy</button>
-                    <button class="btn" onclick="addCustomerBooking()" style="background: #10b981;">Thêm đặt phòng</button>
+                    <button class="btn" onclick="addCustomerBooking()" style="background: #10b981;">Thêm đặt
+                        phòng</button>
                 </div>
             </div>
         </div>
@@ -645,40 +699,63 @@
 
     <!-- Modal nhập thông tin check-in -->
     <div id="checkInModal" class="modal">
-        <div class="modal-content" style="max-width: 90vw; width: 400px; max-height: 85vh; padding: 0; border-radius: 10px; background: #fff; margin: 2% auto; position: relative; top: 50%; transform: translateY(-50%); overflow: hidden; display: flex; flex-direction: column;">
+        <div class="modal-content"
+            style="max-width: 90vw; width: 400px; max-height: 85vh; padding: 0; border-radius: 10px; background: #fff; margin: 2% auto; position: relative; top: 50%; transform: translateY(-50%); overflow: hidden; display: flex; flex-direction: column;">
             <div style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;">
                 <span class="close" onclick="closeCheckInModal()">&times;</span>
-                <h2 style="margin: 0; font-size: 1.2rem;"><span class="material-icons" style="font-size: 1.2rem; vertical-align: middle;">login</span> Thông tin Check-in</h2>
+                <h2 style="margin: 0; font-size: 1.2rem;"><span class="material-icons"
+                        style="font-size: 1.2rem; vertical-align: middle;">login</span> Thông tin Check-in</h2>
             </div>
-            <div style="padding: 10px 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem;">
+            <div
+                style="padding: 10px 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem;">
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số CMND/CCCD:</label>
-                    <input type="text" id="checkinCmnd" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số
+                        CMND/CCCD:</label>
+                    <input type="text" id="checkinCmnd"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
+                        required />
                 </div>
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ngày cấp:</label>
-                    <input type="date" id="checkinNgayCap" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ngày
+                        cấp:</label>
+                    <input type="date" id="checkinNgayCap"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
+                        required />
                 </div>
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Nơi cấp:</label>
-                    <input type="text" id="checkinNoiCap" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Nơi
+                        cấp:</label>
+                    <input type="text" id="checkinNoiCap"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
+                        required />
                 </div>
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số người lớn thực tế:</label>
-                    <input type="number" id="checkinNguoiLon" min="1" value="1" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số người lớn
+                        thực tế:</label>
+                    <input type="number" id="checkinNguoiLon" min="1" value="1"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
+                        required />
                 </div>
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số trẻ em thực tế:</label>
-                    <input type="number" id="checkinTreEm" min="0" value="0" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;" required />
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Số trẻ em
+                        thực tế:</label>
+                    <input type="number" id="checkinTreEm" min="0" value="0"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
+                        required />
                 </div>
                 <div>
-                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ghi chú check-in:</label>
-                    <textarea id="checkinGhiChu" rows="2" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem; resize: vertical;"></textarea>
+                    <label style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; display: block;">Ghi chú
+                        check-in:</label>
+                    <textarea id="checkinGhiChu" rows="2"
+                        style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem; resize: vertical;"></textarea>
                 </div>
             </div>
-            <div style="padding: 10px 12px; border-top: 1px solid #e5e7eb; flex-shrink: 0; display: flex; gap: 0.8rem; justify-content: flex-end;">
-                <button class="btn" onclick="closeCheckInModal()" style="background: #6b7280; padding: 6px 12px; font-size: 0.9rem;">Hủy</button>
-                <button class="btn" id="checkinSubmitBtn" style="background: #10b981; padding: 6px 12px; font-size: 0.9rem;">Xác nhận Check-in</button>
+            <div
+                style="padding: 10px 12px; border-top: 1px solid #e5e7eb; flex-shrink: 0; display: flex; gap: 0.8rem; justify-content: flex-end;">
+                <button class="btn" onclick="closeCheckInModal()"
+                    style="background: #6b7280; padding: 6px 12px; font-size: 0.9rem;">Hủy</button>
+                <button class="btn" id="checkinSubmitBtn"
+                    style="background: #10b981; padding: 6px 12px; font-size: 0.9rem;">Xác nhận Check-in</button>
             </div>
         </div>
     </div>
@@ -688,7 +765,8 @@
         <div class="modal-content" style="max-width: 95vw; width: 1200px; min-height: 600px; position: relative;">
             <span class="close" onclick="closeHistoryModal()">&times;</span>
             <h2><span class="material-icons">history</span> Lịch sử đặt phòng</h2>
-            <iframe id="historyFrame" src="/nhanvien/quanlydatphong/history" style="width:100%;height:500px;border:none;"></iframe>
+            <iframe id="historyFrame" src="/nhanvien/quanlydatphong/history"
+                style="width:100%;height:500px;border:none;"></iframe>
         </div>
     </div>
 
@@ -703,7 +781,8 @@
                     Tổng tiền dịch vụ: <span id="serviceTotalAmount">0</span> VND
                 </div>
                 <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                    <button type="button" class="btn" style="background: #6b7280;" onclick="closeServiceEditModal()">Hủy</button>
+                    <button type="button" class="btn" style="background: #6b7280;"
+                        onclick="closeServiceEditModal()">Hủy</button>
                     <button type="submit" class="btn" style="background: #10b981;">Lưu</button>
                 </div>
             </form>
@@ -717,8 +796,10 @@
             <h2><span class="material-icons">inventory</span> Chọn vật phẩm tồn kho</h2>
             <div id="inventoryList" style="margin-top: 1rem; max-height: 400px; overflow-y: auto;"></div>
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                <button type="button" class="btn" style="background: #6b7280;" onclick="closeInventoryModal()">Hủy</button>
-                <button type="button" class="btn" style="background: #10b981;" onclick="addSelectedInventoryItems()">Thêm vào danh sách</button>
+                <button type="button" class="btn" style="background: #6b7280;"
+                    onclick="closeInventoryModal()">Hủy</button>
+                <button type="button" class="btn" style="background: #10b981;"
+                    onclick="addSelectedInventoryItems()">Thêm vào danh sách</button>
             </div>
         </div>
     </div>
@@ -734,7 +815,8 @@
                     <strong>Tổng tiền: <span id="addInventoryTotalAmount">0</span> VND</strong>
                 </div>
                 <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                    <button type="button" class="btn" style="background: #6b7280;" onclick="closeAddInventoryModal()">Hủy</button>
+                    <button type="button" class="btn" style="background: #6b7280;"
+                        onclick="closeAddInventoryModal()">Hủy</button>
                     <button type="submit" class="btn" style="background: #10b981;">Lưu</button>
                 </div>
             </form>
@@ -783,7 +865,7 @@
                     const oldText = cancelBtn.innerHTML;
                     cancelBtn.innerHTML = 'Đang hủy...';
                 }
-                
+
                 fetch(`/nhanvien/quanlydatphong/cancel/${bookingId}`, {
                     method: 'POST',
                     headers: {
@@ -821,7 +903,7 @@
                 .then(booking => {
                     // Kiểm tra xem có phải booking combo không
                     const isComboBooking = booking.maDatPhong && booking.maDatPhong.startsWith('COMBO');
-                    
+
                     let content = `
                     <!-- Thông tin booking -->
                     <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -857,7 +939,7 @@
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Hiển thị thông tin combo nếu là booking combo
                     if (isComboBooking && booking.ghiChuKhachHang) {
                         const comboMatch = booking.ghiChuKhachHang.match(/COMBO PHÒNG: ([^.]+)/);
@@ -976,7 +1058,7 @@
                                 confirmBtn.innerHTML = oldText;
                             }
                         };
-                        
+
                         // Gán sự kiện cho nút hủy
                         document.getElementById('modal-cancel-btn').onclick = function () {
                             cancelBooking(bookingId);
@@ -996,7 +1078,7 @@
                         checkInBtn.onclick = function () {
                             openCheckInModal(bookingId);
                         };
-                        
+
                         // Hiện nút hủy cho trạng thái đã xác nhận
                         document.getElementById('modal-cancel-btn').style.display = '';
                         document.getElementById('modal-cancel-btn').onclick = function () {
@@ -1115,20 +1197,20 @@
                     console.error('Error loading room types:', error);
                 });
         }
-        
+
         // Hàm load phòng theo hạng phòng
         function loadRoomsByType() {
             const roomTypeSelect = document.getElementById('roomTypeSelect');
             const roomTypePricing = document.getElementById('roomTypePricing');
             const roomSelect = document.getElementById('roomSelect');
-            
+
             if (!roomTypeSelect.value) {
                 roomSelect.innerHTML = '<div class="room-loading">Vui lòng chọn hạng phòng trước</div>';
                 roomTypePricing.style.display = 'none';
                 updateSelectedRoomsCount();
                 return;
             }
-            
+
             // Hiển thị giá phòng
             const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
             if (selectedOption && selectedOption.dataset.giaTheoNgay) {
@@ -1138,10 +1220,10 @@
                 document.getElementById('priceOvernight').textContent = `Qua đêm: ${formatter.format(selectedOption.dataset.giaQuaDem)} VND`;
                 roomTypePricing.style.display = 'block';
             }
-            
+
             // Load phòng theo loại
             roomSelect.innerHTML = '<div class="room-loading">Đang tải danh sách phòng...</div>';
-            
+
             fetch(`/nhanvien/quanlydatphong/rooms/available?roomTypeId=${roomTypeSelect.value}&t=${Date.now()}`)
                 .then(response => response.json())
                 .then(rooms => {
@@ -1152,27 +1234,27 @@
                             roomSelect.innerHTML = '<div class="room-loading">Không có phòng trống cho hạng phòng này</div>';
                             return;
                         }
-                        
+
                         rooms.forEach(room => {
                             const roomItem = document.createElement('div');
                             roomItem.style.cssText = 'margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb;';
-                            
+
                             const checkbox = document.createElement('input');
                             checkbox.type = 'checkbox';
                             checkbox.id = `room_${room.id}`;
                             checkbox.value = room.id;
                             checkbox.className = 'room-checkbox';
                             checkbox.style.marginRight = '8px';
-                            checkbox.addEventListener('change', function() {
+                            checkbox.addEventListener('change', function () {
                                 updateSelectedRoomsCount();
                                 calculatePrice();
                             });
-                            
+
                             const label = document.createElement('label');
                             label.htmlFor = `room_${room.id}`;
                             label.textContent = `Phòng ${room.soPhong} - ${room.roomType}`;
                             label.style.cursor = 'pointer';
-                            
+
                             roomItem.appendChild(checkbox);
                             roomItem.appendChild(label);
                             roomSelect.appendChild(roomItem);
@@ -1201,24 +1283,24 @@
                         rooms.forEach(room => {
                             const roomItem = document.createElement('div');
                             roomItem.style.cssText = 'margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb;';
-                            
+
                             const checkbox = document.createElement('input');
                             checkbox.type = 'checkbox';
                             checkbox.id = `room_${room.id}`;
                             checkbox.value = room.id;
                             checkbox.className = 'room-checkbox';
                             checkbox.style.marginRight = '8px';
-                            
+
                             const label = document.createElement('label');
                             label.htmlFor = `room_${room.id}`;
                             const price = room.giaCoBan ? new Intl.NumberFormat('vi-VN').format(room.giaCoBan) : '0';
                             label.textContent = `${room.soPhong} - ${room.roomType || 'N/A'} - ${price} VND`;
                             label.style.cursor = 'pointer';
-                            
+
                             roomItem.appendChild(checkbox);
                             roomItem.appendChild(label);
                             roomSelect.appendChild(roomItem);
-                            
+
                             // Add event listener to update summary
                             checkbox.addEventListener('change', updateSelectedRoomsSummary);
                         });
@@ -1235,7 +1317,7 @@
             const checkboxes = document.querySelectorAll('.room-checkbox:checked');
             const selectedCount = checkboxes.length;
             const summaryElement = document.getElementById('selectedRoomsCount');
-            
+
             if (selectedCount === 0) {
                 summaryElement.textContent = 'Chưa chọn phòng nào';
                 summaryElement.style.color = '#666';
@@ -1244,23 +1326,23 @@
                 summaryElement.style.color = '#059669';
             }
         }
-        
+
         // Alias cho tương thích
         function updateSelectedRoomsCount() {
             updateSelectedRoomsSummary();
             calculatePrice();
         }
-        
+
         // Hàm hiển thị/ẩn trường nhập số giờ/ngày
         function toggleHourInput() {
             const bookingType = document.getElementById('bookingType').value;
             const hourInputContainer = document.getElementById('hourInputContainer');
             const dayInputContainer = document.getElementById('dayInputContainer');
-            
+
             // Ẩn tất cả các container trước
             hourInputContainer.style.display = 'none';
             dayInputContainer.style.display = 'none';
-            
+
             // Hiển thị container phù hợp
             if (bookingType === 'HOUR') {
                 hourInputContainer.style.display = 'block';
@@ -1270,13 +1352,13 @@
                 updateDayCount();
             }
         }
-        
+
         // Hàm tự động cập nhật số ngày thuê dựa trên ngày nhận và trả phòng
         function updateDayCount() {
             const checkInDate = new Date(document.getElementById('checkInDate').value);
             const checkOutDate = new Date(document.getElementById('checkOutDate').value);
             const dayCountElement = document.getElementById('dayCount');
-            
+
             if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
                 const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
                 const actualDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -1285,7 +1367,7 @@
                 dayCountElement.value = 1;
             }
         }
-        
+
         // Hàm tính giá theo loại đặt phòng
         function calculatePrice() {
             const bookingType = document.getElementById('bookingType').value;
@@ -1293,17 +1375,17 @@
             const checkboxes = document.querySelectorAll('.room-checkbox:checked');
             const totalPriceSection = document.getElementById('totalPriceSection');
             const totalPriceElement = document.getElementById('totalPrice');
-            
+
             if (!bookingType || !roomTypeSelect.value || checkboxes.length === 0) {
                 totalPriceSection.style.display = 'none';
                 return;
             }
-            
+
             const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
             let pricePerRoom = 0;
-            
+
             // Lấy giá theo loại đặt phòng
-            switch(bookingType) {
+            switch (bookingType) {
                 case 'DAY':
                     pricePerRoom = parseInt(selectedOption.dataset.giaTheoNgay) || 0;
                     // Tính số ngày thực tế từ ngày nhận và ngày trả
@@ -1330,7 +1412,7 @@
                 default:
                     pricePerRoom = 0;
             }
-            
+
             const totalPrice = pricePerRoom * checkboxes.length;
             const formatter = new Intl.NumberFormat('vi-VN');
             totalPriceElement.textContent = `${formatter.format(totalPrice)} VND`;
@@ -1399,7 +1481,7 @@
 
             // Prepare data
             const selectedRoomIds = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => parseInt(cb.value));
-            
+
             const bookingData = {
                 customer: {
                     ho: document.getElementById('customerHo').value,
@@ -1417,12 +1499,12 @@
                 bookingType: document.getElementById('bookingType').value,
                 isWalkIn: true
             };
-            
+
             // Thêm số giờ nếu là booking theo giờ
             if (document.getElementById('bookingType').value === 'HOUR') {
                 bookingData.hourCount = parseInt(document.getElementById('hourCount').value) || 1;
             }
-            
+
             // Thêm số ngày nếu là booking theo ngày
             if (document.getElementById('bookingType').value === 'DAY') {
                 bookingData.dayCount = parseInt(document.getElementById('dayCount').value) || 1;
@@ -1454,10 +1536,10 @@
 
         function checkoutBooking(bookingId) {
             const checkoutBtn = document.getElementById('modal-checkout-btn');
-            
+
             // Kiểm tra trạng thái thanh toán trước khi checkout
             if (checkoutBtn) { checkoutBtn.disabled = true; var oldText = checkoutBtn.innerHTML; checkoutBtn.innerHTML = 'Đang kiểm tra...'; }
-            
+
             fetch(`/nhanvien/thanhtoan/booking/` + bookingId + `/status`)
                 .then(res => {
                     if (!res.ok) {
@@ -1472,10 +1554,10 @@
                             if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.innerHTML = oldText; }
                             return;
                         }
-                        
+
                         // Thực hiện checkout
                         if (checkoutBtn) { checkoutBtn.innerHTML = 'Đang checkout...'; }
-                        
+
                         fetch(`/nhanvien/quanlydatphong/checkout/` + bookingId, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' }
@@ -1514,7 +1596,7 @@
             // Gán lại sự kiện cho nút xác nhận check-in mỗi lần mở modal
             const btn = document.getElementById('checkinSubmitBtn');
             if (btn) {
-                btn.onclick = async function() {
+                btn.onclick = async function () {
                     console.log('Đã bấm nút xác nhận check-in');
                     // Validate
                     const soCmndCccd = document.getElementById('checkinCmnd').value.trim();
@@ -1618,20 +1700,20 @@
             });
             html += '</tbody></table>';
             container.innerHTML = html;
-            
+
             updateServiceTotalAmount();
         }
-        
+
         function renderInventoryEditList() {
             const container = document.getElementById('inventoryEditList');
             if (selectedInventoryItems.length === 0) {
                 container.innerHTML = '<p style="color:#666;font-style:italic;padding:10px;">Chưa có vật phẩm nào được chọn</p>';
                 return;
             }
-            
+
             let html = '<table style="width:100%;border-collapse:collapse;margin-top:10px;">';
             html += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Đơn giá</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Thành tiền</th><th style="width:60px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f0f8ff;">Xóa</th></tr></thead><tbody>';
-            
+
             selectedInventoryItems.forEach(item => {
                 const thanhTien = item.giaBan * item.soLuong;
                 html += `<tr>
@@ -1647,7 +1729,7 @@
                     </td>
                 </tr>`;
             });
-            
+
             html += '</tbody></table>';
             container.innerHTML = html;
         }
@@ -1665,7 +1747,7 @@
             updateServiceTotalAmount();
         }
 
-        document.addEventListener('input', function(e) {
+        document.addEventListener('input', function (e) {
             if (e.target.classList.contains('service-qty')) {
                 if (e.target.value < 1) e.target.value = 1;
                 updateServiceTotalAmount();
@@ -1685,7 +1767,7 @@
                 const ttCell = document.getElementById(`service-tt-${sv.id}`);
                 if (ttCell) ttCell.textContent = tt ? new Intl.NumberFormat('vi-VN').format(tt) : '';
             });
-            
+
             // Cập nhật hiển thị tổng tiền dịch vụ
             document.getElementById('serviceTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(serviceTotal);
         }
@@ -1701,25 +1783,25 @@
                     selectedServices.push({ serviceId: sv.id, soLuong: parseInt(qtyInput.value || 1) });
                 }
             });
-            
+
             // Gửi lên backend (chỉ dịch vụ)
             fetch(`/nhanvien/quanlydatphong/update-services/${currentServiceEditBookingId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(selectedServices)
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Cập nhật dịch vụ thành công!');
-                    closeServiceEditModal();
-                    // Refresh toàn bộ trang để cập nhật danh sách booking
-                    location.reload();
-                } else {
-                    alert(data.message || 'Có lỗi khi cập nhật dịch vụ!');
-                }
-            })
-            .catch(() => alert('Có lỗi khi cập nhật dịch vụ!'));
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật dịch vụ thành công!');
+                        closeServiceEditModal();
+                        // Refresh toàn bộ trang để cập nhật danh sách booking
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Có lỗi khi cập nhật dịch vụ!');
+                    }
+                })
+                .catch(() => alert('Có lỗi khi cập nhật dịch vụ!'));
         }
 
         // Biến lưu trữ danh sách vật phẩm tồn kho
@@ -1796,7 +1878,7 @@
                     }
                 }
             });
-            
+
             // Thêm vào danh sách đã chọn (không trùng lặp)
             newItems.forEach(newItem => {
                 const existingIndex = selectedInventoryItems.findIndex(item => item.id === newItem.id);
@@ -1806,7 +1888,7 @@
                     selectedInventoryItems.push(newItem);
                 }
             });
-            
+
             renderSelectedInventoryItems();
             closeInventoryModal();
         }
@@ -1819,7 +1901,7 @@
                 updateInventoryTotalAmount();
                 return;
             }
-            
+
             let html = '<table style="width:100%;border-collapse:collapse;">';
             html += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Giá bán</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Thành tiền</th><th style="width:60px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Xóa</th></tr></thead><tbody>';
             selectedInventoryItems.forEach((item, index) => {
@@ -1870,7 +1952,7 @@
         function openAddInventoryModal(bookingId) {
             currentAddInventoryBookingId = bookingId;
             selectedAddInventoryItems = [];
-            
+
             fetch('/nhanvien/quanlydatphong/inventory/available')
                 .then(res => res.json())
                 .then(items => {
@@ -1895,12 +1977,12 @@
             if (item.giaBan && item.giaBan > 0) {
                 return item.giaBan;
             }
-            
+
             // Nếu không có giá bán, tính từ giá nhập
             if (item.giaNhap && item.giaNhap > 0) {
                 return Math.round(item.giaNhap * 1.2); // Tăng 20%
             }
-            
+
             // Giá mặc định theo loại vật phẩm
             const tenVatPham = item.tenVatPham.toLowerCase();
             if (tenVatPham.includes('dầu gội') || tenVatPham.includes('shampoo')) return 15000;
@@ -1910,7 +1992,7 @@
             if (tenVatPham.includes('bánh') || tenVatPham.includes('snack')) return 25000;
             if (tenVatPham.includes('nước lau') || tenVatPham.includes('cleaning')) return 30000;
             if (tenVatPham.includes('giấy') || tenVatPham.includes('tissue')) return 20000;
-            
+
             // Giá mặc định cuối cùng
             return 50000;
         }
@@ -1920,16 +2002,16 @@
             const container = document.getElementById('addInventoryList');
             let html = '<table style="width:100%;border-collapse:collapse;">';
             html += '<thead><tr><th style="width:40px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;"></th><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tên vật phẩm</th><th style="width:100px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Giá bán</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Tồn kho</th><th style="width:80px;text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Số lượng</th><th style="width:120px;text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa;">Thành tiền</th></tr></thead><tbody>';
-            
+
             addInventoryItems.forEach(item => {
                 const isSelected = selectedAddInventoryItems.find(selected => selected.id === item.id);
                 const checked = isSelected ? 'checked' : '';
                 const soLuong = isSelected ? isSelected.soLuong : 1;
-                
+
                 // Tính giá bán động
                 const giaBanDynamic = calculateDynamicPrice(item);
                 const thanhTien = isSelected ? (giaBanDynamic * soLuong) : 0;
-                
+
                 html += `<tr>
                     <td style='text-align:center;padding:8px;border-bottom:1px solid #eee;'><input type='checkbox' class='add-inventory-checkbox' data-id='${item.id}' ${checked} onchange='onAddInventoryCheckboxChange(this)'></td>
                     <td style='text-align:left;padding:8px;border-bottom:1px solid #eee;'>${item.tenVatPham}</td>
@@ -1939,15 +2021,15 @@
                     <td id='add-inventory-tt-${item.id}' style='text-align:right;padding:8px;border-bottom:1px solid #eee;font-weight:500;'>${thanhTien ? new Intl.NumberFormat('vi-VN').format(thanhTien) : ''}</td>
                 </tr>`;
             });
-            
+
             html += '</tbody></table>';
             container.innerHTML = html;
-            
+
             // Tự động tính toán thành tiền cho các item đã được chọn
             selectedAddInventoryItems.forEach(selectedItem => {
                 calculateAndUpdateRowTotal(selectedItem.id, selectedItem.soLuong);
             });
-            
+
             updateAddInventoryTotalAmount();
         }
 
@@ -1956,11 +2038,11 @@
             const id = parseInt(checkbox.getAttribute('data-id'));
             const qtyInput = document.querySelector(`.add-inventory-qty[data-id='${id}']`);
             const item = addInventoryItems.find(item => item.id === id);
-            
+
             if (checkbox.checked) {
                 qtyInput.disabled = false;
                 if (!qtyInput.value || qtyInput.value < 1) qtyInput.value = 1;
-                
+
                 // Thêm vào danh sách đã chọn
                 const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
                 if (existingIndex === -1) {
@@ -1975,19 +2057,19 @@
                         soLuong: parseInt(qtyInput.value)
                     });
                 }
-                
+
                 // Tự động tính toán thành tiền khi chọn checkbox
                 calculateAndUpdateRowTotal(id, parseInt(qtyInput.value));
             } else {
                 qtyInput.disabled = true;
                 qtyInput.value = 1;
-                
+
                 // Xóa khỏi danh sách đã chọn
                 const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
                 if (existingIndex !== -1) {
                     selectedAddInventoryItems.splice(existingIndex, 1);
                 }
-                
+
                 // Xóa thành tiền khi bỏ chọn
                 const ttCell = document.getElementById(`add-inventory-tt-${id}`);
                 if (ttCell) ttCell.textContent = '';
@@ -1996,19 +2078,19 @@
         }
 
         // Event listener cho thay đổi số lượng
-        document.addEventListener('input', function(e) {
+        document.addEventListener('input', function (e) {
             if (e.target.classList.contains('add-inventory-qty')) {
                 if (e.target.value < 1) e.target.value = 1;
-                
+
                 const id = parseInt(e.target.getAttribute('data-id'));
                 const newQty = parseInt(e.target.value);
-                
+
                 // Cập nhật số lượng trong danh sách đã chọn
                 const existingIndex = selectedAddInventoryItems.findIndex(selected => selected.id === id);
                 if (existingIndex !== -1) {
                     selectedAddInventoryItems[existingIndex].soLuong = newQty;
                 }
-                
+
                 // Tự động tính toán và cập nhật thành tiền cho dòng này
                 calculateAndUpdateRowTotal(id, newQty);
                 updateAddInventoryTotalAmount();
@@ -2019,7 +2101,7 @@
         function calculateAndUpdateRowTotal(itemId, quantity) {
             const item = addInventoryItems.find(item => item.id === itemId);
             if (!item) return;
-            
+
             // Sử dụng giá bán động
             const giaBanDynamic = calculateDynamicPrice(item);
             const thanhTien = giaBanDynamic * quantity;
@@ -2032,7 +2114,7 @@
         // Hàm cập nhật tổng tiền trong modal thêm đồ
         function updateAddInventoryTotalAmount() {
             let total = 0;
-            
+
             // Tính tổng từ các dòng đã được chọn
             selectedAddInventoryItems.forEach(selectedItem => {
                 const item = addInventoryItems.find(item => item.id === selectedItem.id);
@@ -2042,40 +2124,40 @@
                     total += giaBanDynamic * selectedItem.soLuong;
                 }
             });
-            
+
             document.getElementById('addInventoryTotalAmount').textContent = new Intl.NumberFormat('vi-VN').format(total);
         }
 
         // Hàm lưu thêm đồ
         function saveAddInventory(e) {
             e.preventDefault();
-            
+
             if (selectedAddInventoryItems.length === 0) {
                 alert('Vui lòng chọn ít nhất một vật phẩm!');
                 return;
             }
-            
+
             const requestData = selectedAddInventoryItems.map(item => ({
                 inventoryId: item.id,
                 soLuong: item.soLuong
             }));
-            
+
             fetch(`/nhanvien/quanlydatphong/add-inventory/${currentAddInventoryBookingId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Thêm đồ thành công!');
-                    closeAddInventoryModal();
-                    location.reload();
-                } else {
-                    alert(data.message || 'Có lỗi khi thêm đồ!');
-                }
-            })
-            .catch(() => alert('Có lỗi khi thêm đồ!'));
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Thêm đồ thành công!');
+                        closeAddInventoryModal();
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Có lỗi khi thêm đồ!');
+                    }
+                })
+                .catch(() => alert('Có lỗi khi thêm đồ!'));
         }
 
         // Thêm event listener cho tất cả checkbox thanh toán
@@ -2118,18 +2200,18 @@
                 }
             });
         });
-        
+
         // Thêm event listeners cho ngày nhận và ngày trả để tự động tính lại giá
         // Thêm event listener cho các trường ngày trong form đặt phòng
-         document.getElementById('checkInDate').addEventListener('change', function() {
-             updateDayCount();
-             calculatePrice();
-         });
-         document.getElementById('checkOutDate').addEventListener('change', function() {
-             updateDayCount();
-             calculatePrice();
-         });
-        
+        document.getElementById('checkInDate').addEventListener('change', function () {
+            updateDayCount();
+            calculatePrice();
+        });
+        document.getElementById('checkOutDate').addEventListener('change', function () {
+            updateDayCount();
+            calculatePrice();
+        });
+
         // Giữ lại event listener cho các trường ngày cũ (nếu có)
         const ngayNhanPhongElement = document.getElementById('ngayNhanPhong');
         const ngayTraPhongElement = document.getElementById('ngayTraPhong');
@@ -2140,6 +2222,7 @@
             ngayTraPhongElement.addEventListener('change', calculatePrice);
         }
     </script>
+
 
 </body>
 

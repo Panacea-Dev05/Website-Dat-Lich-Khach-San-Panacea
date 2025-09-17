@@ -1,18 +1,26 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyPhongService;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyPhongService;
+import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
 // Controller quản lý phòng cho nhân viên
 @Controller
@@ -28,7 +36,6 @@ public class QuanLyPhongController {
     @GetMapping("")
     public String view(Model model) {
         model.addAttribute("staffName", quanLyPhongService.getStaffName());
-        model.addAttribute("rooms", quanLyPhongService.getAllRoomsDTO());
         model.addAttribute("roomTypes", quanLyPhongService.getAllRoomTypes());
         
         // Add trang thai list for dropdown
@@ -36,6 +43,14 @@ public class QuanLyPhongController {
             "SAN_SANG", "DANG_SU_DUNG", "BAO_TRI", "DON_DEP"
         );
         model.addAttribute("trangThaiList", trangThaiList);
+        
+        // Thêm thông tin booking cho mỗi phòng
+        List<Room> rooms = quanLyPhongService.getAllRooms();
+        for (Room room : rooms) {
+            String bookingInfo = quanLyPhongService.getRoomBookingInfo(room.getId());
+            room.setBookingInfo(bookingInfo);
+        }
+        model.addAttribute("rooms", rooms);
         
         return "NhanVien/QuanLyPhong";
     }
@@ -132,7 +147,7 @@ public class QuanLyPhongController {
                 response.put("message", "Thay đổi trạng thái phòng thành công");
             } else {
                 response.put("success", false);
-                response.put("message", "Không thể thay đổi trạng thái phòng");
+                response.put("message", "Không thể thay đổi trạng thái phòng vì đang được sử dụng bởi booking. Vui lòng checkout trước!");
             }
             
             return ResponseEntity.ok(response);

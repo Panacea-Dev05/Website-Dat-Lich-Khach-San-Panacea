@@ -1,15 +1,24 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import panacea.website_dat_lich_khach_san.entity.Room;
-import panacea.website_dat_lich_khach_san.entity.RoomType;
-import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+
+import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
+import panacea.website_dat_lich_khach_san.entity.Room;
+import panacea.website_dat_lich_khach_san.entity.RoomPricing;
+import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.enums.FloorType;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomCreateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeCreateDTO;
@@ -17,16 +26,11 @@ import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomUpdateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
 import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
+import panacea.website_dat_lich_khach_san.repository.BookingDetailRepository;
+import panacea.website_dat_lich_khach_san.repository.HotelRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
-import panacea.website_dat_lich_khach_san.repository.HotelRepository;
-import panacea.website_dat_lich_khach_san.enums.FloorType;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class QuanLyPhongService {
@@ -43,9 +47,74 @@ public class QuanLyPhongService {
     @Autowired
     private HotelRepository hotelRepository;
     
+    @Autowired
+    private BookingDetailRepository bookingDetailRepository;
+    
     // Lấy tên nhân viên
     public String getStaffName() {
         return "Nhân viên quản lý phòng";
+    }
+    
+    // Lấy thông tin booking của phòng
+    public String getRoomBookingInfo(Integer roomId) {
+        try {
+            List<BookingDetail> bookingDetails = bookingDetailRepository.findAll().stream()
+                .filter(detail -> detail.getPhongId() != null && detail.getPhongId().equals(roomId))
+                .collect(Collectors.toList());
+            
+            if (bookingDetails.isEmpty()) {
+                return null; // Phòng không có booking
+            }
+            
+            // Tìm booking active
+            for (BookingDetail detail : bookingDetails) {
+                if (detail.getBooking() != null) {
+                    Booking booking = detail.getBooking();
+                    if (booking.getTrangThaiDatPhong() != null && 
+                        (booking.getTrangThaiDatPhong().name().equals("DA_XAC_NHAN") || 
+                         booking.getTrangThaiDatPhong().name().equals("DA_NHAN_PHONG"))) {
+                        return booking.getMaDatPhong(); // Trả về mã booking
+                    }
+                }
+            }
+            
+            return null; // Không có booking active
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy thông tin booking phòng: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    // Kiểm tra phòng có đang được sử dụng bởi booking không
+    private boolean isRoomCurrentlyBooked(Integer roomId) {
+        try {
+            // Tìm tất cả BookingDetail có phòng này
+            List<BookingDetail> bookingDetails = bookingDetailRepository.findAll().stream()
+                .filter(detail -> detail.getPhongId() != null && detail.getPhongId().equals(roomId))
+                .collect(Collectors.toList());
+            
+            if (bookingDetails.isEmpty()) {
+                return false; // Phòng không có booking nào
+            }
+            
+            // Kiểm tra xem có booking nào đang active không
+            for (BookingDetail detail : bookingDetails) {
+                if (detail.getBooking() != null) {
+                    Booking booking = detail.getBooking();
+                    // Kiểm tra booking có đang active không (đã xác nhận và chưa checkout)
+                    if (booking.getTrangThaiDatPhong() != null && 
+                        (booking.getTrangThaiDatPhong().name().equals("DA_XAC_NHAN") || 
+                         booking.getTrangThaiDatPhong().name().equals("DA_NHAN_PHONG"))) {
+                        return true; // Phòng đang được sử dụng bởi booking
+                    }
+                }
+            }
+            
+            return false; // Phòng không có booking active
+        } catch (Exception e) {
+            System.err.println("Lỗi khi kiểm tra phòng có booking: " + e.getMessage());
+            return false; // Mặc định cho phép thay đổi nếu có lỗi
+        }
     }
     
     // Thay đổi trạng thái phòng - CHỈ CHỨC NĂNG NÀY ĐƯỢC PHÉP CHO NHÂN VIÊN
@@ -58,6 +127,12 @@ public class QuanLyPhongService {
             
             Room room = roomOpt.get();
             Room.TrangThaiPhong oldStatus = room.getTrangThai();
+            
+            // Kiểm tra phòng có đang được sử dụng bởi booking không
+            if (isRoomCurrentlyBooked(roomId)) {
+                System.err.println("Không thể thay đổi trạng thái phòng " + room.getSoPhong() + " vì đang được sử dụng bởi booking. Cần checkout trước!");
+                return false;
+            }
             
             // Chuyển đổi String thành enum
             Room.TrangThaiPhong newStatusEnum;

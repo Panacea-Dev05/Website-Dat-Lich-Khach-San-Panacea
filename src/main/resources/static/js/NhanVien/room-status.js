@@ -1,4 +1,6 @@
 // JavaScript xử lý thay đổi trạng thái phòng cho nhân viên
+let currentRoomStatus = null; // Lưu trạng thái hiện tại của phòng
+
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("statusChangeModal");
   const closeModal = document.getElementById("closeModal");
@@ -22,16 +24,47 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeStatusChangeModal() {
     modal.style.display = "none";
     statusChangeForm.reset();
+
+    // Reset biến trạng thái hiện tại
+    currentRoomStatus = null;
+
+    // Reset lại tất cả các option trong dropdown
+    const newStatusSelect = document.getElementById("newStatus");
+    const options = newStatusSelect.querySelectorAll("option");
+
+    options.forEach((option) => {
+      option.style.display = "block";
+      option.disabled = false;
+    });
   }
 
   // Mở modal
   function openStatusChangeModal(roomId, currentStatus, roomNumber) {
+    // Lưu trạng thái hiện tại
+    currentRoomStatus = currentStatus;
+
     document.getElementById("roomId").value = roomId;
     document.getElementById("roomNumber").value = roomNumber;
     document.getElementById("currentStatus").value =
       getStatusDisplayName(currentStatus);
     document.getElementById("newStatus").value = "";
     document.getElementById("statusNote").value = "";
+
+    // Cho phép thay đổi trạng thái phòng đang sử dụng
+
+    // Ẩn trạng thái hiện tại khỏi dropdown
+    const newStatusSelect = document.getElementById("newStatus");
+    const options = newStatusSelect.querySelectorAll("option");
+
+    options.forEach((option) => {
+      if (option.value === currentStatus) {
+        option.style.display = "none";
+        option.disabled = true;
+      } else {
+        option.style.display = "block";
+        option.disabled = false;
+      }
+    });
 
     modal.style.display = "block";
   }
@@ -56,6 +89,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!newStatus) {
       alert("Vui lòng chọn trạng thái mới");
+      return;
+    }
+
+    // Kiểm tra xem trạng thái mới có khác trạng thái hiện tại không
+    if (newStatus === currentRoomStatus) {
+      alert("Trạng thái mới phải khác trạng thái hiện tại");
       return;
     }
 

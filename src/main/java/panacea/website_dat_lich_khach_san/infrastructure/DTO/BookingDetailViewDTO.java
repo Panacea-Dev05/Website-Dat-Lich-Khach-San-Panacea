@@ -44,6 +44,7 @@ public class BookingDetailViewDTO {
     // Thông tin phòng - cập nhật để hỗ trợ nhiều phòng
     private List<String> roomNumbers;
     private List<String> roomTypeNames;
+    private List<Integer> roomIds;
     
     // Giữ lại để tương thích ngược
     private String roomNumber;
@@ -81,11 +82,13 @@ public class BookingDetailViewDTO {
         if (details != null && !details.isEmpty()) {
             List<String> roomNumbers = new ArrayList<>();
             List<String> roomTypeNames = new ArrayList<>();
+            List<Integer> roomIds = new ArrayList<>();
             
             for (BookingDetail detail : details) {
                 if (detail.getRoom() != null) {
                     Room room = detail.getRoom();
                     roomNumbers.add(room.getSoPhong());
+                    roomIds.add(room.getId());
                     if (room.getRoomType() != null) {
                         roomTypeNames.add(room.getRoomType().getTenLoaiPhong());
                     } else {
@@ -96,6 +99,7 @@ public class BookingDetailViewDTO {
             
             dto.setRoomNumbers(roomNumbers);
             dto.setRoomTypeNames(roomTypeNames);
+            dto.setRoomIds(roomIds);
             
             // Giữ lại để tương thích ngược - lấy phòng đầu tiên
             if (!roomNumbers.isEmpty()) {

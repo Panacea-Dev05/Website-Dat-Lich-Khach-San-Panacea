@@ -40,6 +40,10 @@ public class Room {
 
     @Column(name = "ghi_chu", length = 500)
     private String ghiChu;
+    
+    // Field tạm thời để hiển thị thông tin booking (không lưu vào DB)
+    @Transient
+    private String bookingInfo;
 
     @Column(name = "uuid_id")
     private UUID uuidId;
