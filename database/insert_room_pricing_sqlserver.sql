@@ -47,3 +47,4 @@ SELECT
 FROM ROOM_PRICING rp
 JOIN ROOM_TYPE rt ON rp.loai_phong_id = rt.id
 ORDER BY rt.id;
+

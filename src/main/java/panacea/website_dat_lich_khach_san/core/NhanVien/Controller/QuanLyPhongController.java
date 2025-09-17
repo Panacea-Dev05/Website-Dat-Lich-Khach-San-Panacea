@@ -1,24 +1,18 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyPhongService;
-import panacea.website_dat_lich_khach_san.entity.Room;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomCreateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeCreateDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomUpdateDTO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 // Controller quản lý phòng cho nhân viên
 @Controller
@@ -46,31 +40,12 @@ public class QuanLyPhongController {
         return "NhanVien/QuanLyPhong";
     }
     
-    // Edit room view
-    @GetMapping("/edit/{id}")
-    public String editRoom(@PathVariable Integer id, Model model) {
-        try {
-            RoomDTO room = quanLyPhongService.getRoomById(id);
-            if (room == null) {
-                return "redirect:/nhanvien/quanlyphong?error=Phòng không tồn tại";
-            }
-            
-            model.addAttribute("room", room);
-            model.addAttribute("roomTypes", quanLyPhongService.getAllRoomTypes());
-            
-            // Add room views for dropdown
-            List<String> roomViews = List.of("City", "Pool", "Sea", "Garden", "Mountain");
-            model.addAttribute("roomViews", roomViews);
-            
-            // Add room statuses for dropdown
-            List<String> roomStatuses = List.of("SAN_SANG", "DANG_SU_DUNG", "BAO_TRI", "DON_DEP");
-            model.addAttribute("roomStatuses", roomStatuses);
-            
-            return "NhanVien/EditRoom";
-        } catch (Exception e) {
-            return "redirect:/nhanvien/quanlyphong?error=" + e.getMessage();
-        }
-    }
+    // Edit room view - REMOVED: Nhân viên không được phép sửa thông tin phòng
+    // @GetMapping("/edit/{id}")
+    // public String editRoom(@PathVariable Integer id, Model model) {
+    //     // Chức năng này đã bị loại bỏ cho nhân viên
+    //     return "redirect:/nhanvien/quanlyphong?error=Không có quyền sửa thông tin phòng";
+    // }
     
     // REST API endpoints
     
@@ -100,30 +75,73 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(room);
     }
     
-    // Create new room
-    @PostMapping("/api/rooms")
-    @ResponseBody
-    public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomCreateDTO roomCreateDTO) {
-        RoomDTO createdRoom = quanLyPhongService.createRoom(roomCreateDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRoom);
-    }
+    // Create new room - REMOVED: Nhân viên không được phép tạo phòng mới
+    // @PostMapping("/api/rooms")
+    // @ResponseBody
+    // public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomCreateDTO roomCreateDTO) {
+    //     // Chức năng này đã bị loại bỏ cho nhân viên
+    //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    // }
     
-    // Update room
-    @PutMapping("/api/rooms/{id}")
-    @ResponseBody
-    public ResponseEntity<RoomDTO> updateRoom(@PathVariable Integer id, @RequestBody RoomUpdateDTO roomUpdateDTO) {
-        RoomDTO updatedRoom = quanLyPhongService.updateRoom(id, roomUpdateDTO);
-        return ResponseEntity.ok(updatedRoom);
-    }
+    // Update room - REMOVED: Nhân viên không được phép sửa thông tin phòng
+    // @PutMapping("/api/rooms/{id}")
+    // @ResponseBody
+    // public ResponseEntity<RoomDTO> updateRoom(@PathVariable Integer id, @RequestBody RoomUpdateDTO roomUpdateDTO) {
+    //     // Chức năng này đã bị loại bỏ cho nhân viên
+    //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    // }
     
-    // Delete room
-    @DeleteMapping("/api/rooms/{id}")
+    // Delete room - REMOVED: Nhân viên không được phép xóa phòng
+    // @DeleteMapping("/api/rooms/{id}")
+    // @ResponseBody
+    // public ResponseEntity<Map<String, String>> deleteRoom(@PathVariable Integer id) {
+    //     // Chức năng này đã bị loại bỏ cho nhân viên
+    //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    // }
+    
+    // Thay đổi trạng thái phòng - CHỈ CHỨC NĂNG NÀY ĐƯỢC PHÉP
+    @PutMapping("/api/rooms/{id}/status")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteRoom(@PathVariable Integer id) {
-        quanLyPhongService.deleteRoom(id);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Phòng đã được xóa thành công");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Object>> changeRoomStatus(@PathVariable Integer id, @RequestBody Map<String, String> request) {
+        try {
+            String newStatus = request.get("trangThai");
+            String ghiChu = request.get("ghiChu");
+            
+            if (newStatus == null || newStatus.trim().isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Trạng thái mới không được để trống");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Validate trạng thái hợp lệ
+            List<String> validStatuses = List.of("SAN_SANG", "DANG_SU_DUNG", "BAO_TRI", "DON_DEP");
+            if (!validStatuses.contains(newStatus)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Trạng thái không hợp lệ");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Gọi service để thay đổi trạng thái
+            boolean success = quanLyPhongService.changeRoomStatus(id, newStatus, ghiChu);
+            
+            Map<String, Object> response = new HashMap<>();
+            if (success) {
+                response.put("success", true);
+                response.put("message", "Thay đổi trạng thái phòng thành công");
+            } else {
+                response.put("success", false);
+                response.put("message", "Không thể thay đổi trạng thái phòng");
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
     
     // Search rooms by room number
@@ -245,54 +263,31 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(stats);
     }
     
-    // Form handling endpoints for HTML template
+    // Form handling endpoints for HTML template - REMOVED: Nhân viên không được phép tạo/sửa/xóa phòng
     
-    // Create room from form
-    @PostMapping("/create-room")
-    public String createRoomFromForm(@ModelAttribute RoomCreateDTO roomCreateDTO, Model model) {
-        try {
-            quanLyPhongService.createRoom(roomCreateDTO);
-            return "redirect:/nhanvien/quanlyphong?success=created";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return view(model);
-        }
-    }
+    // Create room from form - REMOVED
+    // @PostMapping("/create-room")
+    // public String createRoomFromForm(@ModelAttribute RoomCreateDTO roomCreateDTO, Model model) {
+    //     return "redirect:/nhanvien/quanlyphong?error=Không có quyền tạo phòng mới";
+    // }
     
-    // Update room from form
-    @PostMapping("/update-room/{id}")
-    public String updateRoomFromForm(@PathVariable Integer id, @ModelAttribute RoomUpdateDTO roomUpdateDTO, Model model) {
-        try {
-            quanLyPhongService.updateRoom(id, roomUpdateDTO);
-            return "redirect:/nhanvien/quanlyphong?success=updated";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return view(model);
-        }
-    }
+    // Update room from form - REMOVED
+    // @PostMapping("/update-room/{id}")
+    // public String updateRoomFromForm(@PathVariable Integer id, @ModelAttribute RoomUpdateDTO roomUpdateDTO, Model model) {
+    //     return "redirect:/nhanvien/quanlyphong?error=Không có quyền sửa thông tin phòng";
+    // }
     
-    // Delete room from form
-    @PostMapping("/delete-room/{id}")
-    public String deleteRoomFromForm(@PathVariable Integer id) {
-        try {
-            quanLyPhongService.deleteRoom(id);
-            return "redirect:/nhanvien/quanlyphong?success=deleted";
-        } catch (Exception e) {
-            return "redirect:/nhanvien/quanlyphong?error=" + e.getMessage();
-        }
-    }
+    // Delete room from form - REMOVED
+    // @PostMapping("/delete-room/{id}")
+    // public String deleteRoomFromForm(@PathVariable Integer id) {
+    //     return "redirect:/nhanvien/quanlyphong?error=Không có quyền xóa phòng";
+    // }
     
-    // Create room type from form
-    @PostMapping("/create-roomtype")
-    public String createRoomTypeFromForm(@ModelAttribute RoomTypeCreateDTO roomTypeCreateDTO, Model model) {
-        try {
-            quanLyPhongService.createRoomType(roomTypeCreateDTO);
-            return "redirect:/nhanvien/quanlyphong?success=roomtype_created";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return view(model);
-        }
-    }
+    // Create room type from form - REMOVED
+    // @PostMapping("/create-roomtype")
+    // public String createRoomTypeFromForm(@ModelAttribute RoomTypeCreateDTO roomTypeCreateDTO, Model model) {
+    //     return "redirect:/nhanvien/quanlyphong?error=Không có quyền tạo loại phòng mới";
+    // }
     
     // Search rooms from form
     @GetMapping("/search")
