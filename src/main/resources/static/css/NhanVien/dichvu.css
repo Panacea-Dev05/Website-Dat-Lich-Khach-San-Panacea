@@ -1,8 +1,8 @@
 /* Base Section Styles */
 .section {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    display: block ;
+    visibility: visible ;
+    opacity: 1 ;
     position: relative;
     z-index: 1;
 }

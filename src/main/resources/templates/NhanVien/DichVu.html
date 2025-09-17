@@ -166,9 +166,13 @@
         }
 
         .app-layout {
-            display: flex;
+            display: grid;
+            grid-template-areas:
+        "header header"
+        "sidebar main";
+            grid-template-columns: 260px 1fr; /* Độ rộng của sidebar và phần còn lại */
+            grid-template-rows: auto 1fr;    /* Chiều cao của header và phần còn lại */
             height: 100vh;
-            overflow: hidden;
         }
 
         .sidebar {
@@ -185,6 +189,7 @@
         }
 
         .main-content {
+            grid-area: main; /* Thêm dòng này để chỉ định vùng cho main-content */
             flex: 1;
             overflow-y: auto;
             height: 100vh;
@@ -192,9 +197,20 @@
         }
 
         header {
+            grid-area: header;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            user-select: none;
         }
 
         .stock-info {
@@ -300,7 +316,7 @@
                                 <th>Thành tiền</th>
                                 <th>Thời gian sử dụng</th>
                                 <th>Trạng thái</th>
-                                <th>Thao tác</th>
+                                <th style="display: none;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="servicesTableBody">
@@ -339,21 +355,18 @@
                                 <td>
                                     <span class="status active">Hoạt động</span>
                                 </td>
-                                <td>
+                                <td style="display: none;">
                                     <div class="action-buttons">
-                                        <button class="btn-action btn-edit"
-                                            th:data-service-usage-id="${sd.id}"
-                                            th:data-booking-id="${sd.datPhongId}"
-                                            th:data-service-id="${sd.service.id}"
-                                            th:data-quantity="${sd.soLuong}"
+                                        <button class="btn-action btn-edit" style="display: none;"
+                                            th:data-service-usage-id="${sd.id}" th:data-booking-id="${sd.datPhongId}"
+                                            th:data-service-id="${sd.service.id}" th:data-quantity="${sd.soLuong}"
                                             th:data-usage-time="${#temporals.format(sd.ngaySuDung, 'yyyy-MM-dd''T''HH:mm')}"
-                                            onclick="editService(this)"
-                                            title="Chỉnh sửa">
+                                            onclick="editService(this)" title="Chỉnh sửa">
                                             <span class="material-icons">edit</span>
                                         </button>
-                                        <button class="btn-action btn-delete"
-                                            th:data-service-usage-id="${sd.id}"
-                                            onclick="confirmDeleteService(this)" title="Xóa">
+                                        <button class="btn-action btn-delete" style="display: none;"
+                                            th:data-service-usage-id="${sd.id}" onclick="confirmDeleteService(this)"
+                                            title="Xóa">
                                             <span class="material-icons">delete</span>
                                         </button>
                                     </div>
@@ -440,8 +453,8 @@
             updatePricePreview();
 
             // Scroll to form
-            document.querySelector('.service-booking-section').scrollIntoView({ 
-                behavior: 'smooth' 
+            document.querySelector('.service-booking-section').scrollIntoView({
+                behavior: 'smooth'
             });
 
             // Show success message
@@ -451,7 +464,7 @@
         // Delete confirmation
         function confirmDeleteService(element) {
             const serviceUsageId = element.getAttribute('data-service-usage-id');
-            
+
             // Get service name from the table row
             const row = element.closest('tr');
             const serviceName = row ? row.querySelector('.service-name')?.textContent || 'dịch vụ này' : 'dịch vụ này';
@@ -529,7 +542,7 @@
                     while (select.children.length > 1) {
                         select.removeChild(select.lastChild);
                     }
-                    
+
                     data.forEach(item => {
                         const option = document.createElement('option');
                         option.value = item.id;
@@ -544,16 +557,16 @@
         }
 
         // Handle inventory selection change
-        document.getElementById('inventoryItemId').addEventListener('change', function() {
+        document.getElementById('inventoryItemId').addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
             const stockInfo = document.getElementById('stockInfo');
             const stockQuantity = document.getElementById('stockQuantity');
-            
+
             if (selectedOption.value && selectedOption.hasAttribute('data-stock')) {
                 const stock = selectedOption.getAttribute('data-stock');
                 stockQuantity.textContent = stock;
                 stockInfo.style.display = 'block';
-                
+
                 // Update max quantity for input
                 const quantityInput = document.getElementById('soLuong');
                 quantityInput.setAttribute('max', stock);
@@ -564,15 +577,15 @@
         });
 
         // Validate stock before form submission
-        document.getElementById('serviceBookingForm').addEventListener('submit', function(e) {
+        document.getElementById('serviceBookingForm').addEventListener('submit', function (e) {
             const inventorySelect = document.getElementById('inventoryItemId');
             const quantityInput = document.getElementById('soLuong');
-            
+
             if (inventorySelect.value) {
                 const selectedOption = inventorySelect.options[inventorySelect.selectedIndex];
                 const stock = parseInt(selectedOption.getAttribute('data-stock'));
                 const requestedQuantity = parseInt(quantityInput.value);
-                
+
                 if (requestedQuantity > stock) {
                     e.preventDefault();
                     showErrorMessage(`Không đủ tồn kho! Chỉ còn ${stock} sản phẩm.`);
@@ -592,7 +605,7 @@
 
             // Initialize price preview
             updatePricePreview();
-            
+
             // Load inventory items
             loadInventoryItems();
 

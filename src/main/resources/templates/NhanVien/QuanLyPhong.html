@@ -47,7 +47,7 @@
                         <tr th:each="room, stat : ${rooms}">
                             <td th:text="${stat.count}">1</td>
                             <td th:text="${room.soPhong}">101</td>
-                            <td th:text="${room.roomTypeName}">Standard</td>
+                            <td th:text="${room.roomType != null ? room.roomType.tenLoaiPhong : 'N/A'}">Standard</td>
                             <td th:text="${room.tang}">1</td>
                             <td th:text="${room.viewPhong}">City</td>
                             <td th:text="${#numbers.formatDecimal(room.giaCoBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
@@ -55,14 +55,14 @@
                                 1,200,000 VNĐ</td>
                             <td>
                                 <span
-                                    th:class="${room.trangThai == 'SAN_SANG' ? 'status-available' :
-                                                  room.trangThai == 'DA_DAT' ? 'status-booked' :
-                                                  room.trangThai == 'DANG_SU_DUNG' ? 'status-occupied' :
-                                                  room.trangThai == 'BAO_TRI' ? 'status-maintenance' : 'status-cleaning'}"
-                                    th:text="${room.trangThai == 'SAN_SANG' ? 'Sẵn sàng' :
-                                                room.trangThai == 'DA_DAT' ? 'Đã đặt' :
-                                                room.trangThai == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
-                                                room.trangThai == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp'}">
+                                    th:class="${room.trangThai.name() == 'SAN_SANG' ? 'status-available' :
+                                                  room.trangThai.name() == 'DA_DAT' ? 'status-booked' :
+                                                  room.trangThai.name() == 'DANG_SU_DUNG' ? 'status-occupied' :
+                                                  room.trangThai.name() == 'BAO_TRI' ? 'status-maintenance' : 'status-cleaning'}"
+                                    th:text="${room.trangThai.name() == 'SAN_SANG' ? 'Sẵn sàng' :
+                                                room.trangThai.name() == 'DA_DAT' ? 'Đã đặt' :
+                                                room.trangThai.name() == 'DANG_SU_DUNG' ? 'Đang sử dụng' :
+                                                room.trangThai.name() == 'BAO_TRI' ? 'Bảo trì' : 'Dọn dẹp'}">
 
                                 </span>
                             </td>
@@ -72,6 +72,11 @@
                                     title="Thay đổi trạng thái phòng">
                                     <span class="material-icons">swap_horiz</span>
                                 </button>
+                                <!-- Hiển thị thông tin booking nếu có -->
+                                <div th:if="${room.bookingInfo != null}"
+                                    style="font-size: 0.7rem; color: #666; margin-top: 2px;">
+                                    <span th:text="'Booking: ' + ${room.bookingInfo}"></span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

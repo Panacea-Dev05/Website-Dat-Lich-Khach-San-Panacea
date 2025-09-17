@@ -1,47 +1,37 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
-import panacea.website_dat_lich_khach_san.entity.Booking;
-import panacea.website_dat_lich_khach_san.entity.BookingDetail;
-import panacea.website_dat_lich_khach_san.entity.Customer;
-import panacea.website_dat_lich_khach_san.entity.Room;
-import panacea.website_dat_lich_khach_san.entity.Hotel;
-import panacea.website_dat_lich_khach_san.entity.RoomPricing;
-import panacea.website_dat_lich_khach_san.repository.*;
-import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
-import panacea.website_dat_lich_khach_san.entity.BookingHistory;
-import panacea.website_dat_lich_khach_san.repository.ServiceDetailRepository;
-import panacea.website_dat_lich_khach_san.entity.ServiceDetail;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDetailDTO;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageImpl;
 import java.util.stream.Collectors;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import panacea.website_dat_lich_khach_san.entity.*;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationInfoDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationRequestDTO;
-import panacea.website_dat_lich_khach_san.service.CancellationService;
-import panacea.website_dat_lich_khach_san.repository.ServiceRepository;
-import panacea.website_dat_lich_khach_san.repository.InventoryManagementRepository;
-import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDetailDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
+import panacea.website_dat_lich_khach_san.repository.*;
+import panacea.website_dat_lich_khach_san.service.CancellationService;
 
 /**
  * Service class quản lý đặt phòng cho Nhân viên
@@ -66,6 +56,9 @@ public class QuanLyDatPhongService {
     
     @Autowired
     private RoomRepository roomRepository;
+    
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
     
     @Autowired(required = false)
     private JavaMailSender mailSender;
@@ -1002,6 +995,132 @@ public class QuanLyDatPhongService {
             .filter(room -> !isRoomBookedInPeriod(room.getId(), checkIn, checkOut))
             .collect(Collectors.toList());
     }
+
+    /**
+     * Đổi phòng cho khách hàng
+     * @param bookingId ID của booking
+     * @param oldRoomId ID phòng cũ
+     * @param newRoomId ID phòng mới
+     * @param lyDo Lý do đổi phòng
+     * @return true nếu thành công
+     */
+    public boolean changeRoomForBooking(Integer bookingId, Integer oldRoomId, Integer newRoomId, String lyDo) {
+        logger.info("[CHANGE_ROOM] Bắt đầu đổi phòng cho bookingId={}, từ phòng {} sang phòng {}", 
+                   bookingId, oldRoomId, newRoomId);
+        
+        try {
+            // 1. Validate booking
+            Booking booking = bookingRepository.findById(bookingId).orElse(null);
+            if (booking == null) {
+                logger.warn("[CHANGE_ROOM] Không tìm thấy bookingId={}", bookingId);
+                return false;
+            }
+            
+            // 2. Validate phòng cũ
+            Room oldRoom = roomRepository.findById(oldRoomId).orElse(null);
+            if (oldRoom == null) {
+                logger.warn("[CHANGE_ROOM] Không tìm thấy phòng cũ roomId={}", oldRoomId);
+                return false;
+            }
+            
+            // 3. Validate phòng mới
+            Room newRoom = roomRepository.findById(newRoomId).orElse(null);
+            if (newRoom == null) {
+                logger.warn("[CHANGE_ROOM] Không tìm thấy phòng mới roomId={}", newRoomId);
+                return false;
+            }
+            
+            // 4. Kiểm tra phòng mới có trống không
+            if (newRoom.getTrangThai() != Room.TrangThaiPhong.SAN_SANG) {
+                logger.warn("[CHANGE_ROOM] Phòng mới {} không trống, trạng thái: {}", 
+                           newRoom.getSoPhong(), newRoom.getTrangThai());
+                return false;
+            }
+            
+            // 5. Kiểm tra phòng cũ có thuộc booking này không
+            List<BookingDetail> oldDetails = bookingDetailRepository.findByDatPhongId(bookingId)
+                .stream()
+                .filter(detail -> detail.getPhongId() != null && detail.getPhongId().equals(oldRoomId))
+                .collect(Collectors.toList());
+            
+            if (oldDetails.isEmpty()) {
+                logger.warn("[CHANGE_ROOM] Phòng cũ {} không thuộc booking {}", oldRoom.getSoPhong(), bookingId);
+                return false;
+            }
+            
+            // 6. Kiểm tra cùng loại phòng (tùy chọn)
+            if (oldRoom.getRoomType() != null && newRoom.getRoomType() != null) {
+                if (!oldRoom.getRoomType().getId().equals(newRoom.getRoomType().getId())) {
+                    logger.info("[CHANGE_ROOM] Đổi phòng khác loại: {} -> {}", 
+                               oldRoom.getRoomType().getTenLoaiPhong(), 
+                               newRoom.getRoomType().getTenLoaiPhong());
+                }
+            }
+            
+            // 7. Cập nhật BookingDetail
+            BookingDetail oldDetail = oldDetails.get(0);
+            oldDetail.setPhongId(newRoomId);
+            bookingDetailRepository.save(oldDetail);
+            
+            // 8. Cập nhật trạng thái phòng cũ
+            oldRoom.setTrangThai(Room.TrangThaiPhong.SAN_SANG);
+            roomRepository.save(oldRoom);
+            
+            // 9. Cập nhật trạng thái phòng mới
+            newRoom.setTrangThai(Room.TrangThaiPhong.DANG_SU_DUNG);
+            roomRepository.save(newRoom);
+            
+            // 10. Cập nhật ghi chú booking
+            String ghiChuMoi = String.format("Đã đổi phòng từ %s sang %s. Lý do: %s. Thời gian: %s", 
+                                            oldRoom.getSoPhong(), 
+                                            newRoom.getSoPhong(), 
+                                            lyDo != null ? lyDo : "Không có lý do",
+                                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            
+            if (booking.getGhiChuKhachHang() != null) {
+                booking.setGhiChuKhachHang(ghiChuMoi + "\n" + booking.getGhiChuKhachHang());
+            } else {
+                booking.setGhiChuKhachHang(ghiChuMoi);
+            }
+            
+            bookingRepository.save(booking);
+            
+            logger.info("[CHANGE_ROOM] Đổi phòng thành công cho bookingId={}, từ phòng {} sang phòng {}", 
+                       bookingId, oldRoom.getSoPhong(), newRoom.getSoPhong());
+            
+            return true;
+            
+        } catch (Exception e) {
+            logger.error("[CHANGE_ROOM] Lỗi khi đổi phòng cho bookingId={}: {}", bookingId, e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Lấy danh sách phòng trống cùng loại với phòng hiện tại
+     * @param currentRoomId ID phòng hiện tại
+     * @return Danh sách phòng trống cùng loại
+     */
+    public List<Room> getAvailableRoomsForChange(Integer currentRoomId) {
+        try {
+            Room currentRoom = roomRepository.findById(currentRoomId).orElse(null);
+            if (currentRoom == null || currentRoom.getRoomType() == null) {
+                return new ArrayList<>();
+            }
+            
+            return roomRepository.findAll().stream()
+                .filter(room -> room.getRoomType() != null && 
+                               room.getRoomType().getId().equals(currentRoom.getRoomType().getId()))
+                .filter(room -> room.getTrangThai() == Room.TrangThaiPhong.SAN_SANG)
+                .filter(room -> !room.getId().equals(currentRoomId)) // Loại trừ phòng hiện tại
+                .collect(Collectors.toList());
+                
+        } catch (Exception e) {
+            logger.error("[GET_AVAILABLE_ROOMS] Lỗi khi lấy danh sách phòng trống: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
 
     /**
      * Kiểm tra phòng có bị đặt trong khoảng thời gian không

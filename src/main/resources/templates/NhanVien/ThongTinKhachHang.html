@@ -178,9 +178,13 @@
         }
 
         .app-layout {
-            display: flex;
+            display: grid;
+            grid-template-areas:
+        "header header"
+        "sidebar main";
+            grid-template-columns: 260px 1fr; /* Độ rộng của sidebar và phần còn lại */
+            grid-template-rows: auto 1fr;    /* Chiều cao của header và phần còn lại */
             height: 100vh;
-            overflow: hidden;
         }
 
         .sidebar {
@@ -197,6 +201,7 @@
         }
 
         .main-content {
+            grid-area: main; /* Thêm dòng này để chỉ định vùng cho main-content */
             flex: 1;
             overflow-y: auto;
             height: 100vh;
@@ -204,9 +209,20 @@
         }
 
         header {
+            grid-area: header;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            user-select: none;
         }
 
         @media (max-width: 900px) {

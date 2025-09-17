@@ -1,33 +1,40 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyDatPhongService;
+import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.BookingHistory;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
 import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
+import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
+import panacea.website_dat_lich_khach_san.infrastructure.Exception.ValidationException;
+import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.Map;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import panacea.website_dat_lich_khach_san.entity.Booking;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
-import org.springframework.web.bind.annotation.RequestBody;
-import panacea.website_dat_lich_khach_san.repository.BookingHistoryRepository;
-import panacea.website_dat_lich_khach_san.entity.BookingHistory;
-import org.springframework.http.ResponseEntity;
-import panacea.website_dat_lich_khach_san.infrastructure.Exception.ValidationException;
-import panacea.website_dat_lich_khach_san.infrastructure.Exception.BadRequestException;
-import panacea.website_dat_lich_khach_san.infrastructure.Exception.ResourceNotFoundException;
-import panacea.website_dat_lich_khach_san.infrastructure.Exception.InternalServerErrorException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // Controller quản lý đặt phòng cho nhân viên
 @Controller
@@ -259,6 +266,79 @@ public class QuanLyDatPhongController {
         boolean result = quanLyDatPhongService.checkInBooking(bookingId, soCmndCccd, ngayCapCmnd, noiCapCmnd, soNguoiLonThucTe, soTreEmThucTe, ghiChuCheckIn);
         return java.util.Map.of("success", result);
     }
+
+    // API đổi phòng cho khách hàng
+    @PostMapping("/api/change-room/{bookingId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> changeRoom(@PathVariable Integer bookingId, 
+                                                         @RequestBody Map<String, Object> request) {
+        try {
+            Integer oldRoomId = (Integer) request.get("oldRoomId");
+            Integer newRoomId = (Integer) request.get("newRoomId");
+            String lyDo = (String) request.get("lyDo");
+            
+            if (oldRoomId == null || newRoomId == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Thiếu thông tin phòng cũ hoặc phòng mới");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            if (oldRoomId.equals(newRoomId)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Phòng mới phải khác phòng cũ");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Gọi service để đổi phòng
+            boolean success = quanLyDatPhongService.changeRoomForBooking(bookingId, oldRoomId, newRoomId, lyDo);
+            
+            Map<String, Object> response = new HashMap<>();
+            if (success) {
+                response.put("success", true);
+                response.put("message", "Đổi phòng thành công");
+            } else {
+                response.put("success", false);
+                response.put("message", "Không thể đổi phòng. Vui lòng kiểm tra lại thông tin");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+    
+    // API lấy danh sách phòng trống để đổi
+    @GetMapping("/api/available-rooms-for-change/{currentRoomId}")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAvailableRoomsForChange(@PathVariable Integer currentRoomId) {
+        try {
+            List<Room> availableRooms = quanLyDatPhongService.getAvailableRoomsForChange(currentRoomId);
+            
+            List<Map<String, Object>> roomList = availableRooms.stream()
+                .map(room -> {
+                    Map<String, Object> roomInfo = new HashMap<>();
+                    roomInfo.put("id", room.getId());
+                    roomInfo.put("soPhong", room.getSoPhong());
+                    roomInfo.put("tang", room.getTang());
+                    roomInfo.put("viewPhong", room.getViewPhong());
+                    roomInfo.put("roomType", room.getRoomType() != null ? room.getRoomType().getTenLoaiPhong() : "N/A");
+                    return roomInfo;
+                })
+                .collect(java.util.stream.Collectors.toList());
+            
+            return ResponseEntity.ok(roomList);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
 
     @PostMapping("/update-services/{bookingId}")
     @ResponseBody
