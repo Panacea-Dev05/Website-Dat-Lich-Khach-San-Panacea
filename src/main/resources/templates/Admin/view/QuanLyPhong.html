@@ -726,18 +726,25 @@
             
             // Lấy dữ liệu từ bảng
             function getOriginalData() {
-                const rows = roomTableBody.querySelectorAll('tr[data-id]');
-                return Array.from(rows).map(row => {
-                    const cells = row.querySelectorAll('td');
-                    return {
-                        id: row.getAttribute('data-id'),
-                        roomNumber: cells[1]?.textContent?.trim() || '', // Số phòng
-                        roomType: cells[2]?.textContent?.trim() || '', // Hạng phòng
-                        floor: cells[3]?.textContent?.trim() || '', // Tầng
-                        status: cells[8]?.textContent?.trim() || '', // Trạng thái
-                        element: row
-                    };
-                });
+                const rows = roomTableBody.querySelectorAll('tr');
+                const dataRows = Array.from(rows)
+                    .filter(row => {
+                        // Chỉ lấy các dòng có data-id (bỏ qua dòng "Không có dữ liệu")
+                        return row.hasAttribute('data-id') && row.getAttribute('data-id');
+                    })
+                    .map(row => {
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            id: row.getAttribute('data-id'),
+                            roomNumber: cells[1]?.textContent?.trim() || '', // Số phòng
+                            roomType: cells[2]?.textContent?.trim() || '', // Hạng phòng
+                            floor: cells[3]?.textContent?.trim() || '', // Tầng
+                            status: cells[8]?.textContent?.trim() || '', // Trạng thái
+                            element: row
+                        };
+                    });
+                
+                return dataRows;
             }
             
             // Tìm kiếm và lọc
@@ -768,6 +775,7 @@
                     return matchesSearch && matchesRoomType && matchesStatus && matchesFloor;
                 });
                 
+                currentPage = 1; // Reset về trang 1 khi tìm kiếm
                 updatePagination();
             }
             

@@ -40,7 +40,7 @@ public class AdminRoomController {
         @RequestParam(required = false) String area,
         @RequestParam(required = false) String branch,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size,
+        @RequestParam(defaultValue = "1000") int size, // Tăng size để lấy tất cả dữ liệu
         Model model
     ) {
         Pageable pageable = PageRequest.of(page, size);
