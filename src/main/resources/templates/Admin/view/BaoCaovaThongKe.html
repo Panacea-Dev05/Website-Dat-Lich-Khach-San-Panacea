@@ -534,7 +534,9 @@
                     </div>
                     <div class="stat-content">
                         <h3>Tỷ lệ lấp đầy</h3>
-                        <p th:text="${statistics != null ? #numbers.formatDecimal(statistics['occupancyRate'], 1, 1) + '%' : '75.5%'}">75.5%</p>
+                        <p
+                            th:text="${statistics != null ? #numbers.formatDecimal(statistics['occupancyRate'], 1, 1) + '%' : '75.5%'}">
+                            75.5%</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -543,7 +545,9 @@
                     </div>
                     <div class="stat-content">
                         <h3>Doanh thu tháng</h3>
-                        <p th:text="${statistics != null ? #numbers.formatDecimal(statistics['monthlyRevenue'], 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '15,000,000 VNĐ'}">15,000,000 VNĐ</p>
+                        <p
+                            th:text="${statistics != null ? #numbers.formatDecimal(statistics['monthlyRevenue'], 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '15,000,000 VNĐ'}">
+                            15,000,000 VNĐ</p>
                     </div>
                 </div>
             </section>
@@ -570,6 +574,14 @@
             &copy; 2024 Panacea Hotel Booking System - All rights reserved.
         </footer>
     </div>
+
+    <!-- Truyền dữ liệu từ backend sang frontend -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.monthlyRevenue = /*[[${monthlyRevenue}]]*/ {};
+        window.roomTypeBookings = /*[[${roomTypeBookings}]]*/ {};
+        /*]]>*/
+    </script>
 
     <script th:src="@{/js/Admin/baocao-thongke.js}"></script>
     <script th:src="@{/js/responsive.js}"></script>

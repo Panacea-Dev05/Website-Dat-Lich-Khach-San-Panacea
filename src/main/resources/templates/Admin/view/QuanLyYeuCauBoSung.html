@@ -7,14 +7,25 @@
     <title>Quản Lý Yêu Cầu Bổ Sung - Panacea Hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
     <link rel="stylesheet" th:href="@{/css/Admin/quanlyyeucaubosung.css}">
 </head>
 
 <body>
-    <div class="app">
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+            <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </header>
+
         <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
 
-        <div class="main-content">
+        <main role="main" tabindex="0">
             <div class="header">
                 <h1>Quản lý yêu cầu bổ sung</h1>
                 <p>Quản lý các yêu cầu bổ sung vật phẩm kho</p>
@@ -112,12 +123,17 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </main>
+
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
     </div>
 
     <div id="approveModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('approveModal')" style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
+            <span class="close" onclick="closeModal('approveModal')"
+                style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
             <h3>Phê duyệt yêu cầu</h3>
             <div class="form-group">
                 <label for="approveNote">Ghi chú (tùy chọn):</label>
@@ -132,7 +148,8 @@
 
     <div id="rejectModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('rejectModal')" style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
+            <span class="close" onclick="closeModal('rejectModal')"
+                style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
             <h3>Từ chối yêu cầu</h3>
             <div class="form-group">
                 <label for="rejectReason">Lý do từ chối <span style="color: red;">*</span>:</label>
@@ -147,7 +164,8 @@
 
     <div id="viewModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('viewModal')" style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
+            <span class="close" onclick="closeModal('viewModal')"
+                style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
             <h3>Chi tiết yêu cầu</h3>
             <div id="requestDetails"></div>
             <div class="modal-actions">
@@ -157,6 +175,7 @@
     </div>
 
     <script th:src="@{/js/Admin/quanlyyeucaubosung.js}"></script>
+    <script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>

@@ -2,8 +2,10 @@ package panacea.website_dat_lich_khach_san.core.Admin.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -147,6 +149,22 @@ public class AdminRoomService {
             dto.setGiaNgay(pricing.getGiaNgay());
             dto.setGiaQuaDem(pricing.getGiaQuaDem());
         }
+
+        // Lấy danh sách hình ảnh từ bảng RoomImages
+        List<String> imageUrls = roomImagesRepositoty.findByLoaiPhong_Id(roomType.getId())
+                .stream()
+                .filter(img -> img.getTrangThai() != null && img.getTrangThai().equals("Hoạt động"))
+                .sorted((img1, img2) -> {
+                    int orderCompare = Integer.compare(
+                        img1.getThuTuHienThi() != null ? img1.getThuTuHienThi().intValue() : 0,
+                        img2.getThuTuHienThi() != null ? img2.getThuTuHienThi().intValue() : 0
+                    );
+                    if (orderCompare != 0) return orderCompare;
+                    return Integer.compare(img1.getId(), img2.getId());
+                })
+                .map(RoomImages::getUrlHinhAnh)
+                .collect(Collectors.toList());
+        dto.setImageUrls(imageUrls);
 
         return dto;
     }
@@ -341,12 +359,8 @@ public class AdminRoomService {
         return false;
     }
 
-    // Lấy danh sách hình ảnh theo phòng
-    public List<RoomImages> listRoomImagesByRoom(Integer roomId) {
-        return roomImagesRepositoty.findAll().stream()
-                .filter(img -> img.getPhong() != null && img.getPhong().getId().equals(roomId))
-                .collect(Collectors.toList());
-    }
+
+
 
     // Thiết lập giá phòng
     public RoomPricing setRoomPricing(RoomPricing pricing) {
@@ -426,4 +440,105 @@ public class AdminRoomService {
                 .map(this::convertRoomTypeToDTO)
                 .collect(Collectors.toList());
     }
+
+    // Lấy danh sách ảnh theo hạng phòng
+    public List<RoomImages> getRoomTypeImages(Integer roomTypeId) {
+        try {
+            System.out.println("=== GET ROOM TYPE IMAGES START ===");
+            System.out.println("Room Type ID: " + roomTypeId);
+            
+            List<RoomImages> images = roomImagesRepositoty.findByLoaiPhong_Id(roomTypeId);
+            System.out.println("Found " + images.size() + " images for room type " + roomTypeId);
+            
+            // Sắp xếp theo thứ tự hiển thị và ID
+            images.sort((a, b) -> {
+                int orderCompare = Byte.compare(
+                    a.getThuTuHienThi() != null ? a.getThuTuHienThi() : 1,
+                    b.getThuTuHienThi() != null ? b.getThuTuHienThi() : 1
+                );
+                if (orderCompare != 0) return orderCompare;
+                return Integer.compare(a.getId(), b.getId());
+            });
+            
+            System.out.println("=== GET ROOM TYPE IMAGES SUCCESS ===");
+            return images;
+        } catch (Exception e) {
+            System.err.println("=== GET ROOM TYPE IMAGES ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // Thêm hình ảnh cho hạng phòng
+    public RoomImages addRoomTypeImage(Integer roomTypeId, String imageUrl, String imageName, String description) {
+        try {
+            System.out.println("=== ADD ROOM TYPE IMAGE START ===");
+            System.out.println("Room Type ID: " + roomTypeId);
+            System.out.println("Image URL: " + imageUrl);
+            System.out.println("Image Name: " + imageName);
+            
+            // Tìm hạng phòng
+            RoomType roomType = roomTypeRepository.findById(roomTypeId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy hạng phòng với ID: " + roomTypeId));
+            
+            System.out.println("Found room type: " + roomType.getTenLoaiPhong());
+            
+            // Tạo entity hình ảnh
+            RoomImages image = new RoomImages();
+            image.setLoaiPhong(roomType);
+            image.setUrlHinhAnh(imageUrl);
+            image.setTenHinhAnh(imageName);
+            image.setMoTa(description);
+            image.setThuTuHienThi((byte) 1);
+            image.setLaHinhChinh(false);
+            image.setTrangThai("Hoạt động");
+            image.setUuidId(UUID.randomUUID());
+            image.setCreatedDate(System.currentTimeMillis());
+            
+            System.out.println("Saving image to database...");
+            RoomImages savedImage = roomImagesRepositoty.save(image);
+            System.out.println("Successfully saved image with ID: " + savedImage.getId());
+            System.out.println("=== ADD ROOM TYPE IMAGE SUCCESS ===");
+            
+            return savedImage;
+        } catch (Exception e) {
+            System.err.println("=== ADD ROOM TYPE IMAGE ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    // Xóa hình ảnh hạng phòng
+    public boolean deleteRoomTypeImage(Integer imageId) {
+        try {
+            System.out.println("=== DELETE ROOM TYPE IMAGE START ===");
+            System.out.println("Image ID: " + imageId);
+            
+            Optional<RoomImages> imageOpt = roomImagesRepositoty.findById(imageId);
+            if (imageOpt.isPresent()) {
+                RoomImages image = imageOpt.get();
+                // Chỉ xóa nếu là hình ảnh của hạng phòng (không phải phòng cụ thể)
+                if (image.getLoaiPhong() != null && image.getPhong() == null) {
+                    roomImagesRepositoty.deleteById(imageId);
+                    System.out.println("Successfully deleted image with ID: " + imageId);
+                    System.out.println("=== DELETE ROOM TYPE IMAGE SUCCESS ===");
+                    return true;
+                } else {
+                    System.out.println("Image is not a room type image, cannot delete");
+                    return false;
+                }
+            } else {
+                System.out.println("Image not found with ID: " + imageId);
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("=== DELETE ROOM TYPE IMAGE ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

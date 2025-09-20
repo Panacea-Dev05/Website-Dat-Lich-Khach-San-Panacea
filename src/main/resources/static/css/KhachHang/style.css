@@ -369,7 +369,7 @@
 
 .room-card .room-card-img img {
   width: 100%;
-  height: 250px; /* Fixed height for consistency */
+  height: 350px; /* Tăng từ 250px lên 350px */
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -453,7 +453,8 @@ section:not(:last-child) {
   margin-right: 0;
 }
 
-.col-md-8, .col-md-4 {
+.col-md-8,
+.col-md-4 {
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -462,6 +463,41 @@ section:not(:last-child) {
 .blog-content {
   position: relative;
   z-index: 1;
+}
+
+/* CSS cho ảnh phòng trong trang chi tiết */
+.blog-content img {
+  width: 100%;
+  height: 400px; /* Chiều cao cho ảnh phòng chi tiết */
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.blog-content img:hover {
+  transform: scale(1.02);
+}
+
+/* Responsive cho ảnh phòng */
+@media (max-width: 768px) {
+  .room-card .room-card-img img {
+    height: 250px; /* Giảm kích thước trên mobile */
+  }
+
+  .blog-content img {
+    height: 300px; /* Giảm kích thước trên mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .room-card .room-card-img img {
+    height: 200px; /* Kích thước nhỏ hơn trên điện thoại */
+  }
+
+  .blog-content img {
+    height: 250px; /* Kích thước nhỏ hơn trên điện thoại */
+  }
 }
 
 /* Fix for sticky header overlap */
@@ -500,11 +536,11 @@ section {
     margin-top: 40px;
     margin-bottom: 60px;
   }
-  
+
   .similar-room-section {
     margin-top: 80px; /* More space on tablet */
   }
-  
+
   .col-md-4 {
     margin-top: 0;
   }
@@ -514,7 +550,7 @@ section {
   .similar-room-section {
     margin-top: 100px; /* Even more space on mobile */
   }
-  
+
   .booking-widget {
     margin-bottom: 80px;
   }
@@ -524,17 +560,25 @@ section {
 .room-card .room-footer {
   padding: 20px;
   border-top: 1px solid rgba(255, 210, 141, 0.1);
-  background: linear-gradient(135deg, rgba(255, 210, 141, 0.05) 0%, rgba(255, 210, 141, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 141, 0.05) 0%,
+    rgba(255, 210, 141, 0.02) 100%
+  );
   transition: all 0.3s ease;
 }
 
 .room-card:hover .room-footer {
-  background: linear-gradient(135deg, rgba(255, 210, 141, 0.1) 0%, rgba(255, 210, 141, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 141, 0.1) 0%,
+    rgba(255, 210, 141, 0.05) 100%
+  );
   border-top-color: rgba(255, 210, 141, 0.3);
 }
 
 .room-card .room-footer .room-card-bottom-text {
-  color: #FFD28D;
+  color: #ffd28d;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 1px;
@@ -545,20 +589,29 @@ section {
   padding: 12px 20px;
   border: 2px solid transparent;
   border-radius: 30px;
-  background: linear-gradient(135deg, rgba(255, 210, 141, 0.1) 0%, rgba(255, 210, 141, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 141, 0.1) 0%,
+    rgba(255, 210, 141, 0.05) 100%
+  );
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
 .room-card .room-footer .room-card-bottom-text::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
@@ -568,8 +621,8 @@ section {
 
 .room-card .room-footer .room-card-bottom-text:hover {
   color: #040d10;
-  background: linear-gradient(135deg, #FFD28D 0%, #f5c76b 100%);
-  border-color: #FFD28D;
+  background: linear-gradient(135deg, #ffd28d 0%, #f5c76b 100%);
+  border-color: #ffd28d;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(255, 210, 141, 0.3);
 }
@@ -618,7 +671,7 @@ section {
     padding: 10px 16px;
     letter-spacing: 0.5px;
   }
-  
+
   .room-card .room-footer {
     padding: 15px;
   }
