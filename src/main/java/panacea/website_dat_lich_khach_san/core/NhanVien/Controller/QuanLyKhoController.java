@@ -1,28 +1,37 @@
 package panacea.website_dat_lich_khach_san.core.NhanVien.Controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
-import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
-import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
-import panacea.website_dat_lich_khach_san.entity.Staff;
-import panacea.website_dat_lich_khach_san.entity.RoomUsage;
-import panacea.website_dat_lich_khach_san.entity.Booking;
-import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
-import panacea.website_dat_lich_khach_san.repository.StaffRepository;
-import panacea.website_dat_lich_khach_san.repository.BookingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 import java.util.Optional;
-import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import panacea.website_dat_lich_khach_san.core.NhanVien.Service.QuanLyKhoService;
+import panacea.website_dat_lich_khach_san.entity.Booking;
+import panacea.website_dat_lich_khach_san.entity.InventoryManagement;
+import panacea.website_dat_lich_khach_san.entity.InventoryTransaction;
+import panacea.website_dat_lich_khach_san.entity.RoomUsage;
+import panacea.website_dat_lich_khach_san.entity.Staff;
+import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiGiaoDich;
+import panacea.website_dat_lich_khach_san.repository.BookingRepository;
+import panacea.website_dat_lich_khach_san.repository.StaffRepository;
 
 // Controller quản lý kho cho nhân viên
 @Controller
@@ -280,124 +289,10 @@ public class QuanLyKhoController {
         }
     }
     
-    @GetMapping("/api/reports/inventory")
-    @ResponseBody
-    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> getInventoryReport(Authentication authentication) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                response.put("success", false);
-                response.put("message", "Unauthorized access");
-                return ResponseEntity.status(401).body(response);
-            }
-            
-            Map<String, Object> report = quanLyKhoService.generateInventoryReport();
-            response.put("success", true);
-            response.put("data", report);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi tạo báo cáo tồn kho: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
     
-    @GetMapping("/api/reports/transactions")
-    @ResponseBody
-    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> getTransactionReport(
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            Authentication authentication) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                response.put("success", false);
-                response.put("message", "Unauthorized access");
-                return ResponseEntity.status(401).body(response);
-            }
-            
-            Map<String, Object> report = quanLyKhoService.generateTransactionReport(startDate, endDate);
-            response.put("success", true);
-            response.put("data", report);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi tạo báo cáo giao dịch: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
     
-    @GetMapping("/api/reports/expiry")
-    @ResponseBody
-    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> getExpiryReport(Authentication authentication) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                response.put("success", false);
-                response.put("message", "Unauthorized access");
-                return ResponseEntity.status(401).body(response);
-            }
-            
-            Map<String, Object> report = quanLyKhoService.generateExpiryReport();
-            response.put("success", true);
-            response.put("data", report);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi tạo báo cáo hết hạn: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
     
-    @GetMapping("/api/reports/value")
-    @ResponseBody
-    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> getValueReport(Authentication authentication) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                response.put("success", false);
-                response.put("message", "Unauthorized access");
-                return ResponseEntity.status(401).body(response);
-            }
-            
-            Map<String, Object> report = quanLyKhoService.generateValueReport();
-            response.put("success", true);
-            response.put("data", report);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi tạo báo cáo giá trị: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
     
-    @GetMapping("/api/reports/summary")
-    @ResponseBody
-    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> getSummaryStats(Authentication authentication) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // Verify user authentication
-            if (authentication == null || !authentication.isAuthenticated()) {
-                response.put("success", false);
-                response.put("message", "Unauthorized access");
-                return ResponseEntity.status(401).body(response);
-            }
-            
-            Map<String, Object> stats = quanLyKhoService.generateSummaryStats();
-            response.put("success", true);
-            response.put("data", stats);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi khi tạo thống kê tổng hợp: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
     
     // API phê duyệt phiếu nhập kho (chỉ Admin)
     @PostMapping("/api/transactions/{id}/approve")

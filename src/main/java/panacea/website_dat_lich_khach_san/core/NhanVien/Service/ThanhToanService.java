@@ -163,11 +163,21 @@ public class ThanhToanService {
             // Tổng tiền dịch vụ
             BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
             
-            // Tiền cọc (50% tiền phòng)
-            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            // Tổng tiền tổng cộng
+            BigDecimal tongTienTongCong = tongTienPhong.add(tongTienDichVu);
             
-            // Tổng cần thanh toán = Tiền phòng + Tiền dịch vụ - Tiền cọc
-            BigDecimal tongCanThanhToan = tongTienPhong.add(tongTienDichVu).subtract(tienCoc);
+            // Tiền cọc
+            BigDecimal tienCoc = booking.getTienDatCoc() != null ? booking.getTienDatCoc() : tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            
+            // Tính tổng tiền đã thanh toán thành công
+            BigDecimal tongDaThanhToan = paymentRepository.findAll().stream()
+                .filter(p -> p.getBooking() != null && p.getBooking().getId().equals(bookingId))
+                .filter(p -> p.getTrangThai() == TrangThaiPayment.THANH_CONG)
+                .map(Payment::getSoTien)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Tổng cần thanh toán = Tổng tiền - Tiền cọc - Đã thanh toán
+            BigDecimal tongCanThanhToan = tongTienTongCong.subtract(tienCoc).subtract(tongDaThanhToan);
             
             return tongCanThanhToan.compareTo(BigDecimal.ZERO) > 0 ? tongCanThanhToan : BigDecimal.ZERO;
             
@@ -191,8 +201,19 @@ public class ThanhToanService {
             // Tính toán chi tiết
             BigDecimal tongTienPhong = booking.getTongTienPhong() != null ? booking.getTongTienPhong() : BigDecimal.ZERO;
             BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
-            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
-            BigDecimal tongCanThanhToan = calculateTotalPaymentAmount(booking.getId());
+            BigDecimal tongTienTongCong = tongTienPhong.add(tongTienDichVu);
+            BigDecimal tienCoc = booking.getTienDatCoc() != null ? booking.getTienDatCoc() : tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            
+            // Tính tổng tiền đã thanh toán trước đó
+            BigDecimal tongDaThanhToan = paymentRepository.findAll().stream()
+                .filter(p -> p.getBooking() != null && p.getBooking().getId().equals(booking.getId()))
+                .filter(p -> p.getTrangThai() == TrangThaiPayment.THANH_CONG)
+                .filter(p -> !p.getId().equals(payment.getId())) // Loại trừ payment hiện tại
+                .map(Payment::getSoTien)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Tổng cần thanh toán = Tổng tiền - Tiền cọc - Đã thanh toán
+            BigDecimal tongCanThanhToan = tongTienTongCong.subtract(tienCoc).subtract(tongDaThanhToan);
             
             StringBuilder invoice = new StringBuilder();
             invoice.append("=== HÓA ĐƠN THANH TOÁN ===\n");
@@ -202,9 +223,11 @@ public class ThanhToanService {
             invoice.append("\n--- CHI TIẾT TÍNH TOÁN ---\n");
             invoice.append("Tổng tiền phòng: ").append(String.format("%,.0f", tongTienPhong)).append(" VND\n");
             invoice.append("Tổng tiền dịch vụ: ").append(String.format("%,.0f", tongTienDichVu)).append(" VND\n");
-            invoice.append("Tiền cọc đã trả (50%): ").append(String.format("%,.0f", tienCoc)).append(" VND\n");
+            invoice.append("Tổng cộng: ").append(String.format("%,.0f", tongTienTongCong)).append(" VND\n");
+            invoice.append("Tiền cọc đã trả: ").append(String.format("%,.0f", tienCoc)).append(" VND\n");
+            invoice.append("Đã thanh toán trước: ").append(String.format("%,.0f", tongDaThanhToan)).append(" VND\n");
             invoice.append("\n--- TỔNG KẾT ---\n");
-            invoice.append("Tổng cần thanh toán: ").append(String.format("%,.0f", tongCanThanhToan)).append(" VND\n");
+            invoice.append("Còn lại cần thanh toán: ").append(String.format("%,.0f", tongCanThanhToan)).append(" VND\n");
             invoice.append("Số tiền thanh toán này: ").append(String.format("%,.0f", payment.getSoTien())).append(" VND\n");
             invoice.append("\n--- THÔNG TIN THANH TOÁN ---\n");
             invoice.append("Phương thức: ").append(payment.getPhuongThuc()).append("\n");
