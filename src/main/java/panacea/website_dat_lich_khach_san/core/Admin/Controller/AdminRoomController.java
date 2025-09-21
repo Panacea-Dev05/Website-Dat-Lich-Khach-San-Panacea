@@ -1,12 +1,17 @@
 package panacea.website_dat_lich_khach_san.core.Admin.Controller;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import panacea.website_dat_lich_khach_san.core.Admin.Service.AdminRoomService;
+import panacea.website_dat_lich_khach_san.entity.RoomImages;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 
@@ -138,10 +145,273 @@ public class AdminRoomController {
         return adminRoomService.deleteRoomType(id);
     }
 
+
     // API LẤY DANH SÁCH LOẠI PHÒNG JSON: Trả về tất cả loại phòng dạng JSON cho dropdown/select
     @GetMapping("/room-types/json")
     @ResponseBody
     public List<RoomTypeDTO> getRoomTypesJson() {
         return adminRoomService.getAllRoomTypes();
     }
+
+
+
+    // API KIỂM TRA HẠNG PHÒNG: Kiểm tra xem hạng phòng có tồn tại không
+    @GetMapping("/room-types/{id}/check")
+    @ResponseBody
+    public ResponseEntity<?> checkRoomType(@PathVariable Integer id) {
+        try {
+            RoomTypeDTO roomType = adminRoomService.getRoomTypeById(id);
+            if (roomType == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Không tìm thấy hạng phòng với ID: " + id
+                ));
+            }
+            return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "Tìm thấy hạng phòng: " + roomType.getTenLoaiPhong(),
+                "roomType", roomType
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "Lỗi kiểm tra hạng phòng: " + e.getMessage()
+            ));
+        }
+    }
+
+    // API LẤY ẢNH HẠNG PHÒNG: Lấy danh sách ảnh của hạng phòng
+    @GetMapping("/room-types/{id}/images")
+    @ResponseBody
+    public ResponseEntity<?> getRoomTypeImages(@PathVariable Integer id) {
+        try {
+            System.out.println("=== GET ROOM TYPE IMAGES START ===");
+            System.out.println("Room Type ID: " + id);
+            
+            List<RoomImages> images = adminRoomService.getRoomTypeImages(id);
+            System.out.println("Found " + images.size() + " images");
+            
+            List<Map<String, Object>> imageList = new ArrayList<>();
+            for (RoomImages image : images) {
+                Map<String, Object> imageMap = new HashMap<>();
+                imageMap.put("id", image.getId());
+                imageMap.put("url", image.getUrlHinhAnh());
+                imageMap.put("name", image.getTenHinhAnh());
+                imageMap.put("description", image.getMoTa() != null ? image.getMoTa() : "");
+                imageMap.put("isMain", image.getLaHinhChinh() != null ? image.getLaHinhChinh() : false);
+                imageMap.put("order", image.getThuTuHienThi() != null ? image.getThuTuHienThi() : 1);
+                imageList.add(imageMap);
+            }
+            
+            System.out.println("=== GET ROOM TYPE IMAGES SUCCESS ===");
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("images", imageList);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            System.err.println("=== GET ROOM TYPE IMAGES ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "Lỗi lấy danh sách ảnh: " + e.getMessage()
+            ));
+        }
+    }
+
+    // API XÓA ẢNH HẠNG PHÒNG: Xóa ảnh của hạng phòng
+    @DeleteMapping("/room-types/{roomTypeId}/images/{imageId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteRoomTypeImage(
+            @PathVariable Integer roomTypeId,
+            @PathVariable Integer imageId) {
+        
+        try {
+            System.out.println("=== DELETE ROOM TYPE IMAGE START ===");
+            System.out.println("Room Type ID: " + roomTypeId);
+            System.out.println("Image ID: " + imageId);
+            
+            boolean success = adminRoomService.deleteRoomTypeImage(imageId);
+            
+            if (success) {
+                System.out.println("=== DELETE ROOM TYPE IMAGE SUCCESS ===");
+                return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "message", "Xóa hình ảnh thành công"
+                ));
+            } else {
+                System.out.println("=== DELETE ROOM TYPE IMAGE FAILED ===");
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Không thể xóa hình ảnh"
+                ));
+            }
+        } catch (Exception e) {
+            System.err.println("=== DELETE ROOM TYPE IMAGE ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "Lỗi xóa hình ảnh: " + e.getMessage()
+            ));
+        }
+    }
+
+    // API LƯU ẢNH TỪ THƯ VIỆN: Lưu thông tin ảnh từ thư viện vào database
+    @PostMapping("/room-types/{id}/images/save")
+    @ResponseBody
+    public ResponseEntity<?> saveRoomTypeImageFromLibrary(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> imageData) {
+        
+        try {
+            System.out.println("=== SAVE IMAGE FROM LIBRARY START ===");
+            System.out.println("Room Type ID: " + id);
+            System.out.println("Image Data: " + imageData);
+            
+            String imageUrl = imageData.get("imageUrl");
+            String imageName = imageData.get("imageName");
+            String description = imageData.get("description");
+            
+            if (imageUrl == null || imageName == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Thiếu thông tin ảnh"
+                ));
+            }
+            
+            RoomImages image = adminRoomService.addRoomTypeImage(
+                id,
+                imageUrl,
+                imageName,
+                description != null ? description : "Hình ảnh hạng phòng từ thư viện"
+            );
+            
+            System.out.println("=== SAVE IMAGE FROM LIBRARY SUCCESS ===");
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Lưu hình ảnh thành công");
+            response.put("image", image);
+            return ResponseEntity.ok().body(response);
+            
+        } catch (Exception e) {
+            System.err.println("=== SAVE IMAGE FROM LIBRARY ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Lỗi lưu hình ảnh: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // API UPLOAD HÌNH ẢNH HẠNG PHÒNG: Upload hình ảnh cho hạng phòng (DEPRECATED - chỉ dùng cho upload file)
+    @PostMapping("/room-types/{id}/images")
+    @ResponseBody
+    public ResponseEntity<?> uploadRoomTypeImages(
+            @PathVariable Integer id,
+            @RequestParam("files") MultipartFile[] files) {
+        
+        try {
+            System.out.println("=== UPLOAD IMAGES START ===");
+            System.out.println("Room Type ID: " + id);
+            System.out.println("Number of files: " + files.length);
+            
+            // Kiểm tra hạng phòng có tồn tại không
+            RoomTypeDTO roomType = adminRoomService.getRoomTypeById(id);
+            if (roomType == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Không tìm thấy hạng phòng với ID: " + id
+                ));
+            }
+            
+            List<RoomImages> uploadedImages = new ArrayList<>();
+            
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile file = files[i];
+                if (file.isEmpty()) {
+                    System.out.println("File " + i + " is empty, skipping...");
+                    continue;
+                }
+                
+                System.out.println("Processing file " + i + ": " + file.getOriginalFilename());
+                
+                // Tạo tên file unique
+                String originalFilename = file.getOriginalFilename();
+                if (originalFilename == null) continue;
+                
+                // Xử lý file extension an toàn
+                String fileExtension = "";
+                int lastDotIndex = originalFilename.lastIndexOf(".");
+                if (lastDotIndex > 0 && lastDotIndex < originalFilename.length() - 1) {
+                    fileExtension = originalFilename.substring(lastDotIndex);
+                } else {
+                    // Nếu không có extension hoặc extension không hợp lệ, dùng .jpg làm mặc định
+                    fileExtension = ".jpg";
+                }
+                
+                String uniqueFilename = "roomtype_" + id + "_" + System.currentTimeMillis() + "_" + i + fileExtension;
+                
+                // Tạo thư mục upload nếu chưa có
+                // Sử dụng đường dẫn tuyệt đối từ project root
+                String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/images/roomtypes/";
+                File uploadPath = new File(uploadDir);
+                if (!uploadPath.exists()) {
+                    boolean created = uploadPath.mkdirs();
+                    System.out.println("Created upload directory: " + created);
+                    if (!created) {
+                        System.err.println("Failed to create upload directory: " + uploadDir);
+                        continue; // Bỏ qua file này nếu không tạo được thư mục
+                    }
+                }
+                
+                // Lưu file
+                String filePath = uploadDir + uniqueFilename;
+                File targetFile = new File(filePath);
+                file.transferTo(targetFile);
+                System.out.println("File saved to: " + filePath);
+                
+                // Tạo URL để truy cập hình ảnh
+                String imageUrl = "/images/roomtypes/" + uniqueFilename;
+                
+                // Lưu thông tin hình ảnh vào database
+                System.out.println("Saving image info to database...");
+                RoomImages image = adminRoomService.addRoomTypeImage(
+                    id, 
+                    imageUrl, 
+                    originalFilename, 
+                    "Hình ảnh hạng phòng"
+                );
+                uploadedImages.add(image);
+                System.out.println("Image saved with ID: " + image.getId());
+            }
+            
+            System.out.println("=== UPLOAD IMAGES SUCCESS ===");
+            System.out.println("Total uploaded: " + uploadedImages.size());
+            
+            return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "Upload thành công " + uploadedImages.size() + " hình ảnh",
+                "images", uploadedImages
+            ));
+            
+        } catch (Exception e) {
+            System.err.println("=== UPLOAD IMAGES ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "Lỗi upload hình ảnh: " + e.getMessage()
+            ));
+        }
+    }
+
+
 }

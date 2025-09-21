@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Charts - Panacea Hotel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .chart-container {
+            width: 400px;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Debug Charts - Panacea Hotel</h1>
+
+    <div class="debug-info">
+        <h3>Debug Information</h3>
+        <p id="chartjs-status">Checking Chart.js...</p>
+        <p id="canvas-status">Checking Canvas elements...</p>
+    </div>
+
+    <button onclick="testRevenueChart()">Test Revenue Chart</button>
+    <button onclick="testRoomTypeChart()">Test Room Type Chart</button>
+    <button onclick="testAPI()">Test API</button>
+
+    <div class="chart-container">
+        <h3>Revenue Chart</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h3>Room Type Chart</h3>
+        <canvas id="roomTypeChart"></canvas>
+    </div>
+
+    <script>
+        let revenueChart = null;
+        let roomTypeChart = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Debug page loaded');
+
+            // Check Chart.js
+            if (typeof Chart !== 'undefined') {
+                document.getElementById('chartjs-status').innerHTML = '✅ Chart.js loaded - Version: ' + Chart.version;
+            } else {
+                document.getElementById('chartjs-status').innerHTML = '❌ Chart.js not loaded';
+            }
+
+            // Check Canvas elements
+            const revenueCtx = document.getElementById('revenueChart');
+            const roomTypeCtx = document.getElementById('roomTypeChart');
+
+            if (revenueCtx && roomTypeCtx) {
+                document.getElementById('canvas-status').innerHTML = '✅ Canvas elements found';
+            } else {
+                document.getElementById('canvas-status').innerHTML = '❌ Canvas elements not found';
+            }
+
+            // Auto test
+            setTimeout(() => {
+                testRevenueChart();
+                testRoomTypeChart();
+            }, 1000);
+        });
+
+        function testRevenueChart() {
+            console.log('Testing revenue chart...');
+            const ctx = document.getElementById('revenueChart');
+            if (!ctx) {
+                console.error('Revenue chart canvas not found');
+                return;
+            }
+
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            try {
+                revenueChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: [1000000, 1500000, 2000000, 1800000, 2200000, 2500000],
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return new Intl.NumberFormat('vi-VN').format(value) + ' VNĐ';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('✅ Revenue chart created successfully');
+            } catch (error) {
+                console.error('❌ Error creating revenue chart:', error);
+            }
+        }
+
+        function testRoomTypeChart() {
+            console.log('Testing room type chart...');
+            const ctx = document.getElementById('roomTypeChart');
+            if (!ctx) {
+                console.error('Room type chart canvas not found');
+                return;
+            }
+
+            if (roomTypeChart) {
+                roomTypeChart.destroy();
+            }
+
+            try {
+                roomTypeChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Phòng Deluxe', 'Phòng Suite', 'Phòng Standard', 'Phòng VIP', 'Phòng Family'],
+                        datasets: [{
+                            label: 'Số lượt đặt',
+                            data: [45, 32, 28, 18, 12],
+                            backgroundColor: [
+                                'rgba(22, 163, 74, 0.7)',
+                                'rgba(34, 197, 94, 0.7)',
+                                'rgba(74, 222, 128, 0.7)',
+                                'rgba(134, 239, 172, 0.7)',
+                                'rgba(167, 243, 208, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(22, 163, 74, 1)',
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(74, 222, 128, 1)',
+                                'rgba(134, 239, 172, 1)',
+                                'rgba(167, 243, 208, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                console.log('✅ Room type chart created successfully');
+            } catch (error) {
+                console.error('❌ Error creating room type chart:', error);
+            }
+        }
+
+        async function testAPI() {
+            console.log('Testing API...');
+            try {
+                const response = await fetch('/admin/api/reports?type=all');
+                console.log('API Response status:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API Response data:', data);
+                    alert('API hoạt động bình thường!');
+                } else {
+                    console.error('API Error:', response.status, response.statusText);
+                    alert('API Error: ' + response.status);
+                }
+            } catch (error) {
+                console.error('API Test Error:', error);
+                alert('API Test Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+
+</html>

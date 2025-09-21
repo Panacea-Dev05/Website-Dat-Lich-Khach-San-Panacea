@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.Customer;
 import panacea.website_dat_lich_khach_san.entity.Hotel;
-import panacea.website_dat_lich_khach_san.entity.Room;
 import panacea.website_dat_lich_khach_san.entity.RoomType;
 import panacea.website_dat_lich_khach_san.entity.RoomPricing;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
@@ -28,11 +27,9 @@ import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
 import panacea.website_dat_lich_khach_san.repository.HotelRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
-import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
+import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -42,20 +39,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import panacea.website_dat_lich_khach_san.entity.Booking;
-import panacea.website_dat_lich_khach_san.entity.Customer;
-import panacea.website_dat_lich_khach_san.entity.Hotel;
-import panacea.website_dat_lich_khach_san.entity.RoomPricing;
-import panacea.website_dat_lich_khach_san.entity.RoomType;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingRequestDTO;
-import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
-import panacea.website_dat_lich_khach_san.repository.BookingRepository;
-import panacea.website_dat_lich_khach_san.repository.CustomerRepository;
-import panacea.website_dat_lich_khach_san.repository.HotelRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
-import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
-import panacea.website_dat_lich_khach_san.repository.RoomRepository;
-import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 
 /**
  * Service xử lý các chức năng dành cho khách hàng
@@ -78,12 +61,11 @@ public class KhachHangService {
     @Autowired(required = false)
     private JavaMailSender mailSender;
     @Autowired
-
     private RoomPricingRepositoty roomPricingRepositoty;
     @Autowired
-    private RoomImagesRepositoty roomImagesRepositoty;
-    @Autowired
     private RoomTypeRepository roomTypeRepository;
+    @Autowired
+    private RoomImagesRepositoty roomImagesRepositoty;
 
     /**
      * ĐẶT PHÒNG CHO KHÁCH HÀNG: Xử lý đặt phòng đơn lẻ hoặc combo nhiều loại phòng
@@ -324,7 +306,7 @@ public class KhachHangService {
             // Debug log sau khi convert
             System.out.println("[DEBUG] DTO DienTich: " + dto.getDienTich());
             
-            // Lấy ảnh
+            // Lấy ảnh từ bảng RoomImages
             var images = roomImagesRepositoty.findByLoaiPhong_Id(rt.getId());
             List<String> urls = new ArrayList<>();
             for (var img : images) {
@@ -439,7 +421,7 @@ public class KhachHangService {
         
         // Log debug giá
         System.out.println("[DEBUG] Giá phòng DTO: id=" + id + ", giaNgay=" + dto.getGiaNgay() + ", giaGio=" + dto.getGiaGio() + ", giaQuaDem=" + dto.getGiaQuaDem());
-        // Lấy ảnh
+        // Lấy ảnh từ bảng RoomImages
         var images = roomImagesRepositoty.findByLoaiPhong_Id(rt.getId());
         List<String> urls = new ArrayList<>();
         for (var img : images) {

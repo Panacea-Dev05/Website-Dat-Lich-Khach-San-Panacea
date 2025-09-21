@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test API</title>
+</head>
+
+<body>
+    <h1>Test API</h1>
+    <button onclick="testCheckRoomType()">Test Check Room Type</button>
+    <button onclick="testAddSampleImages()">Test Add Sample Images</button>
+    <div id="result"></div>
+
+    <script>
+        async function testCheckRoomType() {
+            try {
+                const response = await fetch('/admin/rooms/room-types/1/check');
+                const result = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+        async function testAddSampleImages() {
+            try {
+                const response = await fetch('/admin/rooms/room-types/1/sample-images', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+
+</html>
+
