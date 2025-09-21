@@ -363,11 +363,7 @@
                     <label for="positionFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Chức vụ:</label>
                     <select id="positionFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
                       <option value="">Tất cả chức vụ</option>
-                      <option value="Quản lý">Quản lý</option>
-                      <option value="Nhân viên">Nhân viên</option>
-                      <option value="Bảo vệ">Bảo vệ</option>
-                      <option value="Lễ tân">Lễ tân</option>
-                      <option value="Khác">Khác</option>
+                      <option th:each="role : ${staffRoles}" th:value="${role}" th:text="${role}"></option>
                     </select>
                   </div>
                   
@@ -692,6 +688,63 @@
                 document.getElementById('viewStaffModal').style.display = 'none';
                 editStaff(staffId);
             };
+            
+            // Xử lý form submission
+            document.getElementById('staffForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const mode = this.getAttribute('data-mode');
+                const staffId = document.getElementById('staffId').value;
+                
+                const data = {
+                    maNhanVien: formData.get('maNhanVien'),
+                    ho: formData.get('ho'),
+                    ten: formData.get('ten'),
+                    email: formData.get('email'),
+                    soDienThoai: formData.get('soDienThoai'),
+                    chucVu: formData.get('chucVu'),
+                    trangThai: formData.get('trangThai')
+                };
+                
+                let url, method;
+                if (mode === 'edit' && staffId) {
+                    url = '/admin/staff/' + staffId;
+                    method = 'PUT';
+                } else {
+                    url = '/admin/staff';
+                    method = 'POST';
+                }
+                
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        if (res.status === 400) {
+                            throw new Error('Dữ liệu không hợp lệ');
+                        }
+                        if (res.status === 500) {
+                            throw new Error('Đã xảy ra lỗi hệ thống');
+                        }
+                        throw new Error('Lỗi khi lưu dữ liệu');
+                    }
+                    return res.json();
+                })
+                .then(result => {
+                    alert(mode === 'edit' ? 'Cập nhật nhân viên thành công!' : 'Thêm nhân viên thành công!');
+                    document.getElementById('staffModal').style.display = 'none';
+                    location.reload(); // Reload để cập nhật danh sách
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Lỗi: ' + error.message);
+                });
+            });
         });
 
         // Hiển thị form thêm nhân viên mới
@@ -703,6 +756,48 @@
             document.getElementById('formTitle').innerText = 'Thêm nhân viên mới';
             document.getElementById('staffId').value = '';
             form.setAttribute('data-mode', 'add');
+        }
+        
+        // Chỉnh sửa nhân viên
+        function editStaff(staffId) {
+            fetch('/admin/staff/' + staffId)
+                .then(res => {
+                    if (!res.ok) {
+                        if (res.status === 500) {
+                            throw new Error('Đã xảy ra lỗi hệ thống, vui lòng thử lại sau');
+                        }
+                        if (res.status === 404) {
+                            throw new Error('Không tìm thấy thông tin nhân viên');
+                        }
+                        throw new Error('Lỗi khi tải dữ liệu nhân viên');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    // Điền dữ liệu vào form
+                    document.getElementById('staffId').value = data.id;
+                    document.getElementById('maNhanVien').value = data.maNhanVien || '';
+                    document.getElementById('ho').value = data.ho || '';
+                    document.getElementById('ten').value = data.ten || '';
+                    document.getElementById('email').value = data.email || '';
+                    document.getElementById('soDienThoai').value = data.soDienThoai || '';
+                    document.getElementById('chucVu').value = data.chucVu || '';
+                    document.getElementById('trangThai').value = data.trangThai || '';
+                    
+                    // Cập nhật tiêu đề form
+                    document.getElementById('formTitle').innerText = 'Chỉnh sửa nhân viên';
+                    document.getElementById('submitBtn').innerHTML = '<span class="material-icons" style="font-size: 18px;">save</span>Cập nhật nhân viên';
+                    
+                    // Đặt mode là edit
+                    document.getElementById('staffForm').setAttribute('data-mode', 'edit');
+                    
+                    // Hiển thị modal
+                    document.getElementById('staffModal').style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Không thể tải thông tin nhân viên: ' + error.message);
+                });
         }
         
         // ===== PHÂN TRANG =====
