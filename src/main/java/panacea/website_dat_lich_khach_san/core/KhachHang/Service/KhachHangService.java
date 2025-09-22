@@ -30,6 +30,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomPricingRepositoty;
 import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
+import panacea.website_dat_lich_khach_san.service.VNPayService;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -60,6 +61,9 @@ public class KhachHangService {
     private CustomerRepository customerRepository;
     @Autowired(required = false)
     private JavaMailSender mailSender;
+    
+    @Autowired(required = false)
+    private VNPayService vnPayService;
     @Autowired
     private RoomPricingRepositoty roomPricingRepositoty;
     @Autowired
@@ -215,69 +219,57 @@ public class KhachHangService {
                 String bookingTypeLabel = "Theo ngày";
                 if ("gio".equals(dto.getBookingType())) bookingTypeLabel = "Theo giờ";
                 else if ("dem".equals(dto.getBookingType())) bookingTypeLabel = "Theo đêm";
-                String text = String.format(
-
-                    "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
+                String text = 
+                    "<h2>Cảm ơn " + dto.getTenKhach() + " đã đặt phòng tại Panacea Hotel!</h2>" +
                     "<p>Thông tin đặt phòng của bạn:</p>" +
                     "<ul>" +
                     "<li>Khách sạn: Panacea Hotel</li>" +
-                    "<li>Loại phòng: %s</li>" +
-                    "<li>Loại thuê: %s</li>" +
-                    "<li>Số lượng: %d</li>" +
-                    "<li>Ngày nhận phòng: %s</li>" +
-                    "<li>Ngày trả phòng: %s</li>" +
-                    "<li>Số người lớn: %d</li>" +
-                    "<li>Số trẻ em: %d</li>" +
-                    "<li>Ghi chú: %s</li>" +
-                    "%s" +
+                    "<li>Loại phòng: " + roomType.getTenLoaiPhong() + "</li>" +
+                    "<li>Loại thuê: " + bookingTypeLabel + "</li>" +
+                    "<li>Số lượng: " + (dto.getBookingQuantity() != null ? dto.getBookingQuantity() : 1) + "</li>" +
+                    "<li>Ngày nhận phòng: " + dto.getNgayNhanPhong() + "</li>" +
+                    "<li>Ngày trả phòng: " + dto.getNgayTraPhong() + "</li>" +
+                    "<li>Số người lớn: " + dto.getSoNguoiLon() + "</li>" +
+                    "<li>Số trẻ em: " + dto.getSoTreEm() + "</li>" +
+                    "<li>Ghi chú: " + (dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có") + "</li>" +
+                    dichVuHtml.toString() +
                     "</ul>" +
-                    "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
-                    "<img src='cid:qr_momo' width='250' height='250'/>" +
-                    "<p><b>Số tiền cần thanh toán khi trả phòng: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
-                    "<p><b>Tiền đặt cọc (50%%): </b>" + booking.getTienDatCoc() + " VNĐ</p>" +
-                    "<p><b>Nội dung chuyển khoản: </b>DatPhong_" + maDatPhong + "</p>" +
-                    "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
+                    "<p>Vui lòng thanh toán bằng VNPAY:</p>" +
+                    "<div style='text-align: center; margin: 20px 0;'>" +
+                    "<a href='" + (vnPayService != null ? vnPayService.createPaymentUrl(booking.getTongThanhToan().longValue(), maDatPhong) : "#") + "' " +
+                    "style='display: inline-block; background-color: #ff6b35; color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);'>" +
+                    "🚀 Thanh toán ngay với VNPAY</a>" +
+                    "</div>" +
+                    "<p><b>Số tiền cần thanh toán: </b>" + String.format("%,.0f", booking.getTongThanhToan().doubleValue()) + " VNĐ</p>" +
+                    "<p><b>Mã đặt phòng: </b>" + maDatPhong + "</p>" +
+                    "<p><b>Lưu ý:</b> Click vào nút trên để thanh toán an toàn và nhanh chóng.</p>" +
                     "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
-                    "<br><b>Panacea Hotel</b>",
-                    dto.getTenKhach(),
-                    roomType.getTenLoaiPhong(),
-                    bookingTypeLabel,
-                    dto.getBookingQuantity() != null ? dto.getBookingQuantity() : 1,
-                    dto.getNgayNhanPhong(),
-                    dto.getNgayTraPhong(),
-                    dto.getSoNguoiLon(),
-                    dto.getSoTreEm(),
-                    dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
-                    dichVuHtml.toString(),
+                    "<br><b>Panacea Hotel</b>";
 
-                        "<h2>Cảm ơn %s đã đặt phòng tại Panacea Hotel!</h2>" +
+                String text2 = 
+                        "<h2>Cảm ơn " + dto.getTenKhach() + " đã đặt phòng tại Panacea Hotel!</h2>" +
                                 "<p>Thông tin đặt phòng của bạn:</p>" +
                                 "<ul>" +
                                 "<li>Khách sạn: Panacea Hotel</li>" +
-                                "<li>Ngày nhận phòng: %s</li>" +
-                                "<li>Ngày trả phòng: %s</li>" +
-                                "<li>Số người lớn: %d</li>" +
-                                "<li>Số trẻ em: %d</li>" +
-                                "<li>Ghi chú: %s</li>" +
-                                "%s" +
+                                "<li>Ngày nhận phòng: " + dto.getNgayNhanPhong() + "</li>" +
+                                "<li>Ngày trả phòng: " + dto.getNgayTraPhong() + "</li>" +
+                                "<li>Số người lớn: " + dto.getSoNguoiLon() + "</li>" +
+                                "<li>Số trẻ em: " + dto.getSoTreEm() + "</li>" +
+                                "<li>Ghi chú: " + (dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có") + "</li>" +
+                                dichVuHtml.toString() +
                                 "</ul>" +
-                                "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
-                                "<img src='cid:qr_momo' width='250' height='250'/>" +
-                                "<p><b>Số tiền cần chuyển: </b>" + booking.getTongThanhToan() + " VNĐ</p>" +
-                                "<p><b>Nội dung chuyển khoản: </b>DatPhong_" + maDatPhong + "</p>" +
-                                "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
+                                "<p>Vui lòng thanh toán bằng VNPAY:</p>" +
+                                "<div style='text-align: center; margin: 20px 0;'>" +
+                                "<a href='" + (vnPayService != null ? vnPayService.createPaymentUrl(booking.getTongThanhToan().longValue(), maDatPhong) : "#") + "' " +
+                                "style='display: inline-block; background-color: #ff6b35; color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);'>" +
+                                "🚀 Thanh toán ngay với VNPAY</a>" +
+                                "</div>" +
+                                "<p><b>Số tiền cần thanh toán: </b>" + String.format("%,.0f", booking.getTongThanhToan().doubleValue()) + " VNĐ</p>" +
+                                "<p><b>Mã đặt phòng: </b>" + maDatPhong + "</p>" +
+                                "<p><b>Lưu ý:</b> Click vào nút trên để thanh toán an toàn và nhanh chóng.</p>" +
                                 "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
-                                "<br><b>Panacea Hotel</b>",
-                        dto.getTenKhach(),
-                        dto.getNgayNhanPhong(),
-                        dto.getNgayTraPhong(),
-                        dto.getSoNguoiLon(),
-                        dto.getSoTreEm(),
-                        dto.getGhiChuKhachHang() != null ? dto.getGhiChuKhachHang() : "Không có",
-                        dichVuHtml.toString()
-
-                );
-                sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
+                                "<br><b>Panacea Hotel</b>";
+                sendMail(dto.getEmailKhach(), subject, text);
             }
             return true;
         } catch (Exception e) {
