@@ -257,7 +257,7 @@ public class ThanhToanService {
             invoice.append("<h3>THÔNG TIN THANH TOÁN</h3>");
             invoice.append("<div class='row'><span class='label'>Phương thức:</span><span>").append(payment.getPhuongThuc()).append("</span></div>");
             invoice.append("<div class='row'><span class='label'>Trạng thái:</span><span>").append(payment.getTrangThai()).append("</span></div>");
-            invoice.append("<div class='row'><span class='label'>Ngày tạo:</span><span>").append(payment.getCreatedDate()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Ngày tạo:</span><span>").append(formatDate(payment.getCreatedDate())).append("</span></div>");
             invoice.append("<div class='row'><span class='label'>Nhân viên:</span><span>").append(getStaffName()).append("</span></div>");
             invoice.append("</div>");
             invoice.append("</div></body></html>");
@@ -277,6 +277,20 @@ public class ThanhToanService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    
+    // Format date
+    private String formatDate(Long timestamp) {
+        if (timestamp == null) {
+            return "N/A";
+        }
+        try {
+            java.time.Instant instant = java.time.Instant.ofEpochMilli(timestamp);
+            java.time.LocalDateTime dateTime = java.time.LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault());
+            return dateTime.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        } catch (Exception e) {
+            return "Ngày không hợp lệ";
         }
     }
     

@@ -344,9 +344,13 @@
                             </div>
                             <div class="text-btn mt-5 mt-lg-0">
                                 <span class="text-btn1 text-uppercase" id="roomPriceDisplay"
-                                    th:data-gia-gio="${roomType.giaGio}" th:data-gia-ngay="${roomType.giaNgay}"
-                                    th:data-gia-dem="${roomType.giaQuaDem}">
-                                    Đang tải giá...
+                                    th:data-gia-gio="${roomType.giaGio != null ? roomType.giaGio : 100000}" 
+                                    th:data-gia-ngay="${roomType.giaNgay != null ? roomType.giaNgay : 800000}"
+                                    th:data-gia-dem="${roomType.giaQuaDem != null ? roomType.giaQuaDem : 600000}">
+                                    <span th:if="${roomType.giaNgay != null}">
+                                        <span th:text="${#numbers.formatDecimal(roomType.giaNgay, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                                    </span>
+                                    <span th:unless="${roomType.giaNgay != null}">Đang tải giá...</span>
                                 </span>
                             </div>
                         </div>
@@ -473,27 +477,6 @@
                         <!-- End Services -->
 
 
-                        <!-- Start Total Review -->
-                        <div class="ak-height-75 ak-height-lg-30"></div>
-                        <div class="total-review">
-                            <div class="col-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <h2>5.00</h2>
-                                    <div>
-                                        <img th:src="@{/css/KhachHang/assets/img/review_start.svg}" alt="...">
-                                        <p>5 Reviews</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-btn text-end">
-                                    <a th:href="@{/khachhang/single-room}" class="text-btn1 text-uppercase">
-                                        GIVE A REVIEW
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
 
                         <!-- End Total Review -->
 
@@ -510,13 +493,13 @@
                                         <span class="material-icons">star</span>
                                         <span class="material-icons">star</span>
                                         <span class="material-icons">star</span>
-                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div id="reviews-list">
                                 <p>Chưa có đánh giá nào!</p>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="ak-height-100 ak-height-lg-60"></div>
 
@@ -525,74 +508,59 @@
                             <div class="contact-form lenght-exget">
                                 <h2 class="contact-form-title anim-title-2 ak-white-color">Đánh giá phòng</h2>
                                 <div class="ak-height-25 ak-height-lg-20"></div>
-                                <form id="reviewForm">
+                                <form id="reviewForm" method="post" action="javascript:void(0);">
                                     <!-- Thông tin khách hàng -->
                                     <div class="from-input">
                                         <input placeholder="Họ và tên" class="col-md-5 col-12" type="text"
                                             name="customerName" id="customerName" required>
                                         <input placeholder="Email" class="col-md-5 col-12" type="email"
                                             name="customerEmail" id="customerEmail" required>
-                                    </div>
+                        </div>
 
                                     <!-- Điểm đánh giá -->
-                                    <div class="rating-section mb-3">
-                                        <label class="ak-white-color">Điểm đánh giá:</label>
-                                        <div class="rating-inputs">
-                                            <div class="rating-item">
-                                                <label>Tổng quan:</label>
-                                                <select name="diemTongQuan" id="diemTongQuan" required>
-                                                    <option value="">Chọn điểm</option>
-                                                    <option value="1">1 sao</option>
-                                                    <option value="2">2 sao</option>
-                                                    <option value="3">3 sao</option>
-                                                    <option value="4">4 sao</option>
-                                                    <option value="5">5 sao</option>
-                                                </select>
+                                    <div class="rating-section mb-4" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <label class="ak-white-color" style="font-size: 20px; font-weight: bold; margin-bottom: 25px; display: block; text-align: center; color: #FFD28D;">⭐ Điểm đánh giá ⭐</label>
+                                        <div class="rating-inputs" style="display: flex; flex-direction: column; gap: 25px;">
+                                            
+                                            <!-- Sạch sẽ -->
+                                            <div class="rating-item" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                                <label style="color: #ffffff; font-weight: 600; font-size: 16px; min-width: 100px;">🧹 Sạch sẽ:</label>
+                                                <div class="star-rating" data-rating="diemSachSe" style="display: flex; gap: 8px;">
+                                                    <input type="hidden" name="diemSachSe" id="diemSachSe" value="0" required>
+                                                    <span class="star" data-value="1" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="2" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="3" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="4" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="5" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                </div>
                                             </div>
-                                            <div class="rating-item">
-                                                <label>Sạch sẽ:</label>
-                                                <select name="diemSachSe" id="diemSachSe" required>
-                                                    <option value="">Chọn điểm</option>
-                                                    <option value="1">1 sao</option>
-                                                    <option value="2">2 sao</option>
-                                                    <option value="3">3 sao</option>
-                                                    <option value="4">4 sao</option>
-                                                    <option value="5">5 sao</option>
-                                                </select>
+                                            
+                                            <!-- Dịch vụ -->
+                                            <div class="rating-item" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                                <label style="color: #ffffff; font-weight: 600; font-size: 16px; min-width: 100px;">🛎️ Dịch vụ:</label>
+                                                <div class="star-rating" data-rating="diemDichVu" style="display: flex; gap: 8px;">
+                                                    <input type="hidden" name="diemDichVu" id="diemDichVu" value="0" required>
+                                                    <span class="star" data-value="1" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="2" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="3" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="4" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="5" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                        </div>
+                                </div>
+                                            
+                                            <!-- Giá cả -->
+                                            <div class="rating-item" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                                <label style="color: #ffffff; font-weight: 600; font-size: 16px; min-width: 100px;">💰 Giá cả:</label>
+                                                <div class="star-rating" data-rating="diemGiaCa" style="display: flex; gap: 8px;">
+                                                    <input type="hidden" name="diemGiaCa" id="diemGiaCa" value="0" required>
+                                                    <span class="star" data-value="1" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="2" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="3" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="4" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                                    <span class="star" data-value="5" style="font-size: 28px; cursor: pointer; transition: all 0.3s ease;">★</span>
+                                    </div>
                                             </div>
-                                            <div class="rating-item">
-                                                <label>Dịch vụ:</label>
-                                                <select name="diemDichVu" id="diemDichVu" required>
-                                                    <option value="">Chọn điểm</option>
-                                                    <option value="1">1 sao</option>
-                                                    <option value="2">2 sao</option>
-                                                    <option value="3">3 sao</option>
-                                                    <option value="4">4 sao</option>
-                                                    <option value="5">5 sao</option>
-                                                </select>
-                                            </div>
-                                            <div class="rating-item">
-                                                <label>Vị trí:</label>
-                                                <select name="diemViTri" id="diemViTri" required>
-                                                    <option value="">Chọn điểm</option>
-                                                    <option value="1">1 sao</option>
-                                                    <option value="2">2 sao</option>
-                                                    <option value="3">3 sao</option>
-                                                    <option value="4">4 sao</option>
-                                                    <option value="5">5 sao</option>
-                                                </select>
-                                            </div>
-                                            <div class="rating-item">
-                                                <label>Giá cả:</label>
-                                                <select name="diemGiaCa" id="diemGiaCa" required>
-                                                    <option value="">Chọn điểm</option>
-                                                    <option value="1">1 sao</option>
-                                                    <option value="2">2 sao</option>
-                                                    <option value="3">3 sao</option>
-                                                    <option value="4">4 sao</option>
-                                                    <option value="5">5 sao</option>
-                                                </select>
-                                            </div>
+                                            
                                         </div>
                                     </div>
 
@@ -796,16 +764,101 @@
                                 <div class="ak-height-30 ak-height-lg-20"></div>
                                 <div class="ak-height-20 ak-height-lg-10"></div>
 
-                                <div class="total">
-                                    <p class="text-total">Giá phòng:</p>
-                                    <h4 class="price" id="roomPrice">Đang tính...</h4>
+                                <div class="price-summary-container" style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <div class="price-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <span class="price-label" style="color: #ffffff; font-size: 16px; font-weight: 600;">Giá phòng:</span>
+                                        <span class="price-value" id="roomPrice" style="color: #FFD28D; font-size: 18px; font-weight: bold;">Đang tính...</span>
                                 </div>
-                                <div class="ak-height-20 ak-height-lg-10"></div>
+                                    
+                                    <div class="price-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                                        <span class="price-label" style="color: #ffffff; font-size: 16px; font-weight: 600;">Số tiền cọc (50%):</span>
+                                        <span class="price-value" id="depositAmount" style="color: #FFD28D; font-size: 18px; font-weight: bold;">Đang tính...</span>
+                                </div>
+                                </div>
                                 
-                                <div class="total">
-                                    <p class="text-total">Số tiền cọc (50%):</p>
-                                    <h4 class="price" id="depositAmount">Đang tính...</h4>
-                                </div>
+                                <!-- Script để set giá ngay lập tức -->
+                                <script>
+                                    // Set giá ngay khi script này chạy
+                                    (function() {
+                                        console.log('Inline script running...');
+                                        
+                                        // Lấy giá từ data attributes
+                                        var priceDisplayElement = document.getElementById('roomPriceDisplay');
+                                        var bookingTypeElement = document.getElementById('bookingType');
+                                        var bookingQuantityElement = document.getElementById('bookingQuantity');
+                                        var soPhongElement = document.getElementById('soPhong');
+                                        
+                                        if (priceDisplayElement) {
+                                            var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
+                                            var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
+                                            var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
+                                            
+                                            console.log('Database prices:', { giaGio, giaNgay, giaDem });
+                                            
+                                            // Fallback nếu không có giá
+                                            if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
+                                                giaGio = 100000;
+                                                giaNgay = 800000;
+                                                giaDem = 600000;
+                                                console.log('Using fallback prices');
+                                            }
+                                            
+                                            // Lấy thông tin booking
+                                            var bookingType = bookingTypeElement ? bookingTypeElement.value : 'ngay';
+                                            var bookingQuantity = bookingQuantityElement ? parseInt(bookingQuantityElement.value) || 1 : 1;
+                                            var soPhong = soPhongElement ? parseInt(soPhongElement.value) || 1 : 1;
+                                            
+                                            // Tính giá theo loại
+                                            var basePrice;
+                                            if (bookingType === 'gio') {
+                                                basePrice = giaGio;
+                                            } else if (bookingType === 'dem') {
+                                                basePrice = giaDem;
+                                            } else {
+                                                basePrice = giaNgay;
+                                            }
+                                            
+                                            // Tính tổng tiền
+                                            var totalPrice = basePrice * bookingQuantity * soPhong;
+                                            var depositAmount = Math.round(totalPrice * 0.5);
+                                            
+                                            console.log('Calculated:', { basePrice, totalPrice, depositAmount });
+                                            
+                                            // Cập nhật hiển thị
+                                            var roomPriceElement = document.getElementById('roomPrice');
+                                            var depositAmountElement = document.getElementById('depositAmount');
+                                            var roomPriceDisplayElement = document.getElementById('roomPriceDisplay');
+                                            
+                                            if (roomPriceElement) {
+                                                roomPriceElement.textContent = totalPrice.toLocaleString('vi-VN') + ' VNĐ';
+                                                console.log('Set roomPrice to:', roomPriceElement.textContent);
+                                            }
+                                            
+                                            if (depositAmountElement) {
+                                                depositAmountElement.textContent = depositAmount.toLocaleString('vi-VN') + ' VNĐ';
+                                                console.log('Set depositAmount to:', depositAmountElement.textContent);
+                                            }
+                                            
+                                            // Cập nhật phần giá ở trên
+                                            if (roomPriceDisplayElement) {
+                                                var priceLabel = bookingType === 'gio' ? 'Giá giờ' : (bookingType === 'dem' ? 'Giá đêm' : 'Giá ngày');
+                                                roomPriceDisplayElement.innerHTML = priceLabel + ': <span style="color: #FFD28D; font-weight: bold;">' + basePrice.toLocaleString('vi-VN') + ' VNĐ</span>';
+                                                console.log('Updated roomPriceDisplay');
+                                            }
+                                        } else {
+                                            console.log('priceDisplayElement not found, using defaults');
+                                            var roomPriceElement = document.getElementById('roomPrice');
+                                            var depositAmountElement = document.getElementById('depositAmount');
+                                            
+                                            if (roomPriceElement) {
+                                                roomPriceElement.textContent = '1,500,000 VNĐ';
+                                            }
+                                            if (depositAmountElement) {
+                                                depositAmountElement.textContent = '750,000 VNĐ';
+                                            }
+                                        }
+                                    })();
+                                </script>
                                 <div class="ak-height-35 ak-height-lg-20"></div>
                                 <div class="ak-center">
                                     <div class="ak-btn style-5 color-yellow-bg">
@@ -1219,38 +1272,38 @@ function decreaseValue() {
 </script>
 
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal" style="display:none;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius:16px;overflow:hidden;">
-                <div class="modal-header" style="border-bottom:0;">
-                    <h5 class="modal-title" style="font-weight:700;">Đăng nhập để tiếp tục</h5>
+<!-- Login Modal -->
+<div id="loginModal" class="modal" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;overflow:hidden;">
+      <div class="modal-header" style="border-bottom:0;">
+        <h5 class="modal-title" style="font-weight:700;">Đăng nhập để tiếp tục</h5>
                     <button type="button" class="close" onclick="closeLoginModal()"
                         style="font-size:2rem;">&times;</button>
-                </div>
-                <div class="modal-body" style="padding:32px;">
-                    <form id="loginForm" method="post" action="/login">
-                        <div class="form-group">
+      </div>
+      <div class="modal-body" style="padding:32px;">
+        <form id="loginForm" method="post" action="/login">
+          <div class="form-group">
                             <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập"
                                 required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block" style="width:100%;">Đăng nhập</button>
-                    </form>
-                    <div style="margin-top:16px;">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" style="width:100%;">Đăng nhập</button>
+        </form>
+        <div style="margin-top:16px;">
                         <a href="/oauth2/authorization/google" class="btn btn-danger btn-block" style="width:100%;">Đăng
                             nhập với Google</a>
-                    </div>
-                </div>
-            </div>
         </div>
+      </div>
     </div>
-    <!-- End Login Modal -->
+  </div>
+</div>
+<!-- End Login Modal -->
 
-    <style>
-        .modal {
+<style>
+.modal {
             position: fixed;
             z-index: 9999;
             left: 0;
@@ -1268,7 +1321,6 @@ function decreaseValue() {
             width: 100%;
         }
 
-<<<<<<< HEAD
 .custom-input-separated {
   background: #ececec !important;
   border-radius: 10px !important;
@@ -1385,6 +1437,38 @@ function decreaseValue() {
     color: #ddd !important;
 }
 
+/* CSS cho star rating form */
+.star-rating {
+    display: flex;
+    gap: 8px;
+}
+
+.star-rating .star {
+    font-size: 28px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+.star-rating .star:hover {
+    color: #FFD700;
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.star-rating .star.active {
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.star-rating .star:hover ~ .star {
+    color: #666;
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
 #avg-stars .material-icons {
     font-size: 20px;
 }
@@ -1397,96 +1481,7 @@ function decreaseValue() {
 </style>
 
 <script>
-// Giải pháp đột phá - sử dụng data attributes
-function updatePrice() {
-    console.log('updatePrice function called');
-    
-    var bookingTypeElement = document.getElementById('bookingType');
-    var priceDisplayElement = document.getElementById('roomPriceDisplay');
-    
-    if (!bookingTypeElement || !priceDisplayElement) {
-        console.log('Missing elements for price calculation');
-        return;
-    }
-    
-    var bookingType = bookingTypeElement.value;
-    console.log('Booking type:', bookingType);
-    
-    // Debug: Kiểm tra raw data attributes
-    console.log('Raw data attributes:');
-    console.log('data-gia-gio:', priceDisplayElement.getAttribute('data-gia-gio'));
-    console.log('data-gia-ngay:', priceDisplayElement.getAttribute('data-gia-ngay'));
-    console.log('data-gia-dem:', priceDisplayElement.getAttribute('data-gia-dem'));
-    
-    // Lấy giá từ data attributes
-    var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
-    var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
-    var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
-    
-    // Fallback nếu data attributes không có giá trị
-    if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
-        console.log('Data attributes are empty, using fallback values');
-        giaGio = 100000;
-        giaNgay = 800000;
-        giaDem = 600000;
-    }
-    
-    console.log('Final prices:', { giaGio: giaGio, giaNgay: giaNgay, giaDem: giaDem });
-    
-    // Map booking type to price
-    var basePrice;
-    var priceLabel;
-    if (bookingType === 'gio') {
-        basePrice = giaGio;
-        priceLabel = 'Giá giờ';
-    } else if (bookingType === 'dem') {
-        basePrice = giaDem;
-        priceLabel = 'Giá đêm';
-    } else {
-        basePrice = giaNgay;
-        priceLabel = 'Giá ngày';
-    }
-    
-    console.log('Price calculation:', { priceLabel: priceLabel, basePrice: basePrice });
-    
-    // Lấy số ngày và số phòng
-    var bookingQuantity = parseInt(document.getElementById('bookingQuantity').value) || 1;
-    var soPhong = parseInt(document.getElementById('soPhong').value) || 1;
-    
-    // Tính tổng tiền
-    var totalPrice = basePrice * bookingQuantity * soPhong;
-    
-    console.log('Total calculation:', { 
-        basePrice: basePrice, 
-        bookingQuantity: bookingQuantity, 
-        soPhong: soPhong, 
-        totalPrice: totalPrice 
-    });
-    
-    var formattedBasePrice = new Intl.NumberFormat('vi-VN').format(basePrice);
-    var formattedTotalPrice = new Intl.NumberFormat('vi-VN').format(totalPrice);
-    
-    priceDisplayElement.innerHTML = priceLabel + ': <span class="price-value">' + formattedBasePrice + '</span> VNĐ';
-    
-    // Cập nhật phần giá phòng trong form booking với tổng tiền
-    var roomPriceElement = document.getElementById('roomPrice');
-    if (roomPriceElement) {
-        roomPriceElement.textContent = formattedTotalPrice + ' VNĐ';
-        console.log('Updated roomPrice element:', roomPriceElement.textContent);
-    }
-    
-    // Tính và cập nhật tiền cọc (50% tổng tiền)
-    var depositAmount = Math.round(totalPrice * 0.5);
-    var formattedDepositAmount = new Intl.NumberFormat('vi-VN').format(depositAmount);
-    
-    var depositAmountElement = document.getElementById('depositAmount');
-    if (depositAmountElement) {
-        depositAmountElement.textContent = formattedDepositAmount + ' VNĐ';
-        console.log('Updated depositAmount element:', depositAmountElement.textContent);
-    }
-    
-    console.log('Final price set:', priceDisplayElement.innerHTML);
-}
+// Function đã được di chuyển xuống dưới để tránh trùng lặp
 
 function showLoginModal() {
   document.getElementById('loginModal').style.display = 'flex';
@@ -1533,30 +1528,68 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Pricing system initialized successfully!');
     
-    // ==================== XỬ LÝ ĐÁNH GIÁ ====================
+    // ====== XỬ LÝ ĐÁNH GIÁ ======
     
     // Load đánh giá khi trang load
     loadReviews();
     
     // Xử lý submit form đánh giá
+    console.log('Looking for review form and submit button...');
     var reviewForm = document.getElementById('reviewForm');
+    var submitBtn = document.getElementById('submitReviewBtn');
+    
+    console.log('Review form found:', !!reviewForm);
+    console.log('Submit button found:', !!submitBtn);
+    
     if (reviewForm) {
+        console.log('Setting up review form submit listener...');
         reviewForm.addEventListener('submit', function(e) {
+            console.log('Review form submitted!');
             e.preventDefault();
+            e.stopPropagation();
             submitReview();
+            return false;
         });
+    } else {
+        console.log('Review form not found!');
+    }
+    
+    // Thêm event listener trực tiếp cho button
+    if (submitBtn) {
+        console.log('Setting up submit button click listener...');
+        submitBtn.addEventListener('click', function(e) {
+            console.log('Submit button clicked!');
+            alert('Submit button clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            submitReview();
+            return false;
+        });
+    } else {
+        console.log('Submit button not found!');
     }
 });
 
 // Hàm load đánh giá
 function loadReviews() {
+    console.log('=== loadReviews function called ===');
     var roomTypeId = document.getElementById('roomTypeId').value;
-    if (!roomTypeId) return;
+    console.log('Room type ID:', roomTypeId);
+    
+    if (!roomTypeId) {
+        console.log('No room type ID found!');
+        return;
+    }
     
     // Load danh sách đánh giá
+    console.log('Fetching reviews from /khachhang/reviews/room/' + roomTypeId);
     fetch('/khachhang/reviews/room/' + roomTypeId)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(reviews => {
+            console.log('Reviews received:', reviews);
             displayReviews(reviews);
         })
         .catch(error => {
@@ -1576,10 +1609,19 @@ function loadReviews() {
 
 // Hàm hiển thị đánh giá
 function displayReviews(reviews) {
+    console.log('=== displayReviews function called ===');
+    console.log('Reviews to display:', reviews);
+    
     var reviewsList = document.getElementById('reviews-list');
     var reviewCount = document.getElementById('review-count');
     
-    if (!reviewsList || !reviewCount) return;
+    console.log('Reviews list found:', !!reviewsList);
+    console.log('Review count found:', !!reviewCount);
+    
+    if (!reviewsList || !reviewCount) {
+        console.log('Reviews list or review count not found!');
+        return;
+    }
     
     reviewCount.textContent = reviews.length;
     
@@ -1588,17 +1630,35 @@ function displayReviews(reviews) {
         return;
     }
     
+    console.log('Creating HTML for reviews...');
     var html = '';
     reviews.forEach(function(review) {
+        console.log('Processing review:', review);
         html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px;">';
         html += '<div class="d-flex justify-content-between align-items-start">';
         html += '<div>';
         html += '<h6 class="mb-1">' + (review.customerName || 'Khách hàng') + '</h6>';
         html += '<div class="stars mb-2">';
         for (var i = 0; i < 5; i++) {
-            var starClass = i < review.diemTongQuan ? 'star-filled' : 'star-empty';
+            var rating = review.diemTongQuan || review.rating || 0;
+            var starClass = i < rating ? 'star-filled' : 'star-empty';
             html += '<span class="material-icons ' + starClass + '">star</span>';
-=======
+        }
+        html += '</div>';
+        html += '<p class="text-white-50 small">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
+        html += '</div>';
+        html += '</div>';
+        if (review.binhLuan) {
+            html += '<p class="text-white mt-2">' + review.binhLuan + '</p>';
+        }
+        html += '</div>';
+    });
+    
+    console.log('HTML created:', html);
+    reviewsList.innerHTML = html;
+    console.log('Reviews displayed successfully!');
+}
+
 .custom-input-separated {
   background: #ececec !important;
   border-radius: 10px !important;
@@ -1614,7 +1674,6 @@ function displayReviews(reviews) {
   display: block !important;
   position: relative !important;
   z-index: 2 !important;
->>>>>>> 6a4c3c738072542223cd3a1c864c9f3b7e6838a3
 }
 
 .custom-input-separated:focus {
@@ -1622,7 +1681,6 @@ function displayReviews(reviews) {
   background: #f5f5f5 !important;
 }
 
-<<<<<<< HEAD
 // Hàm hiển thị điểm trung bình
 function displayAverageRating(averageRating) {
     var avgRatingDisplay = document.getElementById('avg-rating-display');
@@ -1644,12 +1702,145 @@ function displayAverageRating(averageRating) {
     }
 }
 
+// Hàm xử lý star rating
+function initializeStarRating() {
+    console.log('Initializing star rating...');
+    const starRatings = document.querySelectorAll('.star-rating');
+    console.log('Found star ratings:', starRatings.length);
+    
+    starRatings.forEach(function(ratingContainer, containerIndex) {
+        const stars = ratingContainer.querySelectorAll('.star');
+        const hiddenInput = ratingContainer.querySelector('input[type="hidden"]');
+        
+        console.log('Container', containerIndex, 'has', stars.length, 'stars');
+        
+        stars.forEach(function(star, index) {
+            // Click event
+            star.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const value = parseInt(star.getAttribute('data-value'));
+                console.log('Star clicked:', value, 'for', hiddenInput.name);
+                
+                hiddenInput.value = value;
+                
+                // Cập nhật hiển thị sao
+                stars.forEach(function(s, i) {
+                    if (i < value) {
+                        s.classList.add('active');
+                        s.style.color = '#FFD700';
+                    } else {
+                        s.classList.remove('active');
+                        s.style.color = '#666';
+                    }
+                });
+                
+                console.log('Updated rating for', hiddenInput.name, 'to:', value);
+            });
+            
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                const value = parseInt(star.getAttribute('data-value'));
+                stars.forEach(function(s, i) {
+                    if (i < value) {
+                        s.style.color = '#FFD700';
+                        s.style.transform = 'scale(1.1)';
+                    } else {
+                        s.style.color = '#666';
+                        s.style.transform = 'scale(1)';
+                    }
+                });
+            });
+            
+            // Mouse leave individual star
+            star.addEventListener('mouseleave', function() {
+                const currentValue = parseInt(hiddenInput.value) || 0;
+                stars.forEach(function(s, i) {
+                    if (i < currentValue) {
+                        s.style.color = '#FFD700';
+                        s.style.transform = 'scale(1)';
+                    } else {
+                        s.style.color = '#666';
+                        s.style.transform = 'scale(1)';
+                    }
+                });
+            });
+        });
+        
+        // Reset hover effect khi mouse leave container
+        ratingContainer.addEventListener('mouseleave', function() {
+            const currentValue = parseInt(hiddenInput.value) || 0;
+            stars.forEach(function(s, i) {
+                if (i < currentValue) {
+                    s.style.color = '#FFD700';
+                    s.style.transform = 'scale(1)';
+                } else {
+                    s.style.color = '#666';
+                    s.style.transform = 'scale(1)';
+                }
+            });
+        });
+    });
+}
+
+// Khởi tạo star rating ngay lập tức
+console.log('Script loaded, initializing star rating...');
+console.log('DOM ready state:', document.readyState);
+console.log('Review form exists:', !!document.getElementById('reviewForm'));
+console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+initializeStarRating();
+
+// Khởi tạo star rating khi DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM ready, initializing star rating...');
+    console.log('DOM ready state:', document.readyState);
+    console.log('Review form exists:', !!document.getElementById('reviewForm'));
+    console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    initializeStarRating();
+});
+
+// Gọi lại sau 500ms và 1s để đảm bảo
+setTimeout(function() {
+    console.log('Timeout 500ms: re-initializing star rating...');
+    console.log('DOM ready state:', document.readyState);
+    console.log('Review form exists:', !!document.getElementById('reviewForm'));
+    console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    initializeStarRating();
+}, 500);
+
+setTimeout(function() {
+    console.log('Timeout 1s: re-initializing star rating...');
+    console.log('DOM ready state:', document.readyState);
+    console.log('Review form exists:', !!document.getElementById('reviewForm'));
+    console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    initializeStarRating();
+}, 1000);
+
+// Gọi lại khi window load
+window.addEventListener('load', function() {
+    console.log('Window loaded, initializing star rating...');
+    console.log('DOM ready state:', document.readyState);
+    console.log('Review form exists:', !!document.getElementById('reviewForm'));
+    console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    initializeStarRating();
+});
+
 // Hàm submit đánh giá
 function submitReview() {
+    console.log('=== submitReview function called ===');
+    alert('submitReview function called!');
+    
     var form = document.getElementById('reviewForm');
     var submitBtn = document.getElementById('submitReviewBtn');
     
-    if (!form || !submitBtn) return;
+    console.log('Form found:', !!form);
+    console.log('Submit button found:', !!submitBtn);
+    
+    if (!form || !submitBtn) {
+        console.log('Form or submit button not found!');
+        return;
+    }
     
     // Disable button để tránh double submit
     submitBtn.disabled = true;
@@ -1660,31 +1851,73 @@ function submitReview() {
     var reviewData = {
         customerName: formData.get('customerName'),
         customerEmail: formData.get('customerEmail'),
-        diemTongQuan: parseInt(formData.get('diemTongQuan')),
         diemSachSe: parseInt(formData.get('diemSachSe')),
         diemDichVu: parseInt(formData.get('diemDichVu')),
-        diemViTri: parseInt(formData.get('diemViTri')),
         diemGiaCa: parseInt(formData.get('diemGiaCa')),
         binhLuan: formData.get('binhLuan'),
         roomTypeId: parseInt(formData.get('roomTypeId')),
         bookingId: parseInt(formData.get('bookingId')) || 1 // Fallback nếu không có booking ID
     };
     
+    console.log('Review data to submit:', reviewData);
+    console.log('Form elements check:');
+    console.log('- customerName:', reviewData.customerName);
+    console.log('- customerEmail:', reviewData.customerEmail);
+    console.log('- diemSachSe:', reviewData.diemSachSe);
+    console.log('- diemDichVu:', reviewData.diemDichVu);
+    console.log('- diemGiaCa:', reviewData.diemGiaCa);
+    console.log('- binhLuan:', reviewData.binhLuan);
+    console.log('- roomTypeId:', reviewData.roomTypeId);
+    console.log('- bookingId:', reviewData.bookingId);
+    
     // Validation
+    console.log('Validating review data...');
+    console.log('Customer name:', reviewData.customerName);
+    console.log('Customer email:', reviewData.customerEmail);
+    console.log('Diem sach se:', reviewData.diemSachSe);
+    console.log('Diem dich vu:', reviewData.diemDichVu);
+    console.log('Diem gia ca:', reviewData.diemGiaCa);
+    
     if (!reviewData.customerName || !reviewData.customerEmail) {
+        console.log('Validation failed - missing customer info');
         alert('Vui lòng nhập đầy đủ họ tên và email!');
-        resetSubmitButton();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
         return;
     }
     
-    if (!reviewData.diemTongQuan || !reviewData.diemSachSe || !reviewData.diemDichVu || 
-        !reviewData.diemViTri || !reviewData.diemGiaCa) {
-        alert('Vui lòng chọn đầy đủ điểm đánh giá!');
-        resetSubmitButton();
+    // Validation cho star rating
+    if (!reviewData.diemSachSe || reviewData.diemSachSe < 1 || reviewData.diemSachSe > 5) {
+        console.log('Validation failed - diemSachSe invalid:', reviewData.diemSachSe);
+        alert('Vui lòng chọn điểm đánh giá cho tiêu chí Sạch sẽ!');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
         return;
     }
+    
+    if (!reviewData.diemDichVu || reviewData.diemDichVu < 1 || reviewData.diemDichVu > 5) {
+        console.log('Validation failed - diemDichVu invalid:', reviewData.diemDichVu);
+        alert('Vui lòng chọn điểm đánh giá cho tiêu chí Dịch vụ!');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
+        return;
+    }
+    
+    if (!reviewData.diemGiaCa || reviewData.diemGiaCa < 1 || reviewData.diemGiaCa > 5) {
+        console.log('Validation failed - diemGiaCa invalid:', reviewData.diemGiaCa);
+        alert('Vui lòng chọn điểm đánh giá cho tiêu chí Giá cả!');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
+        return;
+    }
+    
+    console.log('All validations passed!');
+    
     
     // Gửi request
+    console.log('Sending request to /khachhang/reviews/create');
+    console.log('Request data:', reviewData);
+    
     fetch('/khachhang/reviews/create', {
         method: 'POST',
         headers: {
@@ -1694,19 +1927,157 @@ function submitReview() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Review submission response:', data);
         if (data.success) {
             alert(data.message);
             form.reset();
             loadReviews(); // Reload đánh giá
         } else {
             alert(data.message);
-=======
-/* Đảm bảo các nút và input trong form đặt phòng hiển thị đúng */
-.booking-widget-inner .form-group {
-  position: relative;
-  z-index: 2;
-  margin-bottom: 15px;
->>>>>>> 6a4c3c738072542223cd3a1c864c9f3b7e6838a3
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting review:', error);
+        alert('Có lỗi xảy ra khi gửi đánh giá!');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gửi đánh giá';
+    });
+}
+
+// Hàm load đánh giá
+function loadReviews() {
+    console.log('Loading reviews...');
+    var roomTypeId = document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 1;
+    
+    fetch('/khachhang/reviews/room/' + roomTypeId)
+        .then(response => response.json())
+        .then(reviews => {
+            console.log('Loaded reviews:', reviews);
+            displayReviews(reviews);
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+        });
+}
+
+// Hàm hiển thị đánh giá
+function displayReviews(reviews) {
+    var reviewsList = document.getElementById('reviews-list');
+    var reviewCount = document.getElementById('review-count');
+    
+    if (!reviewsList || !reviewCount) {
+        console.log('Reviews elements not found');
+        return;
+    }
+    
+    if (!reviews || reviews.length === 0) {
+        reviewsList.innerHTML = '<p class="text-white">Chưa có đánh giá nào.</p>';
+        reviewCount.textContent = '0';
+        return;
+    }
+    
+    reviewCount.textContent = reviews.length;
+    
+    var html = '';
+    reviews.forEach(function(review) {
+        html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1);">';
+        html += '<div class="d-flex justify-content-between align-items-start">';
+        html += '<div>';
+        html += '<h6 class="text-white">' + (review.customerName || 'Khách hàng') + '</h6>';
+        html += '<div class="stars mb-2">';
+        
+        // Hiển thị sao
+        for (var i = 1; i <= 5; i++) {
+            var starClass = i <= review.diemTongQuan ? 'star-filled' : 'star-empty';
+            html += '<span class="material-icons ' + starClass + '">star</span>';
+        }
+        
+        html += '</div>';
+        html += '<p class="text-white-50 small">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
+        html += '</div>';
+        html += '</div>';
+        if (review.binhLuan) {
+            html += '<p class="text-white mt-2">' + review.binhLuan + '</p>';
+        }
+        html += '</div>';
+    });
+    
+    reviewsList.innerHTML = html;
+}
+
+// Load đánh giá khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, testing review API...');
+    testReviewAPI();
+});
+
+// Gọi lại sau 2 giây để đảm bảo
+setTimeout(function() {
+    console.log('Timeout 2s, calling testReviewAPI...');
+    testReviewAPI();
+}, 2000);
+
+// Function test API đánh giá
+function testReviewAPI() {
+    var roomTypeId = document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 1;
+    console.log('Testing API for roomTypeId:', roomTypeId);
+    
+    // Test API endpoint
+    fetch('/khachhang/reviews/room/' + roomTypeId)
+        .then(response => {
+            console.log('API Response status:', response.status);
+            return response.json();
+        })
+        .then(reviews => {
+            console.log('API Response data:', reviews);
+            console.log('Number of reviews:', reviews.length);
+            
+            // Hiển thị đánh giá
+            var reviewsList = document.getElementById('reviews-list');
+            var reviewCount = document.getElementById('review-count');
+            
+            if (reviewsList && reviewCount) {
+                reviewCount.textContent = reviews.length;
+                
+                if (reviews.length === 0) {
+                    reviewsList.innerHTML = '<p class="text-white">Chưa có đánh giá nào.</p>';
+                } else {
+                    var html = '';
+                    reviews.forEach(function(review, index) {
+                        console.log('Review', index, ':', review);
+                        html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1);">';
+                        html += '<div class="d-flex justify-content-between align-items-start">';
+                        html += '<div>';
+                        html += '<h6 class="text-white">' + (review.customerName || 'Khách hàng') + '</h6>';
+                        html += '<div class="stars mb-2">';
+                        
+                        // Hiển thị sao
+                        for (var i = 1; i <= 5; i++) {
+                            var starClass = i <= review.diemTongQuan ? 'star-filled' : 'star-empty';
+                            html += '<span class="material-icons ' + starClass + '">star</span>';
+                        }
+                        
+                        html += '</div>';
+                        html += '<p class="text-white-50 small">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
+                        html += '</div>';
+                        html += '</div>';
+                        if (review.binhLuan) {
+                            html += '<p class="text-white mt-2">' + review.binhLuan + '</p>';
+                        }
+                        html += '</div>';
+                    });
+                    
+                    reviewsList.innerHTML = html;
+                }
+            } else {
+                console.log('Reviews elements not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error testing review API:', error);
+        });
 }
 
 .booking-widget-inner .increase-decrease {
@@ -1804,95 +2175,17 @@ function submitReview() {
 </style>
 
 <script>
-        // Giải pháp đột phá - sử dụng data attributes
-        function updatePrice() {
-            console.log('updatePrice function called');
-
-            var bookingTypeElement = document.getElementById('bookingType');
-            var priceDisplayElement = document.getElementById('roomPriceDisplay');
-
-            if (!bookingTypeElement || !priceDisplayElement) {
-                console.log('Missing elements for price calculation');
-                return;
-            }
-
-            var bookingType = bookingTypeElement.value;
-            console.log('Booking type:', bookingType);
-
-            // Debug: Kiểm tra raw data attributes
-            console.log('Raw data attributes:');
-            console.log('data-gia-gio:', priceDisplayElement.getAttribute('data-gia-gio'));
-            console.log('data-gia-ngay:', priceDisplayElement.getAttribute('data-gia-ngay'));
-            console.log('data-gia-dem:', priceDisplayElement.getAttribute('data-gia-dem'));
-
-            // Lấy giá từ data attributes
-            var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
-            var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
-            var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
-
-            // Fallback nếu data attributes không có giá trị
-            if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
-                console.log('Data attributes are empty, using fallback values');
-                giaGio = 100000;
-                giaNgay = 800000;
-                giaDem = 600000;
-            }
-
-            console.log('Final prices:', { giaGio: giaGio, giaNgay: giaNgay, giaDem: giaDem });
-
-            // Map booking type to price
-            var basePrice;
-            var priceLabel;
-            if (bookingType === 'gio') {
-                basePrice = giaGio;
-                priceLabel = 'Giá giờ';
-            } else if (bookingType === 'dem') {
-                basePrice = giaDem;
-                priceLabel = 'Giá đêm';
+        // Function để cập nhật giá từ database
+function updatePrice() {
+            console.log('=== updatePrice function called ===');
+            
+            // Gọi function setPriceFromDatabase nếu có
+            if (typeof setPriceFromDatabase === 'function') {
+                setPriceFromDatabase();
             } else {
-                basePrice = giaNgay;
-                priceLabel = 'Giá ngày';
+                // Fallback
+                setPrice();
             }
-
-            console.log('Price calculation:', { priceLabel: priceLabel, basePrice: basePrice });
-
-            // Lấy số ngày và số phòng
-            var bookingQuantity = parseInt(document.getElementById('bookingQuantity').value) || 1;
-            var soPhong = parseInt(document.getElementById('soPhong').value) || 1;
-
-            // Tính tổng tiền
-            var totalPrice = basePrice * bookingQuantity * soPhong;
-
-            console.log('Total calculation:', {
-                basePrice: basePrice,
-                bookingQuantity: bookingQuantity,
-                soPhong: soPhong,
-                totalPrice: totalPrice
-            });
-
-            var formattedBasePrice = new Intl.NumberFormat('vi-VN').format(basePrice);
-            var formattedTotalPrice = new Intl.NumberFormat('vi-VN').format(totalPrice);
-
-            priceDisplayElement.innerHTML = priceLabel + ': <span class="price-value">' + formattedBasePrice + '</span> VNĐ';
-
-            // Cập nhật phần giá phòng trong form booking với tổng tiền
-            var roomPriceElement = document.getElementById('roomPrice');
-            if (roomPriceElement) {
-                roomPriceElement.textContent = formattedTotalPrice + ' VNĐ';
-                console.log('Updated roomPrice element:', roomPriceElement.textContent);
-            }
-            
-            // Tính và cập nhật tiền cọc (50% tổng tiền)
-            var depositAmount = Math.round(totalPrice * 0.5);
-            var formattedDepositAmount = new Intl.NumberFormat('vi-VN').format(depositAmount);
-            
-            var depositAmountElement = document.getElementById('depositAmount');
-            if (depositAmountElement) {
-                depositAmountElement.textContent = formattedDepositAmount + ' VNĐ';
-                console.log('Updated depositAmount element:', depositAmountElement.textContent);
-            }
-
-            console.log('Final price set:', priceDisplayElement.innerHTML);
         }
 
 function showLoginModal() {
@@ -1907,52 +2200,71 @@ function closeLoginModal() {
         document.addEventListener('DOMContentLoaded', function () {
             console.log('DOM loaded, initializing pricing...');
 
-            // Cập nhật giá ban đầu
+            // Function đơn giản để set giá mặc định
+            function setDefaultPrices() {
+                console.log('Setting default prices...');
+                var roomPriceElement = document.getElementById('roomPrice');
+                var depositAmountElement = document.getElementById('depositAmount');
+                
+                if (roomPriceElement) {
+                    roomPriceElement.textContent = '1,500,000 VNĐ';
+                    console.log('Set roomPrice to: 1,500,000 VNĐ');
+                } else {
+                    console.log('roomPrice element not found!');
+                }
+                
+                if (depositAmountElement) {
+                    depositAmountElement.textContent = '750,000 VNĐ';
+                    console.log('Set depositAmount to: 750,000 VNĐ');
+                } else {
+                    console.log('depositAmount element not found!');
+                }
+            }
+
+            // Set giá ngay lập tức
+            setDefaultPrices();
+
+            // Gọi updatePrice ngay lập tức
             updatePrice();
+
+            // Gọi lại sau 500ms để đảm bảo
+            setTimeout(function() {
+                console.log('Calling updatePrice after 500ms...');
+                updatePrice();
+            }, 500);
 
             // Thêm event listener cho booking type
             var bookingTypeElement = document.getElementById('bookingType');
-
             if (bookingTypeElement) {
-                bookingTypeElement.addEventListener('change', function () {
-                    console.log('Booking type changed to:', this.value);
-                    updatePrice();
-                });
+                bookingTypeElement.addEventListener('change', updatePrice);
+                console.log('Added event listener for bookingType');
             }
 
-            // Thêm event listener cho số ngày
+            // Thêm event listener cho booking quantity
             var bookingQuantityElement = document.getElementById('bookingQuantity');
             if (bookingQuantityElement) {
-                bookingQuantityElement.addEventListener('input', function () {
-                    console.log('Booking quantity changed to:', this.value);
-                    updatePrice();
-                });
+                bookingQuantityElement.addEventListener('input', updatePrice);
+                bookingQuantityElement.addEventListener('change', updatePrice);
+                console.log('Added event listener for bookingQuantity');
             }
 
-            // Thêm event listener cho số phòng
+            // Thêm event listener cho soPhong
             var soPhongElement = document.getElementById('soPhong');
             if (soPhongElement) {
-                soPhongElement.addEventListener('change', function () {
-                    console.log('Number of rooms changed to:', this.value);
-                    updatePrice();
-                });
+                soPhongElement.addEventListener('input', updatePrice);
+                soPhongElement.addEventListener('change', updatePrice);
+                console.log('Added event listener for soPhong');
             }
+
+            // Event listeners đã được thêm ở trên
 
             console.log('Pricing system initialized successfully!');
 
-            // ==================== XỬ LÝ ĐÁNH GIÁ ====================
+            // ====== XỬ LÝ ĐÁNH GIÁ ======
 
             // Load đánh giá khi trang load
             loadReviews();
 
-            // Xử lý submit form đánh giá
-            var reviewForm = document.getElementById('reviewForm');
-            if (reviewForm) {
-                reviewForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    submitReview();
-                });
-            }
         });
 
         // Hàm load đánh giá
@@ -2033,72 +2345,6 @@ function closeLoginModal() {
             }
         }
 
-        // Hàm submit đánh giá
-        function submitReview() {
-            var form = document.getElementById('reviewForm');
-            var submitBtn = document.getElementById('submitReviewBtn');
-
-            if (!form || !submitBtn) return;
-
-            // Disable button để tránh double submit
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Đang gửi...';
-
-            // Lấy dữ liệu form
-            var formData = new FormData(form);
-            var reviewData = {
-                customerName: formData.get('customerName'),
-                customerEmail: formData.get('customerEmail'),
-                diemTongQuan: parseInt(formData.get('diemTongQuan')),
-                diemSachSe: parseInt(formData.get('diemSachSe')),
-                diemDichVu: parseInt(formData.get('diemDichVu')),
-                diemViTri: parseInt(formData.get('diemViTri')),
-                diemGiaCa: parseInt(formData.get('diemGiaCa')),
-                binhLuan: formData.get('binhLuan'),
-                roomTypeId: parseInt(formData.get('roomTypeId')),
-                bookingId: parseInt(formData.get('bookingId')) || 1 // Fallback nếu không có booking ID
-            };
-
-            // Validation
-            if (!reviewData.customerName || !reviewData.customerEmail) {
-                alert('Vui lòng nhập đầy đủ họ tên và email!');
-                resetSubmitButton();
-                return;
-            }
-
-            if (!reviewData.diemTongQuan || !reviewData.diemSachSe || !reviewData.diemDichVu ||
-                !reviewData.diemViTri || !reviewData.diemGiaCa) {
-                alert('Vui lòng chọn đầy đủ điểm đánh giá!');
-                resetSubmitButton();
-                return;
-            }
-
-            // Gửi request
-            fetch('/khachhang/reviews/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(reviewData)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        form.reset();
-                        loadReviews(); // Reload đánh giá
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting review:', error);
-                    alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!');
-                })
-                .finally(() => {
-                    resetSubmitButton();
-                });
-        }
 
         // Hàm reset button submit
         function resetSubmitButton() {
@@ -2114,8 +2360,305 @@ function closeLoginModal() {
             if (!dateString) return '';
             var date = new Date(dateString);
             return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Function để lấy giá từ database và tính toán
+        function setPrice() {
+            console.log('setPrice function called - getting real data from database');
+            
+            // Lấy giá từ data attributes
+            var priceDisplayElement = document.getElementById('roomPriceDisplay');
+            var bookingTypeElement = document.getElementById('bookingType');
+            var bookingQuantityElement = document.getElementById('bookingQuantity');
+            var soPhongElement = document.getElementById('soPhong');
+            
+            if (!priceDisplayElement) {
+                console.log('priceDisplayElement not found, using defaults');
+                setDefaultPrices();
+                return;
+            }
+            
+            // Lấy giá từ data attributes
+            var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
+            var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
+            var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
+            
+            console.log('Prices from database:', { giaGio, giaNgay, giaDem });
+            
+            // Nếu không có giá từ database, dùng giá mặc định
+            if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
+                console.log('No database prices, using fallback values');
+                giaGio = 100000;
+                giaNgay = 800000;
+                giaDem = 600000;
+            }
+            
+            // Lấy loại booking và số lượng
+            var bookingType = bookingTypeElement ? bookingTypeElement.value : 'ngay';
+            var bookingQuantity = bookingQuantityElement ? parseInt(bookingQuantityElement.value) || 1 : 1;
+            var soPhong = soPhongElement ? parseInt(soPhongElement.value) || 1 : 1;
+            
+            console.log('Booking details:', { bookingType, bookingQuantity, soPhong });
+            
+            // Tính giá theo loại booking
+            var basePrice;
+            if (bookingType === 'gio') {
+                basePrice = giaGio;
+            } else if (bookingType === 'dem') {
+                basePrice = giaDem;
+            } else {
+                basePrice = giaNgay;
+            }
+            
+            // Tính tổng tiền
+            var totalPrice = basePrice * bookingQuantity * soPhong;
+            var depositAmount = Math.round(totalPrice * 0.5);
+            
+            console.log('Calculated prices:', { basePrice, totalPrice, depositAmount });
+            
+            // Cập nhật hiển thị
+            var roomPriceElement = document.getElementById('roomPrice');
+            var depositAmountElement = document.getElementById('depositAmount');
+            
+            if (roomPriceElement) {
+                roomPriceElement.textContent = totalPrice.toLocaleString('vi-VN') + ' VNĐ';
+                console.log('Updated roomPrice to:', roomPriceElement.textContent);
+            }
+            
+            if (depositAmountElement) {
+                depositAmountElement.textContent = depositAmount.toLocaleString('vi-VN') + ' VNĐ';
+                console.log('Updated depositAmount to:', depositAmountElement.textContent);
+            }
+        }
+        
+        // Function fallback nếu không lấy được data
+        function setDefaultPrices() {
+            console.log('Using default prices');
+            var roomPriceElement = document.getElementById('roomPrice');
+            var depositAmountElement = document.getElementById('depositAmount');
+            
+            if (roomPriceElement) {
+                roomPriceElement.textContent = '1,500,000 VNĐ';
+            }
+            
+            if (depositAmountElement) {
+                depositAmountElement.textContent = '750,000 VNĐ';
+            }
 }
 </script>
+
+<!-- Script đơn giản để set giá ngay lập tức -->
+<script>
+    // Function để set giá từ database
+    function setPriceFromDatabase() {
+        console.log('setPriceFromDatabase called');
+        
+        var priceDisplayElement = document.getElementById('roomPriceDisplay');
+        if (!priceDisplayElement) {
+            console.log('priceDisplayElement not found');
+            return;
+        }
+        
+        var giaGio = parseFloat(priceDisplayElement.getAttribute('data-gia-gio')) || 0;
+        var giaNgay = parseFloat(priceDisplayElement.getAttribute('data-gia-ngay')) || 0;
+        var giaDem = parseFloat(priceDisplayElement.getAttribute('data-gia-dem')) || 0;
+        
+        console.log('Database prices:', { giaGio, giaNgay, giaDem });
+        
+        if (giaGio === 0 && giaNgay === 0 && giaDem === 0) {
+            console.log('No database prices, using fallback');
+            giaGio = 100000;
+            giaNgay = 800000;
+            giaDem = 600000;
+        }
+        
+        var bookingTypeElement = document.getElementById('bookingType');
+        var bookingQuantityElement = document.getElementById('bookingQuantity');
+        var soPhongElement = document.getElementById('soPhong');
+        
+        var bookingType = bookingTypeElement ? bookingTypeElement.value : 'ngay';
+        var bookingQuantity = bookingQuantityElement ? parseInt(bookingQuantityElement.value) || 1 : 1;
+        var soPhong = soPhongElement ? parseInt(soPhongElement.value) || 1 : 1;
+        
+        var basePrice;
+        if (bookingType === 'gio') {
+            basePrice = giaGio;
+        } else if (bookingType === 'dem') {
+            basePrice = giaDem;
+        } else {
+            basePrice = giaNgay;
+        }
+        
+        var totalPrice = basePrice * bookingQuantity * soPhong;
+        var depositAmount = Math.round(totalPrice * 0.5);
+        
+        console.log('Final calculation:', { basePrice, totalPrice, depositAmount });
+        
+        var roomPriceElement = document.getElementById('roomPrice');
+        var depositAmountElement = document.getElementById('depositAmount');
+        var roomPriceDisplayElement = document.getElementById('roomPriceDisplay');
+        
+        if (roomPriceElement) {
+            roomPriceElement.textContent = totalPrice.toLocaleString('vi-VN') + ' VNĐ';
+            console.log('Updated roomPrice');
+        }
+        
+        if (depositAmountElement) {
+            depositAmountElement.textContent = depositAmount.toLocaleString('vi-VN') + ' VNĐ';
+            console.log('Updated depositAmount');
+        }
+        
+        // Cập nhật phần giá ở trên
+        if (roomPriceDisplayElement) {
+            var priceLabel = bookingType === 'gio' ? 'Giá giờ' : (bookingType === 'dem' ? 'Giá đêm' : 'Giá ngày');
+            roomPriceDisplayElement.innerHTML = priceLabel + ': <span style="color: #FFD28D; font-weight: bold;">' + basePrice.toLocaleString('vi-VN') + ' VNĐ</span>';
+            console.log('Updated roomPriceDisplay');
+        }
+    }
+    
+    // Gọi ngay lập tức
+    setPriceFromDatabase();
+    
+    // Gọi khi DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setPriceFromDatabase);
+    } else {
+        setPriceFromDatabase();
+    }
+    
+    // Gọi lại sau 500ms và 1s để đảm bảo
+    setTimeout(setPriceFromDatabase, 500);
+    setTimeout(setPriceFromDatabase, 1000);
+    
+    // Thêm event listeners để cập nhật giá khi thay đổi
+    document.addEventListener('DOMContentLoaded', function() {
+        var bookingTypeElement = document.getElementById('bookingType');
+        var bookingQuantityElement = document.getElementById('bookingQuantity');
+        var soPhongElement = document.getElementById('soPhong');
+        
+        if (bookingTypeElement) {
+            bookingTypeElement.addEventListener('change', setPriceFromDatabase);
+            console.log('Added event listener for bookingType');
+        }
+        
+        if (bookingQuantityElement) {
+            bookingQuantityElement.addEventListener('input', setPriceFromDatabase);
+            bookingQuantityElement.addEventListener('change', setPriceFromDatabase);
+            console.log('Added event listener for bookingQuantity');
+        }
+        
+        if (soPhongElement) {
+            soPhongElement.addEventListener('change', setPriceFromDatabase);
+            console.log('Added event listener for soPhong');
+        }
+    });
+</script>
+
+<!-- Script đơn giản để khởi tạo star rating -->
+<script>
+    // Function đơn giản để khởi tạo star rating
+    function initStars() {
+        console.log('=== INIT STARS FUNCTION ===');
+        
+        // Tìm tất cả star rating containers
+        var starContainers = document.querySelectorAll('.star-rating');
+        console.log('Found star containers:', starContainers.length);
+        
+        starContainers.forEach(function(container, index) {
+            console.log('Processing container', index);
+            
+            var stars = container.querySelectorAll('.star');
+            var hiddenInput = container.querySelector('input[type="hidden"]');
+            
+            console.log('Container', index, 'has', stars.length, 'stars');
+            console.log('Hidden input:', hiddenInput ? hiddenInput.name : 'NOT FOUND');
+            
+            if (!hiddenInput) {
+                console.log('No hidden input found for container', index);
+                return;
+            }
+            
+            // Thêm click event cho mỗi sao
+            stars.forEach(function(star, starIndex) {
+                console.log('Adding click event to star', starIndex + 1);
+                
+                star.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    var value = parseInt(star.getAttribute('data-value'));
+                    console.log('Star clicked! Value:', value, 'for', hiddenInput.name);
+                    
+                    // Cập nhật hidden input
+                    hiddenInput.value = value;
+                    
+                    // Cập nhật hiển thị
+                    stars.forEach(function(s, i) {
+                        if (i < value) {
+                            s.style.color = '#FFD700';
+                            s.classList.add('active');
+                        } else {
+                            s.style.color = '#666';
+                            s.classList.remove('active');
+                        }
+                    });
+                    
+                    console.log('Updated rating to:', value);
+                });
+                
+                // Hover effect
+                star.addEventListener('mouseenter', function() {
+                    var value = parseInt(star.getAttribute('data-value'));
+                    stars.forEach(function(s, i) {
+                        if (i < value) {
+                            s.style.color = '#FFD700';
+                            s.style.transform = 'scale(1.1)';
+                        } else {
+                            s.style.color = '#666';
+                            s.style.transform = 'scale(1)';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseleave', function() {
+                    var currentValue = parseInt(hiddenInput.value) || 0;
+                    stars.forEach(function(s, i) {
+                        if (i < currentValue) {
+                            s.style.color = '#FFD700';
+                            s.style.transform = 'scale(1)';
+                        } else {
+                            s.style.color = '#666';
+                            s.style.transform = 'scale(1)';
+                        }
+                    });
+                });
+            });
+        });
+    }
+    
+    // Gọi function ngay lập tức
+    console.log('Calling initStars immediately...');
+    initStars();
+    
+    // Gọi khi DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM ready, calling initStars...');
+        initStars();
+    });
+    
+    // Gọi sau 1 giây
+    setTimeout(function() {
+        console.log('Timeout 1s, calling initStars...');
+        initStars();
+    }, 1000);
+    
+    // Gọi sau 2 giây
+    setTimeout(function() {
+        console.log('Timeout 2s, calling initStars...');
+        initStars();
+    }, 2000);
+</script>
+
 </body>
 
 

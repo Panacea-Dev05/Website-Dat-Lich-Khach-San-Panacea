@@ -684,9 +684,6 @@ function showInvoiceModal(invoiceContent) {
     return;
   }
 
-  // Escape HTML to prevent XSS
-  const escapedContent = $("<div>").text(invoiceContent).html();
-
   // Check if content is HTML or plain text
   const isHTML = invoiceContent.includes('<!DOCTYPE html>') || invoiceContent.includes('<html>');
   
@@ -701,7 +698,7 @@ function showInvoiceModal(invoiceContent) {
                         </button>
                     </div>
                     <div class="modal-body">
-                        ${isHTML ? invoiceContent : `<pre style="white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto;">${escapedContent}</pre>`}
+                        ${isHTML ? invoiceContent : `<pre style="white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto;">${$("<div>").text(invoiceContent).html()}</pre>`}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="printInvoiceContent()">In hóa đơn</button>
@@ -869,17 +866,12 @@ function showPaymentDetailModal(payment) {
 
 function printInvoiceContent() {
   try {
-    // Get content from modal - check if it's HTML or text
+    // Get content from modal
     const modalBody = $("#invoiceModal .modal-body");
-    let content;
-    
-    if (modalBody.find("pre").length > 0) {
-      // Plain text content
-      content = modalBody.find("pre").text();
-    } else {
-      // HTML content
-      content = modalBody.html();
-    }
+    let content = modalBody.html();
+
+    console.log("Content to print:", content);
+    console.log("Content length:", content.length);
 
     if (!content || content.trim() === "") {
       showError("Không có nội dung hóa đơn để in");
@@ -893,23 +885,29 @@ function printInvoiceContent() {
       return;
     }
 
-    // Check if content is HTML or plain text
-    const isHTML = content.includes('<!DOCTYPE html>') || content.includes('<html>');
+    // Check if content is HTML or plain text by looking at the actual content
+    const isHTML = content.includes('<!DOCTYPE html>') || content.includes('<html>') || content.includes('<div class="invoice-container">');
+    
+    console.log("Is HTML:", isHTML);
     
     if (isHTML) {
       // Content is already HTML, display it directly
+      console.log("Printing HTML content directly");
       printWindow.document.write(content);
     } else {
       // Content is plain text, wrap it in HTML with centered styling
+      console.log("Printing plain text content");
       printWindow.document.write(`
             <html>
                 <head>
                     <title>Hóa đơn thanh toán</title>
+                    <meta charset="UTF-8">
                     <style>
                         body { 
                             font-family: Arial, sans-serif; 
-                            white-space: pre-wrap; 
-                            margin: 20px;
+                            margin: 0;
+                            padding: 20px;
+                            text-align: center;
                             display: flex;
                             justify-content: center;
                             align-items: center;
@@ -918,14 +916,16 @@ function printInvoiceContent() {
                         .invoice-container {
                             max-width: 800px;
                             width: 100%;
-                            text-align: center;
                             background: white;
                             padding: 30px;
                             border: 1px solid #ddd;
+                            white-space: pre-wrap;
+                            font-family: monospace;
                         }
                         @media print { 
                             body { 
                                 margin: 0;
+                                padding: 0;
                                 display: block;
                             }
                             .invoice-container {
@@ -933,6 +933,7 @@ function printInvoiceContent() {
                                 width: 100%;
                                 border: none;
                                 box-shadow: none;
+                                padding: 20px;
                             }
                         }
                     </style>

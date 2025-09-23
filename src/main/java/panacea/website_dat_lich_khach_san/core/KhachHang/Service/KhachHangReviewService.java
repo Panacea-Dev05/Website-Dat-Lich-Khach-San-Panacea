@@ -41,10 +41,8 @@ public class KhachHangReviewService {
             System.out.println("[DEBUG] - Customer Email: " + reviewDTO.getCustomerEmail());
             System.out.println("[DEBUG] - Booking ID: " + reviewDTO.getBookingId());
             System.out.println("[DEBUG] - Room Type ID: " + reviewDTO.getRoomTypeId());
-            System.out.println("[DEBUG] - Diem Tong Quan: " + reviewDTO.getDiemTongQuan());
             System.out.println("[DEBUG] - Diem Sach Se: " + reviewDTO.getDiemSachSe());
             System.out.println("[DEBUG] - Diem Dich Vu: " + reviewDTO.getDiemDichVu());
-            System.out.println("[DEBUG] - Diem Vi Tri: " + reviewDTO.getDiemViTri());
             System.out.println("[DEBUG] - Diem Gia Ca: " + reviewDTO.getDiemGiaCa());
             System.out.println("[DEBUG] - Binh Luan: " + reviewDTO.getBinhLuan());
             
@@ -113,11 +111,17 @@ public class KhachHangReviewService {
             review.setDatPhongId(bookingId);
             review.setKhachHangId(customerOpt.get().getId());
             review.setKhachSanId(1); // Set khach_san_id = 1 (default hotel ID)
-            review.setDiemTongQuan(reviewDTO.getDiemTongQuan());
+            // Chỉ set 3 tiêu chí: Sạch sẽ, Dịch vụ, Giá cả
             review.setDiemSachSe(reviewDTO.getDiemSachSe());
             review.setDiemDichVu(reviewDTO.getDiemDichVu());
-            review.setDiemViTri(reviewDTO.getDiemViTri());
             review.setDiemGiaCa(reviewDTO.getDiemGiaCa());
+            
+            // Set diemTongQuan = trung bình của 3 tiêu chí
+            int diemTongQuan = (reviewDTO.getDiemSachSe() + reviewDTO.getDiemDichVu() + reviewDTO.getDiemGiaCa()) / 3;
+            review.setDiemTongQuan((byte) diemTongQuan);
+            
+            // Set diemViTri = 5 (mặc định vì không có trong form)
+            review.setDiemViTri((byte) 5);
             review.setBinhLuan(reviewDTO.getBinhLuan());
             review.setNgayDanhGia(LocalDateTime.now());
             review.setTrangThai(Review.TrangThaiReview.CHO_DUYET);
