@@ -19,6 +19,143 @@
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    
+    <!-- Review submission script -->
+    <script>
+        // Load đánh giá khi trang load
+        setTimeout(function() {
+            console.log('Loading reviews...');
+            
+            // Test API
+            fetch('/khachhang/reviews/room/1')
+                .then(response => response.json())
+                .then(reviews => {
+                    console.log('Reviews received:', reviews);
+                    
+                    // Test update elements
+                    var reviewCount = document.getElementById('review-count');
+                    var reviewsList = document.getElementById('reviews-list');
+                    
+                    if (reviewCount && reviewsList) {
+                        reviewCount.textContent = reviews.length;
+                        
+                        // Hiển thị đánh giá thực sự
+                        if (reviews.length === 0) {
+                            reviewsList.innerHTML = '<p>Chưa có đánh giá nào!</p>';
+                        } else {
+                            var html = '';
+                            reviews.forEach(function(review) {
+                                html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1); margin-bottom: 15px;">';
+                                html += '<div class="d-flex justify-content-between align-items-start">';
+                                html += '<div>';
+                                html += '<h6 class="text-white mb-2">' + (review.customerName || 'Khách hàng') + '</h6>';
+                                html += '<div class="stars mb-2">';
+                                
+                                // Hiển thị sao
+                                var rating = review.diemTongQuan || 0;
+                                for (var i = 1; i <= 5; i++) {
+                                    var starClass = i <= rating ? 'star-filled' : 'star-empty';
+                                    html += '<span class="material-icons ' + starClass + '" style="color: ' + (i <= rating ? '#FFD700' : '#ccc') + ';">star</span>';
+                                }
+                                
+                                html += '<span class="ms-2 text-white">' + rating + '/5</span>';
+                                html += '</div>';
+                                html += '<p class="text-white-50 small mb-0">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
+                                html += '</div>';
+                                html += '</div>';
+                                if (review.binhLuan) {
+                                    html += '<p class="text-white mt-2 mb-0">' + review.binhLuan + '</p>';
+                                }
+                                html += '</div>';
+                            });
+                            
+                            reviewsList.innerHTML = html;
+                        }
+                        
+                        // Cập nhật điểm trung bình
+                        var totalRating = 0;
+                        reviews.forEach(function(review) {
+                            totalRating += (review.diemTongQuan || 0);
+                        });
+                        var averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+                        
+                        // Cập nhật hiển thị điểm trung bình
+                        var avgRatingDisplay = document.getElementById('avg-rating-display');
+                        var avgStars = document.getElementById('avg-stars');
+                        
+                        if (avgRatingDisplay) {
+                            avgRatingDisplay.textContent = averageRating;
+                        }
+                        
+                        if (avgStars) {
+                            // Xóa tất cả sao cũ
+                            avgStars.innerHTML = '';
+                            // Thêm sao mới
+                            for (var i = 1; i <= 5; i++) {
+                                var starClass = i <= averageRating ? 'star-filled' : 'star-empty';
+                                var starColor = i <= averageRating ? '#FFD700' : '#ccc';
+                                avgStars.innerHTML += '<span class="material-icons ' + starClass + '" style="color: ' + starColor + ';">star</span>';
+                            }
+                        }
+                        
+                        console.log('Reviews displayed successfully! Average rating: ' + averageRating);
+                    } else {
+                        console.log('Elements not found!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Lỗi: ' + error.message);
+                });
+        }, 1000);
+        
+        // Function để gửi đánh giá thực sự
+        function submitReviewNow() {
+            
+            // Lấy dữ liệu form
+            var form = document.getElementById('reviewForm');
+            if (!form) {
+                alert('Không tìm thấy form!');
+                return;
+            }
+            
+            var formData = new FormData(form);
+            var reviewData = {
+                customerName: formData.get('customerName') || 'Khách hàng',
+                customerEmail: formData.get('customerEmail') || 'test@example.com',
+                diemSachSe: parseInt(formData.get('diemSachSe')) || 5,
+                diemDichVu: parseInt(formData.get('diemDichVu')) || 5,
+                diemGiaCa: parseInt(formData.get('diemGiaCa')) || 5,
+                binhLuan: formData.get('binhLuan') || 'Đánh giá tốt',
+                roomTypeId: parseInt(formData.get('roomTypeId')) || 1,
+                bookingId: parseInt(formData.get('bookingId')) || 1
+            };
+            
+            
+            // Gửi AJAX request
+            fetch('/khachhang/reviews/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Gửi đánh giá thành công!');
+                    // Reload trang để hiển thị đánh giá mới
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể gửi đánh giá'));
+                }
+            })
+            .catch(error => {
+                alert('Lỗi kết nối: ' + error.message);
+            });
+        }
+        
+    </script>
     <style>
         .room-detail-section {
             margin-top: 48px;
@@ -576,7 +713,7 @@
 
                                     <div class="ak-height-40 ak-height-lg-20"></div>
                                     <div class="ak-btn style-5">
-                                        <button type="submit" id="submitReviewBtn">Gửi đánh giá</button>
+                                        <button type="button" id="submitReviewBtn" onclick="submitReviewNow()">Gửi đánh giá</button>
                                     </div>
                                 </form>
                             </div>
@@ -1533,41 +1670,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load đánh giá khi trang load
     loadReviews();
     
-    // Xử lý submit form đánh giá
-    console.log('Looking for review form and submit button...');
-    var reviewForm = document.getElementById('reviewForm');
-    var submitBtn = document.getElementById('submitReviewBtn');
-    
-    console.log('Review form found:', !!reviewForm);
-    console.log('Submit button found:', !!submitBtn);
-    
-    if (reviewForm) {
-        console.log('Setting up review form submit listener...');
-        reviewForm.addEventListener('submit', function(e) {
-            console.log('Review form submitted!');
-            e.preventDefault();
-            e.stopPropagation();
-            submitReview();
-            return false;
-        });
-    } else {
-        console.log('Review form not found!');
-    }
-    
-    // Thêm event listener trực tiếp cho button
-    if (submitBtn) {
-        console.log('Setting up submit button click listener...');
-        submitBtn.addEventListener('click', function(e) {
-            console.log('Submit button clicked!');
-            alert('Submit button clicked!');
-            e.preventDefault();
-            e.stopPropagation();
-            submitReview();
-            return false;
-        });
-    } else {
-        console.log('Submit button not found!');
-    }
+    // Xử lý submit form đánh giá - sử dụng function đã tạo
+    console.log('Setting up review form listeners...');
+    setupReviewFormListener();
 });
 
 // Hàm load đánh giá
@@ -1789,7 +1894,40 @@ console.log('Script loaded, initializing star rating...');
 console.log('DOM ready state:', document.readyState);
 console.log('Review form exists:', !!document.getElementById('reviewForm'));
 console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+
+// Thêm event listener ngay lập tức
+setupReviewFormListener();
+
 initializeStarRating();
+
+// Function để setup event listener
+function setupReviewFormListener() {
+    console.log('=== setupReviewFormListener called ===');
+    
+    var reviewForm = document.getElementById('reviewForm');
+    var submitBtn = document.getElementById('submitReviewBtn');
+    
+    console.log('Review form found:', !!reviewForm);
+    console.log('Submit button found:', !!submitBtn);
+    
+    if (submitBtn) {
+        // Xóa tất cả event listeners cũ
+        var newBtn = submitBtn.cloneNode(true);
+        submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+        
+        console.log('Setting up NEW submit button click listener...');
+        newBtn.addEventListener('click', function(e) {
+            console.log('Submit button clicked!');
+            alert('Submit button clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            submitReview();
+            return false;
+        });
+    } else {
+        console.log('Submit button not found!');
+    }
+}
 
 // Khởi tạo star rating khi DOM ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -1797,6 +1935,8 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM ready state:', document.readyState);
     console.log('Review form exists:', !!document.getElementById('reviewForm'));
     console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    
+    setupReviewFormListener();
     initializeStarRating();
 });
 
@@ -1806,6 +1946,8 @@ setTimeout(function() {
     console.log('DOM ready state:', document.readyState);
     console.log('Review form exists:', !!document.getElementById('reviewForm'));
     console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    
+    setupReviewFormListener();
     initializeStarRating();
 }, 500);
 
@@ -1814,6 +1956,8 @@ setTimeout(function() {
     console.log('DOM ready state:', document.readyState);
     console.log('Review form exists:', !!document.getElementById('reviewForm'));
     console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    
+    setupReviewFormListener();
     initializeStarRating();
 }, 1000);
 
@@ -1823,8 +1967,20 @@ window.addEventListener('load', function() {
     console.log('DOM ready state:', document.readyState);
     console.log('Review form exists:', !!document.getElementById('reviewForm'));
     console.log('Submit button exists:', !!document.getElementById('submitReviewBtn'));
+    
+    setupReviewFormListener();
     initializeStarRating();
 });
+
+// Test function để kiểm tra button click
+function testButtonClick(event) {
+    console.log('=== testButtonClick called ===');
+    alert('Button clicked via onclick!');
+    event.preventDefault();
+    event.stopPropagation();
+    submitReview();
+    return false;
+}
 
 // Hàm submit đánh giá
 function submitReview() {
@@ -1946,139 +2102,43 @@ function submitReview() {
     });
 }
 
-// Hàm load đánh giá
-function loadReviews() {
-    console.log('Loading reviews...');
-    var roomTypeId = document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 1;
-    
-    fetch('/khachhang/reviews/room/' + roomTypeId)
-        .then(response => response.json())
-        .then(reviews => {
-            console.log('Loaded reviews:', reviews);
-            displayReviews(reviews);
-        })
-        .catch(error => {
-            console.error('Error loading reviews:', error);
-        });
-}
-
-// Hàm hiển thị đánh giá
-function displayReviews(reviews) {
-    var reviewsList = document.getElementById('reviews-list');
-    var reviewCount = document.getElementById('review-count');
-    
-    if (!reviewsList || !reviewCount) {
-        console.log('Reviews elements not found');
-        return;
-    }
-    
-    if (!reviews || reviews.length === 0) {
-        reviewsList.innerHTML = '<p class="text-white">Chưa có đánh giá nào.</p>';
-        reviewCount.textContent = '0';
-        return;
-    }
-    
-    reviewCount.textContent = reviews.length;
-    
-    var html = '';
-    reviews.forEach(function(review) {
-        html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1);">';
-        html += '<div class="d-flex justify-content-between align-items-start">';
-        html += '<div>';
-        html += '<h6 class="text-white">' + (review.customerName || 'Khách hàng') + '</h6>';
-        html += '<div class="stars mb-2">';
-        
-        // Hiển thị sao
-        for (var i = 1; i <= 5; i++) {
-            var starClass = i <= review.diemTongQuan ? 'star-filled' : 'star-empty';
-            html += '<span class="material-icons ' + starClass + '">star</span>';
-        }
-        
-        html += '</div>';
-        html += '<p class="text-white-50 small">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
-        html += '</div>';
-        html += '</div>';
-        if (review.binhLuan) {
-            html += '<p class="text-white mt-2">' + review.binhLuan + '</p>';
-        }
-        html += '</div>';
-    });
-    
-    reviewsList.innerHTML = html;
-}
 
 // Load đánh giá khi trang load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, testing review API...');
-    testReviewAPI();
+    console.log('=== DOM READY - Loading reviews ===');
+    loadReviews();
 });
 
-// Gọi lại sau 2 giây để đảm bảo
-setTimeout(function() {
-    console.log('Timeout 2s, calling testReviewAPI...');
-    testReviewAPI();
-}, 2000);
+// Test ngay lập tức
+console.log('=== Testing loadReviews immediately ===');
+alert('Script loaded!');
 
-// Function test API đánh giá
-function testReviewAPI() {
-    var roomTypeId = document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 1;
-    console.log('Testing API for roomTypeId:', roomTypeId);
+setTimeout(function() {
+    console.log('=== Timeout 1s - Loading reviews ===');
+    alert('Timeout 1s reached!');
+    loadReviews();
+}, 1000);
+
+// Test đơn giản để kiểm tra elements
+setTimeout(function() {
+    console.log('=== Testing elements ===');
+    alert('Testing elements...');
     
-    // Test API endpoint
-    fetch('/khachhang/reviews/room/' + roomTypeId)
-        .then(response => {
-            console.log('API Response status:', response.status);
-            return response.json();
-        })
-        .then(reviews => {
-            console.log('API Response data:', reviews);
-            console.log('Number of reviews:', reviews.length);
-            
-            // Hiển thị đánh giá
-            var reviewsList = document.getElementById('reviews-list');
-            var reviewCount = document.getElementById('review-count');
-            
-            if (reviewsList && reviewCount) {
-                reviewCount.textContent = reviews.length;
-                
-                if (reviews.length === 0) {
-                    reviewsList.innerHTML = '<p class="text-white">Chưa có đánh giá nào.</p>';
-                } else {
-                    var html = '';
-                    reviews.forEach(function(review, index) {
-                        console.log('Review', index, ':', review);
-                        html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1);">';
-                        html += '<div class="d-flex justify-content-between align-items-start">';
-                        html += '<div>';
-                        html += '<h6 class="text-white">' + (review.customerName || 'Khách hàng') + '</h6>';
-                        html += '<div class="stars mb-2">';
-                        
-                        // Hiển thị sao
-                        for (var i = 1; i <= 5; i++) {
-                            var starClass = i <= review.diemTongQuan ? 'star-filled' : 'star-empty';
-                            html += '<span class="material-icons ' + starClass + '">star</span>';
-                        }
-                        
-                        html += '</div>';
-                        html += '<p class="text-white-50 small">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
-                        html += '</div>';
-                        html += '</div>';
-                        if (review.binhLuan) {
-                            html += '<p class="text-white mt-2">' + review.binhLuan + '</p>';
-                        }
-                        html += '</div>';
-                    });
-                    
-                    reviewsList.innerHTML = html;
-                }
-            } else {
-                console.log('Reviews elements not found');
-            }
-        })
-        .catch(error => {
-            console.error('Error testing review API:', error);
-        });
-}
+    var reviewsList = document.getElementById('reviews-list');
+    var reviewCount = document.getElementById('review-count');
+    console.log('reviews-list found:', !!reviewsList);
+    console.log('review-count found:', !!reviewCount);
+    
+    if (reviewsList && reviewCount) {
+        console.log('Elements found! Testing manual update...');
+        alert('Elements found! Updating...');
+        reviewCount.textContent = '2';
+        reviewsList.innerHTML = '<p style="color: red; font-size: 20px;">TEST: Đánh giá đã load!</p>';
+    } else {
+        console.log('Elements NOT found!');
+        alert('Elements NOT found!');
+    }
+}, 2000);
 
 .booking-widget-inner .increase-decrease {
   display: flex;
@@ -2267,83 +2327,8 @@ function closeLoginModal() {
 
         });
 
-        // Hàm load đánh giá
-        function loadReviews() {
-            var roomTypeId = document.getElementById('roomTypeId').value;
-            if (!roomTypeId) return;
 
-            // Load danh sách đánh giá
-            fetch('/khachhang/reviews/room/' + roomTypeId)
-                .then(response => response.json())
-                .then(reviews => {
-                    displayReviews(reviews);
-                })
-                .catch(error => {
-                    console.error('Error loading reviews:', error);
-                });
 
-            // Load điểm trung bình
-            fetch('/khachhang/reviews/room/' + roomTypeId + '/average')
-                .then(response => response.json())
-                .then(data => {
-                    displayAverageRating(data.averageRating);
-                })
-                .catch(error => {
-                    console.error('Error loading average rating:', error);
-                });
-        }
-
-        // Hàm hiển thị đánh giá
-        function displayReviews(reviews) {
-            var reviewsList = document.getElementById('reviews-list');
-            var reviewCount = document.getElementById('review-count');
-
-            if (!reviewsList || !reviewCount) return;
-
-            reviewCount.textContent = reviews.length;
-
-            if (reviews.length === 0) {
-                reviewsList.innerHTML = '<p>Chưa có đánh giá nào!</p>';
-                return;
-            }
-
-            var html = '';
-            reviews.forEach(function (review) {
-                html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px;">';
-                html += '<div class="d-flex justify-content-between align-items-start">';
-                html += '<div>';
-                html += '<h6 class="mb-1">' + (review.customerName || 'Khách hàng') + '</h6>';
-                html += '<div class="stars mb-2" style="--rating: ' + review.diemTongQuan + ';">';
-                for (var i = 0; i < 5; i++) {
-                    html += '<span class="material-icons">star</span>';
-                }
-                html += '<span class="ms-2">' + review.diemTongQuan + '/5</span>';
-                html += '</div>';
-                html += '</div>';
-                html += '<small class="text-muted">' + formatDate(review.ngayDanhGia) + '</small>';
-                html += '</div>';
-                if (review.binhLuan) {
-                    html += '<p class="mb-0">' + review.binhLuan + '</p>';
-                }
-                html += '</div>';
-            });
-
-            reviewsList.innerHTML = html;
-        }
-
-        // Hàm hiển thị điểm trung bình
-        function displayAverageRating(averageRating) {
-            var avgRatingDisplay = document.getElementById('avg-rating-display');
-            var avgStars = document.getElementById('avg-stars');
-
-            if (avgRatingDisplay) {
-                avgRatingDisplay.textContent = averageRating.toFixed(1);
-            }
-
-            if (avgStars) {
-                avgStars.style.setProperty('--rating', averageRating);
-            }
-        }
 
 
         // Hàm reset button submit
