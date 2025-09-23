@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets SePay - Panacea Hotel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .sheets-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #28a745;
+        }
+
+        .sheets-info h3 {
+            color: #28a745;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .sheets-info p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .sheets-link {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .sheets-link a {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .sheets-link a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .booking-info {
+            background: #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .booking-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .booking-info p {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .info-card h4 {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-card li:last-child {
+            border-bottom: none;
+        }
+
+        .back-btn {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .back-btn a {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .back-btn a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Google Sheets SePay</h1>
+            <p>Thông tin giao dịch SePay chi tiết</p>
+        </div>
+
+        <div class="content">
+            <!-- Thông tin booking nếu có -->
+            <div class="booking-info" th:if="${bookingCode}">
+                <h4>Mã Booking đang kiểm tra:</h4>
+                <p th:text="${bookingCode}">BOOK1758620982318</p>
+            </div>
+
+            <!-- Thông tin Google Sheets -->
+            <div class="sheets-info">
+                <h3>📈 Thông Tin Google Sheets SePay</h3>
+                <p><strong>Google Sheets SePay</strong> chứa tất cả thông tin giao dịch SePay của hệ thống, bao gồm:</p>
+                <ul style="margin-left: 20px; margin-top: 15px;">
+                    <li>Thông tin ngân hàng và số tài khoản</li>
+                    <li>Ngày giờ giao dịch</li>
+                    <li>Số tiền và nội dung thanh toán</li>
+                    <li>Mã tham chiếu và trạng thái giao dịch</li>
+                    <li>Thông tin khách hàng và booking</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>💡 Lưu ý:</strong> Google Sheets sẽ mở trong tab mới. Bạn có thể sử dụng chức năng tìm kiếm
+                    (Ctrl+F) để tìm kiếm theo mã booking hoặc thông tin khác.
+                </div>
+            </div>
+
+            <!-- Link mở Google Sheets -->
+            <div class="sheets-link">
+                <a th:href="${sheetsUrl}" target="_blank">
+                    📊 Mở Google Sheets SePay
+                </a>
+            </div>
+
+            <!-- Thông tin hướng dẫn -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🔍 Cách Tìm Kiếm</h4>
+                    <ul>
+                        <li>Nhấn Ctrl+F để mở tìm kiếm</li>
+                        <li>Nhập mã booking cần tìm</li>
+                        <li>Sử dụng bộ lọc để lọc theo ngày</li>
+                        <li>Sắp xếp theo cột để dễ tìm</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h4>📊 Thông Tin Cột</h4>
+                    <ul>
+                        <li><strong>Ngân hàng:</strong> Tên ngân hàng</li>
+                        <li><strong>Ngày giao dịch:</strong> Thời gian giao dịch</li>
+                        <li><strong>Số tài khoản:</strong> 1392005882005</li>
+                        <li><strong>Nội dung:</strong> DatPhong_[MãBooking]</li>
+                        <li><strong>Số tiền:</strong> Số tiền cọc</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h4>📱 Cách Sử Dụng</h4>
+                    <ul>
+                        <li>Mở Google Sheets trong tab mới</li>
+                        <li>Tìm kiếm theo mã booking</li>
+                        <li>Kiểm tra thông tin giao dịch</li>
+                        <li>Xuất dữ liệu nếu cần</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Nút quay lại -->
+            <div class="back-btn">
+                <a href="/nhan-vien/transaction-check">
+                    ← Quay Lại Kiểm Tra Giao Dịch
+                </a>
+            </div>
+
+            <!-- Thông tin bổ sung -->
+            <div class="alert alert-success">
+                <strong>✅ Thành công!</strong> Bạn đã được chuyển hướng đến Google Sheets SePay.
+                Nếu không tự động mở, hãy nhấn vào nút "Mở Google Sheets SePay" ở trên.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tự động mở Google Sheets sau 2 giây
+        setTimeout(function () {
+            const sheetsUrl = '[[${sheetsUrl}]]';
+            if (sheetsUrl && sheetsUrl !== '') {
+                window.open(sheetsUrl, '_blank');
+            }
+        }, 2000);
+    </script>
+</body>
+
+</html>
