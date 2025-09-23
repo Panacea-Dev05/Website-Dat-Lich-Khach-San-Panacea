@@ -39,7 +39,7 @@ public class AdminServiceController {
         model.addAttribute("hasNext", servicePage.hasNext());
         model.addAttribute("hasPrevious", servicePage.hasPrevious());
         model.addAttribute("serviceForm", new ServiceDTO());
-        
+
         // Thêm thông báo nếu có
         if (error != null) {
             model.addAttribute("error", error);
@@ -47,7 +47,7 @@ public class AdminServiceController {
         if (success != null) {
             model.addAttribute("success", success);
         }
-        
+
         return "Admin/view/QuanLyDichVu";
     }
 
@@ -75,7 +75,7 @@ public class AdminServiceController {
                 model.addAttribute("error", "Đơn giá không hợp lệ");
                 return "redirect:/admin/services";
             }
-            
+
             adminServiceService.createService(dto);
             model.addAttribute("success", "Thêm dịch vụ thành công");
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class AdminServiceController {
                 model.addAttribute("error", "Đơn giá không hợp lệ");
                 return "redirect:/admin/services";
             }
-            
+
             ServiceDTO updated = adminServiceService.updateService(id, dto);
             if (updated != null) {
                 model.addAttribute("success", "Cập nhật dịch vụ thành công");
@@ -142,7 +142,7 @@ public class AdminServiceController {
         adminServiceService.deleteService(id);
         return "redirect:/admin/services";
     }
-    
+
     // Thêm dịch vụ (AJAX)
     @PostMapping("/add-ajax")
     @ResponseBody
@@ -165,7 +165,7 @@ public class AdminServiceController {
                 response.put("message", "Đơn giá không hợp lệ");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+
             ServiceDTO created = adminServiceService.createService(dto);
             if (created != null) {
                 response.put("success", true);
@@ -181,7 +181,7 @@ public class AdminServiceController {
         }
         return ResponseEntity.ok(response);
     }
-    
+
     // Cập nhật dịch vụ (AJAX)
     @PostMapping("/edit-ajax/{id}")
     @ResponseBody
@@ -204,7 +204,7 @@ public class AdminServiceController {
                 response.put("message", "Đơn giá không hợp lệ");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+
             ServiceDTO updated = adminServiceService.updateService(id, dto);
             if (updated != null) {
                 response.put("success", true);
@@ -220,7 +220,7 @@ public class AdminServiceController {
         }
         return ResponseEntity.ok(response);
     }
-    
+
     // Xóa dịch vụ (AJAX)
     @PostMapping("/delete/{id}")
     @ResponseBody

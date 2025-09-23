@@ -12,6 +12,7 @@
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/lightgallery.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/plugins/swiper.min.css}" />
     <link rel="stylesheet" th:href="@{/css/KhachHang/assets/css/style.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
         .price-summary {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -20,6 +21,30 @@
             margin: 20px 0;
             border: 1px solid #FFD28D;
             box-shadow: 0 4px 15px rgba(255, 210, 141, 0.1);
+        }
+        
+        
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+        
+        .price-item.discount {
+            color: #4CAF50;
+        }
+        
+        .price-item.total {
+            border-top: 1px solid #FFD28D;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-size: 16px;
+        }
+        
+        .price-item.deposit {
+            color: #FFD28D;
+            font-weight: 500;
         }
         
         .price-breakdown {
@@ -564,6 +589,8 @@
                                 </div>
                             </div>
 
+
+
                             <div class="form-group">
                                 <label class="ak-white-color">Yêu cầu đặc biệt</label>
                                     <textarea name="yeuCauDacBiet" class="form-control booking-now-input" rows="3"
@@ -869,12 +896,96 @@
         let dailyPrice = 1500000; // 1.5 triệu VNĐ/ngày
         let hourlyPrice = 200000; // 200k VNĐ/giờ  
         let overnightPrice = 800000; // 800k VNĐ/đêm
+        
+        
+        
+        
+        // Function format tiền tệ
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+        
 
         console.log('Giá phòng đã set:', {
             dailyPrice: dailyPrice,
             hourlyPrice: hourlyPrice,
             overnightPrice: overnightPrice
         });
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Event listener cho form submission
+            document.getElementById('bookingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleBookingSubmission();
+            });
+        });
+        
+        // Function xử lý form submission
+        async function handleBookingSubmission() {
+            try {
+                // Tạo JSON data
+                const formData = new FormData(document.getElementById('bookingForm'));
+                const bookingData = {
+                    roomTypeId: 1, // Mặc định room type ID
+                    hotelId: 1, // Mặc định hotel ID
+                    ngayNhanPhong: formData.get('ngayNhanPhong'),
+                    ngayTraPhong: formData.get('ngayTraPhong'),
+                    soNguoiLon: parseInt(formData.get('soNguoiLon')),
+                    soTreEm: parseInt(formData.get('soTreEm')),
+                    tenKhach: formData.get('hoTen'),
+                    emailKhach: formData.get('email'),
+                    soDienThoai: formData.get('soDienThoai'),
+                    ghiChuKhachHang: formData.get('yeuCauDacBiet'),
+                    bookingType: 'ngay', // Mặc định theo ngày
+                    loaiGia: 'giaNgay',
+                    bookingQuantity: 1,
+                    soPhong: parseInt(formData.get('soPhong'))
+                };
+                
+                // Gửi request
+                const response = await fetch('/khachhang/single-room/booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.text();
+                    showBookingResult(true, 'Đặt phòng thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.');
+                    
+                } else {
+                    showBookingResult(false, 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
+                }
+            } catch (error) {
+                console.error('Lỗi khi đặt phòng:', error);
+                showBookingResult(false, 'Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.');
+            }
+        }
+        
+        // Function hiển thị kết quả đặt phòng
+        function showBookingResult(success, message) {
+            const modal = document.getElementById('bookingResultModal');
+            const modalContent = modal.querySelector('div');
+            
+            if (success) {
+                modalContent.style.border = '2px solid #4CAF50';
+                modalContent.querySelector('h3').textContent = 'Thành công!';
+                modalContent.querySelector('p').textContent = message;
+            } else {
+                modalContent.style.border = '2px solid #f44336';
+                modalContent.querySelector('h3').textContent = 'Lỗi!';
+                modalContent.querySelector('p').textContent = message;
+            }
+            
+            modal.style.display = 'flex';
+        }
 
     // Hàm tính số ngày giữa 2 ngày
     function calculateDays(checkinDate, checkoutDate) {

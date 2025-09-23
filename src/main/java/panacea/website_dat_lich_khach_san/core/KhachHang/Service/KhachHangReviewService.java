@@ -36,7 +36,17 @@ public class KhachHangReviewService {
      */
     public boolean createReview(ReviewDTO reviewDTO) {
         try {
-            System.out.println("[DEBUG] Bắt đầu tạo đánh giá với dữ liệu: " + reviewDTO);
+            System.out.println("[DEBUG] ========== BẮT ĐẦU TẠO ĐÁNH GIÁ ==========");
+            System.out.println("[DEBUG] Dữ liệu nhận được:");
+            System.out.println("[DEBUG] - Customer Email: " + reviewDTO.getCustomerEmail());
+            System.out.println("[DEBUG] - Booking ID: " + reviewDTO.getBookingId());
+            System.out.println("[DEBUG] - Room Type ID: " + reviewDTO.getRoomTypeId());
+            System.out.println("[DEBUG] - Diem Tong Quan: " + reviewDTO.getDiemTongQuan());
+            System.out.println("[DEBUG] - Diem Sach Se: " + reviewDTO.getDiemSachSe());
+            System.out.println("[DEBUG] - Diem Dich Vu: " + reviewDTO.getDiemDichVu());
+            System.out.println("[DEBUG] - Diem Vi Tri: " + reviewDTO.getDiemViTri());
+            System.out.println("[DEBUG] - Diem Gia Ca: " + reviewDTO.getDiemGiaCa());
+            System.out.println("[DEBUG] - Binh Luan: " + reviewDTO.getBinhLuan());
             
             // Tìm khách hàng theo email
             Optional<Customer> customerOpt = customerRepository.findByEmail(reviewDTO.getCustomerEmail());
@@ -44,25 +54,53 @@ public class KhachHangReviewService {
                 System.out.println("[ERROR] Không tìm thấy khách hàng với email: " + reviewDTO.getCustomerEmail());
                 return false;
             }
-            System.out.println("[DEBUG] Tìm thấy khách hàng: " + customerOpt.get().getHo() + " " + customerOpt.get().getTen());
+            System.out.println("[DEBUG] Tìm thấy khách hàng: " + customerOpt.get().getHo() + " " + customerOpt.get().getTen() + " (ID: " + customerOpt.get().getId() + ")");
             
             // Tìm booking theo ID hoặc tạo booking mặc định
             Integer bookingId = reviewDTO.getBookingId();
             Optional<Booking> bookingOpt;
             
+            System.out.println("[DEBUG] Tìm kiếm booking...");
+            System.out.println("[DEBUG] - Booking ID từ DTO: " + bookingId);
+            
             if (bookingId != null) {
+                System.out.println("[DEBUG] Tìm booking theo ID: " + bookingId);
                 bookingOpt = bookingRepository.findById(bookingId);
+                System.out.println("[DEBUG] - Kết quả tìm booking theo ID: " + (bookingOpt.isPresent() ? "Tìm thấy" : "Không tìm thấy"));
             } else {
-                // Tìm booking đầu tiên của khách hàng này
+                System.out.println("[DEBUG] Booking ID null, tìm booking chưa được đánh giá của khách hàng...");
+                // Tìm booking chưa được đánh giá của khách hàng này
                 List<Booking> customerBookings = bookingRepository.findByKhachHangId(customerOpt.get().getId());
-                if (!customerBookings.isEmpty()) {
-                    bookingOpt = Optional.of(customerBookings.get(0));
-                    bookingId = customerBookings.get(0).getId();
+                System.out.println("[DEBUG] - Tổng số booking của khách hàng: " + customerBookings.size());
+                
+                // Tìm booking chưa được đánh giá
+                Booking unratedBooking = null;
+                for (Booking booking : customerBookings) {
+                    List<Review> existingReviews = reviewRepository.findByDatPhongIdAndKhachHangId(
+                        booking.getId(), 
+                        customerOpt.get().getId()
+                    );
+                    if (existingReviews.isEmpty()) {
+                        unratedBooking = booking;
+                        break;
+                    }
+                }
+                
+                if (unratedBooking != null) {
+                    bookingOpt = Optional.of(unratedBooking);
+                    bookingId = unratedBooking.getId();
+                    System.out.println("[DEBUG] - Tìm thấy booking chưa đánh giá ID: " + bookingId);
                 } else {
-                    // Tạo booking mặc định nếu không có booking nào
-                    System.out.println("[WARNING] Không tìm thấy booking, tạo booking mặc định");
-                    bookingId = 1; // Fallback
-                    bookingOpt = bookingRepository.findById(bookingId);
+                    // Nếu tất cả booking đã được đánh giá, tạo booking mới để đánh giá
+                    System.out.println("[DEBUG] Tất cả booking đã được đánh giá, tạo booking mới...");
+                    // Tạo booking mới cho khách hàng (giả lập)
+                    bookingId = System.currentTimeMillis() % 1000000; // ID tạm thời
+                    System.out.println("[DEBUG] - Sử dụng booking ID tạm thời: " + bookingId);
+                    // Tạo booking tạm thời
+                    Booking tempBooking = new Booking();
+                    tempBooking.setId(bookingId);
+                    tempBooking.setKhachHang(customerOpt.get());
+                    bookingOpt = Optional.of(tempBooking);
                 }
             }
             
@@ -71,17 +109,13 @@ public class KhachHangReviewService {
                 return false;
             }
             
-            // Kiểm tra xem khách hàng đã đánh giá booking này chưa
-            List<Review> existingReviews = reviewRepository.findByDatPhongIdAndKhachHangId(
-                bookingId, 
-                customerOpt.get().getId()
-            );
-            if (!existingReviews.isEmpty()) {
-                System.out.println("[ERROR] Khách hàng đã đánh giá booking này rồi");
-                return false;
-            }
+            System.out.println("[DEBUG] Sử dụng booking ID: " + bookingId);
+            
+            // Logic mới: Cho phép đánh giá nhiều lần, mỗi booking 1 lần
+            System.out.println("[DEBUG] Logic mới: Cho phép đánh giá nhiều lần");
             
             // Tạo đánh giá mới
+            System.out.println("[DEBUG] Tạo đánh giá mới...");
             Review review = new Review();
             review.setDatPhongId(bookingId);
             review.setKhachHangId(customerOpt.get().getId());
@@ -97,8 +131,10 @@ public class KhachHangReviewService {
             review.setUuidId(UUID.randomUUID());
             review.setCreatedDate(System.currentTimeMillis());
             
+            System.out.println("[DEBUG] Lưu đánh giá vào database...");
             reviewRepository.save(review);
             System.out.println("[SUCCESS] Đã tạo đánh giá thành công cho booking ID: " + bookingId);
+            System.out.println("[DEBUG] ========== KẾT THÚC TẠO ĐÁNH GIÁ ==========");
             return true;
             
         } catch (Exception e) {

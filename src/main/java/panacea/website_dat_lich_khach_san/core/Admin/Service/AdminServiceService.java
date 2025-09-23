@@ -107,7 +107,7 @@ public class AdminServiceService {
         dto.setUuidId(s.getUuidId());
         dto.setCreatedDate(s.getCreatedDate());
         dto.setLastModifiedDate(s.getLastModifiedDate());
-        
+
         // Debug logging
         System.out.println("Converting ServiceEntity to DTO:");
         System.out.println("  ID: " + s.getId());
@@ -116,7 +116,7 @@ public class AdminServiceService {
         System.out.println("  LoaiDichVu: " + s.getLoaiDichVu());
         System.out.println("  DonViTinh: " + s.getDonViTinh());
         System.out.println("  TrangThai: " + s.getTrangThai());
-        
+
         return dto;
     }
     /**
