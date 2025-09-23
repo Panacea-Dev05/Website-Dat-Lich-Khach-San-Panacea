@@ -22,12 +22,71 @@
     
     <!-- Review submission script -->
     <script>
+        // Function tính số ngày - GLOBAL SCOPE
+        function calculateDays() {
+            console.log('=== calculateDays function called ===');
+            
+            var checkInElement = document.getElementById('ngayNhanPhong');
+            var checkOutElement = document.getElementById('ngayTraPhong');
+            var bookingQuantityElement = document.getElementById('bookingQuantity');
+            
+            console.log('Elements found:', {
+                ngayNhanPhong: !!checkInElement,
+                ngayTraPhong: !!checkOutElement,
+                bookingQuantity: !!bookingQuantityElement
+            });
+            
+            if (checkInElement && checkOutElement && bookingQuantityElement) {
+                var checkInValue = checkInElement.value;
+                var checkOutValue = checkOutElement.value;
+                
+                console.log('Date values:', { checkInValue, checkOutValue });
+                
+                var checkInDate = new Date(checkInValue);
+                var checkOutDate = new Date(checkOutValue);
+                
+                console.log('Parsed dates:', { checkInDate, checkOutDate });
+                
+                if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                    var timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    console.log('Calculated days:', daysDiff);
+                    bookingQuantityElement.value = daysDiff;
+                    
+                    // Trigger change event để cập nhật giá
+                    bookingQuantityElement.dispatchEvent(new Event('change'));
+                } else {
+                    console.log('Invalid dates or check-out <= check-in');
+                }
+            } else {
+                console.log('Some elements not found');
+            }
+        }
+        
+        // Function để cập nhật giá - GLOBAL SCOPE
+        function updatePrice() {
+            console.log('=== updatePrice function called ===');
+            calculateDays();
+        }
+        
+        // Test function ngay lập tức
+        setTimeout(function() {
+            console.log('=== Testing calculateDays after 1 second ===');
+            calculateDays();
+        }, 1000);
+        
         // Load đánh giá khi trang load
         setTimeout(function() {
             console.log('Loading reviews...');
             
+            // Lấy roomTypeId từ URL hoặc element
+            var roomTypeId = new URLSearchParams(window.location.search).get('id') || 
+                            (document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 1);
+            console.log('Room Type ID:', roomTypeId);
+            
             // Test API
-            fetch('/khachhang/reviews/room/1')
+            fetch('/khachhang/reviews/room/' + roomTypeId)
                 .then(response => response.json())
                 .then(reviews => {
                     console.log('Reviews received:', reviews);
@@ -2235,9 +2294,54 @@ setTimeout(function() {
 </style>
 
 <script>
+        // Function tính số ngày
+        function calculateDays() {
+            console.log('=== calculateDays function called ===');
+            
+            var checkInElement = document.getElementById('ngayNhanPhong');
+            var checkOutElement = document.getElementById('ngayTraPhong');
+            var bookingQuantityElement = document.getElementById('bookingQuantity');
+            
+            console.log('Elements found:', {
+                ngayNhanPhong: !!checkInElement,
+                ngayTraPhong: !!checkOutElement,
+                bookingQuantity: !!bookingQuantityElement
+            });
+            
+            if (checkInElement && checkOutElement && bookingQuantityElement) {
+                var checkInValue = checkInElement.value;
+                var checkOutValue = checkOutElement.value;
+                
+                console.log('Date values:', { checkInValue, checkOutValue });
+                
+                var checkInDate = new Date(checkInValue);
+                var checkOutDate = new Date(checkOutValue);
+                
+                console.log('Parsed dates:', { checkInDate, checkOutDate });
+                
+                if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                    var timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    console.log('Calculated days:', daysDiff);
+                    bookingQuantityElement.value = daysDiff;
+                    
+                    // Trigger change event để cập nhật giá
+                    bookingQuantityElement.dispatchEvent(new Event('change'));
+                } else {
+                    console.log('Invalid dates or check-out <= check-in');
+                }
+            } else {
+                console.log('Some elements not found');
+            }
+        }
+        
         // Function để cập nhật giá từ database
-function updatePrice() {
+        function updatePrice() {
             console.log('=== updatePrice function called ===');
+            
+            // Tính số ngày từ check-in và check-out
+            calculateDays();
             
             // Gọi function setPriceFromDatabase nếu có
             if (typeof setPriceFromDatabase === 'function') {
@@ -2247,6 +2351,12 @@ function updatePrice() {
                 setPrice();
             }
         }
+        
+        // Test function ngay lập tức
+        setTimeout(function() {
+            console.log('=== Testing calculateDays after 2 seconds ===');
+            calculateDays();
+        }, 2000);
 
 function showLoginModal() {
   document.getElementById('loginModal').style.display = 'flex';
@@ -2314,6 +2424,20 @@ function closeLoginModal() {
                 soPhongElement.addEventListener('input', updatePrice);
                 soPhongElement.addEventListener('change', updatePrice);
                 console.log('Added event listener for soPhong');
+            }
+            
+            // Thêm event listener cho check-in và check-out
+            var checkInElement = document.getElementById('ngayNhanPhong');
+            var checkOutElement = document.getElementById('ngayTraPhong');
+            
+            if (checkInElement) {
+                checkInElement.addEventListener('change', calculateDays);
+                console.log('Added event listener for ngayNhanPhong');
+            }
+            
+            if (checkOutElement) {
+                checkOutElement.addEventListener('change', calculateDays);
+                console.log('Added event listener for ngayTraPhong');
             }
 
             // Event listeners đã được thêm ở trên
