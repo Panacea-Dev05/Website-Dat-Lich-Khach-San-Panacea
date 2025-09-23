@@ -28,6 +28,7 @@ import panacea.website_dat_lich_khach_san.entity.*;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.BookingDetailViewDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationInfoDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.CancellationRequestDTO;
+import panacea.website_dat_lich_khach_san.service.OvertimeSurchargeService;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.ServiceDetailDTO;
 import panacea.website_dat_lich_khach_san.infrastructure.Enums.LoaiKhachHang;
 import panacea.website_dat_lich_khach_san.repository.*;
@@ -65,6 +66,9 @@ public class QuanLyDatPhongService {
 
     @Autowired
     private BookingDetailRepository bookingDetailRepository;
+
+    @Autowired(required = false)
+    private OvertimeSurchargeService overtimeSurchargeService;
 
     @Autowired
     private BookingHistoryRepository bookingHistoryRepository;
@@ -205,6 +209,16 @@ public class QuanLyDatPhongService {
         if (mailSender == null) return;
         
         try {
+            // Kiểm tra xem có phụ thu quá giờ không
+            String overtimeInfo = "";
+            if (booking.getGhiChuNoiBo() != null && booking.getGhiChuNoiBo().contains("[PHỤ THU QUÁ GIỜ]")) {
+                overtimeInfo = "<div style='background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 15px 0;'>" +
+                    "<h4 style='color: #856404; margin-top: 0;'>⚠️ Phụ thu quá giờ</h4>" +
+                    "<p style='color: #856404; margin: 5px 0;'>" + booking.getGhiChuNoiBo().substring(booking.getGhiChuNoiBo().indexOf("[PHỤ THU QUÁ GIỜ]")) + "</p>" +
+                    "<p style='color: #856404; margin: 5px 0; font-size: 12px;'>Phụ thu này đã được tính vào tổng thanh toán bên dưới.</p>" +
+                    "</div>";
+            }
+            
             String subject = "Xác nhận đặt phòng thành công - Panacea Hotel";
             String content = String.format("""
                 <html>
@@ -220,8 +234,14 @@ public class QuanLyDatPhongService {
                         <li><strong>Ngày trả phòng:</strong> %s</li>
                         <li><strong>Số người lớn:</strong> %d</li>
                         <li><strong>Số trẻ em:</strong> %d</li>
-                        <li><strong>Tổng thanh toán:</strong> %,.0f VND</li>
                     </ul>
+                    
+                    %s
+                    
+                    <div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;'>
+                        <h3 style='color: #10b981; margin-top: 0;'>💰 Tổng thanh toán</h3>
+                        <p style='font-size: 18px; font-weight: bold; color: #dc3545;'>%,.0f VND</p>
+                    </div>
                     
                     <p>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>
                     
@@ -235,6 +255,7 @@ public class QuanLyDatPhongService {
                 booking.getNgayTraPhong(),
                 booking.getSoNguoiLon(),
                 booking.getSoTreEm(),
+                overtimeInfo,
                 booking.getTongThanhToan()
             );
             
@@ -827,6 +848,10 @@ public class QuanLyDatPhongService {
     }
 
     public boolean checkoutBooking(Integer bookingId) {
+        return checkoutBooking(bookingId, java.time.LocalDateTime.now());
+    }
+
+    public boolean checkoutBooking(Integer bookingId, java.time.LocalDateTime actualCheckoutTime) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) return false;
         if (booking.getTrangThaiDatPhong() != Booking.TrangThaiDatPhong.DA_NHAN_PHONG
@@ -835,6 +860,19 @@ public class QuanLyDatPhongService {
         // Kiểm tra trạng thái thanh toán trước khi cho phép checkout
         if (booking.getTrangThaiThanhToan() != Booking.TrangThaiThanhToan.DA_THANH_TOAN) {
             throw new IllegalStateException("Không thể checkout: Khách hàng chưa thanh toán đủ. Trạng thái hiện tại: " + booking.getTrangThaiThanhToan().getLabel());
+        }
+        
+        // Tính và áp dụng phụ thu quá giờ nếu có
+        try {
+            if (overtimeSurchargeService != null) {
+                boolean hasOvertimeSurcharge = overtimeSurchargeService.applyOvertimeSurcharge(booking, actualCheckoutTime);
+                if (hasOvertimeSurcharge) {
+                    logger.info("Đã áp dụng phụ thu quá giờ cho booking {}: {}", 
+                        booking.getMaDatPhong(), booking.getTongThanhToan());
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Lỗi tính phụ thu quá giờ cho booking {}: {}", booking.getMaDatPhong(), e.getMessage());
         }
         
         // Cập nhật trạng thái booking (chỉ cập nhật trạng thái đặt phòng, không thay đổi trạng thái thanh toán)

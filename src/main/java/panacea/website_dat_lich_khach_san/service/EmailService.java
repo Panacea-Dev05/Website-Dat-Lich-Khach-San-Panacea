@@ -99,23 +99,36 @@ public class EmailService {
      * Tạo nội dung email thanh toán VNPAY
      */
     private String createVNPayEmailContent(Booking booking, String vnpayUrl) {
+        // Kiểm tra xem có phụ thu quá giờ không
+        String overtimeBreakdown = "";
+        if (booking.getGhiChuNoiBo() != null && booking.getGhiChuNoiBo().contains("[PHỤ THU QUÁ GIỜ]")) {
+            String overtimeNote = booking.getGhiChuNoiBo().substring(booking.getGhiChuNoiBo().indexOf("[PHỤ THU QUÁ GIỜ]"));
+            overtimeBreakdown = String.format("""
+                <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                    <h4 style="color: #856404; margin-top: 0; margin-bottom: 15px;">⚠️ Phụ thu quá giờ</h4>
+                    <p style="color: #856404; margin: 5px 0; font-weight: bold;">%s</p>
+                    <p style="color: #856404; margin: 5px 0; font-size: 14px;">Phụ thu này đã được tính vào tổng thanh toán bên trên.</p>
+                </div>
+                """, overtimeNote);
+        }
+        
         return String.format("""
             <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-                    
+
                     <!-- Header -->
                     <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); color: white; border-radius: 8px;">
                         <h1 style="margin: 0; font-size: 28px;">🏨 Panacea Hotel</h1>
                         <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Thanh toán đặt phòng</p>
                     </div>
-                    
+
                     <!-- Greeting -->
                     <div style="margin-bottom: 25px;">
                         <h2 style="color: #2c5aa0; margin-bottom: 10px;">Xin chào %s!</h2>
                         <p style="font-size: 16px; margin-bottom: 0;">Cảm ơn bạn đã chọn Panacea Hotel. Vui lòng thanh toán để hoàn tất đặt phòng.</p>
                     </div>
-                    
+
                     <!-- Booking Info -->
                     <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <h3 style="color: #2c5aa0; margin-top: 0; margin-bottom: 20px; font-size: 20px;">📋 Thông tin đặt phòng</h3>
@@ -151,22 +164,25 @@ public class EmailService {
                         </table>
                     </div>
                     
+                    <!-- Breakdown phụ thu quá giờ nếu có -->
+                    %s
+                    
                     <!-- VNPAY Payment Section -->
                     <div style="background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 25px;">
                         <h3 style="color: white; margin-top: 0; margin-bottom: 20px; font-size: 22px;">💳 Thanh toán VNPAY</h3>
                         <p style="color: white; margin-bottom: 25px; font-size: 16px;">Click vào nút bên dưới để thanh toán an toàn và nhanh chóng</p>
-                        
+
                         <a href="%s" style="display: inline-block; background-color: #ff6b35; color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); transition: all 0.3s ease;">
                             🚀 Thanh toán ngay với VNPAY
                         </a>
-                        
+
                         <div style="margin-top: 20px; color: white; font-size: 14px; opacity: 0.9;">
                             <p>✅ Bảo mật cao với mã hóa SSL</p>
                             <p>✅ Hỗ trợ thẻ ATM, Visa, Mastercard</p>
                             <p>✅ Xác nhận thanh toán ngay lập tức</p>
                         </div>
                     </div>
-                    
+
                     <!-- Instructions -->
                     <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
                         <h4 style="color: #856404; margin-top: 0; margin-bottom: 15px;">📝 Hướng dẫn thanh toán:</h4>
@@ -177,14 +193,14 @@ public class EmailService {
                             <li>Hệ thống sẽ tự động xác nhận và gửi email xác nhận</li>
                         </ol>
                     </div>
-                    
+
                     <!-- Footer -->
                     <div style="text-align: center; padding-top: 20px; border-top: 1px solid #ddd; color: #666;">
                         <p style="margin: 10px 0; font-size: 14px;">Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>
                         <p style="margin: 5px 0; font-weight: bold; color: #2c5aa0;">📞 Hotline: 1900 1234 | 📧 Email: info@panaceahotel.com</p>
                         <p style="margin: 20px 0 0 0; font-size: 12px; color: #999;">Trân trọng,<br>Đội ngũ Panacea Hotel</p>
                     </div>
-                    
+
                 </div>
             </body>
             </html>
@@ -196,6 +212,7 @@ public class EmailService {
             booking.getSoNguoiLon(),
             booking.getSoTreEm(),
             booking.getTongThanhToan().doubleValue(),
+            overtimeBreakdown,
             vnpayUrl
         );
     }

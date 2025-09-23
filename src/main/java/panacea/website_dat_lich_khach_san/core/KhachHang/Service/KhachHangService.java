@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import panacea.website_dat_lich_khach_san.repository.RoomTypeRepository;
 import panacea.website_dat_lich_khach_san.repository.RoomImagesRepositoty;
 import panacea.website_dat_lich_khach_san.infrastructure.DTO.RoomTypeDTO;
 import panacea.website_dat_lich_khach_san.service.VNPayService;
+import panacea.website_dat_lich_khach_san.service.SePayService;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -64,6 +66,8 @@ public class KhachHangService {
     
     @Autowired
     private VNPayService vnPayService;
+    @Autowired
+    private SePayService sePayService;
     @Autowired
     private RoomPricingRepositoty roomPricingRepositoty;
     @Autowired
@@ -198,8 +202,33 @@ public class KhachHangService {
 
             bookingRepository.save(booking);
 
-            // --- Đọc ảnh QR Momo tĩnh từ resources ---
-            InputStreamSource qrImage = new ClassPathResource("static/img/momo-qr.png");
+            // --- Tạo URL QR code SePay để tạo nút click ---
+            String qrImageUrl = sePayService.getSePayQRImageUrl(
+                booking.getTienDatCoc(), 
+                maDatPhong, 
+                "DatPhong_" + maDatPhong
+            );
+            
+            // Fallback: nếu URL SePay không hoạt động, tạo QR code bằng ZXing
+            if (qrImageUrl == null || qrImageUrl.isEmpty()) {
+                System.out.println("SePay URL failed, generating QR with ZXing fallback");
+                byte[] qrCodeBytes = sePayService.generateSePayQRCodeFallback(
+                    booking.getTienDatCoc(), 
+                    maDatPhong, 
+                    "DatPhong_" + maDatPhong
+                );
+                if (qrCodeBytes != null) {
+                    // Tạo data URL cho QR code ZXing
+                    String base64QR = java.util.Base64.getEncoder().encodeToString(qrCodeBytes);
+                    qrImageUrl = "data:image/png;base64," + base64QR;
+                } else {
+                    // Fallback cuối cùng: sử dụng placeholder
+                    qrImageUrl = "https://via.placeholder.com/250x250?text=QR+Code+Error";
+                }
+            }
+            
+            // Không cần attachment nữa vì sử dụng nút click
+            InputStreamSource qrImage = null;
 
             // Gửi mail cho khách hàng
             if (mailSender != null) {
@@ -238,10 +267,20 @@ public class KhachHangService {
                                 "<p><b>Tiền cọc (50%%):</b> %,.0f VNĐ</p>" +
                                 "<p><b>Số tiền còn lại:</b> %,.0f VNĐ (thanh toán khi nhận phòng)</p>" +
                                 "</div>" +
-                                "<p>Vui lòng thanh toán qua Momo bằng cách quét mã QR dưới đây:</p>" +
-                                "<img src='cid:qr_momo' width='250' height='250'/>" +
-                                "<p><b>Nội dung chuyển khoản: </b>DatPhong_%s</p>" +
-                                "<p><b>Lưu ý:</b> Sau khi chuyển khoản, vui lòng giữ lại biên lai để đối chiếu khi nhận phòng.</p>" +
+                    "<p>Vui lòng thanh toán <b>tiền cọc</b> qua SePay bằng cách nhấn nút QR dưới đây:</p>" +
+                    "<div style='text-align: center; margin: 20px 0;'>" +
+                    "<a href='%s' target='_blank' " +
+                    "style='display: inline-block; background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); " +
+                    "color: white; padding: 20px 40px; text-decoration: none; border-radius: 50px; " +
+                    "font-weight: bold; font-size: 18px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); " +
+                    "transition: all 0.3s ease; border: none; cursor: pointer;'>" +
+                    "📱 Quét QR Code SePay</a>" +
+                    "</div>" +
+                    "<p><b>Tài khoản ngân hàng:</b> %s - %s</p>" +
+                    "<p><b>Số tiền cọc cần thanh toán:</b> %,.0f VNĐ</p>" +
+                    "<p><b>Nội dung chuyển khoản: </b>DatPhong_%s</p>" +
+                    "<p><b>Lưu ý:</b> Đây là tiền cọc (50%% tổng tiền phòng). Số tiền còn lại sẽ thanh toán khi nhận phòng.</p>" +
+                    "<p><b>Hướng dẫn:</b> Nhấn nút trên để mở QR code SePay, sau đó quét bằng app ngân hàng để thanh toán.</p>" +
                                 "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
                                 "<br><b>Panacea Hotel</b>",
                         dto.getTenKhach(),
@@ -257,22 +296,27 @@ public class KhachHangService {
                         tongTienPhong.doubleValue(),
                         booking.getTienDatCoc().doubleValue(),
                         tongTienPhong.subtract(booking.getTienDatCoc()).doubleValue(),
+                        qrImageUrl != null ? qrImageUrl : "https://via.placeholder.com/250x250?text=QR+Code+Error",
+                        sePayService.getBankAccountInfo().get("account"),
+                        sePayService.getBankAccountInfo().get("bank"),
+                        booking.getTienDatCoc().doubleValue(),
                         maDatPhong
                 );
-                // Thêm phần VNPAY vào text
-                text += "<p>Vui lòng thanh toán bằng VNPAY:</p>" +
+                // Thêm phần VNPAY vào text (cũng sử dụng tiền cọc)
+                text += "<p>Hoặc thanh toán <b>tiền cọc</b> bằng VNPAY:</p>" +
                     "<div style='text-align: center; margin: 20px 0;'>" +
-                    "<a href='" + (vnPayService != null ? vnPayService.createPaymentUrl(booking.getTongThanhToan().longValue(), maDatPhong) : "#") + "' " +
+                    "<a href='" + (vnPayService != null ? vnPayService.createPaymentUrl(booking.getTienDatCoc().longValue(), maDatPhong) : "#") + "' " +
                     "style='display: inline-block; background-color: #ff6b35; color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);'>" +
-                    "🚀 Thanh toán ngay với VNPAY</a>" +
+                    "🚀 Thanh toán cọc với VNPAY</a>" +
                     "</div>" +
-                    "<p><b>Số tiền cần thanh toán: </b>" + String.format("%,.0f", booking.getTongThanhToan().doubleValue()) + " VNĐ</p>" +
+                    "<p><b>Số tiền cọc cần thanh toán: </b>" + String.format("%,.0f", booking.getTienDatCoc().doubleValue()) + " VNĐ</p>" +
                     "<p><b>Mã đặt phòng: </b>" + maDatPhong + "</p>" +
-                    "<p><b>Lưu ý:</b> Click vào nút trên để thanh toán an toàn và nhanh chóng.</p>" +
+                    "<p><b>Lưu ý:</b> Đây là tiền cọc (50%% tổng tiền phòng). Click vào nút trên để thanh toán an toàn và nhanh chóng.</p>" +
                     "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
                     "<br><b>Panacea Hotel</b>";
                 
-                sendMailWithQRFile(dto.getEmailKhach(), subject, text, qrImage);
+            // Gửi email với nút QR code (không cần attachment)
+            sendMail(dto.getEmailKhach(), subject, text);
             }
             return true;
         } catch (Exception e) {
@@ -479,7 +523,7 @@ public class KhachHangService {
         helper.setSubject(subject);
         helper.setText(html, true);
         if (qrImage != null) {
-            helper.addInline("qr_momo", qrImage, "image/png");
+            helper.addInline("qr_sepay", qrImage, "image/png");
         }
         mailSender.send(message);
     }

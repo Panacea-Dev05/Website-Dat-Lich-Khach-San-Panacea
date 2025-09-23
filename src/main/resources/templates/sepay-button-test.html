@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nút QR SePay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .qr-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .qr-button:active {
+            transform: translateY(-1px);
+        }
+
+        .test-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .url-display {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            border: 2px solid #dee2e6;
+        }
+
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📱 Test Nút QR SePay</h1>
+
+        <div class="info-box">
+            <h3>Thông tin hiện tại:</h3>
+            <p><strong>Số tiền:</strong> <span th:text="${amount}">50000</span> VNĐ</p>
+            <p><strong>Mã đơn hàng:</strong> <span th:text="${orderId}">BOOK1758620982318</span></p>
+            <p><strong>Nội dung:</strong> <span th:text="${description}">DatPhong_BOOK1758620982318</span></p>
+        </div>
+
+        <div style="text-align: center;">
+            <h3>Nút QR Code SePay:</h3>
+            <a th:href="${qrUrl}" target="_blank" class="qr-button">
+                📱 Quét QR Code SePay
+            </a>
+        </div>
+
+        <div class="url-display">
+            <strong>URL QR:</strong><br>
+            <span th:text="${qrUrl}">https://qr.sepay.vn/img?...</span>
+        </div>
+
+        <div class="test-form">
+            <h3>Test với thông tin khác:</h3>
+            <form method="get">
+                <div class="form-group">
+                    <label for="amount">Số tiền (VNĐ):</label>
+                    <input type="number" id="amount" name="amount" th:value="${amount}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderId">Mã đơn hàng:</label>
+                    <input type="text" id="orderId" name="orderId" th:value="${orderId}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Nội dung:</label>
+                    <input type="text" id="description" name="description" th:value="${description}" required>
+                </div>
+
+                <button type="submit">🔄 Tạo Nút QR Mới</button>
+            </form>
+        </div>
+
+        <div class="info-box">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <ol>
+                <li>Nhấn nút "📱 Quét QR Code SePay" ở trên</li>
+                <li>Trang SePay sẽ mở trong tab mới</li>
+                <li>Quét QR code bằng app ngân hàng</li>
+                <li>Thanh toán với thông tin đã được điền sẵn</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h3>Lợi ích của nút QR:</h3>
+            <ul>
+                <li>✅ Không bị lỗi ảnh trong email</li>
+                <li>✅ Hoạt động trên mọi email client</li>
+                <li>✅ Mở trong tab mới, không làm mất email</li>
+                <li>✅ Có thể test URL trước khi gửi</li>
+                <li>✅ Fallback tự động nếu SePay API lỗi</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
