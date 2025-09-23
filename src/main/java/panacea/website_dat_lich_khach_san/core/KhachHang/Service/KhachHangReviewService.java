@@ -91,16 +91,9 @@ public class KhachHangReviewService {
                     bookingId = unratedBooking.getId();
                     System.out.println("[DEBUG] - Tìm thấy booking chưa đánh giá ID: " + bookingId);
                 } else {
-                    // Nếu tất cả booking đã được đánh giá, tạo booking mới để đánh giá
-                    System.out.println("[DEBUG] Tất cả booking đã được đánh giá, tạo booking mới...");
-                    // Tạo booking mới cho khách hàng (giả lập)
-                    bookingId = System.currentTimeMillis() % 1000000; // ID tạm thời
-                    System.out.println("[DEBUG] - Sử dụng booking ID tạm thời: " + bookingId);
-                    // Tạo booking tạm thời
-                    Booking tempBooking = new Booking();
-                    tempBooking.setId(bookingId);
-                    tempBooking.setKhachHang(customerOpt.get());
-                    bookingOpt = Optional.of(tempBooking);
+                    // Nếu tất cả booking đã được đánh giá, không cho phép đánh giá thêm
+                    System.out.println("[DEBUG] Tất cả booking đã được đánh giá, không thể tạo đánh giá mới");
+                    throw new RuntimeException("Khách hàng đã đánh giá tất cả booking của mình");
                 }
             }
             

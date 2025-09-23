@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.Async;
+import panacea.website_dat_lich_khach_san.service.EmailService;
 import panacea.website_dat_lich_khach_san.entity.Booking;
 import panacea.website_dat_lich_khach_san.entity.BookingDetail;
 import panacea.website_dat_lich_khach_san.entity.Room;

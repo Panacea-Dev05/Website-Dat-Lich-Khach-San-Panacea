@@ -166,9 +166,20 @@
             text-transform: uppercase;
         }
 
-        .status.completed { background: #dcfce7; color: #166534; }
-        .status.pending { background: #fef3c7; color: #92400e; }
-        .status.failed { background: #fecaca; color: #991b1b; }
+        .status.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.failed {
+            background: #fecaca;
+            color: #991b1b;
+        }
 
         /* Responsive cho layout 2 cột */
         @media (max-width: 1200px) {
@@ -183,7 +194,7 @@
                 grid-template-columns: 1fr !important;
                 gap: 1rem !important;
             }
-            
+
             #paymentDetails {
                 position: static !important;
                 margin-top: 1rem;
@@ -199,11 +210,11 @@
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .section[style*="grid-template-columns"] {
                 padding: 1rem;
             }
-            
+
             #paymentDetails {
                 padding: 1rem !important;
             }
@@ -212,10 +223,12 @@
         .app-layout {
             display: grid;
             grid-template-areas:
-        "header header"
-        "sidebar main";
-            grid-template-columns: 260px 1fr; /* Độ rộng của sidebar và phần còn lại */
-            grid-template-rows: auto 1fr;    /* Chiều cao của header và phần còn lại */
+                "header header"
+                "sidebar main";
+            grid-template-columns: 260px 1fr;
+            /* Độ rộng của sidebar và phần còn lại */
+            grid-template-rows: auto 1fr;
+            /* Chiều cao của header và phần còn lại */
             height: 100vh;
         }
 
@@ -233,7 +246,8 @@
         }
 
         .main-content {
-            grid-area: main; /* Thêm dòng này để chỉ định vùng cho main-content */
+            grid-area: main;
+            /* Thêm dòng này để chỉ định vùng cho main-content */
             flex: 1;
             overflow-y: auto;
             height: 100vh;
@@ -263,16 +277,16 @@
                 min-width: 70px;
             }
         }
-        
+
         /* Modal styles */
         .modal-backdrop {
             z-index: 1040;
         }
-        
+
         .modal {
             z-index: 1050;
         }
-        
+
         .modal-dialog {
             margin: 1.75rem auto;
         }
@@ -290,39 +304,49 @@
         <aside class="sidebar" th:replace="~{NhanVien/sidebar :: sidebar}"></aside>
         <main class="main-content">
             <!-- Layout 2 cột: Form bên trái, Chi tiết bên phải -->
-            <div class="section" style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem; align-items: start;">
+            <div class="section"
+                style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem; align-items: start;">
                 <!-- Form tạo thanh toán -->
                 <div>
                     <h2><span class="material-icons">payment</span> Tạo thanh toán</h2>
                     <form id="paymentForm" action="/nhanvien/thanhtoan/create" method="post">
-                        <div><label>Mã booking</label><select id="bookingId" name="bookingId" required onchange="updatePaymentInfo()">
+                        <div><label>Mã booking</label><select id="bookingId" name="bookingId" required
+                                onchange="updatePaymentInfo()">
                                 <option disabled selected>Chọn booking...</option>
-                                <option th:each="bk : ${bookings}" 
-                                        th:value="${bk.id}" 
-                                        th:text="${bk.id + ' - ' + (bk.khachHang != null ? (bk.khachHang.ho + ' ' + bk.khachHang.ten) : 'Không rõ')}"
-                                        th:data-room-total="${bk.tongTienPhong}"
-                                        th:data-service-total="${bk.tongTienDichVu}"
-                                        th:data-deposit="${bk.tongTienPhong != null ? bk.tongTienPhong / 2 : 0}"
-                                        th:data-payment-total="${bookingTotalAmounts[bk.id]}"></option>
+                                <option th:each="bk : ${bookings}" th:value="${bk.id}"
+                                    th:text="${bk.id + ' - ' + (bk.khachHang != null ? (bk.khachHang.ho + ' ' + bk.khachHang.ten) : 'Không rõ')}"
+                                    th:data-room-total="${bk.tongTienPhong}"
+                                    th:data-service-total="${bk.tongTienDichVu}"
+                                    th:data-deposit="${bk.tongTienPhong != null ? bk.tongTienPhong / 2 : 0}"
+                                    th:data-payment-total="${bookingTotalAmounts[bk.id]}"></option>
                             </select></div>
-                        
-                        <div><label>Số tiền</label><input id="soTien" type="number" name="soTien" placeholder="VND" min="1000" step="1000" readonly required style="background-color: #f3f4f6; cursor: not-allowed;" /></div>
+
+                        <div><label>Số tiền</label><input id="soTien" type="number" name="soTien" placeholder="VND"
+                                min="1000" step="1000" readonly required
+                                style="background-color: #f3f4f6; cursor: not-allowed;" /></div>
                         <div><label>Phương thức</label><select id="phuongThuc" name="phuongThuc" required>
                                 <option value="" disabled selected>Chọn phương thức...</option>
-                                <option th:each="pt : ${phuongThucList}" th:value="${pt}" th:text="${pt == 'CASH' ? 'Tiền mặt' : (pt == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : pt)}"></option>
+                                <option th:each="pt : ${phuongThucList}" th:value="${pt}"
+                                    th:text="${pt == 'CASH' ? 'Tiền mặt' : (pt == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : pt)}">
+                                </option>
                             </select></div>
-                        <div><label>Nội dung</label><input id="noiDung" type="text" name="noiDung" placeholder="Nhập nội dung thanh toán" /></div>
-                        <div><label>Mã giao dịch (nếu có)</label><input id="maGiaoDich" type="text" name="maGiaoDich" placeholder="Mã giao dịch từ ngân hàng" /></div>
+                        <div><label>Nội dung</label><input id="noiDung" type="text" name="noiDung"
+                                placeholder="Nhập nội dung thanh toán" /></div>
+                        <div><label>Mã giao dịch (nếu có)</label><input id="maGiaoDich" type="text" name="maGiaoDich"
+                                placeholder="Mã giao dịch từ ngân hàng" /></div>
                         <div style="align-self:end">
                             <button type="submit" class="btn"><span class="material-icons">add</span>Tạo</button>
                         </div>
                     </form>
                 </div>
-                
+
                 <!-- Chi tiết tính toán bên phải -->
-                <div id="paymentDetails" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); position: sticky; top: 2rem;">
-                    <h3 style="margin-bottom: 1rem; color: white; display: flex; align-items: center; gap: 0.5rem;"><span class="material-icons">calculate</span>Chi tiết tính toán</h3>
-                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <div id="paymentDetails"
+                    style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); position: sticky; top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-icons">calculate</span>Chi tiết tính toán</h3>
+                    <div
+                        style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                             <span>Tổng tiền phòng:</span>
                             <span id="roomTotal" style="font-weight: bold;">0 VND</span>
@@ -331,19 +355,24 @@
                             <span>Tổng tiền dịch vụ:</span>
                             <span id="serviceTotal" style="font-weight: bold;">0 VND</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #ffcccb;">
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #ffcccb;">
                             <span>Tiền cọc đã trả (50%):</span>
                             <span id="depositAmount" style="font-weight: bold;">0 VND</span>
                         </div>
                     </div>
-                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
+                    <div
+                        style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 1.1rem; font-weight: bold;">Tổng cần thanh toán:</span>
-                            <span id="totalPayment" style="font-size: 1.3rem; font-weight: bold; color: #90EE90;">0 VND</span>
+                            <span id="totalPayment" style="font-size: 1.3rem; font-weight: bold; color: #90EE90;">0
+                                VND</span>
                         </div>
                     </div>
-                    <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.85rem; text-align: center;">
-                        <span class="material-icons" style="font-size: 1rem; vertical-align: middle; margin-right: 0.25rem;">info</span>
+                    <div
+                        style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.85rem; text-align: center;">
+                        <span class="material-icons"
+                            style="font-size: 1rem; vertical-align: middle; margin-right: 0.25rem;">info</span>
                         Công thức: Tiền phòng + Dịch vụ - Cọc
                     </div>
                 </div>
@@ -368,22 +397,30 @@
                         <tr th:each="payment : ${payments}">
                             <td th:text="${payment.id}"></td>
                             <td th:text="${payment.booking?.id ?: 'N/A'}"></td>
-                            <td th:text="${payment.phuongThuc == 'CASH' ? 'Tiền mặt' : (payment.phuongThuc == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : payment.phuongThuc)}"></td>
-                            <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                            <td
+                                th:text="${payment.phuongThuc == 'CASH' ? 'Tiền mặt' : (payment.phuongThuc == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : payment.phuongThuc)}">
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(payment.soTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            </td>
                             <td>
-                                <span th:class="'status ' + ${payment.trangThai?.name() == 'THANH_CONG' ? 'completed' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'pending' : 'failed')}"
-                                      th:text="${payment.trangThai?.name() == 'THANH_CONG' ? 'Hoàn thành' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'Đang xử lý' : (payment.trangThai?.value ?: 'N/A'))}"></span>
+                                <span
+                                    th:class="'status ' + ${payment.trangThai?.name() == 'THANH_CONG' ? 'completed' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'pending' : 'failed')}"
+                                    th:text="${payment.trangThai?.name() == 'THANH_CONG' ? 'Hoàn thành' : (payment.trangThai?.name() == 'DANG_XU_LY' ? 'Đang xử lý' : (payment.trangThai?.value ?: 'N/A'))}"></span>
                             </td>
                             <td th:text="${#temporals.format(payment.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn btn-view-detail" th:data-payment-id="${payment.id}" title="Xem chi tiết">
+                                    <button class="btn btn-view-detail" th:data-payment-id="${payment.id}"
+                                        title="Xem chi tiết">
                                         <span class="material-icons">visibility</span>Chi tiết
                                     </button>
-                                    <button class="btn btn-print-invoice" th:data-payment-id="${payment.id}" title="In hóa đơn">
+                                    <button class="btn btn-print-invoice" th:data-payment-id="${payment.id}"
+                                        title="In hóa đơn">
                                         <span class="material-icons">print</span>In hóa đơn
                                     </button>
-                                    <button th:if="${payment.trangThai?.name() == 'DANG_XU_LY'}" class="btn btn-confirm-payment" th:data-payment-id="${payment.id}" title="Xác nhận thanh toán">
+                                    <button th:if="${payment.trangThai?.name() == 'DANG_XU_LY'}"
+                                        class="btn btn-confirm-payment" th:data-payment-id="${payment.id}"
+                                        title="Xác nhận thanh toán">
                                         <span class="material-icons">check</span>Xác nhận
                                     </button>
                                 </div>
@@ -391,7 +428,8 @@
                         </tr>
                         <tr th:if="${#lists.isEmpty(payments)}">
                             <td colspan="7" style="text-align: center; color: #6b7280; padding: 2rem;">
-                                <span class="material-icons" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">inbox</span>
+                                <span class="material-icons"
+                                    style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">inbox</span>
                                 Chưa có giao dịch nào
                             </td>
                         </tr>
@@ -400,7 +438,7 @@
             </div>
         </main>
     </div>
-    
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -687,6 +687,9 @@ function showInvoiceModal(invoiceContent) {
   // Escape HTML to prevent XSS
   const escapedContent = $("<div>").text(invoiceContent).html();
 
+  // Check if content is HTML or plain text
+  const isHTML = invoiceContent.includes('<!DOCTYPE html>') || invoiceContent.includes('<html>');
+  
   const modalHtml = `
         <div class="modal fade" id="invoiceModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
@@ -698,7 +701,7 @@ function showInvoiceModal(invoiceContent) {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <pre style="white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto;">${escapedContent}</pre>
+                        ${isHTML ? invoiceContent : `<pre style="white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto;">${escapedContent}</pre>`}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="printInvoiceContent()">In hóa đơn</button>
@@ -866,7 +869,17 @@ function showPaymentDetailModal(payment) {
 
 function printInvoiceContent() {
   try {
-    const content = $("#invoiceModal pre").text();
+    // Get content from modal - check if it's HTML or text
+    const modalBody = $("#invoiceModal .modal-body");
+    let content;
+    
+    if (modalBody.find("pre").length > 0) {
+      // Plain text content
+      content = modalBody.find("pre").text();
+    } else {
+      // HTML content
+      content = modalBody.html();
+    }
 
     if (!content || content.trim() === "") {
       showError("Không có nội dung hóa đơn để in");
@@ -880,20 +893,58 @@ function printInvoiceContent() {
       return;
     }
 
-    printWindow.document.write(`
+    // Check if content is HTML or plain text
+    const isHTML = content.includes('<!DOCTYPE html>') || content.includes('<html>');
+    
+    if (isHTML) {
+      // Content is already HTML, display it directly
+      printWindow.document.write(content);
+    } else {
+      // Content is plain text, wrap it in HTML with centered styling
+      printWindow.document.write(`
             <html>
                 <head>
                     <title>Hóa đơn thanh toán</title>
                     <style>
-                        body { font-family: monospace; white-space: pre-wrap; margin: 20px; }
-                        @media print { body { margin: 0; } }
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            white-space: pre-wrap; 
+                            margin: 20px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 100vh;
+                        }
+                        .invoice-container {
+                            max-width: 800px;
+                            width: 100%;
+                            text-align: center;
+                            background: white;
+                            padding: 30px;
+                            border: 1px solid #ddd;
+                        }
+                        @media print { 
+                            body { 
+                                margin: 0;
+                                display: block;
+                            }
+                            .invoice-container {
+                                max-width: none;
+                                width: 100%;
+                                border: none;
+                                box-shadow: none;
+                            }
+                        }
                     </style>
                 </head>
                 <body>
-                    ${$("<div>").text(content).html()}
+                    <div class="invoice-container">
+                        ${$("<div>").text(content).html()}
+                    </div>
                 </body>
             </html>
         `);
+    }
 
     printWindow.document.close();
 

@@ -163,11 +163,21 @@ public class ThanhToanService {
             // Tổng tiền dịch vụ
             BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
             
-            // Tiền cọc (50% tiền phòng)
-            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            // Tổng tiền tổng cộng
+            BigDecimal tongTienTongCong = tongTienPhong.add(tongTienDichVu);
             
-            // Tổng cần thanh toán = Tiền phòng + Tiền dịch vụ - Tiền cọc
-            BigDecimal tongCanThanhToan = tongTienPhong.add(tongTienDichVu).subtract(tienCoc);
+            // Tiền cọc
+            BigDecimal tienCoc = booking.getTienDatCoc() != null ? booking.getTienDatCoc() : tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            
+            // Tính tổng tiền đã thanh toán thành công
+            BigDecimal tongDaThanhToan = paymentRepository.findAll().stream()
+                .filter(p -> p.getBooking() != null && p.getBooking().getId().equals(bookingId))
+                .filter(p -> p.getTrangThai() == TrangThaiPayment.THANH_CONG)
+                .map(Payment::getSoTien)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Tổng cần thanh toán = Tổng tiền - Tiền cọc - Đã thanh toán
+            BigDecimal tongCanThanhToan = tongTienTongCong.subtract(tienCoc).subtract(tongDaThanhToan);
             
             return tongCanThanhToan.compareTo(BigDecimal.ZERO) > 0 ? tongCanThanhToan : BigDecimal.ZERO;
             
@@ -191,27 +201,66 @@ public class ThanhToanService {
             // Tính toán chi tiết
             BigDecimal tongTienPhong = booking.getTongTienPhong() != null ? booking.getTongTienPhong() : BigDecimal.ZERO;
             BigDecimal tongTienDichVu = booking.getTongTienDichVu() != null ? booking.getTongTienDichVu() : BigDecimal.ZERO;
-            BigDecimal tienCoc = tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
-            BigDecimal tongCanThanhToan = calculateTotalPaymentAmount(booking.getId());
+            BigDecimal tongTienTongCong = tongTienPhong.add(tongTienDichVu);
+            BigDecimal tienCoc = booking.getTienDatCoc() != null ? booking.getTienDatCoc() : tongTienPhong.divide(BigDecimal.valueOf(2), 0, java.math.RoundingMode.HALF_UP);
+            
+            // Tính tổng tiền đã thanh toán trước đó
+            BigDecimal tongDaThanhToan = paymentRepository.findAll().stream()
+                .filter(p -> p.getBooking() != null && p.getBooking().getId().equals(booking.getId()))
+                .filter(p -> p.getTrangThai() == TrangThaiPayment.THANH_CONG)
+                .filter(p -> !p.getId().equals(payment.getId())) // Loại trừ payment hiện tại
+                .map(Payment::getSoTien)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Tổng cần thanh toán = Tổng tiền - Tiền cọc - Đã thanh toán
+            BigDecimal tongCanThanhToan = tongTienTongCong.subtract(tienCoc).subtract(tongDaThanhToan);
             
             StringBuilder invoice = new StringBuilder();
-            invoice.append("=== HÓA ĐƠN THANH TOÁN ===\n");
-            invoice.append("Mã thanh toán: ").append(payment.getId()).append("\n");
-            invoice.append("Mã booking: ").append(booking.getId()).append("\n");
-            invoice.append("Khách hàng: ").append(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen()).append("\n");
-            invoice.append("\n--- CHI TIẾT TÍNH TOÁN ---\n");
-            invoice.append("Tổng tiền phòng: ").append(String.format("%,.0f", tongTienPhong)).append(" VND\n");
-            invoice.append("Tổng tiền dịch vụ: ").append(String.format("%,.0f", tongTienDichVu)).append(" VND\n");
-            invoice.append("Tiền cọc đã trả (50%): ").append(String.format("%,.0f", tienCoc)).append(" VND\n");
-            invoice.append("\n--- TỔNG KẾT ---\n");
-            invoice.append("Tổng cần thanh toán: ").append(String.format("%,.0f", tongCanThanhToan)).append(" VND\n");
-            invoice.append("Số tiền thanh toán này: ").append(String.format("%,.0f", payment.getSoTien())).append(" VND\n");
-            invoice.append("\n--- THÔNG TIN THANH TOÁN ---\n");
-            invoice.append("Phương thức: ").append(payment.getPhuongThuc()).append("\n");
-            invoice.append("Trạng thái: ").append(payment.getTrangThai()).append("\n");
-            invoice.append("Ngày tạo: ").append(payment.getCreatedDate()).append("\n");
-            invoice.append("Nhân viên: ").append(getStaffName()).append("\n");
-            invoice.append("========================\n");
+            invoice.append("<!DOCTYPE html>");
+            invoice.append("<html><head>");
+            invoice.append("<meta charset='UTF-8'>");
+            invoice.append("<title>Hóa đơn thanh toán</title>");
+            invoice.append("<style>");
+            invoice.append("body { font-family: Arial, sans-serif; margin: 0; padding: 20px; text-align: center; }");
+            invoice.append(".invoice-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border: 1px solid #ddd; }");
+            invoice.append(".header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }");
+            invoice.append(".section { margin: 20px 0; text-align: left; }");
+            invoice.append(".section h3 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 10px; }");
+            invoice.append(".row { display: flex; justify-content: space-between; margin: 10px 0; }");
+            invoice.append(".label { font-weight: bold; }");
+            invoice.append(".amount { color: #d32f2f; font-weight: bold; }");
+            invoice.append("@media print { body { margin: 0; } .invoice-container { border: none; box-shadow: none; } }");
+            invoice.append("</style></head><body>");
+            invoice.append("<div class='invoice-container'>");
+            invoice.append("<div class='header'>");
+            invoice.append("<h1>HÓA ĐƠN THANH TOÁN</h1>");
+            invoice.append("</div>");
+            invoice.append("<div class='section'>");
+            invoice.append("<div class='row'><span class='label'>Mã thanh toán:</span><span>").append(payment.getId()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Mã booking:</span><span>").append(booking.getId()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Khách hàng:</span><span>").append(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen()).append("</span></div>");
+            invoice.append("</div>");
+            invoice.append("<div class='section'>");
+            invoice.append("<h3>CHI TIẾT TÍNH TOÁN</h3>");
+            invoice.append("<div class='row'><span class='label'>Tổng tiền phòng:</span><span class='amount'>").append(String.format("%,.0f", tongTienPhong)).append(" VND</span></div>");
+            invoice.append("<div class='row'><span class='label'>Tổng tiền dịch vụ:</span><span class='amount'>").append(String.format("%,.0f", tongTienDichVu)).append(" VND</span></div>");
+            invoice.append("<div class='row'><span class='label'>Tổng cộng:</span><span class='amount'>").append(String.format("%,.0f", tongTienTongCong)).append(" VND</span></div>");
+            invoice.append("<div class='row'><span class='label'>Tiền cọc đã trả:</span><span class='amount'>").append(String.format("%,.0f", tienCoc)).append(" VND</span></div>");
+            invoice.append("<div class='row'><span class='label'>Đã thanh toán trước:</span><span class='amount'>").append(String.format("%,.0f", tongDaThanhToan)).append(" VND</span></div>");
+            invoice.append("</div>");
+            invoice.append("<div class='section'>");
+            invoice.append("<h3>TỔNG KẾT</h3>");
+            invoice.append("<div class='row'><span class='label'>Còn lại cần thanh toán:</span><span class='amount'>").append(String.format("%,.0f", tongCanThanhToan)).append(" VND</span></div>");
+            invoice.append("<div class='row'><span class='label'>Số tiền thanh toán này:</span><span class='amount'>").append(String.format("%,.0f", payment.getSoTien())).append(" VND</span></div>");
+            invoice.append("</div>");
+            invoice.append("<div class='section'>");
+            invoice.append("<h3>THÔNG TIN THANH TOÁN</h3>");
+            invoice.append("<div class='row'><span class='label'>Phương thức:</span><span>").append(payment.getPhuongThuc()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Trạng thái:</span><span>").append(payment.getTrangThai()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Ngày tạo:</span><span>").append(payment.getCreatedDate()).append("</span></div>");
+            invoice.append("<div class='row'><span class='label'>Nhân viên:</span><span>").append(getStaffName()).append("</span></div>");
+            invoice.append("</div>");
+            invoice.append("</div></body></html>");
             
             return invoice.toString();
             

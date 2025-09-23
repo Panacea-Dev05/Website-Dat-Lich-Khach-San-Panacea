@@ -618,6 +618,11 @@
                                         <span class="total-label">Tổng tiền:</span>
                                         <span class="total-amount" id="totalPriceDisplay">1,500,000 VNĐ</span>
                                     </div>
+                                    <div class="price-divider"></div>
+                                    <div class="price-item">
+                                        <span class="price-label">Số tiền cọc (50%):</span>
+                                        <span class="price-value" id="depositAmountDisplay">750,000 VNĐ</span>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1176,6 +1181,14 @@
 
             if (totalPriceDisplay) {
                 totalPriceDisplay.textContent = `${totalPrice.toLocaleString('vi-VN')} VNĐ`;
+            }
+            
+            // Cập nhật tiền cọc (50% tổng tiền)
+            const depositAmountDisplay = document.getElementById('depositAmountDisplay');
+            if (depositAmountDisplay) {
+                const depositAmount = Math.round(totalPrice * 0.5);
+                depositAmountDisplay.textContent = `${depositAmount.toLocaleString('vi-VN')} VNĐ`;
+                console.log('Cập nhật tiền cọc:', depositAmount);
             }
         }
 
