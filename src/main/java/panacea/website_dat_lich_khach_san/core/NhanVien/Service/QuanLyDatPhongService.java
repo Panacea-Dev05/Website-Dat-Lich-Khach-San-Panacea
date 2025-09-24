@@ -91,12 +91,93 @@ public class QuanLyDatPhongService {
     @Autowired
     private InventoryManagementRepository inventoryManagementRepository;
 
+    @Autowired
+    private RoomUsageRepository roomUsageRepository;
+
     /**
      * Lấy tên nhân viên hiện tại (hardcoded)
      * @return String - Tên nhân viên
      */
     public String getStaffName() {
         return "Nguyễn Văn A";
+    }
+
+    /**
+     * Lấy số phòng từ Booking thông qua BookingDetail
+     * @param booking - Thông tin booking
+     * @return String - Số phòng hoặc null nếu không tìm thấy
+     */
+    private String getRoomNumberFromBooking(Booking booking) {
+        try {
+            // Lấy BookingDetail đầu tiên của booking này
+            List<BookingDetail> bookingDetails = bookingDetailRepository.findByDatPhongId(booking.getId());
+            if (bookingDetails != null && !bookingDetails.isEmpty()) {
+                BookingDetail detail = bookingDetails.get(0);
+                if (detail.getRoom() != null) {
+                    return detail.getRoom().getSoPhong();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Lỗi khi lấy số phòng từ booking: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Ghi nhận lịch sử giao dịch đồ khi thêm cho khách hàng
+     * @param booking - Thông tin booking
+     * @param inventory - Thông tin vật phẩm
+     * @param soLuong - Số lượng sử dụng
+     * @param nhanVienGhiNhan - Tên nhân viên ghi nhận
+     */
+    private void logInventoryTransaction(Booking booking, InventoryManagement inventory, 
+                                       Integer soLuong, String nhanVienGhiNhan) {
+        try {
+            // Validation đầu vào
+            if (booking == null || inventory == null || soLuong == null || soLuong <= 0) {
+                logger.warn("Dữ liệu không hợp lệ để ghi nhận lịch sử giao dịch đồ");
+                return;
+            }
+            
+            if (booking.getKhachHang() == null) {
+                logger.warn("Thông tin booking không đầy đủ để ghi nhận lịch sử giao dịch đồ");
+                return;
+            }
+            
+            // Lấy thông tin phòng từ BookingDetail
+            String soPhong = getRoomNumberFromBooking(booking);
+            if (soPhong == null) {
+                logger.warn("Không tìm thấy thông tin phòng cho booking: {}", booking.getMaDatPhong());
+                return;
+            }
+            
+            // Tạo bản ghi lịch sử
+            RoomUsage roomUsage = new RoomUsage();
+            roomUsage.setSoPhong(soPhong);
+            roomUsage.setTenVatPham(inventory.getTenVatPham());
+            roomUsage.setMaVatPham(inventory.getMaVatPham());
+            roomUsage.setSoLuongSuDung(soLuong);
+            roomUsage.setLoaiSuDung("Amenities"); // Đồ tiện nghi cho khách
+            roomUsage.setNhanVienGhiNhan(nhanVienGhiNhan != null ? nhanVienGhiNhan : "Hệ thống");
+            roomUsage.setMaDatPhong(booking.getMaDatPhong());
+            roomUsage.setTenKhachHang(booking.getKhachHang().getHo() + " " + booking.getKhachHang().getTen());
+            roomUsage.setNgaySuDung(LocalDateTime.now());
+            roomUsage.setGhiChu("Cấp đồ cho khách hàng - Booking: " + booking.getMaDatPhong());
+            
+            // Lưu vào database
+            roomUsageRepository.save(roomUsage);
+            
+            logger.info("✅ Đã ghi nhận lịch sử giao dịch đồ: {} - Số lượng: {} - Booking: {} - Phòng: {}", 
+                       inventory.getTenVatPham(), soLuong, booking.getMaDatPhong(), soPhong);
+                       
+        } catch (Exception e) {
+            logger.error("❌ Lỗi khi ghi nhận lịch sử giao dịch đồ: {} - Booking: {} - Error: {}", 
+                        inventory != null ? inventory.getTenVatPham() : "Unknown", 
+                        booking != null ? booking.getMaDatPhong() : "Unknown", 
+                        e.getMessage());
+            // Không throw exception để không ảnh hưởng đến chức năng chính
+        }
     }
 
     /**
@@ -1670,6 +1751,9 @@ public class QuanLyDatPhongService {
                     // Cập nhật tồn kho
                     inventory.setSoLuongTon((short)(inventory.getSoLuongTon() - soLuong));
                     inventoryManagementRepository.save(inventory);
+                    
+                    // Ghi nhận lịch sử giao dịch đồ
+                    logInventoryTransaction(booking, inventory, soLuong, getStaffName());
                 }
             }
             
