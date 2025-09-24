@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.UUID;
 
@@ -29,10 +30,12 @@ public class RoomImages {
 
     @ManyToOne
     @JoinColumn(name = "phong_id")
+    @JsonIgnore
     private Room phong;
 
     @ManyToOne
     @JoinColumn(name = "loai_phong_id")
+    @JsonIgnore
     private RoomType loaiPhong;
 
     @Column(name = "url_hinh_anh", nullable = false)

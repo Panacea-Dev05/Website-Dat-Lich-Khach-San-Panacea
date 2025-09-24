@@ -141,6 +141,19 @@
   color: #444;
 }
 
+.admin-modal-price-list li {
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-modal-price-list span {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 1.05em;
+}
+
 .admin-modal-image-section {
   padding: 24px 28px 0 28px;
   display: flex;

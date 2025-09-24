@@ -372,8 +372,8 @@
                     <!-- Filter form -->
                     <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
                         <input type="text" name="keyword" th:value="${keyword}"
-                            placeholder="Tìm kiếm theo tên khách hàng..."
-                            style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; min-width: 200px;" />
+                            placeholder="Tìm kiếm theo tên khách hàng, email, SĐT hoặc mã đặt phòng..."
+                            style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; min-width: 300px;" />
                         <input type="date" name="ngayNhan"
                             th:value="${ngayNhan != null} ? ${#temporals.format(ngayNhan, 'yyyy-MM-dd')} : ''"
                             style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;" />

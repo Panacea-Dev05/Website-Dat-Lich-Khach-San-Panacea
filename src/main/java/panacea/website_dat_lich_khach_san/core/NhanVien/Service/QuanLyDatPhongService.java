@@ -1232,7 +1232,8 @@ public class QuanLyDatPhongService {
                     String lower = keyword.toLowerCase();
                     match &= (b.getKhachHang().getHo() + " " + b.getKhachHang().getTen()).toLowerCase().contains(lower)
                         || (b.getKhachHang().getEmail() != null && b.getKhachHang().getEmail().toLowerCase().contains(lower))
-                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower));
+                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower))
+                        || (b.getMaDatPhong() != null && b.getMaDatPhong().toLowerCase().contains(lower));
                 }
                 if (ngayNhan != null) {
                     match &= b.getNgayNhanPhong() != null && b.getNgayNhanPhong().isEqual(ngayNhan);
@@ -1257,7 +1258,8 @@ public class QuanLyDatPhongService {
                     String lower = keyword.toLowerCase();
                     match &= (b.getKhachHang().getHo() + " " + b.getKhachHang().getTen()).toLowerCase().contains(lower)
                         || (b.getKhachHang().getEmail() != null && b.getKhachHang().getEmail().toLowerCase().contains(lower))
-                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower));
+                        || (b.getKhachHang().getSoDienThoai() != null && b.getKhachHang().getSoDienThoai().toLowerCase().contains(lower))
+                        || (b.getMaDatPhong() != null && b.getMaDatPhong().toLowerCase().contains(lower));
                 }
                 if (ngayNhan != null) {
                     match &= b.getNgayNhanPhong() != null && b.getNgayNhanPhong().isEqual(ngayNhan);

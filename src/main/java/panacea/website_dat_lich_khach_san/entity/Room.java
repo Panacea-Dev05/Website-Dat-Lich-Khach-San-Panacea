@@ -56,10 +56,12 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loai_phong_id", nullable = false)
+    @JsonIgnore
     private RoomType roomType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "khach_san_id", nullable = false)
+    @JsonIgnore
     private Hotel hotel;
 
     @JsonIgnore

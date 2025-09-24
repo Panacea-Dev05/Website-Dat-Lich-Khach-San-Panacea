@@ -2,6 +2,7 @@ package panacea.website_dat_lich_khach_san.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class RoomPricing {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loai_phong_id", nullable = false)
+    @JsonIgnore
     private RoomType roomType;
 
     @Enumerated(EnumType.STRING)

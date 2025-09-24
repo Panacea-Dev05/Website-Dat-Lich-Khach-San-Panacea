@@ -168,22 +168,22 @@
                                     <div class="admin-modal-price-title">Phòng sẽ được áp dụng theo giá của hạng phòng:
                                     </div>
                                     <ul class="admin-modal-price-list">
-                                        <li>Giá giờ:</li>
-                                        <li>Giá cả ngày:</li>
-                                        <li>Giá qua đêm:</li>
-                                        <li>Phụ thu quá giờ:</li>
+                                        <li>Giá giờ: <span id="addGiaGio">0</span> VNĐ</li>
+                                        <li>Giá cả ngày: <span id="addGiaNgay">0</span> VNĐ</li>
+                                        <li>Giá qua đêm: <span id="addGiaQuaDem">0</span> VNĐ</li>
+                                        <li>Phụ thu quá giờ: <span id="addPhuThuQuaGio">0</span> VNĐ/giờ</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <!-- Dưới: Nút thêm ảnh -->
-                        <div class="admin-modal-image-section" style="justify-content: flex-start; padding-bottom: 0;">
-                            <button type="button" id="btnAddRoomImage" class="admin-modal-btn-save-add">
-                                <span class="material-icons">add_photo_alternate</span> Thêm ảnh
-                            </button>
-                            <input id="room-image-upload-input" type="file" accept="image/*" multiple
-                                class="hidden-input" />
-                        </div>
+<!--                        <div class="admin-modal-image-section" style="justify-content: flex-start; padding-bottom: 0;">-->
+<!--                            <button type="button" id="btnAddRoomImage" class="admin-modal-btn-save-add">-->
+<!--                                <span class="material-icons">add_photo_alternate</span> Thêm ảnh-->
+<!--                            </button>-->
+<!--                            <input id="room-image-upload-input" type="file" accept="image/*" multiple-->
+<!--                                class="hidden-input" />-->
+<!--                        </div>-->
                         <!-- Dưới cùng: Nút hành động -->
                         <div class="admin-modal-actions">
                             <button type="submit" class="admin-modal-btn-save"><span class="material-icons">save</span>
@@ -244,9 +244,10 @@
                                 <div class="admin-modal-price-box">
                                     <div class="admin-modal-price-title">Giá theo hạng phòng:</div>
                                     <ul class="admin-modal-price-list">
-                                        <li>Giá giờ: <span id="editGiaGio">0</span></li>
-                                        <li>Giá cả ngày: <span id="editGiaNgay">0</span></li>
-                                        <li>Giá qua đêm: <span id="editGiaQuaDem">0</span></li>
+                                        <li>Giá giờ: <span id="editGiaGio">0</span> VNĐ</li>
+                                        <li>Giá cả ngày: <span id="editGiaNgay">0</span> VNĐ</li>
+                                        <li>Giá qua đêm: <span id="editGiaQuaDem">0</span> VNĐ</li>
+                                        <li>Phụ thu quá giờ: <span id="editPhuThuQuaGio">0</span> VNĐ/giờ</li>
                                     </ul>
                                 </div>
                             </div>
@@ -466,6 +467,46 @@
                 alert('Có lỗi xảy ra khi tạo phòng!');
             });
         };
+
+        // Cập nhật giá khi chọn hạng phòng trong modal thêm phòng
+        function updateAddRoomPrice() {
+            const roomTypeId = document.querySelector('select[name="roomTypeId"]').value;
+            if (!roomTypeId) {
+                // Reset về 0 nếu không chọn hạng phòng
+                document.getElementById('addGiaGio').textContent = '0';
+                document.getElementById('addGiaNgay').textContent = '0';
+                document.getElementById('addGiaQuaDem').textContent = '0';
+                document.getElementById('addPhuThuQuaGio').textContent = '0';
+                return;
+            }
+            
+            fetch(`/admin/rooms/room-types/${roomTypeId}`)
+                .then(res => res.json())
+                .then(type => {
+                    document.getElementById('addGiaGio').textContent = type.giaGio ? type.giaGio.toLocaleString() : '0';
+                    document.getElementById('addGiaNgay').textContent = type.giaNgay ? type.giaNgay.toLocaleString() : '0';
+                    document.getElementById('addGiaQuaDem').textContent = type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0';
+                    // Tính phụ thu quá giờ (có thể là giá giờ hoặc giá riêng)
+                    const phuThuQuaGio = type.phuThuNhanSom || type.phuThuTraMuon || type.giaGio || 0;
+                    document.getElementById('addPhuThuQuaGio').textContent = phuThuQuaGio ? phuThuQuaGio.toLocaleString() : '0';
+                })
+                .catch(error => {
+                    console.error('Lỗi khi lấy thông tin hạng phòng:', error);
+                    // Reset về 0 nếu có lỗi
+                    document.getElementById('addGiaGio').textContent = '0';
+                    document.getElementById('addGiaNgay').textContent = '0';
+                    document.getElementById('addGiaQuaDem').textContent = '0';
+                    document.getElementById('addPhuThuQuaGio').textContent = '0';
+                });
+        }
+
+        // Gắn sự kiện cho select hạng phòng trong modal thêm phòng
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomTypeSelect = document.querySelector('select[name="roomTypeId"]');
+            if (roomTypeSelect) {
+                roomTypeSelect.addEventListener('change', updateAddRoomPrice);
+            }
+        });
         // Kéo modal di chuyển
         (function () {
             const modal = document.getElementById('addRoomModal');
@@ -657,13 +698,31 @@
             });
             function updateEditRoomPrice() {
                 const roomTypeId = document.getElementById('editRoomTypeId').value;
-                if (!roomTypeId) return;
+                if (!roomTypeId) {
+                    // Reset về 0 nếu không chọn hạng phòng
+                    document.getElementById('editGiaGio').textContent = '0';
+                    document.getElementById('editGiaNgay').textContent = '0';
+                    document.getElementById('editGiaQuaDem').textContent = '0';
+                    document.getElementById('editPhuThuQuaGio').textContent = '0';
+                    return;
+                }
                 fetch(`/admin/rooms/room-types/${roomTypeId}`)
                     .then(res => res.json())
                     .then(type => {
                         document.getElementById('editGiaGio').textContent = type.giaGio ? type.giaGio.toLocaleString() : '0';
                         document.getElementById('editGiaNgay').textContent = type.giaNgay ? type.giaNgay.toLocaleString() : '0';
                         document.getElementById('editGiaQuaDem').textContent = type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0';
+                        // Tính phụ thu quá giờ (có thể là giá giờ hoặc giá riêng)
+                        const phuThuQuaGio = type.phuThuNhanSom || type.phuThuTraMuon || type.giaGio || 0;
+                        document.getElementById('editPhuThuQuaGio').textContent = phuThuQuaGio ? phuThuQuaGio.toLocaleString() : '0';
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy thông tin hạng phòng:', error);
+                        // Reset về 0 nếu có lỗi
+                        document.getElementById('editGiaGio').textContent = '0';
+                        document.getElementById('editGiaNgay').textContent = '0';
+                        document.getElementById('editGiaQuaDem').textContent = '0';
+                        document.getElementById('editPhuThuQuaGio').textContent = '0';
                     });
             }
             editRoomForm.onsubmit = function (e) {
@@ -926,5 +985,933 @@
 
 <script th:src="@{/js/responsive.js}"></script>
 </body>
+
+</html>
+
+            });
+
+        };
+
+        // Kéo modal di chuyển
+
+        (function () {
+
+            const modal = document.getElementById('addRoomModal');
+
+            if (!modal) {
+
+                console.warn("Không tìm thấy #addRoomModal trong DOM.");
+
+                return;
+
+            }
+
+            const modalBox = modal.querySelector('.admin-modal-content');
+
+            if (!modalBox) {
+
+                console.warn("Không tìm thấy .admin-modal-content trong #addRoomModal.");
+
+                return;
+
+            }
+
+            const header = modalBox.querySelector('.admin-modal-title');
+
+            if (!header) {
+
+                console.warn("Không tìm thấy .admin-modal-title trong .admin-modal-content.");
+
+                return;
+
+            }
+
+            let isDragging = false, startX, startY, startLeft, startTop;
+
+            header.style.cursor = 'move';
+
+            header.onmousedown = function (e) {
+
+                isDragging = true;
+
+                startX = e.clientX;
+
+                startY = e.clientY;
+
+                const rect = modalBox.getBoundingClientRect();
+
+                startLeft = rect.left;
+
+                startTop = rect.top;
+
+                modalBox.style.position = 'fixed';
+
+                modalBox.style.margin = '0';
+
+                document.body.style.userSelect = 'none';
+
+            };
+
+            document.onmousemove = function (e) {
+
+                if (!isDragging) return;
+
+                let dx = e.clientX - startX;
+
+                let dy = e.clientY - startY;
+
+                modalBox.style.left = (startLeft + dx) + 'px';
+
+                modalBox.style.top = (startTop + dy) + 'px';
+
+            };
+
+            document.onmouseup = function () {
+
+                isDragging = false;
+
+                document.body.style.userSelect = '';
+
+            };
+
+        })();
+
+        // Upload & preview ảnh phòng
+
+        (function () {
+
+            const boxes = document.querySelectorAll('.room-image-upload-box');
+
+            const input = document.getElementById('room-image-upload-input');
+
+            let currentIdx = 0;
+
+            boxes.forEach((box, idx) => {
+
+                box.onclick = () => {
+
+                    currentIdx = idx;
+
+                    input.click();
+
+                };
+
+            });
+
+            input.onchange = function (e) {
+
+                const files = Array.from(e.target.files);
+
+                files.slice(0, 6).forEach((file, i) => {
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (ev) {
+
+                        const box = boxes[currentIdx + i];
+
+                        if (box) {
+
+                            box.querySelector('img').src = ev.target.result;
+
+                            box.querySelector('img').style.display = 'block';
+
+                            box.querySelector('.material-icons').style.display = 'none';
+
+                        }
+
+                    };
+
+                    reader.readAsDataURL(file);
+
+                });
+
+                input.value = '';
+
+            };
+
+        })();
+
+
+
+        // Sự kiện click vào dòng phòng để hiển thị chi tiết ngay dưới dòng đó (toggle)
+
+        (function () {
+
+            const tableBody = document.getElementById('roomTableBody');
+
+            if (tableBody) {
+
+                tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+
+                    row.style.cursor = 'pointer';
+
+                    row.addEventListener('click', function () {
+
+                        // Nếu đã có dòng chi tiết ngay sau thì ẩn đi (toggle)
+
+                        const nextRow = this.nextElementSibling;
+
+                        if (nextRow && nextRow.classList.contains('room-detail-row')) {
+
+                            nextRow.remove();
+
+                            return;
+
+                        }
+
+                        // Xóa mọi dòng chi tiết cũ
+
+                        tableBody.querySelectorAll('.room-detail-row').forEach(e => e.remove());
+
+                        const roomId = this.getAttribute('data-id');
+
+                        if (!roomId) return;
+
+                        fetch(`/admin/rooms/${roomId}`)
+
+                            .then(res => res.json())
+
+                            .then(room => {
+
+                                let imagesHtml = '';
+
+                                if (room.imageUrls && room.imageUrls.length > 0) {
+
+                                    imagesHtml = `<div style='display:flex;gap:8px;margin-bottom:12px;'>` +
+
+                                        room.imageUrls.map(url => `<img src='${url}' style='width:120px;height:80px;object-fit:cover;border-radius:8px;'>`).join('') +
+
+                                        `</div>`;
+
+                                }
+
+                                const detailTr = document.createElement('tr');
+
+                                detailTr.className = 'room-detail-row';
+
+                                detailTr.innerHTML = `<td colspan='10' style='background:#f8f9fa;'>
+
+                                    <div style='padding:18px 0 8px 0;'>
+
+                                        <h3 style='margin-bottom:16px;'>Phòng ${room.soPhong} - ${room.roomTypeName}</h3>
+
+                                        ${imagesHtml}
+
+                                        <div style='display:flex;gap:32px;flex-wrap:wrap;'>
+
+                                            <div style='flex:1;min-width:220px;'>
+
+                                                <div><b>Khu vực:</b> ${room.tang || ''}</div>
+
+                                                <div><b>View:</b> ${room.viewPhong || ''}</div>
+
+                                                <div><b>Giá giờ:</b> ${room.giaGio ? room.giaGio.toLocaleString() : '0'}</div>
+
+                                                <div><b>Giá cả ngày:</b> ${room.giaNgay ? room.giaNgay.toLocaleString() : '0'}</div>
+
+                                                <div><b>Giá qua đêm:</b> ${room.giaQuaDem ? room.giaQuaDem.toLocaleString() : '0'}</div>
+
+                                                <div><b>Trạng thái:</b> ${room.trangThai || ''}</div>
+
+                                            </div>
+
+                                            <div style='flex:1;min-width:220px;'>
+
+                                                <div><b>Ghi chú:</b> ${room.ghiChu || ''}</div>
+
+                                                <div><b>Bắt đầu sử dụng:</b> ${room.batDauSuDung || ''}</div>
+
+                                                <div><b>Chi nhánh:</b> ${room.hotelName || ''}</div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>`;
+
+                                // Chèn dòng chi tiết ngay sau dòng vừa click
+
+                                this.parentNode.insertBefore(detailTr, this.nextSibling);
+
+                            });
+
+                    });
+
+                });
+
+            }
+
+        })();
+
+
+
+        // Modal sửa phòng
+
+        (function () {
+
+            const editRoomModal = document.getElementById('editRoomModal');
+
+            const btnCloseEditRoomModal = document.getElementById('btnCloseEditRoomModal');
+
+            const btnCloseEditRoomModal2 = document.getElementById('btnCloseEditRoomModal2');
+
+            const editRoomForm = document.getElementById('editRoomForm');
+
+            let currentEditRoomId = null;
+
+
+
+            // Gắn sự kiện cho tất cả nút Sửa
+
+            document.querySelectorAll('.btn-edit[data-room-id]').forEach(btn => {
+
+                btn.onclick = function (e) {
+
+                    e.stopPropagation();
+
+                    const roomId = this.getAttribute('data-room-id');
+
+                    openEditRoomModal(roomId);
+
+                };
+
+            });
+
+
+
+            window.openEditRoomModal = function (roomId) {
+
+                currentEditRoomId = roomId;
+
+                // Lấy thông tin phòng
+
+                fetch(`/admin/rooms/${roomId}`)
+
+                    .then(res => res.json())
+
+                    .then(room => {
+
+                        document.getElementById('editSoPhong').value = room.soPhong || '';
+
+                        document.getElementById('editTang').value = room.tang || '';
+
+                        document.getElementById('editViewPhong').value = room.viewPhong || '';
+
+                        document.getElementById('editTrangThai').value = room.trangThai || 'SAN_SANG';
+
+                        document.getElementById('editGhiChu').value = room.ghiChu || '';
+
+                        // Lấy danh sách hạng phòng
+
+                        fetch('/admin/rooms/room-types/json')
+
+                            .then(res => res.json())
+
+                            .then(types => {
+
+                                const editRoomTypeId = document.getElementById('editRoomTypeId');
+
+                                editRoomTypeId.innerHTML = types.map(type =>
+
+                                    `<option value="${type.id}">${type.tenLoaiPhong}</option>`
+
+                                ).join('');
+
+                                // Set lại value đã chọn
+
+                                editRoomTypeId.value = room.roomTypeId;
+
+                                if (editRoomTypeId.value != room.roomTypeId) {
+
+                                    [...editRoomTypeId.options].forEach(opt => {
+
+                                        if (opt.value == room.roomTypeId) opt.selected = true;
+
+                                    });
+
+                                }
+
+                                updateEditRoomPrice();
+
+                            });
+
+                        // Khi chọn lại hạng phòng thì cập nhật giá động
+
+                        document.getElementById('editRoomTypeId').onchange = updateEditRoomPrice;
+
+                    });
+
+                editRoomModal.style.display = 'flex';
+
+                document.body.style.overflow = 'hidden';
+
+            };
+
+            btnCloseEditRoomModal.onclick = btnCloseEditRoomModal2.onclick = function () {
+
+                editRoomModal.style.display = 'none';
+
+                document.body.style.overflow = 'auto';
+
+            };
+
+            window.addEventListener('click', function (event) {
+
+                if (event.target === editRoomModal) {
+
+                    editRoomModal.style.display = 'none';
+
+                    document.body.style.overflow = 'auto';
+
+                }
+
+            });
+
+            function updateEditRoomPrice() {
+
+                const roomTypeId = document.getElementById('editRoomTypeId').value;
+
+                if (!roomTypeId) return;
+
+                fetch(`/admin/rooms/room-types/${roomTypeId}`)
+
+                    .then(res => res.json())
+
+                    .then(type => {
+
+                        document.getElementById('editGiaGio').textContent = type.giaGio ? type.giaGio.toLocaleString() : '0';
+
+                        document.getElementById('editGiaNgay').textContent = type.giaNgay ? type.giaNgay.toLocaleString() : '0';
+
+                        document.getElementById('editGiaQuaDem').textContent = type.giaQuaDem ? type.giaQuaDem.toLocaleString() : '0';
+
+                    });
+
+            }
+
+            editRoomForm.onsubmit = function (e) {
+
+                e.preventDefault();
+
+                if (!currentEditRoomId) return;
+
+                const data = {
+
+                    soPhong: document.getElementById('editSoPhong').value,
+
+                    tang: document.getElementById('editTang').value,
+
+                    viewPhong: document.getElementById('editViewPhong').value,
+
+                    trangThai: document.getElementById('editTrangThai').value,
+
+                    roomTypeId: document.getElementById('editRoomTypeId').value,
+
+                    ghiChu: document.getElementById('editGhiChu').value
+
+                };
+
+                fetch(`/admin/rooms/${currentEditRoomId}`, {
+
+                    method: 'PUT',
+
+                    headers: { 'Content-Type': 'application/json' },
+
+                    body: JSON.stringify(data)
+
+                })
+
+                    .then(res => {
+
+                        if (res.ok) {
+
+                            location.reload();
+
+                        } else {
+
+                            alert('Cập nhật phòng thất bại!');
+
+                        }
+
+                    });
+
+            };
+
+        })();
+
+
+
+        // ===== TÌM KIẾM TỰ ĐỘNG VÀ LỌC =====
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Lấy các element
+
+            const searchInput = document.getElementById('searchInput');
+
+            const roomTypeFilter = document.getElementById('roomTypeFilter');
+
+            const statusFilter = document.getElementById('statusFilter');
+
+            const floorFilter = document.getElementById('floorFilter');
+
+            const roomTable = document.getElementById('roomTable');
+
+            const roomTableBody = document.getElementById('roomTableBody');
+
+            
+
+            // Lưu trữ dữ liệu gốc
+
+            let originalData = [];
+
+            let filteredData = [];
+
+            let currentPage = 1;
+
+            let itemsPerPage = 10;
+
+            
+
+            // Lấy các element phân trang
+
+            const currentPageDisplay = document.getElementById('currentPageDisplay');
+
+            const totalPagesDisplay = document.getElementById('totalPagesDisplay');
+
+            const totalItemsDisplay = document.getElementById('totalItemsDisplay');
+
+            const prevPageBtn = document.getElementById('prevPageBtn');
+
+            const nextPageBtn = document.getElementById('nextPageBtn');
+
+            const pageNumbers = document.getElementById('pageNumbers');
+
+            const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
+
+            
+
+            // Khởi tạo dữ liệu
+
+            function initializeData() {
+
+                originalData = getOriginalData();
+
+                filteredData = [...originalData];
+
+                updatePagination();
+
+            }
+
+            
+
+            // Lấy dữ liệu từ bảng
+
+            function getOriginalData() {
+
+                const rows = roomTableBody.querySelectorAll('tr');
+
+                const dataRows = Array.from(rows)
+
+                    .filter(row => {
+
+                        // Chỉ lấy các dòng có data-id (bỏ qua dòng "Không có dữ liệu")
+
+                        return row.hasAttribute('data-id') && row.getAttribute('data-id');
+
+                    })
+
+                    .map(row => {
+
+                        const cells = row.querySelectorAll('td');
+
+                        return {
+
+                            id: row.getAttribute('data-id'),
+
+                            roomNumber: cells[1]?.textContent?.trim() || '', // Số phòng
+
+                            roomType: cells[2]?.textContent?.trim() || '', // Hạng phòng
+
+                            floor: cells[3]?.textContent?.trim() || '', // Tầng
+
+                            status: cells[8]?.textContent?.trim() || '', // Trạng thái
+
+                            element: row
+
+                        };
+
+                    });
+
+                
+
+                return dataRows;
+
+            }
+
+            
+
+            // Tìm kiếm và lọc
+
+            function performSearch() {
+
+                const searchTerm = searchInput.value.toLowerCase().trim();
+
+                const selectedRoomType = roomTypeFilter.value;
+
+                const selectedStatus = statusFilter.value;
+
+                const floorTerm = floorFilter.value.toLowerCase().trim();
+
+                
+
+                filteredData = originalData.filter(item => {
+
+                    // Tìm kiếm theo từ khóa
+
+                    const matchesSearch = !searchTerm || 
+
+                        item.roomNumber.toLowerCase().includes(searchTerm) ||
+
+                        item.roomType.toLowerCase().includes(searchTerm);
+
+                    
+
+                    // Lọc theo hạng phòng - so sánh với tên loại phòng
+
+                    const matchesRoomType = !selectedRoomType || 
+
+                        item.roomType.toLowerCase() === selectedRoomType.toLowerCase();
+
+                    
+
+                    // Lọc theo trạng thái - so sánh với text hiển thị
+
+                    const matchesStatus = !selectedStatus || 
+
+                        item.status.toLowerCase() === selectedStatus.toLowerCase();
+
+                    
+
+                    // Lọc theo tầng
+
+                    const matchesFloor = !floorTerm || 
+
+                        item.floor.toLowerCase().includes(floorTerm);
+
+                    
+
+                    return matchesSearch && matchesRoomType && matchesStatus && matchesFloor;
+
+                });
+
+                
+
+                currentPage = 1; // Reset về trang 1 khi tìm kiếm
+
+                updatePagination();
+
+            }
+
+            
+
+            // Cập nhật phân trang
+
+            function updatePagination() {
+
+                const totalItems = filteredData.length;
+
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                
+
+                // Cập nhật thông tin phân trang
+
+                currentPageDisplay.textContent = currentPage;
+
+                totalPagesDisplay.textContent = totalPages;
+
+                totalItemsDisplay.textContent = totalItems;
+
+                
+
+                // Enable/disable nút Previous/Next
+
+                prevPageBtn.disabled = currentPage <= 1;
+
+                nextPageBtn.disabled = currentPage >= totalPages;
+
+                
+
+                // Tạo nút trang
+
+                createPageNumbers(totalPages);
+
+                
+
+                // Hiển thị dữ liệu cho trang hiện tại
+
+                displayCurrentPage();
+
+            }
+
+            
+
+            // Tạo nút trang
+
+            function createPageNumbers(totalPages) {
+
+                pageNumbers.innerHTML = '';
+
+                
+
+                const startPage = Math.max(1, currentPage - 1);
+
+                const endPage = Math.min(totalPages, currentPage + 1);
+
+                
+
+                // Nút trang đầu
+
+                if (startPage > 1) {
+
+                    createPageButton(1);
+
+                    if (startPage > 2) {
+
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+
+                    }
+
+                }
+
+                
+
+                // Các nút trang xung quanh trang hiện tại
+
+                for (let i = startPage; i <= endPage; i++) {
+
+                    createPageButton(i);
+
+                }
+
+                
+
+                // Nút trang cuối
+
+                if (endPage < totalPages) {
+
+                    if (endPage < totalPages - 1) {
+
+                        pageNumbers.innerHTML += '<span style="padding: 6px 10px; color: #64748b;">...</span>';
+
+                    }
+
+                    createPageButton(totalPages);
+
+                }
+
+            }
+
+            
+
+            // Tạo nút trang
+
+            function createPageButton(pageNum) {
+
+                const button = document.createElement('button');
+
+                button.textContent = pageNum;
+
+                button.className = 'pagination-btn';
+
+                button.style.cssText = 'padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; min-width: 32px; text-align: center; cursor: pointer;';
+
+                
+
+                if (pageNum === currentPage) {
+
+                    button.style.background = '#3b82f6';
+
+                    button.style.color = 'white';
+
+                    button.style.borderColor = '#3b82f6';
+
+                }
+
+                
+
+                button.addEventListener('click', () => {
+
+                    currentPage = pageNum;
+
+                    updatePagination();
+
+                });
+
+                
+
+                pageNumbers.appendChild(button);
+
+            }
+
+            
+
+            // Hiển thị dữ liệu cho trang hiện tại
+
+            function displayCurrentPage() {
+
+                // Ẩn tất cả các dòng
+
+                originalData.forEach(item => {
+
+                    item.element.style.display = 'none';
+
+                });
+
+                
+
+                // Hiển thị dữ liệu cho trang hiện tại
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+
+                const endIndex = startIndex + itemsPerPage;
+
+                const currentPageData = filteredData.slice(startIndex, endIndex);
+
+                
+
+                currentPageData.forEach(item => {
+
+                    item.element.style.display = '';
+
+                });
+
+            }
+
+            
+
+            // Auto-search với debounce
+
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(performSearch, 300);
+
+            });
+
+            
+
+            searchInput.addEventListener('keypress', function(e) {
+
+                if (e.key === 'Enter') {
+
+                    clearTimeout(searchTimeout);
+
+                    performSearch();
+
+                }
+
+            });
+
+            
+
+            // Auto-search cho các filter
+
+            roomTypeFilter.addEventListener('change', function() {
+
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(performSearch, 300);
+
+            });
+
+            
+
+            statusFilter.addEventListener('change', function() {
+
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(performSearch, 300);
+
+            });
+
+            
+
+            floorFilter.addEventListener('input', function() {
+
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(performSearch, 300);
+
+            });
+
+            
+
+            // Event listeners cho phân trang
+
+            prevPageBtn.addEventListener('click', function() {
+
+                if (currentPage > 1) {
+
+                    currentPage--;
+
+                    updatePagination();
+
+                }
+
+            });
+
+            
+
+            nextPageBtn.addEventListener('click', function() {
+
+                const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+                if (currentPage < totalPages) {
+
+                    currentPage++;
+
+                    updatePagination();
+
+                }
+
+            });
+
+            
+
+            itemsPerPageSelect.addEventListener('change', function() {
+
+                itemsPerPage = parseInt(this.value);
+
+                currentPage = 1;
+
+                updatePagination();
+
+            });
+
+            
+
+            // Khởi tạo
+
+            initializeData();
+
+        });
+
+    </script>
+
+
+
+<script th:src="@{/js/responsive.js}"></script>
+
+</body>
+
+
 
 </html>
