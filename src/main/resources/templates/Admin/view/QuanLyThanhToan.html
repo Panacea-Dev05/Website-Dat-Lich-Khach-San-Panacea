@@ -14,55 +14,58 @@
     .modal-content {
       animation: slideIn 0.3s ease-out;
     }
-    
+
     @keyframes slideIn {
       from {
         opacity: 0;
         transform: translateY(-20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-    
+
     .form-section {
       transition: all 0.3s ease;
     }
-    
+
     .form-section:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    
-    
+
+
     #submitRefundBtn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
     }
-    
+
     #cancelRefundBtn:hover {
       background: #dc2626 !important;
       color: white !important;
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
     }
-    
-    select:focus, input:focus, textarea:focus {
+
+    select:focus,
+    input:focus,
+    textarea:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    
+
     .info-card {
       transition: all 0.2s ease;
     }
-    
+
     .info-card:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-    
+
     /* Cải thiện hiển thị bảng */
     #paymentTable {
       font-size: 14px;
@@ -73,7 +76,7 @@
       background: white;
       table-layout: auto;
     }
-    
+
     #paymentTable th {
       padding: 12px 8px !important;
       font-size: 13px;
@@ -87,7 +90,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     #paymentTable td {
       padding: 12px 8px !important;
       font-size: 13px;
@@ -95,20 +98,20 @@
       vertical-align: middle;
       color: #4b5563;
     }
-    
+
     #paymentTable tbody tr:nth-child(even) {
       background: #fafbfc;
     }
-    
+
     #paymentTable tbody tr:nth-child(odd) {
       background: white;
     }
-    
+
     #paymentTable tbody tr:hover {
       background: #f8fafc;
       transition: background-color 0.2s ease;
     }
-    
+
     /* Container bảng với chiều cao cố định */
     .table-container {
       max-height: 70vh;
@@ -117,31 +120,31 @@
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
       width: 100%;
       min-width: 100%;
     }
-    
+
     /* Custom scrollbar cho table container */
     .table-container::-webkit-scrollbar {
       width: 8px;
     }
-    
+
     .table-container::-webkit-scrollbar-track {
       background: #f1f5f9;
       border-radius: 4px;
     }
-    
+
     .table-container::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
-    
+
     .table-container::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
+
     /* Header Layout Styles */
     .header-layout {
       display: flex;
@@ -149,14 +152,14 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    
+
     .header-layout h1 {
       margin: 0;
       color: #1f2937;
       font-size: 28px;
       font-weight: 700;
     }
-    
+
     .header-layout button {
       display: flex;
       align-items: center;
@@ -171,50 +174,50 @@
       cursor: pointer;
       background: #10b981;
     }
-    
+
     .header-layout button:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
     }
-    
+
     /* Content Section Styles */
     .content-section {
       width: 100%;
       max-width: none;
       overflow-x: hidden;
     }
-    
+
     /* Đảm bảo bảng sử dụng toàn bộ chiều rộng */
     .table-container {
       width: 100%;
       overflow-x: auto;
       min-width: 100%;
     }
-    
+
     #paymentTable {
       width: 100% !important;
       min-width: 1200px !important;
     }
-    
+
     #paymentTable th,
     #paymentTable td {
       white-space: nowrap;
       overflow: visible;
       text-overflow: ellipsis;
     }
-    
+
     /* Đảm bảo cột thao tác có đủ không gian */
     #paymentTable th:last-child,
     #paymentTable td:last-child {
       min-width: 120px;
       white-space: nowrap;
     }
-    
+
     /* Đảm bảo các button trong cột thao tác hiển thị đầy đủ */
     #paymentTable td:last-child {
       padding: 8px 4px !important;
     }
-    
+
     #paymentTable td:last-child .btn {
       margin: 0 2px;
       min-width: 28px;
@@ -223,37 +226,37 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     /* Đảm bảo không bị cắt nội dung */
     #paymentTable td {
       overflow: visible !important;
     }
-    
+
     /* Search and Filter Section */
     .search-filter-section {
       background: #f8fafc;
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       width: 100%;
     }
-    
-    .search-filter-section > div {
+
+    .search-filter-section>div {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
       gap: 15px;
       align-items: end;
       width: 100%;
     }
-    
+
     .search-filter-section label {
       display: block;
       margin-bottom: 5px;
       font-weight: 600;
       color: #374151;
     }
-    
+
     .search-filter-section input,
     .search-filter-section select {
       width: 100%;
@@ -262,54 +265,89 @@
       border-radius: 6px;
       font-size: 14px;
       background: white;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
-    
+
     .search-filter-section input:focus,
     .search-filter-section select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    
+
     /* Responsive cho thanh tìm kiếm */
     @media (max-width: 768px) {
-      .search-filter-section > div {
+      .search-filter-section>div {
         grid-template-columns: 1fr !important;
         gap: 15px !important;
       }
-      
+
       .header-layout {
         flex-direction: column !important;
         align-items: stretch !important;
         gap: 15px !important;
       }
-      
+
       .header-layout button {
         align-self: flex-start !important;
       }
-      
+
       #paymentTable th {
         font-size: 12px !important;
         padding: 8px 4px !important;
       }
-      
+
       #paymentTable td {
         font-size: 12px !important;
         padding: 8px 4px !important;
       }
-      
+
       /* Điều chỉnh column widths cho mobile */
-      #paymentTable th:nth-child(1), #paymentTable td:nth-child(1) { width: 6%; }
-      #paymentTable th:nth-child(2), #paymentTable td:nth-child(2) { width: 14%; }
-      #paymentTable th:nth-child(3), #paymentTable td:nth-child(3) { width: 10%; }
-      #paymentTable th:nth-child(4), #paymentTable td:nth-child(4) { width: 20%; }
-      #paymentTable th:nth-child(5), #paymentTable td:nth-child(5) { width: 12%; }
-      #paymentTable th:nth-child(6), #paymentTable td:nth-child(6) { width: 12%; }
-      #paymentTable th:nth-child(7), #paymentTable td:nth-child(7) { width: 14%; }
-      #paymentTable th:nth-child(8), #paymentTable td:nth-child(8) { width: 8%; }
-      #paymentTable th:nth-child(9), #paymentTable td:nth-child(9) { width: 12%; }
-      
+      #paymentTable th:nth-child(1),
+      #paymentTable td:nth-child(1) {
+        width: 6%;
+      }
+
+      #paymentTable th:nth-child(2),
+      #paymentTable td:nth-child(2) {
+        width: 14%;
+      }
+
+      #paymentTable th:nth-child(3),
+      #paymentTable td:nth-child(3) {
+        width: 10%;
+      }
+
+      #paymentTable th:nth-child(4),
+      #paymentTable td:nth-child(4) {
+        width: 20%;
+      }
+
+      #paymentTable th:nth-child(5),
+      #paymentTable td:nth-child(5) {
+        width: 12%;
+      }
+
+      #paymentTable th:nth-child(6),
+      #paymentTable td:nth-child(6) {
+        width: 12%;
+      }
+
+      #paymentTable th:nth-child(7),
+      #paymentTable td:nth-child(7) {
+        width: 14%;
+      }
+
+      #paymentTable th:nth-child(8),
+      #paymentTable td:nth-child(8) {
+        width: 8%;
+      }
+
+      #paymentTable th:nth-child(9),
+      #paymentTable td:nth-child(9) {
+        width: 12%;
+      }
+
       /* Responsive cho phân trang */
       /* Server Pagination Styles */
       .pagination-btn:hover:not(:disabled) {
@@ -317,33 +355,33 @@
         border-color: #94a3b8 !important;
         transform: translateY(-1px);
       }
-      
+
       .pagination-btn:disabled {
         background: #f8fafc !important;
         color: #cbd5e1 !important;
         border-color: #e2e8f0 !important;
         cursor: not-allowed !important;
       }
-      
+
       .pagination-btn.active {
         background: #3b82f6 !important;
         color: white !important;
         border-color: #3b82f6 !important;
         box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
       }
-      
+
       .pagination-controls {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
-      
+
       .pagination-controls select {
         cursor: pointer;
       }
-      
+
       .pagination-controls select:hover {
         border-color: #94a3b8 !important;
       }
-      
+
       /* Responsive cho pagination */
       @media (max-width: 1024px) {
         .pagination-controls {
@@ -352,52 +390,52 @@
           align-items: center !important;
           text-align: center !important;
         }
-        
+
         .pagination-buttons {
           flex-wrap: wrap !important;
           justify-content: center !important;
         }
-        
+
         .items-per-page {
           justify-content: center !important;
         }
       }
-      
+
       @media (max-width: 768px) {
         .pagination-controls {
           padding: 12px 15px !important;
         }
-        
+
         .pagination-btn {
           padding: 4px 8px !important;
           font-size: 12px !important;
         }
-        
+
         .pagination-info {
           font-size: 13px !important;
         }
-        
+
         .items-per-page span {
           font-size: 12px !important;
         }
-        
+
         .items-per-page select {
           font-size: 12px !important;
           padding: 3px 6px !important;
         }
       }
     }
-    
+
     /* Form group styling */
     .form-group {
       margin-bottom: 0;
     }
-    
+
     /* Error styling */
     [id$="Error"] {
       transition: all 0.2s ease;
     }
-    
+
     /* Responsive design */
     @media (max-width: 768px) {
       .modal-content {
@@ -406,18 +444,18 @@
         min-width: auto !important;
         max-width: none !important;
       }
-      
-      
+
+
       #refundInfo {
         margin: 10px 0 !important;
       }
     }
-    
+
     @media (max-width: 480px) {
       .modal-header h2 {
         font-size: 1.2rem !important;
       }
-      
+
     }
   </style>
 </head>
@@ -438,161 +476,182 @@
 
     <main role="main" tabindex="0">
       <!-- Header Layout -->
-      <div class="header-layout" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div class="header-layout"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700;">Quản lý thanh toán</h1>
       </div>
-      
+
       <!-- Content Section -->
       <section class="content-section" id="contentSection">
-      
-      <!-- Thanh tìm kiếm và lọc -->
-      <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
-          <!-- Tìm kiếm -->
-          <div>
-            <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Tìm kiếm:</label>
-            <input type="text" id="searchInput" placeholder="Mã thanh toán, tên khách hàng... (tự động tìm kiếm)" 
-                   style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-          </div>
-          
-          <!-- Lọc theo trạng thái -->
-          <div>
-            <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Trạng thái:</label>
-            <select id="statusFilter" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-              <option value="">Tất cả trạng thái</option>
-              <option value="DANG_XU_LY">Đang xử lý</option>
-              <option value="THANH_CONG">Thành công</option>
-              <option value="THAT_BAI">Thất bại</option>
-              <option value="HOAN_TIEN">Hoàn tiền</option>
-            </select>
-          </div>
-          
-          <!-- Lọc theo phương thức thanh toán -->
-          <div>
-            <label for="methodFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Phương thức:</label>
-            <select id="methodFilter" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-              <option value="">Tất cả phương thức</option>
-              <option value="Cash">Cash</option>
-              <option value="Credit Card">Credit Card</option>
-              <option value="Debit Card">Debit Card</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="E-wallet">E-wallet</option>
-            </select>
-          </div>
-          
-          <!-- Lọc theo ngày từ -->
-          <div>
-            <label for="dateFrom" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Từ ngày:</label>
-            <input type="date" id="dateFrom" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-          </div>
-          
-          <!-- Lọc theo ngày đến -->
-          <div>
-            <label for="dateTo" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Đến ngày:</label>
-            <input type="date" id="dateTo" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-          </div>
-        </div>
-        
-      </section>
-      
-      <section class="content-section" id="contentSection">
-        <button class="btn" id="btnCreateRefund" style="background:#f59e0b; margin-left: 12px;">Tạo hoàn tiền</button>
-        <div class="table-container">
-          <table aria-label="Danh sách thanh toán" id="paymentTable">
-            <thead>
-              <tr>
-                <th style="width: 60px; text-align: center;">STT</th>
-                <th style="width: 120px;">Mã thanh toán</th>
-                <th style="width: 100px;">Mã đặt phòng</th>
-                <th style="width: 180px;">Khách hàng</th>
-                <th style="width: 120px; text-align: right;">Số tiền</th>
-                <th style="width: 120px; text-align: center;">Phương thức</th>
-                <th style="width: 160px; text-align: center;">Ngày thanh toán</th>
-                <th style="width: 120px; text-align: center;">Trạng thái</th>
-                <th style="width: 140px; text-align: center;">Thao tác</th>
-              </tr>
-            </thead>
-          <tbody id="paymentTableBody">
-            <!-- Dữ liệu thanh toán từ controller -->
-            <tr th:each="payment, stat : ${payments}">
-              <td th:text="${stat.count}">1</td>
-              <td th:text="${payment.id}">PAY001</td>
-              <td th:text="${payment.bookingId}">BK001</td>
-              <td th:text="${payment.customerName}">Nguyễn Văn A</td>
-              <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000 VNĐ
-              </td>
-              <td th:text="${payment.paymentMethod}">Thẻ tín dụng</td>
-              <td th:text="${#temporals.format(payment.paymentDate, 'dd/MM/yyyy HH:mm')}">15/12/2024 14:30</td>
-              <td>
-                <span th:class="${payment.status == 'Thành công' ? 'status-completed' : 
-                                  payment.status == 'Đang xử lý' ? 'status-pending' : 
-                                  payment.status == 'Thất bại' ? 'status-failed' : 'status-refunded'}" th:text="${payment.status}">
-                  Thành công
-                </span>
-              </td>
-              <td>
-                <button class="btn-view" th:onclick="'viewPayment(' + ${payment.id} + ')'" title="Xem chi tiết">
-                  <span class="material-icons">visibility</span>
-                </button>
-                <button class="btn-edit" th:data-id="${payment.id}" title="Sửa">
-                  <span class="material-icons">edit</span>
-                </button>
-                <button class="btn-delete" th:data-id="${payment.id}" title="Xóa">
-                  <span class="material-icons">delete</span>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-          </table>
-        </div>
 
-        <!-- Server Pagination Controls -->
-        <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-          <!-- Pagination Info -->
-          <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
-            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
-            (<span id="totalItemsDisplay">0</span> thanh toán)
-          </div>
-          
-          <!-- Pagination Buttons -->
-          <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
-            <!-- Previous Button -->
-            <button id="prevPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              <span>◀</span> Trước
-            </button>
-            
-            <!-- Page Numbers -->
-            <div id="pageNumbers" style="display: flex; gap: 4px;">
-              <!-- Sẽ được tạo bởi JavaScript -->
+        <!-- Thanh tìm kiếm và lọc -->
+        <section class="search-filter-section"
+          style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div
+            style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+            <!-- Tìm kiếm -->
+            <div>
+              <label for="searchInput"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Tìm
+                kiếm:</label>
+              <input type="text" id="searchInput" placeholder="Mã thanh toán, tên khách hàng... (tự động tìm kiếm)"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
             </div>
-            
-            <!-- Next Button -->
-            <button id="nextPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              Sau <span>▶</span>
-            </button>
+
+            <!-- Lọc theo trạng thái -->
+            <div>
+              <label for="statusFilter"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Trạng
+                thái:</label>
+              <select id="statusFilter"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="DANG_XU_LY">Đang xử lý</option>
+                <option value="THANH_CONG">Thành công</option>
+                <option value="THAT_BAI">Thất bại</option>
+                <option value="HOAN_TIEN">Hoàn tiền</option>
+              </select>
+            </div>
+
+            <!-- Lọc theo phương thức thanh toán -->
+            <div>
+              <label for="methodFilter"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Phương
+                thức:</label>
+              <select id="methodFilter"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Tất cả phương thức</option>
+                <option value="Cash">Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Debit Card">Debit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="E-wallet">E-wallet</option>
+              </select>
+            </div>
+
+            <!-- Lọc theo ngày từ -->
+            <div>
+              <label for="dateFrom"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Từ
+                ngày:</label>
+              <input type="date" id="dateFrom"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+            </div>
+
+            <!-- Lọc theo ngày đến -->
+            <div>
+              <label for="dateTo"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 14px;">Đến
+                ngày:</label>
+              <input type="date" id="dateTo"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+            </div>
           </div>
-          
-          <!-- Items per page selector -->
-          <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
-            <select id="itemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="25" selected>25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+
+        </section>
+
+        <section class="content-section" id="contentSection">
+          <button class="btn" id="btnCreateRefund" style="background:#f59e0b; margin-left: 12px;">Tạo hoàn tiền</button>
+          <div class="table-container">
+            <table aria-label="Danh sách thanh toán" id="paymentTable">
+              <thead>
+                <tr>
+                  <th style="width: 60px; text-align: center;">STT</th>
+                  <th style="width: 120px;">Mã thanh toán</th>
+                  <th style="width: 100px;">Mã đặt phòng</th>
+                  <th style="width: 180px;">Khách hàng</th>
+                  <th style="width: 120px; text-align: right;">Số tiền</th>
+                  <th style="width: 120px; text-align: center;">Phương thức</th>
+                  <th style="width: 160px; text-align: center;">Ngày thanh toán</th>
+                  <th style="width: 120px; text-align: center;">Trạng thái</th>
+                  <th style="width: 140px; text-align: center;">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="paymentTableBody">
+                <!-- Dữ liệu thanh toán từ controller -->
+                <tr th:each="payment, stat : ${payments}">
+                  <td th:text="${stat.count}">1</td>
+                  <td th:text="${payment.id}">PAY001</td>
+                  <td th:text="${payment.bookingId}">BK001</td>
+                  <td th:text="${payment.customerName}">Nguyễn Văn A</td>
+                  <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000 VNĐ
+                  </td>
+                  <td th:text="${payment.paymentMethod}">Thẻ tín dụng</td>
+                  <td th:text="${#temporals.format(payment.paymentDate, 'dd/MM/yyyy HH:mm')}">15/12/2024 14:30</td>
+                  <td>
+                    <span th:class="${payment.status == 'Thành công' ? 'status-completed' : 
+                                  payment.status == 'Đang xử lý' ? 'status-pending' : 
+                                  payment.status == 'Thất bại' ? 'status-failed' : 'status-refunded'}"
+                      th:text="${payment.status}">
+                      Thành công
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn-view" th:onclick="'viewPayment(' + ${payment.id} + ')'" title="Xem chi tiết">
+                      <span class="material-icons">visibility</span>
+                    </button>
+                    <button class="btn-edit" th:data-id="${payment.id}" title="Sửa">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-delete" th:data-id="${payment.id}" title="Xóa">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-      </section>
+
+          <!-- Server Pagination Controls -->
+          <div class="pagination-controls"
+            style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <!-- Pagination Info -->
+            <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+              Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span>
+              (<span id="totalItemsDisplay">0</span> thanh toán)
+            </div>
+
+            <!-- Pagination Buttons -->
+            <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+              <!-- Previous Button -->
+              <button id="prevPageBtn" class="pagination-btn" disabled
+                style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                <span>◀</span> Trước
+              </button>
+
+              <!-- Page Numbers -->
+              <div id="pageNumbers" style="display: flex; gap: 4px;">
+                <!-- Sẽ được tạo bởi JavaScript -->
+              </div>
+
+              <!-- Next Button -->
+              <button id="nextPageBtn" class="pagination-btn" disabled
+                style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                Sau <span>▶</span>
+              </button>
+            </div>
+
+            <!-- Items per page selector -->
+            <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+              <select id="itemsPerPage"
+                style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
+            </div>
+          </div>
+        </section>
 
         <!-- Modal form thêm/sửa thanh toán (ẩn mặc định) -->
         <div class="modal-overlay" id="paymentModal" style="display:none;">
           <div class="modal-content">
-            <button type="button" class="modal-close" id="closePaymentModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <button type="button" class="modal-close" id="closePaymentModal"
+              style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
             <form id="paymentForm">
               <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Tạo hoàn tiền</h2>
               <input type="hidden" id="paymentId" name="paymentId" />
@@ -627,7 +686,8 @@
 
               <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
                 <button type="submit" class="btn" id="submitBtn">Lưu thanh toán</button>
-                <button type="button" class="btn" id="cancelBtn" style="background:#ef4444; margin-left: 12px;">Hủy</button>
+                <button type="button" class="btn" id="cancelBtn"
+                  style="background:#ef4444; margin-left: 12px;">Hủy</button>
               </div>
             </form>
           </div>
@@ -636,9 +696,10 @@
         <!-- Modal xem chi tiết thanh toán (ẩn mặc định) -->
         <div class="modal-overlay" id="viewPaymentModal" style="display:none;">
           <div class="modal-content">
-            <button type="button" class="modal-close" id="closeViewPaymentModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+            <button type="button" class="modal-close" id="closeViewPaymentModal"
+              style="position:absolute;top:10px;right:10px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
             <h2 style="color:#064e3b; margin-bottom:1rem;">Chi tiết thanh toán</h2>
-            
+
             <div class="payment-details">
               <div class="detail-row">
                 <div class="detail-label">Mã thanh toán:</div>
@@ -669,73 +730,144 @@
                 <div class="detail-value" id="viewStatus"></div>
               </div>
             </div>
-            
+
             <div class="action-buttons">
               <button type="button" class="btn" id="printInvoiceBtn">In hóa đơn</button>
-              <button type="button" class="btn" id="closeViewBtn" style="background:#ef4444; margin-left: 12px;">Đóng</button>
+              <button type="button" class="btn" id="closeViewBtn"
+                style="background:#ef4444; margin-left: 12px;">Đóng</button>
             </div>
           </div>
         </div>
 
         <!-- Modal tạo hoàn tiền (ẩn mặc định) -->
-        <div class="modal-overlay" id="refundModal" style="display:none;">
-          <div class="modal-content" style="min-width: 300px; max-width: 50%; width: 100%;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
-              <h2 style="color:#1f2937; margin:0; font-size: 1.4rem; font-weight: 600;">💰 Tạo hoàn tiền</h2>
-              <button type="button" class="modal-close" id="closeRefundModal" style="background:none; border:none; font-size:1.5rem; color:#6b7280; cursor:pointer; padding:5px; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        <div class="modal-overlay" id="refundModal"
+          style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(4px);">
+          <div class="modal-content"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 16px; padding: 32px; min-width: 500px; max-width: 90vw; width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25); border: 1px solid rgba(16, 185, 129, 0.1);">
+            <div class="modal-header"
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb;">
+              <h2
+                style="color:#064e3b; margin:0; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 28px;">💰</span>
+                Tạo hoàn tiền
+              </h2>
+              <button type="button" class="modal-close" id="closeRefundModal"
+                style="background: #f3f4f6; border: none; font-size: 20px; color: #6b7280; cursor: pointer; padding: 8px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                onmouseover="this.style.background='#e5e7eb'; this.style.color='#374151';"
+                onmouseout="this.style.background='#f3f4f6'; this.style.color='#6b7280';">
+                <span style="font-weight: bold;">×</span>
+              </button>
             </div>
-            
-            <form id="refundForm">
-              <label for="refundBookingId">Chọn booking đã hủy</label>
-              <select id="refundBookingId" name="refundBookingId" required>
-                <option value="" disabled selected>Chọn booking đã hủy để tạo hoàn tiền...</option>
-                <option th:each="booking : ${cancelledBookings}" th:value="${booking.id}"
-                  th:text="${booking.maDatPhong + ' - ' + booking.customerName + ' (Hủy: ' + #temporals.format(booking.ngayHuy, 'dd/MM/yyyy') + ')'}"></option>
-              </select>
-              <div id="refundBookingError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng chọn booking đã hủy</div>
+
+            <form id="refundForm" style="display: flex; flex-direction: column; gap: 20px;">
+              <div class="form-group">
+                <label for="refundBookingId"
+                  style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 14px;">
+                  📋 Chọn booking đã hủy
+                </label>
+                <select id="refundBookingId" name="refundBookingId" required
+                  style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; background: white; transition: border-color 0.3s; cursor: pointer;"
+                  onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                  onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';">
+                  <option value="" disabled selected>Chọn booking đã hủy để tạo hoàn tiền...</option>
+                  <option th:each="booking : ${cancelledBookings}" th:value="${booking.id}"
+                    th:text="${booking.maDatPhong + ' - ' + booking.customerName + ' (Hủy: ' + #temporals.format(booking.ngayHuy, 'dd/MM/yyyy') + ')'}">
+                  </option>
+                </select>
+                <div id="refundBookingError"
+                  style="color: #dc2626; font-size: 12px; margin-top: 6px; display: none; font-weight: 500;">⚠️ Vui lòng
+                  chọn booking đã hủy</div>
+              </div>
 
               <!-- Thông tin hoàn tiền tự động -->
-              <div id="refundInfo" style="display:none; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; margin: 15px 0;">
-                <h3 style="color:#1f2937; margin: 0 0 12px 0; font-size: 14px; font-weight: 600;">📊 Thông tin booking</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; font-size: 13px;">
-                  <div>
-                    <span style="color: #6b7280;">Khách hàng:</span>
-                    <div style="font-weight: 500; color: #1f2937;" id="refundCustomerName"></div>
+              <div id="refundInfo"
+                style="display:none; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 20px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3
+                  style="color:#064e3b; margin: 0 0 20px 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 20px;">📊</span>
+                  Thông tin chi tiết booking
+                </h3>
+                <div
+                  style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                  <div class="info-card"
+                    style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 4px solid #10b981;">
+                    <div
+                      style="font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                      👤 KHÁCH HÀNG</div>
+                    <div style="font-weight: 600; color: #1f2937; font-size: 14px;" id="refundCustomerName"></div>
                   </div>
-                  <div>
-                    <span style="color: #6b7280;">Mã đặt phòng:</span>
-                    <div style="font-weight: 500; color: #1f2937;" id="refundMaDatPhong"></div>
+                  <div class="info-card"
+                    style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 4px solid #3b82f6;">
+                    <div
+                      style="font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                      🏷️ MÃ ĐẶT PHÒNG</div>
+                    <div style="font-weight: 600; color: #1f2937; font-size: 14px;" id="refundMaDatPhong"></div>
                   </div>
-                  <div>
-                    <span style="color: #6b7280;">Tổng đã thanh toán:</span>
-                    <div style="font-weight: 500; color: #059669;" id="refundTotalPaid"></div>
+                  <div class="info-card"
+                    style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 4px solid #059669;">
+                    <div
+                      style="font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                      💰 TỔNG ĐÃ THANH TOÁN</div>
+                    <div style="font-weight: 600; color: #059669; font-size: 14px;" id="refundTotalPaid"></div>
                   </div>
-                  <div>
-                    <span style="color: #6b7280;">Phí hủy:</span>
-                    <div style="font-weight: 500; color: #dc2626;" id="refundCancellationFee"></div>
+                  <div class="info-card"
+                    style="background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 4px solid #dc2626;">
+                    <div
+                      style="font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                      💸 PHÍ HỦY</div>
+                    <div style="font-weight: 600; color: #dc2626; font-size: 14px;" id="refundCancellationFee"></div>
                   </div>
                 </div>
-                <div style="background: #dbeafe; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #93c5fd;">
-                  <div style="font-size: 12px; color: #1e40af; margin-bottom: 4px;">Số tiền hoàn được tính toán</div>
-                  <div style="font-size: 18px; font-weight: 700; color: #1e40af;" id="refundCalculatedAmount"></div>
+                <div
+                  style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);">
+                  <div style="font-size: 14px; color: #1e40af; margin-bottom: 8px; font-weight: 600;">🎯 SỐ TIỀN HOÀN
+                    ĐƯỢC TÍNH TOÁN</div>
+                  <div style="font-size: 28px; font-weight: 800; color: #1e40af;" id="refundCalculatedAmount"></div>
                 </div>
               </div>
 
-              <label for="refundAmount">Số tiền hoàn (VNĐ)</label>
-              <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000" 
-                     placeholder="Số tiền hoàn sẽ được tự động điền khi chọn booking..." 
-                     readonly />
-              <div id="refundAmountError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng nhập số tiền hoàn hợp lệ</div>
+              <div class="form-group">
+                <label for="refundAmount"
+                  style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 14px;">
+                  💰 Số tiền hoàn (VNĐ)
+                </label>
+                <input type="number" id="refundAmount" name="refundAmount" required min="0" step="1000"
+                  placeholder="Số tiền hoàn sẽ được tự động điền khi chọn booking..." readonly
+                  style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; background: #f9fafb; color: #6b7280; cursor: not-allowed;" />
+                <div id="refundAmountError"
+                  style="color: #dc2626; font-size: 12px; margin-top: 6px; display: none; font-weight: 500;">⚠️ Vui lòng
+                  nhập số tiền hoàn hợp lệ</div>
+              </div>
 
-              <label for="refundReason">Lý do hoàn tiền</label>
-              <textarea id="refundReason" name="refundReason" rows="5" 
-                        placeholder="Nhập lý do hoàn tiền (ví dụ: Hoàn tiền do hủy đặt phòng theo chính sách, khách hàng yêu cầu hủy do thay đổi kế hoạch, v.v...)" 
-                        style="resize: vertical; min-height: 100px;"></textarea>
-              <div id="refundReasonError" style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none;">Vui lòng nhập lý do hoàn tiền</div>
+              <div class="form-group">
+                <label for="refundReason"
+                  style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 14px;">
+                  📝 Lý do hoàn tiền
+                </label>
+                <textarea id="refundReason" name="refundReason" rows="5"
+                  placeholder="Nhập lý do hoàn tiền (ví dụ: Hoàn tiền do hủy đặt phòng theo chính sách, khách hàng yêu cầu hủy do thay đổi kế hoạch, v.v...)"
+                  style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; background: white; resize: vertical; min-height: 120px; transition: border-color 0.3s; font-family: inherit;"
+                  onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                  onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';"></textarea>
+                <div id="refundReasonError"
+                  style="color: #dc2626; font-size: 12px; margin-top: 6px; display: none; font-weight: 500;">⚠️ Vui lòng
+                  nhập lý do hoàn tiền</div>
+              </div>
 
-              <div style="grid-column: 2 / 3; margin-top: 1.5rem;">
-                <button type="submit" class="btn" id="submitRefundBtn">Tạo hoàn tiền</button>
-                <button type="button" class="btn" id="cancelRefundBtn" style="background: transparent; color: #dc2626; border: 1px solid #dc2626; margin-left: 12px;">Hủy</button>
+              <div
+                style="display: flex; gap: 16px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                <button type="button" class="btn" id="cancelRefundBtn"
+                  style="background: #f3f4f6; color: #6b7280; border: 2px solid #e5e7eb; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s;"
+                  onmouseover="this.style.background='#e5e7eb'; this.style.color='#374151';"
+                  onmouseout="this.style.background='#f3f4f6'; this.style.color='#6b7280';">
+                  Hủy
+                </button>
+                <button type="submit" class="btn" id="submitRefundBtn"
+                  style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);"
+                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(16, 185, 129, 0.4)';"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(16, 185, 129, 0.3)';">
+                  💰 Tạo hoàn tiền
+                </button>
               </div>
             </form>
           </div>
@@ -767,12 +899,12 @@
       document.getElementById('bookingId').value = payment.bookingId;
       document.getElementById('amount').value = payment.amount;
       document.getElementById('paymentMethod').value = payment.paymentMethod;
-      document.getElementById('paymentDate').value = payment.paymentDate ? payment.paymentDate.substring(0,16) : '';
-      
+      document.getElementById('paymentDate').value = payment.paymentDate ? payment.paymentDate.substring(0, 16) : '';
+
       // Set status correctly - map from display value to enum value
       var statusMapping = {
         'Thành công': 'THANH_CONG',
-        'Đang xử lý': 'DANG_XU_LY', 
+        'Đang xử lý': 'DANG_XU_LY',
         'Thất bại': 'THAT_BAI',
         'Hoàn tiền': 'HOAN_TIEN',
         // Handle old values
@@ -781,19 +913,19 @@
         'Failed': 'THAT_BAI',
         'Refunded': 'HOAN_TIEN'
       };
-      
+
       // Reverse mapping for edit
       var reverseStatusMapping = {
         'THANH_CONG': 'THANH_CONG',
         'DANG_XU_LY': 'DANG_XU_LY',
-        'THAT_BAI': 'THAT_BAI', 
+        'THAT_BAI': 'THAT_BAI',
         'HOAN_TIEN': 'HOAN_TIEN'
       };
-      
+
       // Map status value
       var statusValue = reverseStatusMapping[payment.status] || statusMapping[payment.status] || payment.status;
       console.log('Payment status:', payment.status, 'Mapped to:', statusValue);
-      
+
       // Set the status value, with fallback
       if (statusValue && document.getElementById('status').querySelector('option[value="' + statusValue + '"]')) {
         document.getElementById('status').value = statusValue;
@@ -801,7 +933,7 @@
         console.log('Status value not found in options, using default');
         document.getElementById('status').value = 'DANG_XU_LY';
       }
-      
+
       form.setAttribute('data-mode', 'edit');
       form.setAttribute('action', '/admin/payments/' + payment.id);
     }
@@ -820,7 +952,7 @@
           if (data.error) {
             throw new Error(data.message || 'Lỗi không xác định');
           }
-          
+
           // Nếu không có lỗi, hiển thị thông tin thanh toán
           document.getElementById('viewPaymentId').textContent = data.id;
           document.getElementById('viewBookingId').textContent = data.bookingId;
@@ -828,19 +960,19 @@
           document.getElementById('viewAmount').textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.amount);
           document.getElementById('viewPaymentMethod').textContent = data.paymentMethod;
           document.getElementById('viewPaymentDate').textContent = new Date(data.paymentDate).toLocaleString('vi-VN');
-          
+
           // Hiển thị trạng thái với màu sắc tương ứng
           const statusElement = document.getElementById('viewStatus');
-          statusElement.textContent = data.status === 'Thành công' ? 'Thành công' : 
-                                      data.status === 'Đang xử lý' ? 'Đang xử lý' : 
-                                      data.status === 'Thất bại' ? 'Thất bại' : 'Hoàn tiền';
-          statusElement.className = data.status === 'Thành công' ? 'status-completed' : 
-                                   data.status === 'Đang xử lý' ? 'status-pending' : 
-                                   data.status === 'Thất bại' ? 'status-failed' : 'status-refunded';
-          
+          statusElement.textContent = data.status === 'Thành công' ? 'Thành công' :
+            data.status === 'Đang xử lý' ? 'Đang xử lý' :
+              data.status === 'Thất bại' ? 'Thất bại' : 'Hoàn tiền';
+          statusElement.className = data.status === 'Thành công' ? 'status-completed' :
+            data.status === 'Đang xử lý' ? 'status-pending' :
+              data.status === 'Thất bại' ? 'status-failed' : 'status-refunded';
+
           // Hiển thị modal
           document.getElementById('viewPaymentModal').style.display = 'flex';
-          
+
           // Lưu ID thanh toán cho nút in hóa đơn
           document.getElementById('printInvoiceBtn').setAttribute('data-id', data.id);
         })
@@ -856,14 +988,14 @@
       document.getElementById('refundAmountError').style.display = 'none';
       document.getElementById('refundReasonError').style.display = 'none';
     }
-    
+
     // Show validation error
     function showRefundError(fieldId, message) {
       var errorElement = document.getElementById(fieldId);
       errorElement.textContent = message;
       errorElement.style.display = 'block';
     }
-    
+
     // Load thông tin hoàn tiền
     function loadRefundInfo(bookingId) {
       // Hiển thị loading
@@ -880,7 +1012,7 @@
           }
         </style>
       `;
-      
+
       fetch('/admin/payments/refund-info/' + bookingId)
         .then(res => {
           if (!res.ok) {
@@ -892,7 +1024,7 @@
           if (data.error) {
             throw new Error(data.message || 'Lỗi không xác định');
           }
-          
+
           // Hiển thị thông tin hoàn tiền
           document.getElementById('refundInfo').innerHTML = `
             <h3 style="color:#0c4a6e; margin: 0 0 15px 0; font-size: 1.1rem; font-weight: 600;">📊 Thông tin chi tiết booking</h3>
@@ -927,13 +1059,13 @@
               <div style="font-size: 24px; font-weight: 700; color: #1e40af;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.calculatedRefund)}</div>
             </div>
           `;
-          
+
           // Tự động điền số tiền hoàn
           document.getElementById('refundAmount').value = data.calculatedRefund;
-          
+
           // Clear any amount errors
           document.getElementById('refundAmountError').style.display = 'none';
-          
+
         })
         .catch(error => {
           console.error('Lỗi:', error);
@@ -972,34 +1104,34 @@
       if (!confirm('Bạn có chắc chắn muốn xóa thanh toán này? Hành động này không thể hoàn tác.')) {
         return;
       }
-      
+
       console.log('Deleting payment with ID:', paymentId);
-      
+
       fetch('/admin/payments/' + paymentId, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      .then(res => {
-        console.log('Delete response status:', res.status);
-        if (!res.ok) {
-          throw new Error('HTTP ' + res.status + ': Lỗi khi xóa thanh toán');
-        }
-        return res.json();
-      })
-      .then(data => {
-        console.log('Delete response:', data);
-        if (data.error) {
-          throw new Error(data.message || 'Lỗi không xác định');
-        }
-        alert('Xóa thanh toán thành công!');
-        location.reload(); // Reload page to update table
-      })
-      .catch(error => {
-        console.error('Lỗi khi xóa thanh toán:', error);
-        alert('Không thể xóa thanh toán: ' + error.message);
-      });
+        .then(res => {
+          console.log('Delete response status:', res.status);
+          if (!res.ok) {
+            throw new Error('HTTP ' + res.status + ': Lỗi khi xóa thanh toán');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log('Delete response:', data);
+          if (data.error) {
+            throw new Error(data.message || 'Lỗi không xác định');
+          }
+          alert('Xóa thanh toán thành công!');
+          location.reload(); // Reload page to update table
+        })
+        .catch(error => {
+          console.error('Lỗi khi xóa thanh toán:', error);
+          alert('Không thể xóa thanh toán: ' + error.message);
+        });
     }
 
     // Chức năng tìm kiếm và lọc
@@ -1013,12 +1145,12 @@
       // searchResults và resultCount đã được xóa khỏi HTML
       const paymentTable = document.getElementById('paymentTable');
       const paymentTableBody = document.getElementById('paymentTableBody');
-      
+
       // Phân trang
       const itemsPerPageSelect = document.getElementById('itemsPerPage');
-      
+
       // Sử dụng biến global đã khai báo ở ngoài
-      
+
       // Lấy dữ liệu gốc từ bảng
       function getOriginalData() {
         const rows = paymentTableBody.querySelectorAll('tr');
@@ -1036,7 +1168,7 @@
           };
         });
       }
-      
+
       // Tìm kiếm và lọc
       function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
@@ -1044,34 +1176,34 @@
         const selectedMethod = methodFilter.value;
         const fromDate = dateFrom.value;
         const toDate = dateTo.value;
-        
+
         filteredData = originalData.filter(item => {
           // Tìm kiếm theo từ khóa
-          const matchesSearch = !searchTerm || 
+          const matchesSearch = !searchTerm ||
             item.id.toLowerCase().includes(searchTerm) ||
             item.bookingId.toLowerCase().includes(searchTerm) ||
             item.customerName.toLowerCase().includes(searchTerm);
-          
+
           // Lọc theo trạng thái
           let matchesStatus = true;
           if (selectedStatus) {
             const statusMap = {
               'DANG_XU_LY': 'Đang xử lý',
-              'THANH_CONG': 'Thành công', 
+              'THANH_CONG': 'Thành công',
               'THAT_BAI': 'Thất bại',
               'HOAN_TIEN': 'Hoàn tiền'
             };
             const expectedStatus = statusMap[selectedStatus];
             matchesStatus = item.status === expectedStatus;
           }
-          
+
           // Lọc theo phương thức
           let matchesMethod = true;
           if (selectedMethod) {
             const itemMethod = item.method ? item.method.trim() : '';
             matchesMethod = itemMethod === selectedMethod;
           }
-          
+
           // Lọc theo ngày
           let matchesDate = true;
           if (fromDate || toDate) {
@@ -1086,7 +1218,7 @@
               }
               return null;
             };
-            
+
             const itemDate = parseVietnameseDate(item.date);
             if (itemDate) {
               if (fromDate) {
@@ -1102,39 +1234,39 @@
               matchesDate = false;
             }
           }
-          
+
           return matchesSearch && matchesStatus && matchesMethod && matchesDate;
         });
-        
+
         // Reset về trang đầu
         currentPage = 1;
-        
+
         // Auto-search không cần hiển thị kết quả tìm kiếm
-        
+
         // Cập nhật phân trang
         updatePagination();
       }
-      
+
       // Cập nhật phân trang
       function updatePagination() {
         const totalItems = filteredData.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
-        
+
         // Ẩn tất cả hàng
         originalData.forEach(item => {
           item.element.style.display = 'none';
         });
-        
+
         // Hiển thị hàng cho trang hiện tại
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-        
+
         for (let i = startIndex; i < endIndex; i++) {
           if (filteredData[i]) {
             filteredData[i].element.style.display = '';
           }
         }
-        
+
         // Cập nhật số thứ tự
         let stt = startIndex + 1;
         for (let i = startIndex; i < endIndex; i++) {
@@ -1145,33 +1277,33 @@
             }
           }
         }
-        
+
         // Cập nhật thông tin phân trang
         document.getElementById('currentPageDisplay').textContent = currentPage;
         document.getElementById('totalPagesDisplay').textContent = totalPages;
         document.getElementById('totalItemsDisplay').textContent = totalItems;
-        
+
         // Cập nhật nút Previous/Next
         const prevBtn = document.getElementById('prevPageBtn');
         const nextBtn = document.getElementById('nextPageBtn');
         prevBtn.disabled = currentPage <= 1;
         nextBtn.disabled = currentPage >= totalPages;
-        
+
         // Tạo nút phân trang
         createPageNumbers(totalPages);
       }
-      
+
       // Tạo số trang
       function createPageNumbers(totalPages) {
         const pageNumbers = document.getElementById('pageNumbers');
         pageNumbers.innerHTML = '';
-        
+
         if (totalPages <= 1) return;
-        
+
         // Chỉ hiển thị trang hiện tại ± 1
         const startPage = Math.max(1, currentPage - 1);
         const endPage = Math.min(totalPages, currentPage + 1);
-        
+
         for (let i = startPage; i <= endPage; i++) {
           const pageBtn = document.createElement('button');
           pageBtn.textContent = i;
@@ -1190,22 +1322,22 @@
             text-align: center;
             cursor: pointer;
           `;
-          
+
           if (i === currentPage) {
             pageBtn.style.background = '#3b82f6';
             pageBtn.style.color = 'white';
             pageBtn.style.borderColor = '#3b82f6';
             pageBtn.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)';
           }
-          
-          pageBtn.addEventListener('click', function() {
+
+          pageBtn.addEventListener('click', function () {
             currentPage = i;
             updatePagination();
           });
-          
+
           pageNumbers.appendChild(pageBtn);
         }
-        
+
         // Thêm dấu "..." nếu có nhiều trang hơn
         if (totalPages > 3 && currentPage < totalPages - 1) {
           const dots = document.createElement('span');
@@ -1214,22 +1346,22 @@
           pageNumbers.appendChild(dots);
         }
       }
-      
+
       // Event listeners cho nút Previous/Next
-      document.getElementById('prevPageBtn').addEventListener('click', function() {
+      document.getElementById('prevPageBtn').addEventListener('click', function () {
         if (currentPage > 1) {
           currentPage--;
           updatePagination();
         }
       });
-      
-      document.getElementById('nextPageBtn').addEventListener('click', function() {
+
+      document.getElementById('nextPageBtn').addEventListener('click', function () {
         if (currentPage < totalPages) {
           currentPage++;
           updatePagination();
         }
       });
-      
+
       // Reset tìm kiếm
       function resetSearch() {
         searchInput.value = '';
@@ -1237,96 +1369,96 @@
         methodFilter.value = '';
         dateFrom.value = '';
         dateTo.value = '';
-        
+
         // Reset về dữ liệu gốc
         filteredData = [...originalData];
         currentPage = 1;
-        
+
         // Cập nhật phân trang
         updatePagination();
       }
-      
+
       // Auto-search đã được thiết lập ở trên
-      
+
       // Tìm kiếm real-time khi gõ
       // Auto-search với debounce
       let searchTimeout;
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
           performSearch();
         }, 300);
       });
-      
+
       // Auto-search cho các filter
-      statusFilter.addEventListener('change', function() {
+      statusFilter.addEventListener('change', function () {
         performSearch();
       });
-      
-      methodFilter.addEventListener('change', function() {
+
+      methodFilter.addEventListener('change', function () {
         performSearch();
       });
-      
-      dateFrom.addEventListener('change', function() {
+
+      dateFrom.addEventListener('change', function () {
         performSearch();
       });
-      
-      dateTo.addEventListener('change', function() {
+
+      dateTo.addEventListener('change', function () {
         performSearch();
       });
-      
+
       // Auto-search cho date inputs
-      dateFrom.addEventListener('input', function() {
+      dateFrom.addEventListener('input', function () {
         performSearch();
       });
-      
-      dateTo.addEventListener('input', function() {
+
+      dateTo.addEventListener('input', function () {
         performSearch();
       });
-      
+
       // Auto-search đã được thiết lập ở trên
-      
+
       // Thay đổi số mục/trang
-      itemsPerPageSelect.addEventListener('change', function() {
+      itemsPerPageSelect.addEventListener('change', function () {
         itemsPerPage = parseInt(this.value);
         currentPage = 1;
         updatePagination();
       });
-      
+
       // Khởi tạo dữ liệu gốc
       getOriginalData();
-      
+
       // Khởi tạo phân trang
       filteredData = [...originalData];
       updatePagination();
     }
 
     // Gắn sự kiện cho các nút
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Nút tạo hoàn tiền
-      document.getElementById('btnCreateRefund').onclick = function() {
+      document.getElementById('btnCreateRefund').onclick = function () {
         document.getElementById('refundModal').style.display = 'flex';
         document.getElementById('refundInfo').style.display = 'none';
         document.getElementById('refundForm').reset();
       };
-      
+
       // Chức năng tìm kiếm và lọc
       setupSearchAndFilter();
-      
+
       // Đóng modal hoàn tiền
-      document.getElementById('closeRefundModal').onclick = function() {
+      document.getElementById('closeRefundModal').onclick = function () {
         document.getElementById('refundModal').style.display = 'none';
       };
-      document.getElementById('cancelRefundBtn').onclick = function() {
+      document.getElementById('cancelRefundBtn').onclick = function () {
         document.getElementById('refundModal').style.display = 'none';
       };
-      
+
       // Xử lý khi chọn booking để hoàn tiền
-      document.getElementById('refundBookingId').onchange = function() {
+      document.getElementById('refundBookingId').onchange = function () {
         var bookingId = this.value;
         // Clear previous errors
         clearRefundErrors();
-        
+
         if (bookingId) {
           loadRefundInfo(bookingId);
         } else {
@@ -1334,44 +1466,44 @@
           document.getElementById('refundAmount').value = '';
         }
       };
-      
+
       // Tự động điền số tiền hoàn khi chọn booking (không cần button)
       // Logic này đã được tích hợp vào loadRefundInfo function
-      
+
       // Đóng modal thêm/sửa
-      document.getElementById('closePaymentModal').onclick = function() {
+      document.getElementById('closePaymentModal').onclick = function () {
         document.getElementById('paymentModal').style.display = 'none';
       };
-      document.getElementById('cancelBtn').onclick = function() {
+      document.getElementById('cancelBtn').onclick = function () {
         document.getElementById('paymentModal').style.display = 'none';
       };
-      
+
       // Đóng modal xem chi tiết
-      document.getElementById('closeViewPaymentModal').onclick = function() {
+      document.getElementById('closeViewPaymentModal').onclick = function () {
         document.getElementById('viewPaymentModal').style.display = 'none';
       };
-      document.getElementById('closeViewBtn').onclick = function() {
+      document.getElementById('closeViewBtn').onclick = function () {
         document.getElementById('viewPaymentModal').style.display = 'none';
       };
-      
+
       // Nút in hóa đơn
-      document.getElementById('printInvoiceBtn').onclick = function() {
+      document.getElementById('printInvoiceBtn').onclick = function () {
         const paymentId = this.getAttribute('data-id');
         printInvoice(paymentId);
       };
-      
+
       // Gắn sự kiện cho nút Sửa (Edit)
-      document.querySelectorAll('.btn-edit').forEach(function(btn) {
-        btn.onclick = function() {
+      document.querySelectorAll('.btn-edit').forEach(function (btn) {
+        btn.onclick = function () {
           var paymentId = this.getAttribute('data-id');
           console.log('Loading payment with ID:', paymentId);
-          
+
           if (!paymentId) {
             console.error('No payment ID found');
             alert('Không tìm thấy ID thanh toán');
             return;
           }
-          
+
           fetch('/admin/payments/' + paymentId)
             .then(res => {
               console.log('Response status:', res.status);
@@ -1394,48 +1526,48 @@
             });
         };
       });
-      
+
       // Gắn sự kiện cho nút Xóa (Delete)
-      document.querySelectorAll('.btn-delete').forEach(function(btn) {
-        btn.onclick = function() {
+      document.querySelectorAll('.btn-delete').forEach(function (btn) {
+        btn.onclick = function () {
           var paymentId = this.getAttribute('data-id');
           console.log('Delete button clicked for payment ID:', paymentId);
-          
+
           if (!paymentId) {
             console.error('No payment ID found for delete');
             alert('Không tìm thấy ID thanh toán');
             return;
           }
-          
+
           deletePayment(paymentId);
         };
       });
-      
+
       // Submit form add/edit
-      document.getElementById('paymentForm').onsubmit = function(e) {
+      document.getElementById('paymentForm').onsubmit = function (e) {
         e.preventDefault();
         var form = this;
         var mode = form.getAttribute('data-mode');
         var url = form.getAttribute('action');
         var method = 'POST';
-        
+
         // Validation
         var bookingId = document.getElementById('bookingId').value;
         var amount = document.getElementById('amount').value;
         var paymentMethod = document.getElementById('paymentMethod').value;
         var paymentDate = document.getElementById('paymentDate').value;
         var status = document.getElementById('status').value;
-        
+
         if (!bookingId || !amount || !paymentMethod || !paymentDate || !status) {
           alert('Vui lòng điền đầy đủ thông tin!');
           return;
         }
-        
+
         if (parseFloat(amount) <= 0) {
           alert('Số tiền phải lớn hơn 0!');
           return;
         }
-        
+
         var data = {
           id: document.getElementById('paymentId').value,
           bookingId: bookingId,
@@ -1444,65 +1576,65 @@
           paymentDate: paymentDate,
           status: status
         };
-        
+
         // Set method based on mode
         if (mode === 'edit') {
           method = 'PUT';
         }
-        
+
         fetch(url, {
           method: method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         })
-        .then(res => {
-          console.log('Response status:', res.status);
-          if(res.ok) {
-            return res.json();
-          } else {
-            return res.json().then(errorData => {
-              throw new Error(errorData.message || 'Lưu thanh toán thất bại!');
-            });
-          }
-        })
-        .then(data => {
-          console.log('Thanh toán đã được lưu:', data);
-          if (data && data.error) {
-            throw new Error(data.message || 'Có lỗi xảy ra khi lưu thanh toán');
-          }
-          if (data && data.id) {
-          alert('Lưu thanh toán thành công!');
-          location.reload();
-          } else {
-            throw new Error('Dữ liệu phản hồi không hợp lệ');
-          }
-        })
-        .catch(error => {
-          console.error('Lỗi:', error);
-          alert('Lỗi: ' + error.message);
-        });
+          .then(res => {
+            console.log('Response status:', res.status);
+            if (res.ok) {
+              return res.json();
+            } else {
+              return res.json().then(errorData => {
+                throw new Error(errorData.message || 'Lưu thanh toán thất bại!');
+              });
+            }
+          })
+          .then(data => {
+            console.log('Thanh toán đã được lưu:', data);
+            if (data && data.error) {
+              throw new Error(data.message || 'Có lỗi xảy ra khi lưu thanh toán');
+            }
+            if (data && data.id) {
+              alert('Lưu thanh toán thành công!');
+              location.reload();
+            } else {
+              throw new Error('Dữ liệu phản hồi không hợp lệ');
+            }
+          })
+          .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Lỗi: ' + error.message);
+          });
       };
-      
+
       // Submit form hoàn tiền
-      document.getElementById('refundForm').onsubmit = function(e) {
+      document.getElementById('refundForm').onsubmit = function (e) {
         e.preventDefault();
         var form = this;
-        
+
         // Clear previous errors
         clearRefundErrors();
-        
+
         var bookingId = document.getElementById('refundBookingId').value;
         var refundAmount = document.getElementById('refundAmount').value;
         var refundReason = document.getElementById('refundReason').value;
-        
+
         var hasError = false;
-        
+
         // Validation booking
         if (!bookingId) {
           showRefundError('refundBookingError', 'Vui lòng chọn booking đã hủy');
           hasError = true;
         }
-        
+
         // Validation amount
         if (!refundAmount) {
           showRefundError('refundAmountError', 'Vui lòng nhập số tiền hoàn');
@@ -1521,58 +1653,58 @@
             }
           }
         }
-        
+
         // Validation reason
         if (!refundReason.trim()) {
           showRefundError('refundReasonError', 'Vui lòng nhập lý do hoàn tiền');
           hasError = true;
         }
-        
+
         if (hasError) {
           return;
         }
-        
+
         var data = {
           bookingId: bookingId,
           refundAmount: refundAmount,
           reason: refundReason
         };
-        
+
         fetch('/admin/payments/refund', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         })
-        .then(res => {
-          console.log('Refund response status:', res.status);
-          if(res.ok) {
-            return res.json();
-          } else {
-            return res.json().then(errorData => {
-              throw new Error(errorData.message || 'Tạo hoàn tiền thất bại!');
-            });
-          }
-        })
-        .then(data => {
-          console.log('Hoàn tiền đã được tạo:', data);
-          if (data && data.error) {
-            throw new Error(data.message || 'Có lỗi xảy ra khi tạo hoàn tiền');
-          }
-          if (data && data.id) {
-            alert('Tạo hoàn tiền thành công!');
-            location.reload();
-          } else {
-            throw new Error('Dữ liệu phản hồi không hợp lệ');
-          }
-        })
-        .catch(error => {
-          console.error('Lỗi:', error);
-          alert('Lỗi: ' + error.message);
-        });
+          .then(res => {
+            console.log('Refund response status:', res.status);
+            if (res.ok) {
+              return res.json();
+            } else {
+              return res.json().then(errorData => {
+                throw new Error(errorData.message || 'Tạo hoàn tiền thất bại!');
+              });
+            }
+          })
+          .then(data => {
+            console.log('Hoàn tiền đã được tạo:', data);
+            if (data && data.error) {
+              throw new Error(data.message || 'Có lỗi xảy ra khi tạo hoàn tiền');
+            }
+            if (data && data.id) {
+              alert('Tạo hoàn tiền thành công!');
+              location.reload();
+            } else {
+              throw new Error('Dữ liệu phản hồi không hợp lệ');
+            }
+          })
+          .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Lỗi: ' + error.message);
+          });
       };
     });
   </script>
-<script th:src="@{/js/responsive.js}"></script>
+  <script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>

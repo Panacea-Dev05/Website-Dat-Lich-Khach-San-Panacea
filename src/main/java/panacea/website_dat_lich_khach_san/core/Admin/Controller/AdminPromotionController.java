@@ -72,6 +72,16 @@ public class AdminPromotionController {
             model.addAttribute("error", "Vui lòng nhập đầy đủ và đúng thông tin!");
             return "Admin/view/QuanLyKhuyenMai";
         }
+        // Kiểm tra giá trị giảm không được quá 50% khi loại giảm giá là phần trăm
+        if ("PHAN_TRAM".equals(promotionDTO.getLoaiGiamGia()) && promotionDTO.getGiaTriGiam().compareTo(new java.math.BigDecimal("50")) > 0) {
+            model.addAttribute("promotionForm", promotionDTO);
+            model.addAttribute("promotionTypes", Arrays.asList("PHAN_TRAM", "SO_TIEN"));
+            model.addAttribute("promotionStatuses", Arrays.asList("HOAT_DONG", "TAM_NGUNG", "HET_HAN"));
+            model.addAttribute("promotions", adminPromotionService.getAllPromotions());
+            model.addAttribute("error", "Giá trị giảm không được vượt quá 50% khi chọn loại giảm giá là phần trăm!");
+            return "Admin/view/QuanLyKhuyenMai";
+        }
+        
         // Kiểm tra mã khuyến mãi trùng
         List<PromotionDTO> allPromos = adminPromotionService.getAllPromotions();
         boolean isDuplicate = allPromos.stream().anyMatch(p -> p.getMaKhuyenMai().equalsIgnoreCase(promotionDTO.getMaKhuyenMai()));
@@ -102,6 +112,17 @@ public class AdminPromotionController {
             model.addAttribute("promotions", adminPromotionService.getAllPromotions());
             model.addAttribute("editMode", true);
             model.addAttribute("error", "Vui lòng nhập đầy đủ và đúng thông tin!");
+            return "Admin/view/QuanLyKhuyenMai";
+        }
+        
+        // Kiểm tra giá trị giảm không được quá 50% khi loại giảm giá là phần trăm
+        if ("PHAN_TRAM".equals(promotionDTO.getLoaiGiamGia()) && promotionDTO.getGiaTriGiam().compareTo(new java.math.BigDecimal("50")) > 0) {
+            model.addAttribute("promotionForm", promotionDTO);
+            model.addAttribute("promotionTypes", Arrays.asList("PHAN_TRAM", "SO_TIEN"));
+            model.addAttribute("promotionStatuses", Arrays.asList("HOAT_DONG", "TAM_NGUNG", "HET_HAN"));
+            model.addAttribute("promotions", adminPromotionService.getAllPromotions());
+            model.addAttribute("editMode", true);
+            model.addAttribute("error", "Giá trị giảm không được vượt quá 50% khi chọn loại giảm giá là phần trăm!");
             return "Admin/view/QuanLyKhuyenMai";
         }
         adminPromotionService.updatePromotion(id, promotionDTO);

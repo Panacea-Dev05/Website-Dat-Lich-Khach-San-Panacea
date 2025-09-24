@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,7 +13,7 @@
     <style>
         /* Responsive cho thanh tìm kiếm */
         @media (max-width: 768px) {
-            .search-filter-section > div {
+            .search-filter-section>div {
                 grid-template-columns: 1fr !important;
                 gap: 15px !important;
             }
@@ -34,7 +35,7 @@
                 align-items: center !important;
             }
 
-            #bottomPaginationControls > div {
+            #bottomPaginationControls>div {
                 width: 100% !important;
                 justify-content: center !important;
             }
@@ -44,7 +45,7 @@
                 justify-content: center !important;
             }
 
-            .search-filter-section > div:first-child > div:last-child {
+            .search-filter-section>div:first-child>div:last-child {
                 text-align: center !important;
             }
         }
@@ -201,7 +202,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         /* Sticky header */
@@ -233,571 +234,591 @@
         }
     </style>
 </head>
+
 <body>
-<div class="app" id="app">
-    <header>
-        <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
-            <span class="material-icons" aria-hidden="true">hotel</span>
-            <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
-        </div>
-        <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
-            <span class="material-icons">menu</span>
-        </button>
-    </header>
-    <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
-    <main role="main" tabindex="0">
-        <div class="header-layout">
-            <h1>Quản lý dịch vụ</h1>
-            <button class="btn" id="btnAddService" type="button" style="margin-right: 50px;">
-                <span class="material-icons">add</span>
-                Thêm dịch vụ mới
+    <div class="app" id="app">
+        <header>
+            <div class="logo" aria-label="Biểu tượng khách sạn Panacea">
+                <span class="material-icons" aria-hidden="true">hotel</span>
+                <div class="hotel-name" aria-live="polite">Panacea Hotel Central</div>
+            </div>
+            <button class="mobile-toggle" aria-label="Chuyển đổi thanh bên" id="mobileToggle">
+                <span class="material-icons">menu</span>
             </button>
-        </div>
+        </header>
+        <div th:replace="~{Admin/Layout/AdminSlidebar :: sidebar}"></div>
+        <main role="main" tabindex="0">
+            <div class="header-layout">
+                <h1>Quản lý dịch vụ</h1>
+                <button class="btn" id="btnAddService" type="button" style="margin-right: 50px;">
+                    <span class="material-icons">add</span>
+                    Thêm dịch vụ mới
+                </button>
+            </div>
 
-        <section class="content-section" id="contentSection">
+            <section class="content-section" id="contentSection">
 
-            <!-- Thanh tìm kiếm và lọc -->
-            <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
-                    <!-- Tìm kiếm theo từ khóa -->
-                    <div>
-                        <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
-                        <input type="text" id="searchInput" placeholder="Mã dịch vụ, tên dịch vụ... (tự động tìm kiếm)"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <!-- Thanh tìm kiếm và lọc -->
+                <section class="search-filter-section"
+                    style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+                    <div
+                        style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
+                        <!-- Tìm kiếm theo từ khóa -->
+                        <div>
+                            <label for="searchInput"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm
+                                kiếm:</label>
+                            <input type="text" id="searchInput"
+                                placeholder="Mã dịch vụ, tên dịch vụ... (tự động tìm kiếm)"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        </div>
+
+                        <!-- Lọc theo loại dịch vụ -->
+                        <div>
+                            <label for="typeFilter"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Loại dịch
+                                vụ:</label>
+                            <select id="typeFilter"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                                <option value="">Tất cả loại</option>
+                                <option value="SPA & Massage">SPA & Massage</option>
+                                <option value="Nhà hàng">Nhà hàng</option>
+                                <option value="Thể dục">Thể dục</option>
+                                <option value="Giải trí">Giải trí</option>
+                                <option value="Vận chuyển">Vận chuyển</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo trạng thái -->
+                        <div>
+                            <label for="statusFilter"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng
+                                thái:</label>
+                            <select id="statusFilter"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="Hoạt động">Hoạt động</option>
+                                <option value="Tạm ngưng">Tạm ngưng</option>
+                                <option value="Bảo trì">Bảo trì</option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo khoảng giá -->
+                        <div>
+                            <label for="priceFrom"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Giá
+                                từ:</label>
+                            <input type="number" id="priceFrom" placeholder="0 (tự động lọc)" min="0" step="1000"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                        </div>
                     </div>
 
-                    <!-- Lọc theo loại dịch vụ -->
-                    <div>
-                        <label for="typeFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Loại dịch vụ:</label>
-                        <select id="typeFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-                            <option value="">Tất cả loại</option>
-                            <option value="SPA & Massage">SPA & Massage</option>
-                            <option value="Nhà hàng">Nhà hàng</option>
-                            <option value="Thể dục">Thể dục</option>
-                            <option value="Giải trí">Giải trí</option>
-                            <option value="Vận chuyển">Vận chuyển</option>
-                            <option value="Khác">Khác</option>
+                </section>
+                <!-- Thông báo từ server -->
+                <div th:if="${error}" class="error-message" style="display: flex; margin-bottom: 20px;">
+                    <span class="material-icons">error</span>
+                    <span th:text="${error}"></span>
+                </div>
+                <div th:if="${success}" class="success-message" style="display: flex; margin-bottom: 20px;">
+                    <span class="material-icons">check_circle</span>
+                    <span th:text="${success}"></span>
+                </div>
+                <div class="table-container">
+                    <table aria-label="Danh sách dịch vụ" id="serviceTable"
+                        style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã</th>
+                                <th>Tên</th>
+                                <th>Loại</th>
+                                <th>Đơn giá</th>
+                                <th>Đơn vị</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="serviceTableBody">
+                            <tr th:if="${#lists.isEmpty(services)}">
+                                <td colspan="8" style="text-align:center; color:#888;">Không có dịch vụ nào</td>
+                            </tr>
+                            <tr th:each="service, stat : ${services}">
+                                <td th:text="${stat.count}">1</td>
+                                <td th:text="${service.maDichVu}"></td>
+                                <td th:text="${service.tenDichVu}"></td>
+                                <td th:text="${service.loaiDichVu}"></td>
+                                <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
+                                <td th:text="${service.donViTinh}"></td>
+                                <td th:text="${service.trangThai}"></td>
+                                <td>
+                                    <button class="btn-edit" th:onclick="'editService(' + ${service.id} + ')'"
+                                        title="Sửa">
+                                        <span class="material-icons">mode_edit</span>
+                                    </button>
+                                    <button class="btn-delete" th:onclick="'deleteService(' + ${service.id} + ')'"
+                                        title="Xóa">
+                                        <span class="material-icons">delete_forever</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Server Pagination Controls -->
+                <div class="pagination-controls"
+                    style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <!-- Pagination Info -->
+                    <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
+                        Trang <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                        (<span th:text="${totalItems}">0</span> dịch vụ)
+                    </div>
+
+                    <!-- Pagination Buttons -->
+                    <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
+                        <!-- Previous Button -->
+                        <a th:if="${hasPrevious}"
+                            th:href="@{/admin/services(page=${currentPage - 1}, size=${pageSize})}"
+                            class="pagination-btn"
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px;">
+                            <span>◀</span> Trước
+                        </a>
+
+                        <!-- Page Numbers -->
+                        <div th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:if="${pageNum >= currentPage - 1 and pageNum <= currentPage + 1}">
+                            <a th:href="@{/admin/services(page=${pageNum}, size=${pageSize})}"
+                                th:class="${pageNum == currentPage} ? 'pagination-btn active' : 'pagination-btn'"
+                                th:text="${pageNum + 1}"
+                                style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; min-width: 32px; text-align: center;">
+                            </a>
+                        </div>
+
+                        <!-- Show "..." if there are more pages -->
+                        <span th:if="${totalPages > 3 and currentPage < totalPages - 2}"
+                            style="color: #94a3b8; font-size: 13px; padding: 0 4px;">...</span>
+
+                        <!-- Next Button -->
+                        <a th:if="${hasNext}" th:href="@{/admin/services(page=${currentPage + 1}, size=${pageSize})}"
+                            class="pagination-btn"
+                            style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px;">
+                            Sau <span>▶</span>
+                        </a>
+                    </div>
+
+                    <!-- Items per page selector -->
+                    <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
+                        <select onchange="changePageSize(this.value)"
+                            style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+                            <option value="5" th:selected="${pageSize == 5}">5</option>
+                            <option value="10" th:selected="${pageSize == 10}">10</option>
+                            <option value="25" th:selected="${pageSize == 25}">25</option>
+                            <option value="50" th:selected="${pageSize == 50}">50</option>
+                            <option value="100" th:selected="${pageSize == 100}">100</option>
                         </select>
-                    </div>
-
-                    <!-- Lọc theo trạng thái -->
-                    <div>
-                        <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
-                        <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
-                            <option value="">Tất cả trạng thái</option>
-                            <option value="Hoạt động">Hoạt động</option>
-                            <option value="Tạm ngưng">Tạm ngưng</option>
-                            <option value="Bảo trì">Bảo trì</option>
-                        </select>
-                    </div>
-
-                    <!-- Lọc theo khoảng giá -->
-                    <div>
-                        <label for="priceFrom" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Giá từ:</label>
-                        <input type="number" id="priceFrom" placeholder="0 (tự động lọc)" min="0" step="1000"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+                        <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
                     </div>
                 </div>
 
             </section>
-            <!-- Thông báo từ server -->
-            <div th:if="${error}" class="error-message" style="display: flex; margin-bottom: 20px;">
-                <span class="material-icons">error</span>
-                <span th:text="${error}"></span>
-            </div>
-            <div th:if="${success}" class="success-message" style="display: flex; margin-bottom: 20px;">
-                <span class="material-icons">check_circle</span>
-                <span th:text="${success}"></span>
-            </div>
-            <div class="table-container">
-                <table aria-label="Danh sách dịch vụ" id="serviceTable" style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
-                    <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã</th>
-                        <th>Tên</th>
-                        <th>Loại</th>
-                        <th>Đơn giá</th>
-                        <th>Đơn vị</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    </thead>
-                    <tbody id="serviceTableBody">
-                    <tr th:if="${#lists.isEmpty(services)}">
-                        <td colspan="8" style="text-align:center; color:#888;">Không có dịch vụ nào</td>
-                    </tr>
-                    <tr th:each="service, stat : ${services}">
-                        <td th:text="${stat.count}">1</td>
-                        <td th:text="${service.maDichVu}"></td>
-                        <td th:text="${service.tenDichVu}"></td>
-                        <td th:text="${service.loaiDichVu}"></td>
-                        <td th:text="${#numbers.formatDecimal(service.donGia, 0, 'COMMA', 0, 'POINT')}"></td>
-                        <td th:text="${service.donViTinh}"></td>
-                        <td th:text="${service.trangThai}"></td>
-                        <td>
-                            <button class="btn-edit" th:onclick="'editService(' + ${service.id} + ')'" title="Sửa">
-                                <span class="material-icons">mode_edit</span>
-                            </button>
-                            <button class="btn-delete" th:onclick="'deleteService(' + ${service.id} + ')'" title="Xóa">
-                                <span class="material-icons">delete_forever</span>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Modal form thêm/sửa dịch vụ (ẩn mặc định) -->
+            <div class="modal" id="serviceModal" style="display:none;">
+                <div class="modal-content">
+                    <button type="button" class="modal-close" id="closeServiceModal">
+                        <span class="material-icons">close</span>
+                    </button>
+                    <h2 id="serviceModalTitle" style="margin-bottom:1.2rem; color:#064e3b;">Thêm dịch vụ mới</h2>
 
-            <!-- Server Pagination Controls -->
-            <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <!-- Pagination Info -->
-                <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
-                    Trang <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
-                    (<span th:text="${totalItems}">0</span> dịch vụ)
-                </div>
-
-                <!-- Pagination Buttons -->
-                <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
-                    <!-- Previous Button -->
-                    <a th:if="${hasPrevious}"
-                       th:href="@{/admin/services(page=${currentPage - 1}, size=${pageSize})}"
-                       class="pagination-btn"
-                       style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px;">
-                        <span>◀</span> Trước
-                    </a>
-
-                    <!-- Page Numbers -->
-                    <div th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                         th:if="${pageNum >= currentPage - 1 and pageNum <= currentPage + 1}">
-                        <a th:href="@{/admin/services(page=${pageNum}, size=${pageSize})}"
-                           th:class="${pageNum == currentPage} ? 'pagination-btn active' : 'pagination-btn'"
-                           th:text="${pageNum + 1}"
-                           style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; min-width: 32px; text-align: center;">
-                        </a>
+                    <!-- Thông báo lỗi -->
+                    <div id="errorMessage" class="error-message" style="display: none;">
+                        <span class="material-icons">error</span>
+                        <span id="errorText"></span>
                     </div>
 
-                    <!-- Show "..." if there are more pages -->
-                    <span th:if="${totalPages > 3 and currentPage < totalPages - 2}"
-                          style="color: #94a3b8; font-size: 13px; padding: 0 4px;">...</span>
-
-                    <!-- Next Button -->
-                    <a th:if="${hasNext}"
-                       th:href="@{/admin/services(page=${currentPage + 1}, size=${pageSize})}"
-                       class="pagination-btn"
-                       style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px;">
-                        Sau <span>▶</span>
-                    </a>
-                </div>
-
-                <!-- Items per page selector -->
-                <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
-                    <select onchange="changePageSize(this.value)" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
-                        <option value="5" th:selected="${pageSize == 5}">5</option>
-                        <option value="10" th:selected="${pageSize == 10}">10</option>
-                        <option value="25" th:selected="${pageSize == 25}">25</option>
-                        <option value="50" th:selected="${pageSize == 50}">50</option>
-                        <option value="100" th:selected="${pageSize == 100}">100</option>
-                    </select>
-                    <span style="font-weight: 500; color: #64748b; font-size: 13px;">mục/trang</span>
-                </div>
-            </div>
-
-        </section>
-        <!-- Modal form thêm/sửa dịch vụ (ẩn mặc định) -->
-        <div class="modal" id="serviceModal" style="display:none;">
-            <div class="modal-content">
-                <button type="button" class="modal-close" id="closeServiceModal">
-                    <span class="material-icons">close</span>
-                </button>
-                <h2 id="serviceModalTitle" style="margin-bottom:1.2rem; color:#064e3b;">Thêm dịch vụ mới</h2>
-
-                <!-- Thông báo lỗi -->
-                <div id="errorMessage" class="error-message" style="display: none;">
-                    <span class="material-icons">error</span>
-                    <span id="errorText"></span>
-                </div>
-
-                <!-- Thông báo thành công -->
-                <div id="successMessage" class="success-message" style="display: none;">
-                    <span class="material-icons">check_circle</span>
-                    <span id="successText"></span>
-                </div>
-
-                <form th:action="@{/admin/services/add}" th:object="${serviceForm}" method="post" class="service-form" id="serviceForm">
-                    <div class="form-group half">
-                        <label for="maDichVu">
-                            <span class="material-icons">tag</span>
-                            Mã dịch vụ <span class="required">*</span>
-                        </label>
-                        <input type="text" id="maDichVu" th:field="*{maDichVu}" required maxlength="20"
-                               placeholder="VD: SV001" pattern="[A-Z0-9]+"
-                               title="Mã dịch vụ chỉ chứa chữ hoa và số" />
-                        <div class="field-hint">Tối đa 20 ký tự, chỉ chữ hoa và số</div>
+                    <!-- Thông báo thành công -->
+                    <div id="successMessage" class="success-message" style="display: none;">
+                        <span class="material-icons">check_circle</span>
+                        <span id="successText"></span>
                     </div>
 
-                    <div class="form-group half">
-                        <label for="loaiDichVu">
-                            <span class="material-icons">category</span>
-                            Loại dịch vụ <span class="required">*</span>
-                        </label>
-                        <select id="loaiDichVu" th:field="*{loaiDichVu}" required>
-                            <option value="">-- Chọn loại dịch vụ --</option>
-                            <option value="Ăn uống">Ăn uống</option>
-                            <option value="Giải trí">Giải trí</option>
-                            <option value="Spa & Massage">Spa & Massage</option>
-                            <option value="Thể thao">Thể thao</option>
-                            <option value="Vận chuyển">Vận chuyển</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tenDichVu">
-                            <span class="material-icons">room_service</span>
-                            Tên dịch vụ <span class="required">*</span>
-                        </label>
-                        <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required maxlength="100"
-                               placeholder="Nhập tên dịch vụ" />
-                        <div class="field-hint">Tối đa 100 ký tự</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="moTa">
-                            <span class="material-icons">description</span>
-                            Mô tả dịch vụ
-                        </label>
-                        <textarea id="moTa" th:field="*{moTa}" rows="3" maxlength="500"
-                                  placeholder="Mô tả chi tiết về dịch vụ..."></textarea>
-                        <div class="field-hint">Tối đa 500 ký tự</div>
-                    </div>
-
-                    <div class="form-group half">
-                        <label for="donGia">
-                            <span class="material-icons">attach_money</span>
-                            Đơn giá (VNĐ) <span class="required">*</span>
-                        </label>
-                        <input type="number" id="donGia" th:field="*{donGia}" required min="0" step="1000"
-                               placeholder="0" />
-                        <div class="field-hint">Nhập đơn giá bằng VNĐ</div>
-                    </div>
-
-                    <div class="form-group half">
-                        <label for="donViTinh">
-                            <span class="material-icons">straighten</span>
-                            Đơn vị tính <span class="required">*</span>
-                        </label>
-                        <select id="donViTinh" th:field="*{donViTinh}" required>
-                            <option value="">-- Chọn đơn vị --</option>
-                            <option value="Lần">Lần</option>
-                            <option value="Giờ">Giờ</option>
-                            <option value="Ngày">Ngày</option>
-                            <option value="Kg">Kg</option>
-                            <option value="Lượt">Lượt</option>
-                            <option value="Phòng">Phòng</option>
-                            <option value="Người">Người</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="trangThai">
-                            <span class="material-icons">toggle_on</span>
-                            Trạng thái <span class="required">*</span>
-                        </label>
-                        <div class="status-toggle">
-                            <input type="radio" id="trangThaiHoatDong" name="trangThai" value="Hoạt động" th:checked="${serviceForm.trangThai == 'Hoạt động'}" />
-                            <label for="trangThaiHoatDong" class="status-option active">
-                                <span class="material-icons">check_circle</span>
-                                Hoạt động
+                    <form th:action="@{/admin/services/add}" th:object="${serviceForm}" method="post"
+                        class="service-form" id="serviceForm">
+                        <div class="form-group half">
+                            <label for="maDichVu">
+                                <span class="material-icons">tag</span>
+                                Mã dịch vụ <span class="required">*</span>
                             </label>
-                            <input type="radio" id="trangThaiTamNgung" name="trangThai" value="Tạm ngưng" th:checked="${serviceForm.trangThai == 'Tạm ngưng'}" />
-                            <label for="trangThaiTamNgung" class="status-option">
-                                <span class="material-icons">pause_circle</span>
-                                Tạm ngưng
-                            </label>
+                            <input type="text" id="maDichVu" th:field="*{maDichVu}" required maxlength="20"
+                                placeholder="VD: SV001" pattern="[A-Z0-9]+" title="Mã dịch vụ chỉ chứa chữ hoa và số" />
+                            <div class="field-hint">Tối đa 20 ký tự, chỉ chữ hoa và số</div>
                         </div>
-                    </div>
 
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="cancelServiceModal">
-                            <span class="material-icons">close</span>
-                            Hủy
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="submitService">
-                            <span class="material-icons">save</span>
-                            <span id="submitText">Lưu</span>
-                        </button>
-                    </div>
-                </form>
+                        <div class="form-group half">
+                            <label for="loaiDichVu">
+                                <span class="material-icons">category</span>
+                                Loại dịch vụ <span class="required">*</span>
+                            </label>
+                            <select id="loaiDichVu" th:field="*{loaiDichVu}" required>
+                                <option value="">-- Chọn loại dịch vụ --</option>
+                                <option value="Ăn uống">Ăn uống</option>
+                                <option value="Giải trí">Giải trí</option>
+                                <option value="Spa & Massage">Spa & Massage</option>
+                                <option value="Thể thao">Thể thao</option>
+                                <option value="Vận chuyển">Vận chuyển</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenDichVu">
+                                <span class="material-icons">room_service</span>
+                                Tên dịch vụ <span class="required">*</span>
+                            </label>
+                            <input type="text" id="tenDichVu" th:field="*{tenDichVu}" required maxlength="100"
+                                placeholder="Nhập tên dịch vụ" />
+                            <div class="field-hint">Tối đa 100 ký tự</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="moTa">
+                                <span class="material-icons">description</span>
+                                Mô tả dịch vụ
+                            </label>
+                            <textarea id="moTa" th:field="*{moTa}" rows="3" maxlength="500"
+                                placeholder="Mô tả chi tiết về dịch vụ..."></textarea>
+                            <div class="field-hint">Tối đa 500 ký tự</div>
+                        </div>
+
+                        <div class="form-group half">
+                            <label for="donGia">
+                                <span class="material-icons">attach_money</span>
+                                Đơn giá (VNĐ) <span class="required">*</span>
+                            </label>
+                            <input type="number" id="donGia" th:field="*{donGia}" required min="0" step="1000"
+                                placeholder="0" />
+                            <div class="field-hint">Nhập đơn giá bằng VNĐ</div>
+                        </div>
+
+                        <div class="form-group half">
+                            <label for="donViTinh">
+                                <span class="material-icons">straighten</span>
+                                Đơn vị tính <span class="required">*</span>
+                            </label>
+                            <select id="donViTinh" th:field="*{donViTinh}" required>
+                                <option value="">-- Chọn đơn vị --</option>
+                                <option value="Lần">Lần</option>
+                                <option value="Giờ">Giờ</option>
+                                <option value="Ngày">Ngày</option>
+                                <option value="Kg">Kg</option>
+                                <option value="Lượt">Lượt</option>
+                                <option value="Phòng">Phòng</option>
+                                <option value="Người">Người</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="trangThai">
+                                <span class="material-icons">toggle_on</span>
+                                Trạng thái <span class="required">*</span>
+                            </label>
+                            <div class="status-toggle">
+                                <input type="radio" id="trangThaiHoatDong" name="trangThai" value="Hoạt động"
+                                    th:checked="${serviceForm.trangThai == 'Hoạt động'}" />
+                                <label for="trangThaiHoatDong" class="status-option active">
+                                    <span class="material-icons">check_circle</span>
+                                    Hoạt động
+                                </label>
+                                <input type="radio" id="trangThaiTamNgung" name="trangThai" value="Tạm ngưng"
+                                    th:checked="${serviceForm.trangThai == 'Tạm ngưng'}" />
+                                <label for="trangThaiTamNgung" class="status-option">
+                                    <span class="material-icons">pause_circle</span>
+                                    Tạm ngưng
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelServiceModal">
+                                <span class="material-icons">close</span>
+                                Hủy
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="submitService">
+                                <span class="material-icons">save</span>
+                                <span id="submitText">Lưu</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-        <script th:inline="javascript">
-            // TEST FUNCTION - Kiểm tra cơ bản
-            function testBasicFunctionality() {
-                console.log('🧪 TESTING BASIC FUNCTIONALITY...');
-                
-                // Test 1: Kiểm tra các element có tồn tại không
-                const searchInput = document.getElementById('searchInput');
-                const typeFilter = document.getElementById('typeFilter');
-                const statusFilter = document.getElementById('statusFilter');
-                const priceFrom = document.getElementById('priceFrom');
-                const serviceTableBody = document.getElementById('serviceTableBody');
-                
-                console.log('Element check:', {
-                    searchInput: !!searchInput,
-                    typeFilter: !!typeFilter,
-                    statusFilter: !!statusFilter,
-                    priceFrom: !!priceFrom,
-                    serviceTableBody: !!serviceTableBody
-                });
-                
-                // Test 2: Kiểm tra có dữ liệu trong bảng không
-                if (serviceTableBody) {
-                    const rows = serviceTableBody.querySelectorAll('tr');
-                    console.log('Table rows count:', rows.length);
-                    
-                    if (rows.length > 0) {
-                        const firstRow = rows[0];
-                        const cells = firstRow.querySelectorAll('td');
-                        console.log('First row cells count:', cells.length);
-                        console.log('First row data:', Array.from(cells).map(cell => cell.textContent?.trim()));
-                    }
-                }
-                
-                // Test 3: Kiểm tra event listener có hoạt động không
-                if (searchInput) {
-                    searchInput.addEventListener('input', function() {
-                        console.log('✅ Search input event triggered!', this.value);
-                    });
-                    console.log('✅ Search input event listener added');
-                }
-                
-                console.log('🧪 BASIC TEST COMPLETED');
-            }
-            
-            // Chức năng tìm kiếm và phân trang - PHIÊN BẢN DEBUG
-            function setupSearchAndFilter() {
-                console.log('=== SETTING UP SEARCH AND FILTER ===');
+            <script th:inline="javascript">
+                // TEST FUNCTION - Kiểm tra cơ bản
+                function testBasicFunctionality() {
+                    console.log('🧪 TESTING BASIC FUNCTIONALITY...');
 
-                // Tìm các element
-                const searchInput = document.getElementById('searchInput');
-                const typeFilter = document.getElementById('typeFilter');
-                const statusFilter = document.getElementById('statusFilter');
-                const priceFrom = document.getElementById('priceFrom');
-                const serviceTableBody = document.getElementById('serviceTableBody');
+                    // Test 1: Kiểm tra các element có tồn tại không
+                    const searchInput = document.getElementById('searchInput');
+                    const typeFilter = document.getElementById('typeFilter');
+                    const statusFilter = document.getElementById('statusFilter');
+                    const priceFrom = document.getElementById('priceFrom');
+                    const serviceTableBody = document.getElementById('serviceTableBody');
 
-                console.log('Elements found:', {
-                    searchInput: !!searchInput,
-                    typeFilter: !!typeFilter,
-                    statusFilter: !!statusFilter,
-                    priceFrom: !!priceFrom,
-                    serviceTableBody: !!serviceTableBody
-                });
-
-                // Kiểm tra element quan trọng nhất
-                if (!searchInput) {
-                    console.error('❌ Search input not found!');
-                    return;
-                }
-
-                if (!serviceTableBody) {
-                    console.error('❌ Service table body not found!');
-                    return;
-                }
-
-                console.log('✅ All required elements found');
-
-                // Lưu trữ dữ liệu gốc
-                let originalData = [];
-                let filteredData = [];
-                let currentPage = 1;
-                let itemsPerPage = 5;
-
-                // Lấy dữ liệu gốc từ bảng - PHIÊN BẢN DEBUG
-                function getOriginalData() {
-                    console.log('📊 Getting original data...');
-                    const rows = serviceTableBody.querySelectorAll('tr');
-                    console.log('Found rows:', rows.length);
-                    
-                    originalData = [];
-                    rows.forEach((row, index) => {
-                        const firstCell = row.querySelector('td');
-                        if (firstCell && !firstCell.textContent.includes('Không có dịch vụ nào')) {
-                            const cells = row.querySelectorAll('td');
-                            const data = {
-                                element: row,
-                                id: cells[1]?.textContent?.trim() || '',
-                                name: cells[2]?.textContent?.trim() || '',
-                                type: cells[3]?.textContent?.trim() || '',
-                                price: cells[4]?.textContent?.trim() || '',
-                                unit: cells[5]?.textContent?.trim() || '',
-                                status: cells[6]?.textContent?.trim() || ''
-                            };
-                            originalData.push(data);
-                            console.log(`Row ${index}:`, data.name, data.type);
-                        }
-                    });
-                    
-                    console.log('✅ Total services loaded:', originalData.length);
-                }
-
-                // Tìm kiếm và lọc - PHIÊN BẢN DEBUG
-                function performSearch() {
-                    console.log('🔍 Performing search...');
-                    const searchTerm = searchInput.value.toLowerCase().trim();
-                    const selectedType = typeFilter ? typeFilter.value : '';
-                    const selectedStatus = statusFilter ? statusFilter.value : '';
-                    const fromPrice = priceFrom ? parseFloat(priceFrom.value) || 0 : 0;
-
-                    console.log('Search params:', { searchTerm, selectedType, selectedStatus, fromPrice });
-                    console.log('Original data count:', originalData.length);
-
-                    filteredData = originalData.filter(item => {
-                        // Tìm kiếm theo từ khóa
-                        const matchesSearch = !searchTerm ||
-                            item.id.toLowerCase().includes(searchTerm) ||
-                            item.name.toLowerCase().includes(searchTerm) ||
-                            item.type.toLowerCase().includes(searchTerm) ||
-                            item.price.toLowerCase().includes(searchTerm) ||
-                            item.unit.toLowerCase().includes(searchTerm);
-
-                        // Lọc theo loại
-                        const matchesType = !selectedType ||
-                            item.type.toLowerCase().includes(selectedType.toLowerCase());
-
-                        // Lọc theo trạng thái
-                        const matchesStatus = !selectedStatus ||
-                            item.status.toLowerCase().includes(selectedStatus.toLowerCase());
-
-                        // Lọc theo giá
-                        let matchesPrice = true;
-                        if (fromPrice > 0) {
-                            const itemPrice = parseFloat(item.price.replace(/[^\d]/g, '')) || 0;
-                            matchesPrice = itemPrice >= fromPrice;
-                        }
-
-                        const result = matchesSearch && matchesType && matchesStatus && matchesPrice;
-                        
-                        // Debug log for first few items
-                        if (originalData.indexOf(item) < 2) {
-                            console.log('Item filter debug:', {
-                                item: item.name,
-                                selectedType,
-                                matchesType,
-                                selectedStatus,
-                                matchesStatus,
-                                fromPrice,
-                                matchesPrice,
-                                result
-                            });
-                        }
-
-                        return result;
+                    console.log('Element check:', {
+                        searchInput: !!searchInput,
+                        typeFilter: !!typeFilter,
+                        statusFilter: !!statusFilter,
+                        priceFrom: !!priceFrom,
+                        serviceTableBody: !!serviceTableBody
                     });
 
-                    console.log('✅ Filtered data count:', filteredData.length);
-                    console.log('❌ Filtered out:', originalData.length - filteredData.length);
+                    // Test 2: Kiểm tra có dữ liệu trong bảng không
+                    if (serviceTableBody) {
+                        const rows = serviceTableBody.querySelectorAll('tr');
+                        console.log('Table rows count:', rows.length);
 
-                    // Reset về trang đầu
-                    currentPage = 1;
-
-                    // Cập nhật phân trang
-                    updatePagination();
-                }
-
-                // Cập nhật phân trang - GIỐNG NHƯ QUẢN LÝ ĐẶT PHÒNG
-                function updatePagination() {
-                    const totalItems = filteredData.length;
-                    const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-                    console.log('Update pagination:', { totalItems, totalPages, currentPage, itemsPerPage });
-
-                    // Ẩn tất cả hàng
-                    originalData.forEach(item => {
-                        item.element.style.display = 'none';
-                    });
-
-                    // Hiển thị hàng cho trang hiện tại
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-
-                    console.log('Showing items:', { startIndex, endIndex, totalItems });
-
-                    for (let i = startIndex; i < endIndex; i++) {
-                        if (filteredData[i]) {
-                            filteredData[i].element.style.display = '';
+                        if (rows.length > 0) {
+                            const firstRow = rows[0];
+                            const cells = firstRow.querySelectorAll('td');
+                            console.log('First row cells count:', cells.length);
+                            console.log('First row data:', Array.from(cells).map(cell => cell.textContent?.trim()));
                         }
                     }
 
-                    // Cập nhật số thứ tự
-                    let stt = startIndex + 1;
-                    for (let i = startIndex; i < endIndex; i++) {
-                        if (filteredData[i]) {
-                            const sttCell = filteredData[i].element.querySelector('td:first-child');
-                            if (sttCell) {
-                                sttCell.textContent = stt++;
+                    // Test 3: Kiểm tra event listener có hoạt động không
+                    if (searchInput) {
+                        searchInput.addEventListener('input', function () {
+                            console.log('✅ Search input event triggered!', this.value);
+                        });
+                        console.log('✅ Search input event listener added');
+                    }
+
+                    console.log('🧪 BASIC TEST COMPLETED');
+                }
+
+                // Chức năng tìm kiếm và phân trang - PHIÊN BẢN DEBUG
+                function setupSearchAndFilter() {
+                    console.log('=== SETTING UP SEARCH AND FILTER ===');
+
+                    // Tìm các element
+                    const searchInput = document.getElementById('searchInput');
+                    const typeFilter = document.getElementById('typeFilter');
+                    const statusFilter = document.getElementById('statusFilter');
+                    const priceFrom = document.getElementById('priceFrom');
+                    const serviceTableBody = document.getElementById('serviceTableBody');
+
+                    console.log('Elements found:', {
+                        searchInput: !!searchInput,
+                        typeFilter: !!typeFilter,
+                        statusFilter: !!statusFilter,
+                        priceFrom: !!priceFrom,
+                        serviceTableBody: !!serviceTableBody
+                    });
+
+                    // Kiểm tra element quan trọng nhất
+                    if (!searchInput) {
+                        console.error('❌ Search input not found!');
+                        return;
+                    }
+
+                    if (!serviceTableBody) {
+                        console.error('❌ Service table body not found!');
+                        return;
+                    }
+
+                    console.log('✅ All required elements found');
+
+                    // Lưu trữ dữ liệu gốc
+                    let originalData = [];
+                    let filteredData = [];
+                    let currentPage = 1;
+                    let itemsPerPage = 5;
+
+                    // Lấy dữ liệu gốc từ bảng - PHIÊN BẢN DEBUG
+                    function getOriginalData() {
+                        console.log('📊 Getting original data...');
+                        const rows = serviceTableBody.querySelectorAll('tr');
+                        console.log('Found rows:', rows.length);
+
+                        originalData = [];
+                        rows.forEach((row, index) => {
+                            const firstCell = row.querySelector('td');
+                            if (firstCell && !firstCell.textContent.includes('Không có dịch vụ nào')) {
+                                const cells = row.querySelectorAll('td');
+                                const data = {
+                                    element: row,
+                                    id: cells[1]?.textContent?.trim() || '',
+                                    name: cells[2]?.textContent?.trim() || '',
+                                    type: cells[3]?.textContent?.trim() || '',
+                                    price: cells[4]?.textContent?.trim() || '',
+                                    unit: cells[5]?.textContent?.trim() || '',
+                                    status: cells[6]?.textContent?.trim() || ''
+                                };
+                                originalData.push(data);
+                                console.log(`Row ${index}:`, data.name, data.type);
+                            }
+                        });
+
+                        console.log('✅ Total services loaded:', originalData.length);
+                    }
+
+                    // Tìm kiếm và lọc - PHIÊN BẢN DEBUG
+                    function performSearch() {
+                        console.log('🔍 Performing search...');
+                        const searchTerm = searchInput.value.toLowerCase().trim();
+                        const selectedType = typeFilter ? typeFilter.value : '';
+                        const selectedStatus = statusFilter ? statusFilter.value : '';
+                        const fromPrice = priceFrom ? parseFloat(priceFrom.value) || 0 : 0;
+
+                        console.log('Search params:', { searchTerm, selectedType, selectedStatus, fromPrice });
+                        console.log('Original data count:', originalData.length);
+
+                        filteredData = originalData.filter(item => {
+                            // Tìm kiếm theo từ khóa
+                            const matchesSearch = !searchTerm ||
+                                item.id.toLowerCase().includes(searchTerm) ||
+                                item.name.toLowerCase().includes(searchTerm) ||
+                                item.type.toLowerCase().includes(searchTerm) ||
+                                item.price.toLowerCase().includes(searchTerm) ||
+                                item.unit.toLowerCase().includes(searchTerm);
+
+                            // Lọc theo loại
+                            const matchesType = !selectedType ||
+                                item.type.toLowerCase().includes(selectedType.toLowerCase());
+
+                            // Lọc theo trạng thái
+                            const matchesStatus = !selectedStatus ||
+                                item.status.toLowerCase().includes(selectedStatus.toLowerCase());
+
+                            // Lọc theo giá
+                            let matchesPrice = true;
+                            if (fromPrice > 0) {
+                                const itemPrice = parseFloat(item.price.replace(/[^\d]/g, '')) || 0;
+                                matchesPrice = itemPrice >= fromPrice;
+                            }
+
+                            const result = matchesSearch && matchesType && matchesStatus && matchesPrice;
+
+                            // Debug log for first few items
+                            if (originalData.indexOf(item) < 2) {
+                                console.log('Item filter debug:', {
+                                    item: item.name,
+                                    selectedType,
+                                    matchesType,
+                                    selectedStatus,
+                                    matchesStatus,
+                                    fromPrice,
+                                    matchesPrice,
+                                    result
+                                });
+                            }
+
+                            return result;
+                        });
+
+                        console.log('✅ Filtered data count:', filteredData.length);
+                        console.log('❌ Filtered out:', originalData.length - filteredData.length);
+
+                        // Reset về trang đầu
+                        currentPage = 1;
+
+                        // Cập nhật phân trang
+                        updatePagination();
+                    }
+
+                    // Cập nhật phân trang - GIỐNG NHƯ QUẢN LÝ ĐẶT PHÒNG
+                    function updatePagination() {
+                        const totalItems = filteredData.length;
+                        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                        console.log('Update pagination:', { totalItems, totalPages, currentPage, itemsPerPage });
+
+                        // Ẩn tất cả hàng
+                        originalData.forEach(item => {
+                            item.element.style.display = 'none';
+                        });
+
+                        // Hiển thị hàng cho trang hiện tại
+                        const startIndex = (currentPage - 1) * itemsPerPage;
+                        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+                        console.log('Showing items:', { startIndex, endIndex, totalItems });
+
+                        for (let i = startIndex; i < endIndex; i++) {
+                            if (filteredData[i]) {
+                                filteredData[i].element.style.display = '';
                             }
                         }
-                    }
 
-                    // Cập nhật thông tin phân trang
-                    bottomPaginationInfo.textContent = `Trang ${currentPage} / ${totalPages} (${totalItems} mục)`;
+                        // Cập nhật số thứ tự
+                        let stt = startIndex + 1;
+                        for (let i = startIndex; i < endIndex; i++) {
+                            if (filteredData[i]) {
+                                const sttCell = filteredData[i].element.querySelector('td:first-child');
+                                if (sttCell) {
+                                    sttCell.textContent = stt++;
+                                }
+                            }
+                        }
+
+                        // Cập nhật thông tin phân trang
+                        bottomPaginationInfo.textContent = `Trang ${currentPage} / ${totalPages} (${totalItems} mục)`;
+
+                        // Tạo nút phân trang
+                        createBottomPaginationButtons(totalPages);
+                    }
 
                     // Tạo nút phân trang
-                    createBottomPaginationButtons(totalPages);
-                }
+                    function createPaginationButtons(totalPages) {
+                        paginationButtons.innerHTML = '';
 
-                // Tạo nút phân trang
-                function createPaginationButtons(totalPages) {
-                    paginationButtons.innerHTML = '';
+                        if (totalPages <= 1) return;
 
-                    if (totalPages <= 1) return;
-
-                    // Nút Trang đầu
-                    if (currentPage > 1) {
-                        const firstBtn = createPageButton('⏮️', 1, 'Trang đầu');
-                        paginationButtons.appendChild(firstBtn);
-                    }
-
-                    // Nút Trang trước
-                    if (currentPage > 1) {
-                        const prevBtn = createPageButton('◀️', currentPage - 1, 'Trang trước');
-                        paginationButtons.appendChild(prevBtn);
-                    }
-
-                    // Nút các trang
-                    const startPage = Math.max(1, currentPage - 2);
-                    const endPage = Math.min(totalPages, currentPage + 2);
-
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageBtn = createPageButton(i.toString(), i, `Trang ${i}`);
-                        if (i === currentPage) {
-                            pageBtn.style.background = '#3b82f6';
-                            pageBtn.style.color = 'white';
+                        // Nút Trang đầu
+                        if (currentPage > 1) {
+                            const firstBtn = createPageButton('⏮️', 1, 'Trang đầu');
+                            paginationButtons.appendChild(firstBtn);
                         }
-                        paginationButtons.appendChild(pageBtn);
+
+                        // Nút Trang trước
+                        if (currentPage > 1) {
+                            const prevBtn = createPageButton('◀️', currentPage - 1, 'Trang trước');
+                            paginationButtons.appendChild(prevBtn);
+                        }
+
+                        // Nút các trang
+                        const startPage = Math.max(1, currentPage - 2);
+                        const endPage = Math.min(totalPages, currentPage + 2);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            const pageBtn = createPageButton(i.toString(), i, `Trang ${i}`);
+                            if (i === currentPage) {
+                                pageBtn.style.background = '#3b82f6';
+                                pageBtn.style.color = 'white';
+                            }
+                            paginationButtons.appendChild(pageBtn);
+                        }
+
+                        // Nút Trang sau
+                        if (currentPage < totalPages) {
+                            const nextBtn = createPageButton('▶️', currentPage + 1, 'Trang sau');
+                            paginationButtons.appendChild(nextBtn);
+                        }
+
+                        // Nút Trang cuối
+                        if (currentPage < totalPages) {
+                            const lastBtn = createPageButton('⏭️', totalPages, 'Trang cuối');
+                            paginationButtons.appendChild(lastBtn);
+                        }
                     }
 
-                    // Nút Trang sau
-                    if (currentPage < totalPages) {
-                        const nextBtn = createPageButton('▶️', currentPage + 1, 'Trang sau');
-                        paginationButtons.appendChild(nextBtn);
-                    }
-
-                    // Nút Trang cuối
-                    if (currentPage < totalPages) {
-                        const lastBtn = createPageButton('⏭️', totalPages, 'Trang cuối');
-                        paginationButtons.appendChild(lastBtn);
-                    }
-                }
-
-                // Tạo nút trang
-                function createPageButton(text, page, title) {
-                    const button = document.createElement('button');
-                    button.textContent = text;
-                    button.title = title;
-                    button.style.cssText = `
+                    // Tạo nút trang
+                    function createPageButton(text, page, title) {
+                        const button = document.createElement('button');
+                        button.textContent = text;
+                        button.title = title;
+                        button.style.cssText = `
               padding: 6px 12px;
               border: 1px solid #d1d5db;
               background: white;
@@ -809,79 +830,79 @@
               transition: all 0.2s;
             `;
 
-                    button.addEventListener('mouseenter', function() {
-                        if (this.textContent !== currentPage.toString()) {
-                            this.style.background = '#f3f4f6';
-                            this.style.borderColor = '#9ca3af';
+                        button.addEventListener('mouseenter', function () {
+                            if (this.textContent !== currentPage.toString()) {
+                                this.style.background = '#f3f4f6';
+                                this.style.borderColor = '#9ca3af';
+                            }
+                        });
+
+                        button.addEventListener('mouseleave', function () {
+                            if (this.textContent !== currentPage.toString()) {
+                                this.style.background = 'white';
+                                this.style.borderColor = '#d1d5db';
+                            }
+                        });
+
+                        button.addEventListener('click', function () {
+                            currentPage = page;
+                            updatePagination();
+                        });
+
+                        return button;
+                    }
+
+                    // Tạo nút phân trang ở cuối bảng
+                    function createBottomPaginationButtons(totalPages) {
+                        bottomPaginationButtons.innerHTML = '';
+
+                        if (totalPages <= 1) return;
+
+                        // Nút Trang đầu
+                        if (currentPage > 1) {
+                            const firstBtn = createBottomPageButton('⏮️', 1, 'Trang đầu');
+                            bottomPaginationButtons.appendChild(firstBtn);
                         }
-                    });
 
-                    button.addEventListener('mouseleave', function() {
-                        if (this.textContent !== currentPage.toString()) {
-                            this.style.background = 'white';
-                            this.style.borderColor = '#d1d5db';
+                        // Nút Trang trước
+                        if (currentPage > 1) {
+                            const prevBtn = createBottomPageButton('◀️', currentPage - 1, 'Trang trước');
+                            bottomPaginationButtons.appendChild(prevBtn);
                         }
-                    });
 
-                    button.addEventListener('click', function() {
-                        currentPage = page;
-                        updatePagination();
-                    });
+                        // Nút các trang
+                        const startPage = Math.max(1, currentPage - 2);
+                        const endPage = Math.min(totalPages, currentPage + 2);
 
-                    return button;
-                }
-
-                // Tạo nút phân trang ở cuối bảng
-                function createBottomPaginationButtons(totalPages) {
-                    bottomPaginationButtons.innerHTML = '';
-
-                    if (totalPages <= 1) return;
-
-                    // Nút Trang đầu
-                    if (currentPage > 1) {
-                        const firstBtn = createBottomPageButton('⏮️', 1, 'Trang đầu');
-                        bottomPaginationButtons.appendChild(firstBtn);
-                    }
-
-                    // Nút Trang trước
-                    if (currentPage > 1) {
-                        const prevBtn = createBottomPageButton('◀️', currentPage - 1, 'Trang trước');
-                        bottomPaginationButtons.appendChild(prevBtn);
-                    }
-
-                    // Nút các trang
-                    const startPage = Math.max(1, currentPage - 2);
-                    const endPage = Math.min(totalPages, currentPage + 2);
-
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageBtn = createBottomPageButton(i.toString(), i, `Trang ${i}`);
-                        if (i === currentPage) {
-                            pageBtn.style.background = '#3b82f6';
-                            pageBtn.style.color = 'white';
-                            pageBtn.style.borderColor = '#3b82f6';
+                        for (let i = startPage; i <= endPage; i++) {
+                            const pageBtn = createBottomPageButton(i.toString(), i, `Trang ${i}`);
+                            if (i === currentPage) {
+                                pageBtn.style.background = '#3b82f6';
+                                pageBtn.style.color = 'white';
+                                pageBtn.style.borderColor = '#3b82f6';
+                            }
+                            bottomPaginationButtons.appendChild(pageBtn);
                         }
-                        bottomPaginationButtons.appendChild(pageBtn);
+
+                        // Nút Trang sau
+                        if (currentPage < totalPages) {
+                            const nextBtn = createBottomPageButton('▶️', currentPage + 1, 'Trang sau');
+                            bottomPaginationButtons.appendChild(nextBtn);
+                        }
+
+                        // Nút Trang cuối
+                        if (currentPage < totalPages) {
+                            const lastBtn = createBottomPageButton('⏭️', totalPages, 'Trang cuối');
+                            bottomPaginationButtons.appendChild(lastBtn);
+                        }
                     }
 
-                    // Nút Trang sau
-                    if (currentPage < totalPages) {
-                        const nextBtn = createBottomPageButton('▶️', currentPage + 1, 'Trang sau');
-                        bottomPaginationButtons.appendChild(nextBtn);
-                    }
-
-                    // Nút Trang cuối
-                    if (currentPage < totalPages) {
-                        const lastBtn = createBottomPageButton('⏭️', totalPages, 'Trang cuối');
-                        bottomPaginationButtons.appendChild(lastBtn);
-                    }
-                }
-
-                // Tạo nút trang ở cuối
-                function createBottomPageButton(text, page, title) {
-                    const button = document.createElement('button');
-                    button.textContent = text;
-                    button.title = title;
-                    button.style.cssText = `
+                    // Tạo nút trang ở cuối
+                    function createBottomPageButton(text, page, title) {
+                        const button = document.createElement('button');
+                        button.textContent = text;
+                        button.title = title;
+                        button.style.cssText = `
               padding: 8px 16px;
               border: 1px solid #d1d5db;
               background: white;
@@ -894,635 +915,688 @@
               min-width: 40px;
             `;
 
-                    button.addEventListener('mouseenter', function() {
-                        if (this.textContent !== currentPage.toString()) {
-                            this.style.background = '#f3f4f6';
-                            this.style.borderColor = '#9ca3af';
-                            this.style.transform = 'translateY(-1px)';
-                        }
-                    });
+                        button.addEventListener('mouseenter', function () {
+                            if (this.textContent !== currentPage.toString()) {
+                                this.style.background = '#f3f4f6';
+                                this.style.borderColor = '#9ca3af';
+                                this.style.transform = 'translateY(-1px)';
+                            }
+                        });
 
-                    button.addEventListener('mouseleave', function() {
-                        if (this.textContent !== currentPage.toString()) {
-                            this.style.background = 'white';
-                            this.style.borderColor = '#d1d5db';
-                            this.style.transform = 'translateY(0)';
-                        }
-                    });
+                        button.addEventListener('mouseleave', function () {
+                            if (this.textContent !== currentPage.toString()) {
+                                this.style.background = 'white';
+                                this.style.borderColor = '#d1d5db';
+                                this.style.transform = 'translateY(0)';
+                            }
+                        });
 
-                    button.addEventListener('click', function() {
-                        currentPage = page;
-                        updatePagination();
-                    });
+                        button.addEventListener('click', function () {
+                            currentPage = page;
+                            updatePagination();
+                        });
 
-                    return button;
-                }
-
-                // Reset tìm kiếm
-                function resetSearch() {
-                    searchInput.value = '';
-                    typeFilter.value = '';
-                    statusFilter.value = '';
-                    priceFrom.value = '';
-
-                    // Reset về dữ liệu gốc
-                    filteredData = [...originalData];
-                    currentPage = 1;
-
-                    // Cập nhật phân trang
-                    updatePagination();
-                }
-
-                // Event listeners - PHIÊN BẢN DEBUG
-                let searchTimeout;
-                
-                // Search input listener
-                console.log('🔗 Adding search input listener...');
-                searchInput.addEventListener('input', function() {
-                    console.log('📝 Search input changed:', this.value);
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        console.log('⏰ Timeout triggered, performing search...');
-                        performSearch();
-                    }, 300);
-                });
-                console.log('✅ Search input listener added');
-
-                // Enter key listener
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        console.log('⌨️ Enter pressed, performing search...');
-                        clearTimeout(searchTimeout);
-                        performSearch();
+                        return button;
                     }
-                });
 
-                // Filter listeners
-                console.log('🔗 Adding filter listeners...');
-                if (typeFilter) {
-                    typeFilter.addEventListener('change', function() {
-                        console.log('📋 Type filter changed:', this.value);
-                        performSearch();
-                    });
-                    console.log('✅ Type filter listener added');
-                }
-                
-                if (statusFilter) {
-                    statusFilter.addEventListener('change', function() {
-                        console.log('📋 Status filter changed:', this.value);
-                        performSearch();
-                    });
-                    console.log('✅ Status filter listener added');
-                }
+                    // Reset tìm kiếm
+                    function resetSearch() {
+                        searchInput.value = '';
+                        typeFilter.value = '';
+                        statusFilter.value = '';
+                        priceFrom.value = '';
 
-                if (priceFrom) {
-                    priceFrom.addEventListener('input', function() {
-                        console.log('💰 Price input changed:', this.value);
+                        // Reset về dữ liệu gốc
+                        filteredData = [...originalData];
+                        currentPage = 1;
+
+                        // Cập nhật phân trang
+                        updatePagination();
+                    }
+
+                    // Event listeners - PHIÊN BẢN DEBUG
+                    let searchTimeout;
+
+                    // Search input listener
+                    console.log('🔗 Adding search input listener...');
+                    searchInput.addEventListener('input', function () {
+                        console.log('📝 Search input changed:', this.value);
                         clearTimeout(searchTimeout);
                         searchTimeout = setTimeout(() => {
+                            console.log('⏰ Timeout triggered, performing search...');
                             performSearch();
                         }, 300);
                     });
-                    console.log('✅ Price input listener added');
+                    console.log('✅ Search input listener added');
+
+                    // Enter key listener
+                    searchInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            console.log('⌨️ Enter pressed, performing search...');
+                            clearTimeout(searchTimeout);
+                            performSearch();
+                        }
+                    });
+
+                    // Filter listeners
+                    console.log('🔗 Adding filter listeners...');
+                    if (typeFilter) {
+                        typeFilter.addEventListener('change', function () {
+                            console.log('📋 Type filter changed:', this.value);
+                            performSearch();
+                        });
+                        console.log('✅ Type filter listener added');
+                    }
+
+                    if (statusFilter) {
+                        statusFilter.addEventListener('change', function () {
+                            console.log('📋 Status filter changed:', this.value);
+                            performSearch();
+                        });
+                        console.log('✅ Status filter listener added');
+                    }
+
+                    if (priceFrom) {
+                        priceFrom.addEventListener('input', function () {
+                            console.log('💰 Price input changed:', this.value);
+                            clearTimeout(searchTimeout);
+                            searchTimeout = setTimeout(() => {
+                                performSearch();
+                            }, 300);
+                        });
+                        console.log('✅ Price input listener added');
+                    }
+
+                    // Lọc ngay khi thay đổi giá từ
+                    priceFrom.addEventListener('change', performSearch);
+
+                    // Thay đổi số mục/trang ở cuối
+                    bottomItemsPerPageSelect.addEventListener('change', function () {
+                        itemsPerPage = parseInt(this.value);
+                        currentPage = 1;
+                        updatePagination();
+                    });
+
+                    // Khởi tạo dữ liệu gốc
+                    console.log('🚀 Initializing data...');
+                    getOriginalData();
+                    console.log('📊 Original data loaded:', originalData.length, 'items');
+
+                    // Khởi tạo phân trang
+                    filteredData = [...originalData];
+                    console.log('📄 Initializing pagination with data:', filteredData.length);
+                    updatePagination();
+
+                    console.log('🎉 Search and filter setup completed!');
+                    console.log('✨ All event listeners should be active now');
+                    console.log('=== END SETUP ===');
                 }
 
-                // Lọc ngay khi thay đổi giá từ
-                priceFrom.addEventListener('change', performSearch);
+                // Function to change page size
+                function changePageSize(newSize) {
+                    const url = new URL(window.location);
+                    url.searchParams.set('size', newSize);
+                    url.searchParams.set('page', '0'); // Reset to first page
+                    window.location.href = url.toString();
+                }
 
-                // Thay đổi số mục/trang ở cuối
-                bottomItemsPerPageSelect.addEventListener('change', function() {
-                    itemsPerPage = parseInt(this.value);
-                    currentPage = 1;
-                    updatePagination();
-                });
+                // Hiện modal khi ấn Thêm dịch vụ hoặc khi ở chế độ sửa
+                document.addEventListener('DOMContentLoaded', function () {
+                    console.log('🚀 DOM Content Loaded - Starting initialization...');
 
-                // Khởi tạo dữ liệu gốc
-                console.log('🚀 Initializing data...');
-                getOriginalData();
-                console.log('📊 Original data loaded:', originalData.length, 'items');
+                    // Test cơ bản trước
+                    testBasicFunctionality();
 
-                // Khởi tạo phân trang
-                filteredData = [...originalData];
-                console.log('📄 Initializing pagination with data:', filteredData.length);
-                updatePagination();
-                
-                console.log('🎉 Search and filter setup completed!');
-                console.log('✨ All event listeners should be active now');
-                console.log('=== END SETUP ===');
-            }
+                    // Khởi tạo modal trước
+                    var btn = document.getElementById('btnAddService');
+                    var modal = document.getElementById('serviceModal');
+                    var closeBtn = document.getElementById('closeServiceModal');
+                    var cancelBtn = document.getElementById('cancelServiceModal');
+                    var form = document.getElementById('serviceForm');
+                    var submitBtn = document.getElementById('submitService');
+                    var submitText = document.getElementById('submitText');
 
-            // Function to change page size
-            function changePageSize(newSize) {
-                const url = new URL(window.location);
-                url.searchParams.set('size', newSize);
-                url.searchParams.set('page', '0'); // Reset to first page
-                window.location.href = url.toString();
-            }
+                    console.log('🔍 Elements check:', {
+                        btn: !!btn,
+                        modal: !!modal,
+                        closeBtn: !!closeBtn,
+                        cancelBtn: !!cancelBtn,
+                        form: !!form,
+                        submitBtn: !!submitBtn,
+                        submitText: !!submitText
+                    });
 
-            // Hiện modal khi ấn Thêm dịch vụ hoặc khi ở chế độ sửa
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('🚀 DOM Content Loaded - Starting initialization...');
-                
-                // Test cơ bản trước
-                testBasicFunctionality();
-                
-                // Khởi tạo tìm kiếm và phân trang
-                setupSearchAndFilter();
-                var btn = document.getElementById('btnAddService');
-                var modal = document.getElementById('serviceModal');
-                var closeBtn = document.getElementById('closeServiceModal');
-                var cancelBtn = document.getElementById('cancelServiceModal');
-                var form = document.getElementById('serviceForm');
-                var submitBtn = document.getElementById('submitService');
-                var submitText = document.getElementById('submitText');
+                    // Test đơn giản - thêm event listener trực tiếp
+                    if (btn) {
+                        btn.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            console.log('🎯 Event listener trực tiếp được gọi');
+                            if (modal) {
+                                modal.style.display = 'flex';
+                                modal.style.visibility = 'visible';
+                                modal.style.opacity = '1';
+                                modal.style.zIndex = '9999';
+                                modal.style.position = 'fixed';
+                                modal.style.top = '0';
+                                modal.style.left = '0';
+                                modal.style.width = '100vw';
+                                modal.style.height = '100vh';
+                                console.log('✅ Modal hiển thị qua event listener');
+                                console.log('🔍 Modal computed style:', window.getComputedStyle(modal));
+                            }
+                        });
+                    }
 
-                // Hiển thị modal
-                if(btn && modal) {
-                    btn.onclick = function() {
-                        // Force clear form completely
-                        clearFormCompletely();
-                        // Set form action to add
-                        if(form) {
-                            form.action = '/admin/services/add';
+                    // Khởi tạo tìm kiếm và phân trang sau
+                    setupSearchAndFilter();
+
+                    // Hiển thị modal
+                    if (btn && modal) {
+                        console.log('✅ Button và modal được tìm thấy');
+                        btn.onclick = function () {
+                            console.log('🔘 Button Thêm dịch vụ được click');
+                            // Force clear form completely
+                            clearFormCompletely();
+                            // Set form action to add
+                            if (form) {
+                                form.action = '/admin/services/add';
+                                console.log('📝 Form action được set:', form.action);
+                            }
+                            modal.style.display = 'flex';
+                            modal.style.visibility = 'visible';
+                            modal.style.opacity = '1';
+                            modal.style.zIndex = '9999';
+                            modal.style.position = 'fixed';
+                            modal.style.top = '0';
+                            modal.style.left = '0';
+                            modal.style.width = '100vw';
+                            modal.style.height = '100vh';
+                            console.log('👁️ Modal được hiển thị');
+                            console.log('🔍 Modal style:', modal.style.cssText);
+                            console.log('🔍 Modal computed style:', window.getComputedStyle(modal));
+                            document.getElementById('serviceModalTitle').innerText = 'Thêm dịch vụ mới';
+                            submitText.textContent = 'Lưu';
+                        }
+                    } else {
+                        console.error('❌ Không tìm thấy button hoặc modal:', {
+                            btn: !!btn,
+                            modal: !!modal
+                        });
+                    }
+
+                    // Đóng modal
+                    if (closeBtn && modal) {
+                        closeBtn.onclick = function () {
+                            closeModal();
+                        }
+                    }
+                    if (cancelBtn && modal) {
+                        cancelBtn.onclick = function () {
+                            closeModal();
+                        }
+                    }
+
+                    // Đóng modal khi click ra ngoài modal-content
+                    window.onclick = function (event) {
+                        if (event.target === modal) { closeModal(); }
+                    }
+
+                    // Nếu ở chế độ edit, tự động mở modal và đổi tiêu đề
+                    /*<![CDATA[*/
+                    var editMode = /*[[${editMode} ? 'true' : 'false']]*/ 'false';
+                    if (editMode === 'true' && modal) {
+                        // Set form action to edit
+                        if (form) {
+                            var serviceId = /*[[${serviceForm.id}]]*/ '0';
+                            form.action = '/admin/services/edit/' + serviceId;
                         }
                         modal.style.display = 'flex';
-                        document.getElementById('serviceModalTitle').innerText = 'Thêm dịch vụ mới';
-                        submitText.textContent = 'Lưu';
+                        document.getElementById('serviceModalTitle').innerText = 'Sửa dịch vụ';
+                        submitText.textContent = 'Cập nhật';
                     }
-                }
+                    /*]]>*/
 
-                // Đóng modal
-                if(closeBtn && modal) {
-                    closeBtn.onclick = function() {
-                        closeModal();
+                    // Validation form
+                    if (form) {
+                        form.addEventListener('submit', function (e) {
+                            e.preventDefault(); // Prevent default form submission
+
+                            if (!validateForm()) {
+                                return false;
+                            }
+
+                            // Hiển thị loading
+                            submitBtn.disabled = true;
+                            submitText.textContent = 'Đang xử lý...';
+
+                            // Ẩn thông báo lỗi cũ
+                            hideMessage('error');
+
+                            // Submit form via AJAX
+                            submitFormAjax();
+                        });
                     }
-                }
-                if(cancelBtn && modal) {
-                    cancelBtn.onclick = function() {
-                        closeModal();
+
+                    // Auto-format mã dịch vụ
+                    var maDichVuInput = document.getElementById('maDichVu');
+                    if (maDichVuInput) {
+                        maDichVuInput.addEventListener('input', function () {
+                            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                        });
                     }
-                }
 
-                // Đóng modal khi click ra ngoài modal-content
-                window.onclick = function(event) {
-                    if(event.target === modal) { closeModal(); }
-                }
-
-                // Nếu ở chế độ edit, tự động mở modal và đổi tiêu đề
-                /*<![CDATA[*/
-                var editMode = /*[[${editMode} ? 'true' : 'false']]*/ 'false';
-                if(editMode === 'true' && modal) {
-                    // Set form action to edit
-                    if(form) {
-                        var serviceId = /*[[${serviceForm.id}]]*/ '0';
-                        form.action = '/admin/services/edit/' + serviceId;
+                    // Auto-format đơn giá
+                    var donGiaInput = document.getElementById('donGia');
+                    if (donGiaInput) {
+                        donGiaInput.addEventListener('input', function () {
+                            var value = parseInt(this.value);
+                            if (value < 0) this.value = 0;
+                            if (value > 999999999) this.value = 999999999;
+                        });
                     }
-                    modal.style.display = 'flex';
-                    document.getElementById('serviceModalTitle').innerText = 'Sửa dịch vụ';
-                    submitText.textContent = 'Cập nhật';
-                }
-                /*]]>*/
 
-                // Validation form
-                if(form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault(); // Prevent default form submission
-
-                        if (!validateForm()) {
-                            return false;
-                        }
-
-                        // Hiển thị loading
-                        submitBtn.disabled = true;
-                        submitText.textContent = 'Đang xử lý...';
-
-                        // Ẩn thông báo lỗi cũ
-                        hideMessage('error');
-
-                        // Submit form via AJAX
-                        submitFormAjax();
+                    // Real-time validation
+                    var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+                    inputs.forEach(function (input) {
+                        input.addEventListener('blur', function () {
+                            validateField(this);
+                        });
                     });
-                }
 
-                // Auto-format mã dịch vụ
-                var maDichVuInput = document.getElementById('maDichVu');
-                if(maDichVuInput) {
-                    maDichVuInput.addEventListener('input', function() {
-                        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                    });
-                }
+                    // Status toggle functionality
+                    var statusOptions = document.querySelectorAll('.status-option');
+                    statusOptions.forEach(function (option) {
+                        option.addEventListener('click', function () {
+                            // Remove active class from all options
+                            statusOptions.forEach(function (opt) {
+                                opt.classList.remove('active');
+                            });
 
-                // Auto-format đơn giá
-                var donGiaInput = document.getElementById('donGia');
-                if(donGiaInput) {
-                    donGiaInput.addEventListener('input', function() {
-                        var value = parseInt(this.value);
-                        if (value < 0) this.value = 0;
-                        if (value > 999999999) this.value = 999999999;
-                    });
-                }
+                            // Add active class to clicked option
+                            this.classList.add('active');
 
-                // Real-time validation
-                var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-                inputs.forEach(function(input) {
-                    input.addEventListener('blur', function() {
-                        validateField(this);
+                            // Check the corresponding radio button
+                            var radio = this.querySelector('input[type="radio"]');
+                            if (radio) {
+                                radio.checked = true;
+                            }
+                        });
                     });
                 });
 
-                // Status toggle functionality
-                var statusOptions = document.querySelectorAll('.status-option');
-                statusOptions.forEach(function(option) {
-                    option.addEventListener('click', function() {
-                        // Remove active class from all options
-                        statusOptions.forEach(function(opt) {
-                            opt.classList.remove('active');
+                function closeModal() {
+                    var modal = document.getElementById('serviceModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                        resetForm();
+                    }
+                }
+
+                function clearFormCompletely() {
+                    var form = document.getElementById('serviceForm');
+                    var submitBtn = document.getElementById('submitService');
+                    var submitText = document.getElementById('submitText');
+
+                    if (form) {
+                        // Clear all form fields manually - more comprehensive
+                        var allInputs = form.querySelectorAll('input, textarea, select');
+                        allInputs.forEach(function (input) {
+                            if (input.type === 'radio' || input.type === 'checkbox') {
+                                input.checked = false;
+                            } else {
+                                input.value = '';
+                            }
                         });
 
-                        // Add active class to clicked option
-                        this.classList.add('active');
+                        // Reset form
+                        form.reset();
+                        clearFieldErrors();
+                        hideMessage('error');
+                        hideMessage('success');
+                    }
 
-                        // Check the corresponding radio button
-                        var radio = this.querySelector('input[type="radio"]');
-                        if(radio) {
-                            radio.checked = true;
-                        }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Lưu';
+                    }
+
+                    // Reset status toggle - set default to "Hoạt động"
+                    var statusOptions = document.querySelectorAll('.status-option');
+                    statusOptions.forEach(function (opt) {
+                        opt.classList.remove('active');
+                        var radio = opt.querySelector('input[type="radio"]');
+                        if (radio) radio.checked = false;
                     });
-                });
-            });
 
-            function closeModal() {
-                var modal = document.getElementById('serviceModal');
-                if(modal) {
-                    modal.style.display = 'none';
-                    resetForm();
+                    // Set "Hoạt động" as default
+                    var hoatDongRadio = document.getElementById('trangThaiHoatDong');
+                    var hoatDongOption = document.querySelector('label[for="trangThaiHoatDong"]');
+                    if (hoatDongRadio && hoatDongOption) {
+                        hoatDongRadio.checked = true;
+                        hoatDongOption.classList.add('active');
+                    }
                 }
-            }
 
-            function clearFormCompletely() {
-                var form = document.getElementById('serviceForm');
-                var submitBtn = document.getElementById('submitService');
-                var submitText = document.getElementById('submitText');
+                function resetForm() {
+                    clearFormCompletely();
+                }
 
-                if(form) {
-                    // Clear all form fields manually - more comprehensive
-                    var allInputs = form.querySelectorAll('input, textarea, select');
-                    allInputs.forEach(function(input) {
-                        if(input.type === 'radio' || input.type === 'checkbox') {
-                            input.checked = false;
-                        } else {
-                            input.value = '';
-                        }
-                    });
+                function validateForm() {
+                    var isValid = true;
+                    var form = document.getElementById('serviceForm');
+                    var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
 
-                    // Reset form
-                    form.reset();
                     clearFieldErrors();
-                    hideMessage('error');
-                    hideMessage('success');
-                }
 
-                if(submitBtn) {
-                    submitBtn.disabled = false;
-                    submitText.textContent = 'Lưu';
-                }
+                    inputs.forEach(function (input) {
+                        if (!validateField(input)) {
+                            isValid = false;
+                        }
+                    });
 
-                // Reset status toggle - set default to "Hoạt động"
-                var statusOptions = document.querySelectorAll('.status-option');
-                statusOptions.forEach(function(opt) {
-                    opt.classList.remove('active');
-                    var radio = opt.querySelector('input[type="radio"]');
-                    if(radio) radio.checked = false;
-                });
-
-                // Set "Hoạt động" as default
-                var hoatDongRadio = document.getElementById('trangThaiHoatDong');
-                var hoatDongOption = document.querySelector('label[for="trangThaiHoatDong"]');
-                if(hoatDongRadio && hoatDongOption) {
-                    hoatDongRadio.checked = true;
-                    hoatDongOption.classList.add('active');
-                }
-            }
-
-            function resetForm() {
-                clearFormCompletely();
-            }
-
-            function validateForm() {
-                var isValid = true;
-                var form = document.getElementById('serviceForm');
-                var inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-
-                clearFieldErrors();
-
-                inputs.forEach(function(input) {
-                    if (!validateField(input)) {
-                        isValid = false;
-                    }
-                });
-
-                // Validate radio button group for status
-                var statusRadios = document.querySelectorAll('input[name="trangThai"]');
-                var isStatusSelected = false;
-                statusRadios.forEach(function(radio) {
-                    if (radio.checked) {
-                        isStatusSelected = true;
-                    }
-                });
-                if (!isStatusSelected) {
-                    isValid = false;
-                    showMessage('error', 'Vui lòng chọn trạng thái dịch vụ');
-                }
-
-                if (!isValid) {
-                    showMessage('error', 'Vui lòng kiểm tra lại thông tin đã nhập');
-                }
-
-                return isValid;
-            }
-
-            function validateField(field) {
-                var isValid = true;
-                var errorMsg = '';
-
-                // Remove existing error styling
-                field.classList.remove('error');
-                var errorDiv = field.parentNode.querySelector('.field-error');
-                if(errorDiv) errorDiv.remove();
-
-                // Required field validation
-                if (field.hasAttribute('required') && !field.value.trim()) {
-                    isValid = false;
-                    errorMsg = 'Trường này là bắt buộc';
-                }
-
-                // Specific field validations
-                if (field.id === 'maDichVu' && field.value) {
-                    if (!/^[A-Z0-9]+$/.test(field.value)) {
-                        isValid = false;
-                        errorMsg = 'Mã dịch vụ chỉ chứa chữ hoa và số';
-                    }
-                    if (field.value.length < 3) {
-                        isValid = false;
-                        errorMsg = 'Mã dịch vụ phải có ít nhất 3 ký tự';
-                    }
-                }
-
-                if (field.id === 'donGia' && field.value) {
-                    var price = parseFloat(field.value);
-                    if (price < 0) {
-                        isValid = false;
-                        errorMsg = 'Đơn giá không được âm';
-                    }
-                    if (price > 999999999) {
-                        isValid = false;
-                        errorMsg = 'Đơn giá quá lớn';
-                    }
-                }
-
-                if (field.id === 'tenDichVu' && field.value) {
-                    if (field.value.length < 3) {
-                        isValid = false;
-                        errorMsg = 'Tên dịch vụ phải có ít nhất 3 ký tự';
-                    }
-                }
-
-                // Validate radio button group for status
-                if (field.name === 'trangThai') {
+                    // Validate radio button group for status
                     var statusRadios = document.querySelectorAll('input[name="trangThai"]');
                     var isStatusSelected = false;
-                    statusRadios.forEach(function(radio) {
+                    statusRadios.forEach(function (radio) {
                         if (radio.checked) {
                             isStatusSelected = true;
                         }
                     });
                     if (!isStatusSelected) {
                         isValid = false;
-                        errorMsg = 'Vui lòng chọn trạng thái';
+                        showMessage('error', 'Vui lòng chọn trạng thái dịch vụ');
+                    }
+
+                    if (!isValid) {
+                        showMessage('error', 'Vui lòng kiểm tra lại thông tin đã nhập');
+                    }
+
+                    return isValid;
+                }
+
+                function validateField(field) {
+                    var isValid = true;
+                    var errorMsg = '';
+
+                    // Remove existing error styling
+                    field.classList.remove('error');
+                    var errorDiv = field.parentNode.querySelector('.field-error');
+                    if (errorDiv) errorDiv.remove();
+
+                    // Required field validation
+                    if (field.hasAttribute('required') && !field.value.trim()) {
+                        isValid = false;
+                        errorMsg = 'Trường này là bắt buộc';
+                    }
+
+                    // Specific field validations
+                    if (field.id === 'maDichVu' && field.value) {
+                        if (!/^[A-Z0-9]+$/.test(field.value)) {
+                            isValid = false;
+                            errorMsg = 'Mã dịch vụ chỉ chứa chữ hoa và số';
+                        }
+                        if (field.value.length < 3) {
+                            isValid = false;
+                            errorMsg = 'Mã dịch vụ phải có ít nhất 3 ký tự';
+                        }
+                    }
+
+                    if (field.id === 'donGia' && field.value) {
+                        var price = parseFloat(field.value);
+                        if (price < 0) {
+                            isValid = false;
+                            errorMsg = 'Đơn giá không được âm';
+                        }
+                        if (price > 999999999) {
+                            isValid = false;
+                            errorMsg = 'Đơn giá quá lớn';
+                        }
+                    }
+
+                    if (field.id === 'tenDichVu' && field.value) {
+                        if (field.value.length < 3) {
+                            isValid = false;
+                            errorMsg = 'Tên dịch vụ phải có ít nhất 3 ký tự';
+                        }
+                    }
+
+                    // Validate radio button group for status
+                    if (field.name === 'trangThai') {
+                        var statusRadios = document.querySelectorAll('input[name="trangThai"]');
+                        var isStatusSelected = false;
+                        statusRadios.forEach(function (radio) {
+                            if (radio.checked) {
+                                isStatusSelected = true;
+                            }
+                        });
+                        if (!isStatusSelected) {
+                            isValid = false;
+                            errorMsg = 'Vui lòng chọn trạng thái';
+                        }
+                    }
+
+                    // Show error if invalid
+                    if (!isValid) {
+                        field.classList.add('error');
+                        var errorDiv = document.createElement('div');
+                        errorDiv.className = 'field-error';
+                        errorDiv.textContent = errorMsg;
+                        field.parentNode.appendChild(errorDiv);
+                    }
+
+                    return isValid;
+                }
+
+                function clearFieldErrors() {
+                    var errorFields = document.querySelectorAll('.error');
+                    errorFields.forEach(function (field) { field.classList.remove('error'); });
+
+                    var errorDivs = document.querySelectorAll('.field-error');
+                    errorDivs.forEach(function (div) { div.remove(); });
+                }
+
+                function showMessage(type, message) {
+                    var messageDiv = document.getElementById(type + 'Message');
+                    var textDiv = document.getElementById(type + 'Text');
+
+                    if (messageDiv && textDiv) {
+                        textDiv.textContent = message;
+                        messageDiv.style.display = 'flex';
+
+                        // Auto hide after 5 seconds
+                        setTimeout(function () {
+                            hideMessage(type);
+                        }, 5000);
                     }
                 }
 
-                // Show error if invalid
-                if (!isValid) {
-                    field.classList.add('error');
-                    var errorDiv = document.createElement('div');
-                    errorDiv.className = 'field-error';
-                    errorDiv.textContent = errorMsg;
-                    field.parentNode.appendChild(errorDiv);
+                function hideMessage(type) {
+                    var messageDiv = document.getElementById(type + 'Message');
+                    if (messageDiv) {
+                        messageDiv.style.display = 'none';
+                    }
                 }
 
-                return isValid;
-            }
+                function submitFormAjax() {
+                    var form = document.getElementById('serviceForm');
+                    var formData = new FormData(form);
+                    var url = form.action;
 
-            function clearFieldErrors() {
-                var errorFields = document.querySelectorAll('.error');
-                errorFields.forEach(function(field) { field.classList.remove('error'); });
+                    // Determine if it's add or edit
+                    var isEdit = url.includes('/edit/');
+                    var ajaxUrl;
+                    if (isEdit) {
+                        // Extract ID from URL like /admin/services/edit/3
+                        var id = url.split('/edit/')[1];
+                        ajaxUrl = '/admin/services/edit-ajax/' + id;
+                    } else {
+                        ajaxUrl = '/admin/services/add-ajax';
+                    }
 
-                var errorDivs = document.querySelectorAll('.field-error');
-                errorDivs.forEach(function(div) { div.remove(); });
-            }
-
-            function showMessage(type, message) {
-                var messageDiv = document.getElementById(type + 'Message');
-                var textDiv = document.getElementById(type + 'Text');
-
-                if(messageDiv && textDiv) {
-                    textDiv.textContent = message;
-                    messageDiv.style.display = 'flex';
-
-                    // Auto hide after 5 seconds
-                    setTimeout(function() {
-                        hideMessage(type);
-                    }, 5000);
-                }
-            }
-
-            function hideMessage(type) {
-                var messageDiv = document.getElementById(type + 'Message');
-                if(messageDiv) {
-                    messageDiv.style.display = 'none';
-                }
-            }
-
-            function submitFormAjax() {
-                var form = document.getElementById('serviceForm');
-                var formData = new FormData(form);
-                var url = form.action;
-
-                // Determine if it's add or edit
-                var isEdit = url.includes('/edit/');
-                var ajaxUrl;
-                if (isEdit) {
-                    // Extract ID from URL like /admin/services/edit/3
-                    var id = url.split('/edit/')[1];
-                    ajaxUrl = '/admin/services/edit-ajax/' + id;
-                } else {
-                    ajaxUrl = '/admin/services/add-ajax';
-                }
-
-                fetch(ajaxUrl, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Close modal
-                            closeModal();
-
-                            // Show success message
-                            showMessage('success', data.message || 'Dịch vụ đã được lưu thành công');
-
-                            // Reload page after a short delay to show the message
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
-                        } else {
-                            throw new Error(data.message || 'Có lỗi xảy ra khi lưu dịch vụ');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showMessage('error', error.message || 'Không thể lưu dịch vụ. Vui lòng thử lại.');
-                    })
-                    .finally(() => {
-                        // Restore button
-                        var submitBtn = document.getElementById('submitService');
-                        var submitText = document.getElementById('submitText');
-                        if (submitBtn) submitBtn.disabled = false;
-                        if (submitText) submitText.textContent = 'Lưu';
-                    });
-            }
-
-            function deleteService(serviceId) {
-                if (confirm('Bạn có chắc muốn xóa dịch vụ này?')) {
-                    // Show loading
-                    var deleteBtn = event.target.closest('.btn-delete');
-                    var originalContent = deleteBtn.innerHTML;
-                    deleteBtn.innerHTML = '<span class="material-icons">hourglass_empty</span>';
-                    deleteBtn.disabled = true;
-
-                    // Send delete request
-                    fetch('/admin/services/delete/' + serviceId, {
+                    fetch(ajaxUrl, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
+                        body: formData
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Reload toàn bộ bảng
-                                location.reload();
+                                // Close modal
+                                closeModal();
 
                                 // Show success message
-                                showMessage('success', data.message || 'Dịch vụ đã được xóa thành công');
+                                showMessage('success', data.message || 'Dịch vụ đã được lưu thành công');
+
+                                // Reload page after a short delay to show the message
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
                             } else {
-                                throw new Error(data.message || 'Xóa thất bại');
+                                throw new Error(data.message || 'Có lỗi xảy ra khi lưu dịch vụ');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            showMessage('error', 'Không thể xóa dịch vụ. Vui lòng thử lại.');
+                            showMessage('error', error.message || 'Không thể lưu dịch vụ. Vui lòng thử lại.');
                         })
                         .finally(() => {
                             // Restore button
-                            deleteBtn.innerHTML = originalContent;
-                            deleteBtn.disabled = false;
+                            var submitBtn = document.getElementById('submitService');
+                            var submitText = document.getElementById('submitText');
+                            if (submitBtn) submitBtn.disabled = false;
+                            if (submitText) submitText.textContent = 'Lưu';
                         });
                 }
-            }
 
-            function editService(serviceId) {
-                // Clear form first
-                clearFormCompletely();
+                function deleteService(serviceId) {
+                    if (confirm('Bạn có chắc muốn xóa dịch vụ này?')) {
+                        // Show loading
+                        var deleteBtn = event.target.closest('.btn-delete');
+                        var originalContent = deleteBtn.innerHTML;
+                        deleteBtn.innerHTML = '<span class="material-icons">hourglass_empty</span>';
+                        deleteBtn.disabled = true;
 
-                // Set form action to edit
-                var form = document.getElementById('serviceForm');
-                if(form) {
-                    form.action = '/admin/services/edit/' + serviceId;
-                }
-
-                // Show modal
-                var modal = document.getElementById('serviceModal');
-                if(modal) {
-                    modal.style.display = 'flex';
-                    document.getElementById('serviceModalTitle').innerText = 'Sửa dịch vụ';
-                    document.getElementById('submitText').textContent = 'Cập nhật';
-                }
-
-                // Load service data via AJAX
-                fetch('/admin/services/' + serviceId)
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        if (!response.ok) {
-                            throw new Error('HTTP ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Service data received:', data);
-                        if(data) {
-                            // Fill form with service data
-                            var maDichVuInput = document.getElementById('maDichVu');
-                            var tenDichVuInput = document.getElementById('tenDichVu');
-                            var loaiDichVuInput = document.getElementById('loaiDichVu');
-                            var moTaInput = document.getElementById('moTa');
-                            var donGiaInput = document.getElementById('donGia');
-                            var donViTinhInput = document.getElementById('donViTinh');
-
-                            if(maDichVuInput) maDichVuInput.value = data.maDichVu || '';
-                            if(tenDichVuInput) tenDichVuInput.value = data.tenDichVu || '';
-                            if(loaiDichVuInput) loaiDichVuInput.value = data.loaiDichVu || '';
-                            if(moTaInput) moTaInput.value = data.moTa || '';
-                            if(donGiaInput) donGiaInput.value = data.donGia || '';
-                            if(donViTinhInput) donViTinhInput.value = data.donViTinh || '';
-
-                            // Set status
-                            var statusOptions = document.querySelectorAll('.status-option');
-                            statusOptions.forEach(function(opt) {
-                                opt.classList.remove('active');
-                                var radio = opt.querySelector('input[type="radio"]');
-                                if(radio && radio.value === data.trangThai) {
-                                    radio.checked = true;
-                                    opt.classList.add('active');
-                                }
-                            });
-
-                            // If no status is set, default to "Hoạt động"
-                            var hasStatus = false;
-                            statusOptions.forEach(function(opt) {
-                                var radio = opt.querySelector('input[type="radio"]');
-                                if(radio && radio.checked) {
-                                    hasStatus = true;
-                                }
-                            });
-                            if (!hasStatus) {
-                                var defaultRadio = document.getElementById('trangThaiHoatDong');
-                                var defaultOption = document.querySelector('label[for="trangThaiHoatDong"]');
-                                if(defaultRadio && defaultOption) {
-                                    defaultRadio.checked = true;
-                                    defaultOption.classList.add('active');
-                                }
+                        // Send delete request
+                        fetch('/admin/services/delete/' + serviceId, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
                             }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Reload toàn bộ bảng
+                                    location.reload();
 
-                            console.log('Form filled successfully');
-                        } else {
-                            console.error('No data received');
-                            showMessage('error', 'Không có dữ liệu dịch vụ');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading service data:', error);
-                        showMessage('error', 'Không thể tải dữ liệu dịch vụ: ' + error.message);
-                    });
-            }
-        </script>
-    </main>
-    <footer>
-        &copy; 2024 Panacea Hotel Booking System - All rights reserved.
-    </footer>
-</div>
-<script th:src="@{/js/responsive.js}"></script>
+                                    // Show success message
+                                    showMessage('success', data.message || 'Dịch vụ đã được xóa thành công');
+                                } else {
+                                    throw new Error(data.message || 'Xóa thất bại');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showMessage('error', 'Không thể xóa dịch vụ. Vui lòng thử lại.');
+                            })
+                            .finally(() => {
+                                // Restore button
+                                deleteBtn.innerHTML = originalContent;
+                                deleteBtn.disabled = false;
+                            });
+                    }
+                }
+
+                function editService(serviceId) {
+                    // Clear form first
+                    clearFormCompletely();
+
+                    // Set form action to edit
+                    var form = document.getElementById('serviceForm');
+                    if (form) {
+                        form.action = '/admin/services/edit/' + serviceId;
+                    }
+
+                    // Show modal
+                    var modal = document.getElementById('serviceModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        document.getElementById('serviceModalTitle').innerText = 'Sửa dịch vụ';
+                        document.getElementById('submitText').textContent = 'Cập nhật';
+                    }
+
+                    // Load service data via AJAX
+                    fetch('/admin/services/' + serviceId)
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            if (!response.ok) {
+                                throw new Error('HTTP ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Service data received:', data);
+                            if (data) {
+                                // Fill form with service data
+                                var maDichVuInput = document.getElementById('maDichVu');
+                                var tenDichVuInput = document.getElementById('tenDichVu');
+                                var loaiDichVuInput = document.getElementById('loaiDichVu');
+                                var moTaInput = document.getElementById('moTa');
+                                var donGiaInput = document.getElementById('donGia');
+                                var donViTinhInput = document.getElementById('donViTinh');
+
+                                if (maDichVuInput) maDichVuInput.value = data.maDichVu || '';
+                                if (tenDichVuInput) tenDichVuInput.value = data.tenDichVu || '';
+                                if (loaiDichVuInput) loaiDichVuInput.value = data.loaiDichVu || '';
+                                if (moTaInput) moTaInput.value = data.moTa || '';
+                                if (donGiaInput) donGiaInput.value = data.donGia || '';
+                                if (donViTinhInput) donViTinhInput.value = data.donViTinh || '';
+
+                                // Set status
+                                var statusOptions = document.querySelectorAll('.status-option');
+                                statusOptions.forEach(function (opt) {
+                                    opt.classList.remove('active');
+                                    var radio = opt.querySelector('input[type="radio"]');
+                                    if (radio && radio.value === data.trangThai) {
+                                        radio.checked = true;
+                                        opt.classList.add('active');
+                                    }
+                                });
+
+                                // If no status is set, default to "Hoạt động"
+                                var hasStatus = false;
+                                statusOptions.forEach(function (opt) {
+                                    var radio = opt.querySelector('input[type="radio"]');
+                                    if (radio && radio.checked) {
+                                        hasStatus = true;
+                                    }
+                                });
+                                if (!hasStatus) {
+                                    var defaultRadio = document.getElementById('trangThaiHoatDong');
+                                    var defaultOption = document.querySelector('label[for="trangThaiHoatDong"]');
+                                    if (defaultRadio && defaultOption) {
+                                        defaultRadio.checked = true;
+                                        defaultOption.classList.add('active');
+                                    }
+                                }
+
+                                console.log('Form filled successfully');
+                            } else {
+                                console.error('No data received');
+                                showMessage('error', 'Không có dữ liệu dịch vụ');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading service data:', error);
+                            showMessage('error', 'Không thể tải dữ liệu dịch vụ: ' + error.message);
+                        });
+                }
+            </script>
+        </main>
+        <footer>
+            &copy; 2024 Panacea Hotel Booking System - All rights reserved.
+        </footer>
+    </div>
+    <script th:src="@{/js/responsive.js}"></script>
 </body>
+
 </html>

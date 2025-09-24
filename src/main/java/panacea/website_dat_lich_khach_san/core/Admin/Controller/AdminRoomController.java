@@ -47,7 +47,7 @@ public class AdminRoomController {
         @RequestParam(required = false) String area,
         @RequestParam(required = false) String branch,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "1000") int size, // Tăng size để lấy tất cả dữ liệu
+        @RequestParam(defaultValue = "10") int size, // Server-side pagination
         Model model
     ) {
         Pageable pageable = PageRequest.of(page, size);
@@ -66,9 +66,9 @@ public class AdminRoomController {
         model.addAttribute("area", area);
         model.addAttribute("branch", branch);
         
-        // Phân trang
+        // Server-side pagination
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", Math.max(1, roomPage.getTotalPages())); // Đảm bảo ít nhất 1 trang
+        model.addAttribute("totalPages", Math.max(1, roomPage.getTotalPages()));
         model.addAttribute("totalItems", roomPage.getTotalElements());
         model.addAttribute("pageSize", size);
         model.addAttribute("hasNext", roomPage.hasNext());

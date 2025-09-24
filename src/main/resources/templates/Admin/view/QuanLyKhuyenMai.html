@@ -11,26 +11,26 @@
   <style>
     /* Responsive cho thanh tìm kiếm */
     @media (max-width: 1200px) {
-      .search-filter-section > div {
+      .search-filter-section>div {
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
       }
-      
-      .search-filter-section > div > div:nth-child(1) {
+
+      .search-filter-section>div>div:nth-child(1) {
         grid-column: 1 / -1 !important;
       }
     }
-    
+
     @media (max-width: 768px) {
-      .search-filter-section > div {
+      .search-filter-section>div {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
       }
-      
-      .search-filter-section > div > div {
+
+      .search-filter-section>div>div {
         grid-column: 1 / -1 !important;
       }
-      
+
       /* Responsive cho phân trang */
       /* Server Pagination Styles */
       .pagination-btn:hover:not(:disabled) {
@@ -38,33 +38,33 @@
         border-color: #94a3b8 !important;
         transform: translateY(-1px);
       }
-      
+
       .pagination-btn:disabled {
         background: #f8fafc !important;
         color: #cbd5e1 !important;
         border-color: #e2e8f0 !important;
         cursor: not-allowed !important;
       }
-      
+
       .pagination-btn.active {
         background: #3b82f6 !important;
         color: white !important;
         border-color: #3b82f6 !important;
         box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
       }
-      
+
       .pagination-controls {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
-      
+
       .pagination-controls select {
         cursor: pointer;
       }
-      
+
       .pagination-controls select:hover {
         border-color: #94a3b8 !important;
       }
-      
+
       /* Responsive cho pagination */
       @media (max-width: 1024px) {
         .pagination-controls {
@@ -73,41 +73,41 @@
           align-items: center !important;
           text-align: center !important;
         }
-        
+
         .pagination-buttons {
           flex-wrap: wrap !important;
           justify-content: center !important;
         }
-        
+
         .items-per-page {
           justify-content: center !important;
         }
       }
-      
+
       @media (max-width: 768px) {
         .pagination-controls {
           padding: 12px 15px !important;
         }
-        
+
         .pagination-btn {
           padding: 4px 8px !important;
           font-size: 12px !important;
         }
-        
+
         .pagination-info {
           font-size: 13px !important;
         }
-        
+
         .items-per-page span {
           font-size: 12px !important;
         }
-        
+
         .items-per-page select {
           font-size: 12px !important;
           padding: 3px 6px !important;
         }
       }
-      
+
       #bottomPaginationButtons {
         flex-wrap: wrap !important;
         justify-content: center !important;
@@ -121,7 +121,7 @@
       width: 100%;
       min-width: 1200px;
     }
-    
+
     #promotionTable th {
       padding: 12px 16px !important;
       font-size: 14px;
@@ -133,7 +133,7 @@
       z-index: 10;
       white-space: nowrap;
     }
-    
+
     #promotionTable td {
       padding: 12px 16px !important;
       font-size: 14px;
@@ -154,7 +154,7 @@
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       width: 100%;
     }
 
@@ -176,19 +176,19 @@
     .table-container::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
+
     /* Đảm bảo bảng rộng đầy đủ */
     .content-section {
       width: 100% !important;
       max-width: none !important;
     }
-    
+
     /* Cải thiện layout tổng thể */
     main {
       width: 100%;
       padding: 10px 2px 10px 2px;
     }
-    
+
     /* Header layout */
     .header-layout {
       display: flex;
@@ -196,36 +196,86 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    
+
     .header-layout h1 {
       margin: 0;
       font-size: 28px;
       font-weight: 700;
       color: #1f2937;
     }
-    
+
     /* Cột bảng có chiều rộng phù hợp */
-    #promotionTable th:nth-child(1), #promotionTable td:nth-child(1) { width: 60px; } /* STT */
-    #promotionTable th:nth-child(2), #promotionTable td:nth-child(2) { width: 100px; } /* Mã KM */
-    #promotionTable th:nth-child(3), #promotionTable td:nth-child(3) { width: 200px; } /* Tên khuyến mãi */
-    #promotionTable th:nth-child(4), #promotionTable td:nth-child(4) { width: 120px; } /* Loại giảm giá */
-    #promotionTable th:nth-child(5), #promotionTable td:nth-child(5) { width: 120px; } /* Giá trị giảm */
-    #promotionTable th:nth-child(6), #promotionTable td:nth-child(6) { width: 120px; } /* Ngày bắt đầu */
-    #promotionTable th:nth-child(7), #promotionTable td:nth-child(7) { width: 120px; } /* Ngày kết thúc */
-    #promotionTable th:nth-child(8), #promotionTable td:nth-child(8) { width: 120px; } /* Trạng thái */
-    #promotionTable th:nth-child(9), #promotionTable td:nth-child(9) { width: 100px; } /* Thao tác */
+    #promotionTable th:nth-child(1),
+    #promotionTable td:nth-child(1) {
+      width: 60px;
+    }
+
+    /* STT */
+    #promotionTable th:nth-child(2),
+    #promotionTable td:nth-child(2) {
+      width: 100px;
+    }
+
+    /* Mã KM */
+    #promotionTable th:nth-child(3),
+    #promotionTable td:nth-child(3) {
+      width: 200px;
+    }
+
+    /* Tên khuyến mãi */
+    #promotionTable th:nth-child(4),
+    #promotionTable td:nth-child(4) {
+      width: 120px;
+    }
+
+    /* Loại giảm giá */
+    #promotionTable th:nth-child(5),
+    #promotionTable td:nth-child(5) {
+      width: 120px;
+    }
+
+    /* Giá trị giảm */
+    #promotionTable th:nth-child(6),
+    #promotionTable td:nth-child(6) {
+      width: 120px;
+    }
+
+    /* Ngày bắt đầu */
+    #promotionTable th:nth-child(7),
+    #promotionTable td:nth-child(7) {
+      width: 120px;
+    }
+
+    /* Ngày kết thúc */
+    #promotionTable th:nth-child(8),
+    #promotionTable td:nth-child(8) {
+      width: 120px;
+    }
+
+    /* Trạng thái */
+    #promotionTable th:nth-child(9),
+    #promotionTable td:nth-child(9) {
+      width: 100px;
+    }
+
+    /* Thao tác */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
       z-index: 1000;
       display: none;
       align-items: center;
       justify-content: center;
     }
+
     .modal-overlay.active {
       display: flex;
     }
+
     .modal-content {
       background: #fff;
       border-radius: 12px;
@@ -233,15 +283,21 @@
       min-width: 320px;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: stretch;
     }
+
     @media (max-width: 600px) {
-      .modal-content { padding: 1rem; min-width: 90vw; max-width: 98vw; }
+      .modal-content {
+        padding: 1rem;
+        min-width: 90vw;
+        max-width: 98vw;
+      }
     }
+
     .modal-close {
       position: absolute;
       top: 10px;
@@ -252,6 +308,7 @@
       color: #888;
       cursor: pointer;
     }
+
     .modal-content h2 {
       text-align: left;
       font-size: 1.5rem;
@@ -259,11 +316,13 @@
       margin-bottom: 1.2rem;
       color: #064e3b;
     }
+
     .modal-content form {
       width: 100%;
       display: flex;
       flex-direction: column;
     }
+
     .modal-content label {
       display: block;
       text-align: left;
@@ -275,6 +334,7 @@
       padding-left: 0;
       margin-left: 0;
     }
+
     .modal-content input,
     .modal-content textarea,
     .modal-content select {
@@ -288,6 +348,7 @@
       width: 100%;
       box-sizing: border-box;
     }
+
     .modal-content input:focus,
     .modal-content textarea:focus,
     .modal-content select:focus {
@@ -295,11 +356,13 @@
       outline: none;
       background: #fff;
     }
+
     .modal-content textarea {
       resize: vertical;
       min-height: 40px;
       max-height: 120px;
     }
+
     .modal-content .btn {
       margin-bottom: 0;
     }
@@ -322,136 +385,150 @@
 
     <main role="main" tabindex="0">
       <div class="header-layout">
-      <h1>Quản lý khuyến mãi</h1>
-        <button class="btn" id="btnAddPromotion" type="button" onclick="showAddForm()" style="margin-right: 50px;">Thêm khuyến mãi mới</button>
+        <h1>Quản lý khuyến mãi</h1>
+        <button class="btn" id="btnAddPromotion" type="button" onclick="showAddForm()" style="margin-right: 50px;">Thêm
+          khuyến mãi mới</button>
       </div>
 
       <section class="content-section" id="contentSection">
 
         <!-- Thanh tìm kiếm và lọc -->
-        <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+        <section class="search-filter-section"
+          style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
           <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
             <!-- Tìm kiếm theo từ khóa -->
             <div>
-              <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
-              <input type="text" id="searchInput" placeholder="Mã KM, tên khuyến mãi... (tự động tìm kiếm)" 
-                     style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm
+                kiếm:</label>
+              <input type="text" id="searchInput" placeholder="Mã KM, tên khuyến mãi... (tự động tìm kiếm)"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             </div>
-            
+
             <!-- Lọc theo loại giảm giá -->
             <div>
-              <label for="typeFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Loại giảm giá:</label>
-              <select id="typeFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <label for="typeFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Loại
+                giảm giá:</label>
+              <select id="typeFilter"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
                 <option value="">Tất cả loại</option>
                 <option value="PHAN_TRAM">Phần trăm</option>
                 <option value="SO_TIEN">Số tiền</option>
               </select>
             </div>
-            
+
             <!-- Lọc theo trạng thái -->
             <div>
-              <label for="statusFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
-              <select id="statusFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <label for="statusFilter"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Trạng thái:</label>
+              <select id="statusFilter"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
                 <option value="">Tất cả trạng thái</option>
                 <option value="HOAT_DONG">Hoạt động</option>
                 <option value="TAM_NGUNG">Tạm ngưng</option>
                 <option value="HET_HAN">Hết hạn</option>
               </select>
             </div>
-            
+
             <!-- Lọc theo khoảng thời gian -->
             <div>
-              <label for="dateFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Thời gian:</label>
-              <select id="dateFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <label for="dateFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Thời
+                gian:</label>
+              <select id="dateFilter"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
                 <option value="">Tất cả thời gian</option>
                 <option value="dang_dien_ra">Đang diễn ra</option>
                 <option value="sap_dien_ra">Sắp diễn ra</option>
                 <option value="da_ket_thuc">Đã kết thúc</option>
               </select>
             </div>
-            
+
           </div>
-          
+
         </section>
 
         <div class="table-container" style="width: 100%; overflow-x: auto;">
-        <table aria-label="Danh sách khuyến mãi" id="promotionTable" style="width: 100%; min-width: 1200px;">
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Mã KM</th>
-              <th>Tên khuyến mãi</th>
-              <th>Loại giảm giá</th>
-              <th>Giá trị giảm</th>
-              <th>Ngày bắt đầu</th>
-              <th>Ngày kết thúc</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="promotionTableBody">
-            <tr th:if="${promotions.size() == 0}">
-              <td colspan="9" style="text-align:center; color:#888;">Không có khuyến mãi nào.</td>
-            </tr>
-            <tr th:each="promotion, stat : ${promotions}">
-              <td th:text="${stat.count}">1</td>
-              <td th:text="${promotion.maKhuyenMai}">KM001</td>
-              <td th:text="${promotion.tenKhuyenMai}">Giảm giá mùa hè</td>
-              <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? 'Phần trăm' : 'Số tiền'}">Phần trăm</td>
-              <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? promotion.giaTriGiam + '%' : #numbers.formatDecimal(promotion.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">20%</td>
-              <td th:text="${#temporals.format(promotion.ngayBatDau, 'dd/MM/yyyy')}">01/06/2024</td>
-              <td th:text="${#temporals.format(promotion.ngayKetThuc, 'dd/MM/yyyy')}">31/08/2024</td>
-              <td>
-                <span th:class="${promotion.trangThai == 'HOAT_DONG' ? 'status-active' : promotion.trangThai == 'TAM_NGUNG' ? 'status-paused' : 'status-expired'}"
-                      th:text="${promotion.trangThai == 'HOAT_DONG' ? 'Hoạt động' : promotion.trangThai == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn'}">
-                  Hoạt động
-                </span>
-              </td>
-              <td>
-                <button class="btn-edit" type="button" th:onclick="|editPromotion(${promotion.id})|" title="Sửa">
-                  <span class="material-icons">edit</span>
-                </button>
-                <button class="btn-delete" type="button" th:onclick="|deletePromotion(${promotion.id})|" title="Xóa">
-                  <span class="material-icons">delete</span>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table aria-label="Danh sách khuyến mãi" id="promotionTable" style="width: 100%; min-width: 1200px;">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã KM</th>
+                <th>Tên khuyến mãi</th>
+                <th>Loại giảm giá</th>
+                <th>Giá trị giảm</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="promotionTableBody">
+              <tr th:if="${promotions.size() == 0}">
+                <td colspan="9" style="text-align:center; color:#888;">Không có khuyến mãi nào.</td>
+              </tr>
+              <tr th:each="promotion, stat : ${promotions}">
+                <td th:text="${stat.count}">1</td>
+                <td th:text="${promotion.maKhuyenMai}">KM001</td>
+                <td th:text="${promotion.tenKhuyenMai}">Giảm giá mùa hè</td>
+                <td th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? 'Phần trăm' : 'Số tiền'}">Phần trăm</td>
+                <td
+                  th:text="${promotion.loaiGiamGia == 'PHAN_TRAM' ? promotion.giaTriGiam + '%' : #numbers.formatDecimal(promotion.giaTriGiam, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
+                  20%</td>
+                <td th:text="${#temporals.format(promotion.ngayBatDau, 'dd/MM/yyyy')}">01/06/2024</td>
+                <td th:text="${#temporals.format(promotion.ngayKetThuc, 'dd/MM/yyyy')}">31/08/2024</td>
+                <td>
+                  <span
+                    th:class="${promotion.trangThai == 'HOAT_DONG' ? 'status-active' : promotion.trangThai == 'TAM_NGUNG' ? 'status-paused' : 'status-expired'}"
+                    th:text="${promotion.trangThai == 'HOAT_DONG' ? 'Hoạt động' : promotion.trangThai == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn'}">
+                    Hoạt động
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-edit" type="button" th:onclick="|editPromotion(${promotion.id})|" title="Sửa">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-delete" type="button" th:onclick="|deletePromotion(${promotion.id})|" title="Xóa">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <!-- Server Pagination Controls -->
-        <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div class="pagination-controls"
+          style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
           <!-- Pagination Info -->
           <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
-            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span>
             (<span id="totalItemsDisplay">0</span> khuyến mãi)
           </div>
-          
+
           <!-- Pagination Buttons -->
           <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
             <!-- Previous Button -->
             <button id="prevPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
               <span>◀</span> Trước
             </button>
-            
+
             <!-- Page Numbers -->
             <div id="pageNumbers" style="display: flex; gap: 4px;">
               <!-- Sẽ được tạo bởi JavaScript -->
             </div>
-            
+
             <!-- Next Button -->
             <button id="nextPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
               Sau <span>▶</span>
             </button>
           </div>
-          
+
           <!-- Items per page selector -->
           <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
             <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
-            <select id="bottomItemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+            <select id="bottomItemsPerPage"
+              style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
               <option value="5" selected>5</option>
               <option value="10">10</option>
               <option value="25">25</option>
@@ -466,9 +543,12 @@
         <div id="promotionModal" class="modal-overlay" th:classappend="${error} ? ' active' : ''">
           <div class="modal-content">
             <button type="button" class="modal-close" onclick="hideForm()">&times;</button>
-            <form id="promotionForm" th:action="${editMode} ? @{'/admin/promotions/edit/' + ${promotionForm.id}} : @{/admin/promotions}" th:object="${promotionForm}" method="post">
+            <form id="promotionForm"
+              th:action="${editMode} ? @{'/admin/promotions/edit/' + ${promotionForm.id}} : @{/admin/promotions}"
+              th:object="${promotionForm}" method="post">
               <h2 id="formTitle" style="color:#064e3b; margin-bottom:1rem;">Thêm khuyến mãi mới</h2>
-              <div th:if="${error}" style="color:#e53935; font-weight:600; margin-bottom:12px; text-align:center;">[[${error}]]</div>
+              <div th:if="${error}" style="color:#e53935; font-weight:600; margin-bottom:12px; text-align:center;">
+                [[${error}]]</div>
               <input type="hidden" th:field="*{id}" />
 
               <label for="maKhuyenMai">Mã khuyến mãi</label>
@@ -488,28 +568,39 @@
               </select>
 
               <label for="giaTriGiam">Giá trị giảm</label>
-              <input type="number" id="giaTriGiam" th:field="*{giaTriGiam}" min="0.01" step="0.01" required placeholder="20" />
+              <input type="number" id="giaTriGiam" th:field="*{giaTriGiam}" min="0.01" step="0.01" max="50" required
+                placeholder="20" />
+              <div id="giaTriGiamError"
+                style="color: #dc2626; font-size: 12px; margin-top: 4px; display: none; font-weight: 500;">⚠️ Giá trị
+                giảm không được vượt quá 50%</div>
 
               <label for="giamToiDa">Giảm tối đa (VNĐ)</label>
               <input type="number" id="giamToiDa" th:field="*{giamToiDa}" min="0" step="1000" placeholder="500000" />
 
               <label for="ngayBatDau">Ngày bắt đầu</label>
-              <input type="date" id="ngayBatDau" name="ngayBatDau" th:value="${promotionForm.ngayBatDau != null ? #temporals.format(promotionForm.ngayBatDau, 'yyyy-MM-dd') : ''}" required />
+              <input type="date" id="ngayBatDau" name="ngayBatDau"
+                th:value="${promotionForm.ngayBatDau != null ? #temporals.format(promotionForm.ngayBatDau, 'yyyy-MM-dd') : ''}"
+                required />
 
               <label for="ngayKetThuc">Ngày kết thúc</label>
-              <input type="date" id="ngayKetThuc" name="ngayKetThuc" th:value="${promotionForm.ngayKetThuc != null ? #temporals.format(promotionForm.ngayKetThuc, 'yyyy-MM-dd') : ''}" required />
+              <input type="date" id="ngayKetThuc" name="ngayKetThuc"
+                th:value="${promotionForm.ngayKetThuc != null ? #temporals.format(promotionForm.ngayKetThuc, 'yyyy-MM-dd') : ''}"
+                required />
 
               <label for="soLuongToiDa">Số lượng tối đa</label>
-              <input type="number" id="soLuongToiDa" th:field="*{soLuongToiDa}" min="1" step="1" required placeholder="100" />
+              <input type="number" id="soLuongToiDa" th:field="*{soLuongToiDa}" min="1" step="1" required
+                placeholder="100" />
 
               <label for="dieuKienApDung">Điều kiện áp dụng</label>
-              <textarea id="dieuKienApDung" th:field="*{dieuKienApDung}" placeholder="Điều kiện áp dụng khuyến mãi"></textarea>
+              <textarea id="dieuKienApDung" th:field="*{dieuKienApDung}"
+                placeholder="Điều kiện áp dụng khuyến mãi"></textarea>
 
               <label for="trangThai">Trạng thái</label>
               <select id="trangThai" th:field="*{trangThai}" required>
                 <option value="" disabled>Chọn trạng thái</option>
                 <option th:each="status : ${promotionStatuses}" th:value="${status}"
-                  th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}"></option>
+                  th:text="${status == 'HOAT_DONG' ? 'Hoạt động' : (status == 'TAM_NGUNG' ? 'Tạm ngưng' : 'Hết hạn')}">
+                </option>
               </select>
 
               <div class="btn-row">
@@ -529,7 +620,7 @@
 
   <script th:inline="javascript">
     // ===== TÌM KIẾM, LỌC VÀ PHÂN TRANG =====
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Lấy các element
       const searchInput = document.getElementById('searchInput');
       const typeFilter = document.getElementById('typeFilter');
@@ -663,13 +754,13 @@
         document.getElementById('currentPageDisplay').textContent = currentPage;
         document.getElementById('totalPagesDisplay').textContent = totalPages;
         document.getElementById('totalItemsDisplay').textContent = totalItems;
-        
+
         // Cập nhật nút Previous/Next
         const prevBtn = document.getElementById('prevPageBtn');
         const nextBtn = document.getElementById('nextPageBtn');
         prevBtn.disabled = currentPage <= 1;
         nextBtn.disabled = currentPage >= totalPages;
-        
+
         // Tạo nút phân trang
         createPageNumbers(totalPages);
       }
@@ -678,13 +769,13 @@
       function createPageNumbers(totalPages) {
         const pageNumbers = document.getElementById('pageNumbers');
         pageNumbers.innerHTML = '';
-        
+
         if (totalPages <= 1) return;
-        
+
         // Chỉ hiển thị trang hiện tại ± 1
         const startPage = Math.max(1, currentPage - 1);
         const endPage = Math.min(totalPages, currentPage + 1);
-        
+
         for (let i = startPage; i <= endPage; i++) {
           const pageBtn = document.createElement('button');
           pageBtn.textContent = i;
@@ -703,22 +794,22 @@
             text-align: center;
             cursor: pointer;
           `;
-          
+
           if (i === currentPage) {
             pageBtn.style.background = '#3b82f6';
             pageBtn.style.color = 'white';
             pageBtn.style.borderColor = '#3b82f6';
             pageBtn.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.2)';
           }
-          
-          pageBtn.addEventListener('click', function() {
+
+          pageBtn.addEventListener('click', function () {
             currentPage = i;
             updatePagination();
           });
-          
+
           pageNumbers.appendChild(pageBtn);
         }
-        
+
         // Thêm dấu "..." nếu có nhiều trang hơn
         if (totalPages > 3 && currentPage < totalPages - 1) {
           const dots = document.createElement('span');
@@ -729,14 +820,14 @@
       }
 
       // Event listeners cho nút Previous/Next
-      document.getElementById('prevPageBtn').addEventListener('click', function() {
+      document.getElementById('prevPageBtn').addEventListener('click', function () {
         if (currentPage > 1) {
           currentPage--;
           updatePagination();
         }
       });
-      
-      document.getElementById('nextPageBtn').addEventListener('click', function() {
+
+      document.getElementById('nextPageBtn').addEventListener('click', function () {
         if (currentPage < totalPages) {
           currentPage++;
           updatePagination();
@@ -746,14 +837,14 @@
       // Event listeners
       // Auto-search khi gõ (với debounce)
       let searchTimeout;
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
           performSearch();
         }, 300); // Delay 300ms sau khi ngừng gõ
       });
 
-      searchInput.addEventListener('keypress', function(e) {
+      searchInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
           clearTimeout(searchTimeout);
           performSearch();
@@ -765,7 +856,7 @@
       dateFilter.addEventListener('change', performSearch);
 
       // Thay đổi số mục/trang ở cuối
-      bottomItemsPerPageSelect.addEventListener('change', function() {
+      bottomItemsPerPageSelect.addEventListener('change', function () {
         itemsPerPage = parseInt(this.value);
         currentPage = 1;
         updatePagination();
@@ -801,23 +892,88 @@
       window.location.href = '/admin/promotions/edit/' + id;
     }
     function deletePromotion(id) {
-      if(confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')) {
+      if (confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')) {
         fetch('/admin/promotions/' + id, { method: 'DELETE' })
           .then(res => {
-            if(res.ok) location.reload();
+            if (res.ok) location.reload();
             else alert('Xóa khuyến mãi thất bại!');
           });
       }
     }
+    // ===== VALIDATION CHO GIÁ TRỊ GIẢM =====
+    function validateGiaTriGiam() {
+      const giaTriGiamInput = document.getElementById('giaTriGiam');
+      const loaiGiamGiaSelect = document.getElementById('loaiGiamGia');
+      const errorDiv = document.getElementById('giaTriGiamError');
+
+      if (!giaTriGiamInput || !loaiGiamGiaSelect || !errorDiv) return;
+
+      const giaTriGiam = parseFloat(giaTriGiamInput.value);
+      const loaiGiamGia = loaiGiamGiaSelect.value;
+
+      // Chỉ validate khi loại giảm giá là phần trăm
+      if (loaiGiamGia === 'PHAN_TRAM' && giaTriGiam > 50) {
+        errorDiv.style.display = 'block';
+        giaTriGiamInput.style.borderColor = '#dc2626';
+        giaTriGiamInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.1)';
+        return false;
+      } else {
+        errorDiv.style.display = 'none';
+        giaTriGiamInput.style.borderColor = '#e5e7eb';
+        giaTriGiamInput.style.boxShadow = 'none';
+        return true;
+      }
+    }
+
+    // Thêm event listeners cho validation
+    document.addEventListener('DOMContentLoaded', function () {
+      const giaTriGiamInput = document.getElementById('giaTriGiam');
+      const loaiGiamGiaSelect = document.getElementById('loaiGiamGia');
+
+      if (giaTriGiamInput) {
+        giaTriGiamInput.addEventListener('input', validateGiaTriGiam);
+        giaTriGiamInput.addEventListener('blur', validateGiaTriGiam);
+      }
+
+      if (loaiGiamGiaSelect) {
+        loaiGiamGiaSelect.addEventListener('change', function () {
+          // Reset validation khi thay đổi loại giảm giá
+          const errorDiv = document.getElementById('giaTriGiamError');
+          const giaTriGiamInput = document.getElementById('giaTriGiam');
+
+          if (errorDiv) errorDiv.style.display = 'none';
+          if (giaTriGiamInput) {
+            giaTriGiamInput.style.borderColor = '#e5e7eb';
+            giaTriGiamInput.style.boxShadow = 'none';
+          }
+
+          // Validate lại sau khi reset
+          setTimeout(validateGiaTriGiam, 100);
+        });
+      }
+
+      // Validate form submission
+      const promotionForm = document.getElementById('promotionForm');
+      if (promotionForm) {
+        promotionForm.addEventListener('submit', function (e) {
+          if (!validateGiaTriGiam()) {
+            e.preventDefault();
+            alert('⚠️ Giá trị giảm không được vượt quá 50% khi chọn loại giảm giá là phần trăm!');
+            return false;
+          }
+        });
+      }
+    });
+
     // Tự động mở modal nếu có lỗi từ backend
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', function () {
       if (document.querySelector('#promotionModal').classList.contains('active')) {
         document.body.style.overflow = 'hidden';
       }
       // Nếu ở chế độ edit, tự động mở modal và đổi tiêu đề
       var editMode = /*[[${editMode} ? 'true' : 'false']]*/ 'false';
       var modal = document.getElementById('promotionModal');
-      if(editMode === 'true' && modal) {
+      if (editMode === 'true' && modal) {
         modal.classList.add('active');
         document.getElementById('formTitle').innerText = 'Sửa khuyến mãi';
         document.body.style.overflow = 'hidden';

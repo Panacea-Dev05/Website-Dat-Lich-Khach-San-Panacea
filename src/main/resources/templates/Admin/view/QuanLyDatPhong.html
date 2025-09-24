@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/css/Admin/quanlydatphong.css}">
   <link rel="stylesheet" th:href="@{/css/responsive.css}">
-  
+
   <style>
     /* Cải thiện hiển thị bảng */
     #bookingTable {
@@ -19,7 +19,7 @@
       border-collapse: collapse;
       background: white;
     }
-    
+
     #bookingTable th {
       padding: 12px 8px !important;
       font-size: 13px;
@@ -33,7 +33,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     #bookingTable td {
       padding: 12px 8px !important;
       font-size: 13px;
@@ -41,20 +41,20 @@
       vertical-align: middle;
       color: #4b5563;
     }
-    
+
     #bookingTable tbody tr:nth-child(even) {
       background: #fafbfc;
     }
-    
+
     #bookingTable tbody tr:nth-child(odd) {
       background: white;
     }
-    
+
     #bookingTable tbody tr:hover {
       background: #f8fafc;
       transition: background-color 0.2s ease;
     }
-    
+
     /* Container bảng với chiều cao cố định */
     .table-container {
       max-height: 70vh;
@@ -63,29 +63,29 @@
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
     }
-    
+
     /* Custom scrollbar cho table container */
     .table-container::-webkit-scrollbar {
       width: 8px;
     }
-    
+
     .table-container::-webkit-scrollbar-track {
       background: #f1f5f9;
       border-radius: 4px;
     }
-    
+
     .table-container::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
-    
+
     .table-container::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
+
     /* Header Layout Styles */
     .header-layout {
       display: flex;
@@ -93,14 +93,14 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    
+
     .header-layout h1 {
       margin: 0;
       color: #1f2937;
       font-size: 28px;
       font-weight: 700;
     }
-    
+
     .header-layout button {
       display: flex;
       align-items: center;
@@ -115,43 +115,43 @@
       cursor: pointer;
       background: #10b981;
     }
-    
+
     .header-layout button:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
     }
-    
+
     /* Content Section Styles */
     .content-section {
       width: 100%;
       max-width: none;
     }
-    
+
     /* Search and Filter Section */
     .search-filter-section {
       background: #f8fafc;
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       width: 100%;
     }
-    
-    .search-filter-section > div {
+
+    .search-filter-section>div {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr;
       gap: 15px;
       align-items: end;
       width: 100%;
     }
-    
+
     .search-filter-section label {
       display: block;
       margin-bottom: 5px;
       font-weight: 600;
       color: #374151;
     }
-    
+
     .search-filter-section input,
     .search-filter-section select {
       width: 100%;
@@ -160,51 +160,51 @@
       border-radius: 6px;
       font-size: 14px;
       background: white;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
-    
+
     .search-filter-section input:focus,
     .search-filter-section select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    
+
     /* Server Pagination Styles */
     .pagination-btn:hover:not(:disabled) {
       background: #f1f5f9 !important;
       border-color: #94a3b8 !important;
       transform: translateY(-1px);
     }
-    
+
     .pagination-btn:disabled {
       background: #f8fafc !important;
       color: #cbd5e1 !important;
       border-color: #e2e8f0 !important;
       cursor: not-allowed !important;
     }
-    
+
     .pagination-btn.active {
       background: #3b82f6 !important;
       color: white !important;
       border-color: #3b82f6 !important;
       box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
     }
-    
+
     .pagination-controls {
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       background: #f8fafc;
       border: 1px solid #e2e8f0;
     }
-    
+
     .pagination-controls select {
       cursor: pointer;
     }
-    
+
     .pagination-controls select:hover {
       border-color: #94a3b8 !important;
     }
-    
+
     /* Responsive */
     @media (max-width: 1024px) {
       .pagination-controls {
@@ -213,66 +213,65 @@
         align-items: center !important;
         text-align: center !important;
       }
-      
+
       .pagination-buttons {
         flex-wrap: wrap !important;
         justify-content: center !important;
       }
-      
+
       .items-per-page {
         justify-content: center !important;
       }
     }
-    
+
     @media (max-width: 768px) {
       .pagination-controls {
         padding: 12px 15px !important;
       }
-      
+
       .pagination-btn {
         padding: 4px 8px !important;
         font-size: 12px !important;
       }
-      
+
       .pagination-info {
         font-size: 13px !important;
       }
-      
+
       .items-per-page span {
         font-size: 12px !important;
       }
-      
+
       .items-per-page select {
         font-size: 12px !important;
         padding: 3px 6px !important;
       }
-      
+
       #bookingTable th {
         font-size: 12px !important;
         padding: 8px 6px !important;
       }
-      
+
       #bookingTable td {
         font-size: 12px !important;
         padding: 8px 6px !important;
       }
-      
+
       .header-layout {
         flex-direction: column !important;
         align-items: stretch !important;
         gap: 15px !important;
       }
-      
+
       .header-layout button {
         align-self: flex-start !important;
       }
-      
-      .search-filter-section > div {
+
+      .search-filter-section>div {
         grid-template-columns: 1fr !important;
         gap: 15px !important;
       }
     }
-    
   </style>
 </head>
 
@@ -294,35 +293,44 @@
 
     <main role="main" tabindex="0">
       <!-- Header Layout -->
-      <div class="header-layout" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div class="header-layout"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700;">Quản lý đặt phòng</h1>
-        <div class="header-actions" style="display: flex; gap: 10px;">
-          <button class="btn-primary" onclick="openAddBookingModal()" style="display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; border: none; background: #10b981; cursor: pointer;">
+        <div class="header-actions" style="display: none;">
+          <!-- Buttons đã được ẩn theo yêu cầu -->
+          <button class="btn-primary" onclick="openAddBookingModal()"
+            style="display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; border: none; background: #10b981; cursor: pointer;">
             <span class="material-icons">add</span>
             Thêm đặt phòng
           </button>
-          <button class="btn-primary" onclick="exportToExcel()" style="display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; border: none; background: #10b981; cursor: pointer;">
+          <button class="btn-primary" onclick="exportToExcel()"
+            style="display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); transition: all 0.2s; border: none; background: #10b981; cursor: pointer;">
             <span class="material-icons">download</span>
             Xuất Excel
           </button>
         </div>
       </div>
-      
+
       <section class="content-section" id="contentSection">
         <!-- Search and Filter Section -->
-        <section class="search-filter-section" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+        <section class="search-filter-section"
+          style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
           <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; align-items: end; width: 100%;">
             <!-- Tìm kiếm -->
             <div>
-              <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm kiếm:</label>
-              <input type="text" id="searchInput" placeholder="Mã đặt phòng, tên khách hàng, số phòng... (tự động tìm kiếm)" 
-                     style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <label for="searchInput" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Tìm
+                kiếm:</label>
+              <input type="text" id="searchInput"
+                placeholder="Mã đặt phòng, tên khách hàng, số phòng... (tự động tìm kiếm)"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             </div>
-            
+
             <!-- Lọc theo hạng phòng -->
             <div>
-              <label for="roomTypeFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Hạng phòng:</label>
-              <select id="roomTypeFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <label for="roomTypeFilter"
+                style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Hạng phòng:</label>
+              <select id="roomTypeFilter"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
                 <option value="">Tất cả hạng phòng</option>
                 <option value="Standard">Phòng Standard</option>
                 <option value="Deluxe">Phòng Deluxe</option>
@@ -332,11 +340,13 @@
                 <option value="Executive">Phòng Executive</option>
               </select>
             </div>
-            
+
             <!-- Lọc theo ngày -->
             <div>
-              <label for="dateFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Ngày đặt:</label>
-              <input type="date" id="dateFilter" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
+              <label for="dateFilter" style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Ngày
+                đặt:</label>
+              <input type="date" id="dateFilter"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: white;">
             </div>
           </div>
         </section>
@@ -358,10 +368,10 @@
                 <th style="width: 120px;">Nhân viên tạo</th>
               </tr>
             </thead>
-          
-          <!-- DỮ LIỆU BOOKING: Loop qua danh sách bookings từ controller -->
-          <tbody id="bookingTableBody">
-            <tr th:each="booking, stat : ${bookings}" th:attr="data-madatphong=${booking.maDatPhong},
+
+            <!-- DỮ LIỆU BOOKING: Loop qua danh sách bookings từ controller -->
+            <tbody id="bookingTableBody">
+              <tr th:each="booking, stat : ${bookings}" th:attr="data-madatphong=${booking.maDatPhong},
                          data-customername=${booking.customerName},
                          data-roomnumber=${booking.roomNumber},
                          data-roomtypename=${booking.roomTypeName},
@@ -372,87 +382,89 @@
                          data-trangthai=${booking.trangThaiDatPhong},
                          data-nhanvienta=${booking.tenNhanVienTao},
                          data-yeucaudacbiet=${booking.yeuCauDacBiet}" class="booking-row" style="cursor:pointer;">
-              <!-- STT: Số thứ tự tự động -->
-              <td th:text="${stat.count}">1</td>
-              
-              <!-- MÃ ĐẶT PHÒNG: Unique booking ID -->
-              <td th:text="${booking.maDatPhong}">BK001</td>
-              
-              <!-- TÊN KHÁCH HÀNG: Hiển thị tên hoặc "Không rõ" nếu null -->
-              <td th:text="${booking.customerName != null ? booking.customerName : 'Không rõ'}">
-                Nguyễn Văn A</td>
-              
-              <!-- SỐ PHÒNG: Room number -->
-              <td th:text="${booking.roomNumber}">101</td>
-              
-              <!-- HẠNG PHÒNG: Room type name -->
-              <td th:text="${booking.roomTypeName != null ? booking.roomTypeName : 'N/A'}">Standard</td>
-              
-              <!-- NGÀY ĐẶT: Booking creation date -->
-              <td th:text="${#temporals.format(booking.ngayDat, 'dd/MM/yyyy')}">15/12/2024</td>
-              
-              <!-- NGÀY NHẬN PHÒNG: Check-in date -->
-              <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}">15/12/2024</td>
-              
-              <!-- NGÀY TRẢ PHÒNG: Check-out date -->
-              <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}">18/12/2024</td>
-              
-              <!-- TỔNG TIỀN: Format số tiền với dấu phẩy -->
-              <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000
-                VNĐ</td>
-              
-              <!-- TRẠNG THÁI: Hiển thị status với CSS class tương ứng -->
-              <td>
-                <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
+                <!-- STT: Số thứ tự tự động -->
+                <td th:text="${stat.count}">1</td>
+
+                <!-- MÃ ĐẶT PHÒNG: Unique booking ID -->
+                <td th:text="${booking.maDatPhong}">BK001</td>
+
+                <!-- TÊN KHÁCH HÀNG: Hiển thị tên hoặc "Không rõ" nếu null -->
+                <td th:text="${booking.customerName != null ? booking.customerName : 'Không rõ'}">
+                  Nguyễn Văn A</td>
+
+                <!-- SỐ PHÒNG: Room number -->
+                <td th:text="${booking.roomNumber}">101</td>
+
+                <!-- HẠNG PHÒNG: Room type name -->
+                <td th:text="${booking.roomTypeName != null ? booking.roomTypeName : 'N/A'}">Standard</td>
+
+                <!-- NGÀY ĐẶT: Booking creation date -->
+                <td th:text="${#temporals.format(booking.ngayDat, 'dd/MM/yyyy')}">15/12/2024</td>
+
+                <!-- NGÀY NHẬN PHÒNG: Check-in date -->
+                <td th:text="${#temporals.format(booking.ngayNhanPhong, 'dd/MM/yyyy')}">15/12/2024</td>
+
+                <!-- NGÀY TRẢ PHÒNG: Check-out date -->
+                <td th:text="${#temporals.format(booking.ngayTraPhong, 'dd/MM/yyyy')}">18/12/2024</td>
+
+                <!-- TỔNG TIỀN: Format số tiền với dấu phẩy -->
+                <td th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">3,600,000
+                  VNĐ</td>
+
+                <!-- TRẠNG THÁI: Hiển thị status với CSS class tương ứng -->
+                <td>
+                  <span th:class="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'status-pending' : 
                                    booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'status-confirmed' : 
                                    booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'status-checkin' : 
                                    booking.trangThaiDatPhong == 'DA_HUY' ? 'status-cancelled' : 'status-default'}"
-                  th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
+                    th:text="${booking.trangThaiDatPhong == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : 
                                    booking.trangThaiDatPhong == 'DA_XAC_NHAN' ? 'Đã xác nhận' : 
                                    booking.trangThaiDatPhong == 'DA_NHAN_PHONG' ? 'Đã nhận phòng' : 
                                    booking.trangThaiDatPhong == 'DA_HUY' ? 'Đã hủy' : 'Hoàn thành'}">
-                </span>
-              </td>
-              
-              <!-- NHÂN VIÊN TẠO: Staff member who created booking -->
-              <td th:text="${booking.tenNhanVienTao != null ? booking.tenNhanVienTao : '---'}">---</td>
-            </tr>
-          </tbody>
+                  </span>
+                </td>
+
+                <!-- NHÂN VIÊN TẠO: Staff member who created booking -->
+                <td th:text="${booking.tenNhanVienTao != null ? booking.tenNhanVienTao : '---'}">---</td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
         <!-- Server Pagination Controls -->
-        <div class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div class="pagination-controls"
+          style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
           <!-- Pagination Info -->
           <div class="pagination-info" style="font-weight: 500; color: #64748b; font-size: 14px;">
-            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span> 
+            Trang <span id="currentPageDisplay">1</span> / <span id="totalPagesDisplay">1</span>
             (<span id="totalItemsDisplay">0</span> đặt phòng)
           </div>
-          
+
           <!-- Pagination Buttons -->
           <div class="pagination-buttons" style="display: flex; gap: 8px; align-items: center;">
             <!-- Previous Button -->
             <button id="prevPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
               <span>◀</span> Trước
             </button>
-            
+
             <!-- Page Numbers -->
             <div id="pageNumbers" style="display: flex; gap: 4px;">
               <!-- Sẽ được tạo bởi JavaScript -->
             </div>
-            
+
             <!-- Next Button -->
             <button id="nextPageBtn" class="pagination-btn" disabled
-                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; color: #475569; font-size: 13px; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;">
               Sau <span>▶</span>
             </button>
           </div>
-          
+
           <!-- Items per page selector -->
           <div class="items-per-page" style="display: flex; align-items: center; gap: 8px;">
             <span style="font-weight: 500; color: #64748b; font-size: 13px;">Hiển thị:</span>
-            <select id="itemsPerPage" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
+            <select id="itemsPerPage"
+              style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; background: white; color: #475569; min-width: 60px;">
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="25" selected>25</option>
@@ -463,7 +475,7 @@
           </div>
         </div>
       </section>
-      
+
       <!-- MODAL CHI TIẾT: Popup hiển thị thông tin booking chi tiết khi click row -->
       <div id="bookingDetailModal" class="modal"
         style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
@@ -535,7 +547,7 @@
     });
 
     // Search and Filter Functionality
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Global variables
       let originalData = [];
       let filteredData = [];
@@ -567,7 +579,7 @@
         return Array.from(rows).map(row => {
           const cells = row.querySelectorAll('td');
           if (cells.length < 11) return null; // Skip invalid rows
-          
+
           return {
             element: row,
             bookingId: cells[1]?.textContent?.trim() || '',
@@ -594,19 +606,19 @@
       // Parse date for comparison
       function parseDate(dateStr) {
         if (!dateStr) return null;
-        
+
         // Handle dd/MM/yyyy format
         const parts = dateStr.split('/');
         if (parts.length === 3) {
           const [day, month, year] = parts;
           return new Date(year, month - 1, day);
         }
-        
+
         // Handle yyyy-MM-dd format
         if (dateStr.includes('-')) {
           return new Date(dateStr);
         }
-        
+
         // Handle other formats
         return new Date(dateStr);
       }
@@ -622,14 +634,14 @@
 
         filteredData = originalData.filter(item => {
           // Search term matching
-          const matchesSearch = !searchTerm || 
+          const matchesSearch = !searchTerm ||
             item.bookingId.toLowerCase().includes(searchTerm) ||
             item.customerName.toLowerCase().includes(searchTerm) ||
             item.roomNumber.toLowerCase().includes(searchTerm) ||
             item.roomType.toLowerCase().includes(searchTerm);
 
           // Room type filter - so sánh với giá trị trong dropdown
-          const matchesRoomType = !selectedRoomType || 
+          const matchesRoomType = !selectedRoomType ||
             item.roomType.toLowerCase().includes(selectedRoomType.toLowerCase());
 
           // Date filter
@@ -640,15 +652,15 @@
             if (itemDate && filterDate && !isNaN(itemDate.getTime()) && !isNaN(filterDate.getTime())) {
               // So sánh ngày, tháng, năm
               matchesDate = itemDate.getFullYear() === filterDate.getFullYear() &&
-                          itemDate.getMonth() === filterDate.getMonth() &&
-                          itemDate.getDate() === filterDate.getDate();
+                itemDate.getMonth() === filterDate.getMonth() &&
+                itemDate.getDate() === filterDate.getDate();
             } else {
               matchesDate = false;
             }
           }
 
           const result = matchesSearch && matchesRoomType && matchesDate;
-          
+
           // Debug log for first few items
           if (originalData.indexOf(item) < 3) {
             console.log('Item filter debug:', {
@@ -676,7 +688,7 @@
       function updatePagination() {
         const totalItems = filteredData.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
-        
+
         // Update pagination info
         currentPageDisplay.textContent = currentPage;
         totalPagesDisplay.textContent = totalPages;
@@ -710,7 +722,7 @@
       // Create page number buttons
       function createPageNumbers(totalPages) {
         pageNumbers.innerHTML = '';
-        
+
         if (totalPages <= 1) return;
 
         const startPage = Math.max(1, currentPage - 1);
@@ -754,7 +766,7 @@
         if (pageNum === currentPage) {
           button.classList.add('active');
         }
-        
+
         button.style.cssText = `
           padding: 6px 10px;
           border: 1px solid #cbd5e1;
@@ -791,7 +803,7 @@
 
       // Event listeners
       let searchTimeout;
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
           performSearch();
@@ -816,7 +828,7 @@
         }
       });
 
-      itemsPerPageSelect.addEventListener('change', function() {
+      itemsPerPageSelect.addEventListener('change', function () {
         itemsPerPage = parseInt(this.value);
         currentPage = 1;
         updatePagination();
@@ -824,23 +836,23 @@
 
       // Initialize on page load
       initializeData();
-      
+
     });
-    
+
     // Function mở modal thêm đặt phòng
     function openAddBookingModal() {
       document.getElementById('addBookingModal').style.display = 'block';
     }
-    
+
     // Function đóng modal
     function closeAddBookingModal() {
       document.getElementById('addBookingModal').style.display = 'none';
       document.getElementById('addBookingForm').reset();
     }
-    
-    
-    
-    
+
+
+
+
     // Function format tiền tệ
     function formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN', {
@@ -848,34 +860,34 @@
         currency: 'VND'
       }).format(amount);
     }
-    
+
     // Event listeners cho modal
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Đóng modal khi click nút X
       document.getElementById('closeAddBookingModal').addEventListener('click', closeAddBookingModal);
       document.getElementById('cancelAddBooking').addEventListener('click', closeAddBookingModal);
-      
+
       // Đóng modal khi click bên ngoài
-      document.getElementById('addBookingModal').addEventListener('click', function(e) {
+      document.getElementById('addBookingModal').addEventListener('click', function (e) {
         if (e.target === this) {
           closeAddBookingModal();
         }
       });
-      
-      
+
+
       // Xử lý form submission
-      document.getElementById('addBookingForm').addEventListener('submit', async function(e) {
+      document.getElementById('addBookingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         try {
           const formData = new FormData(this);
-          
+
           // Gửi request tạo booking
           const response = await fetch('/admin/bookings/add', {
             method: 'POST',
             body: formData
           });
-          
+
           if (response.ok) {
             alert('Tạo đặt phòng thành công!');
             closeAddBookingModal();
@@ -892,69 +904,96 @@
     });
   </script>
 
-  <!-- Modal thêm đặt phòng mới -->
-  <div id="addBookingModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-    <div class="modal-content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 12px; padding: 30px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
-      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+  <!-- Modal thêm đặt phòng mới - Đã ẩn theo yêu cầu -->
+  <div id="addBookingModal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; visibility: hidden;">
+    <div class="modal-content"
+      style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 12px; padding: 30px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
         <h2 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 600;">Thêm đặt phòng mới</h2>
-        <button type="button" id="closeAddBookingModal" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer;">&times;</button>
+        <button type="button" id="closeAddBookingModal"
+          style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer;">&times;</button>
       </div>
-      
+
       <form id="addBookingForm">
         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
           <!-- Thông tin khách hàng -->
           <div class="form-group">
-            <label for="customerName" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tên khách hàng <span style="color: #e53935;">*</span></label>
-            <input type="text" id="customerName" name="customerName" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" placeholder="Nhập tên khách hàng" />
+            <label for="customerName" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tên
+              khách hàng <span style="color: #e53935;">*</span></label>
+            <input type="text" id="customerName" name="customerName" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;"
+              placeholder="Nhập tên khách hàng" />
           </div>
-          
+
           <div class="form-group">
-            <label for="customerPhone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Số điện thoại <span style="color: #e53935;">*</span></label>
-            <input type="tel" id="customerPhone" name="customerPhone" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" placeholder="0903123456" />
+            <label for="customerPhone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Số
+              điện thoại <span style="color: #e53935;">*</span></label>
+            <input type="tel" id="customerPhone" name="customerPhone" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;"
+              placeholder="0903123456" />
           </div>
-          
+
           <div class="form-group">
-            <label for="customerEmail" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email <span style="color: #e53935;">*</span></label>
-            <input type="email" id="customerEmail" name="customerEmail" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" placeholder="abc@gmail.com" />
+            <label for="customerEmail"
+              style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email <span
+                style="color: #e53935;">*</span></label>
+            <input type="email" id="customerEmail" name="customerEmail" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;"
+              placeholder="abc@gmail.com" />
           </div>
-          
+
           <div class="form-group">
-            <label for="roomType" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hạng phòng <span style="color: #e53935;">*</span></label>
-            <select id="roomType" name="roomType" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;">
+            <label for="roomType" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hạng
+              phòng <span style="color: #e53935;">*</span></label>
+            <select id="roomType" name="roomType" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;">
               <option value="">-- Chọn hạng phòng --</option>
               <option value="1">Phòng Standard</option>
               <option value="2">Phòng Deluxe</option>
               <option value="3">Phòng Suite</option>
             </select>
           </div>
-          
+
           <div class="form-group">
-            <label for="checkInDate" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Ngày nhận phòng <span style="color: #e53935;">*</span></label>
-            <input type="date" id="checkInDate" name="checkInDate" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" />
+            <label for="checkInDate" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Ngày
+              nhận phòng <span style="color: #e53935;">*</span></label>
+            <input type="date" id="checkInDate" name="checkInDate" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" />
           </div>
-          
+
           <div class="form-group">
-            <label for="checkOutDate" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Ngày trả phòng <span style="color: #e53935;">*</span></label>
-            <input type="date" id="checkOutDate" name="checkOutDate" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" />
+            <label for="checkOutDate" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Ngày
+              trả phòng <span style="color: #e53935;">*</span></label>
+            <input type="date" id="checkOutDate" name="checkOutDate" required
+              style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;" />
           </div>
         </div>
-        
-        
-        
+
+
+
         <div class="form-group">
-          <label for="specialRequests" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Yêu cầu đặc biệt</label>
-          <textarea id="specialRequests" name="specialRequests" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; resize: vertical;" placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy..."></textarea>
+          <label for="specialRequests" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Yêu
+            cầu đặc biệt</label>
+          <textarea id="specialRequests" name="specialRequests" rows="3"
+            style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; resize: vertical;"
+            placeholder="Ví dụ: Tôi muốn phòng tầng cao, gần thang máy..."></textarea>
         </div>
-        
-        <div class="form-actions" style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-          <button type="button" id="cancelAddBooking" style="padding: 12px 24px; border: 2px solid #e5e7eb; background: white; color: #6b7280; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Hủy</button>
-          <button type="submit" style="padding: 12px 24px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Tạo đặt phòng</button>
+
+        <div class="form-actions"
+          style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+          <button type="button" id="cancelAddBooking"
+            style="padding: 12px 24px; border: 2px solid #e5e7eb; background: white; color: #6b7280; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Hủy</button>
+          <button type="submit"
+            style="padding: 12px 24px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Tạo
+            đặt phòng</button>
         </div>
       </form>
     </div>
   </div>
 
-<script th:src="@{/js/responsive.js}"></script>
+  <script th:src="@{/js/responsive.js}"></script>
 </body>
 
 </html>
