@@ -30,7 +30,46 @@ public class ThanhToanService {
 
     // Lấy danh sách tất cả thanh toán
     public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+        return paymentRepository.findAll().stream()
+            .sorted((p1, p2) -> {
+                try {
+                    // Sắp xếp theo trạng thái: ĐANG_XU_LY lên trên, sau đó theo ngày tạo giảm dần
+                    TrangThaiPayment status1 = p1.getTrangThai();
+                    TrangThaiPayment status2 = p2.getTrangThai();
+                    
+                    // Xử lý null values
+                    if (status1 == null && status2 == null) {
+                        // Cả hai đều null, sắp xếp theo ngày tạo
+                        Long date1 = p1.getCreatedDate();
+                        Long date2 = p2.getCreatedDate();
+                        if (date1 == null && date2 == null) return 0;
+                        if (date1 == null) return 1;
+                        if (date2 == null) return -1;
+                        return date2.compareTo(date1);
+                    }
+                    if (status1 == null) return 1; // null xuống dưới
+                    if (status2 == null) return -1; // null xuống dưới
+                    
+                    // Nếu cả hai đều là DANG_XU_LY hoặc cả hai đều không phải DANG_XU_LY
+                    if ((status1 == TrangThaiPayment.DANG_XU_LY) == (status2 == TrangThaiPayment.DANG_XU_LY)) {
+                        // Sắp xếp theo ngày tạo giảm dần (mới nhất lên trên)
+                        Long date1 = p1.getCreatedDate();
+                        Long date2 = p2.getCreatedDate();
+                        if (date1 == null && date2 == null) return 0;
+                        if (date1 == null) return 1;
+                        if (date2 == null) return -1;
+                        return date2.compareTo(date1);
+                    } else {
+                        // DANG_XU_LY lên trên
+                        return status1 == TrangThaiPayment.DANG_XU_LY ? -1 : 1;
+                    }
+                } catch (Exception e) {
+                    // Nếu có lỗi, trả về 0 để giữ nguyên thứ tự
+                    System.err.println("Error sorting payments: " + e.getMessage());
+                    return 0;
+                }
+            })
+            .collect(java.util.stream.Collectors.toList());
     }
     
     // Lấy danh sách booking đang hoạt động
