@@ -1,8 +1,6 @@
 package panacea.website_dat_lich_khach_san.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import panacea.website_dat_lich_khach_san.entity.Review;
 
@@ -28,4 +26,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     
     // Tìm đánh giá theo khách hàng ID và trạng thái
     List<Review> findByKhachHangIdAndTrangThai(Integer khachHangId, Review.TrangThaiReview trangThai);
+    
+    // Tìm đánh giá theo danh sách booking ID (tất cả trạng thái)
+    List<Review> findByDatPhongIdIn(List<Integer> datPhongIds);
 } 

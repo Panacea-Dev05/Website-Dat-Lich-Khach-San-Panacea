@@ -312,6 +312,11 @@ public class KhachHangService {
                     "<p><b>Số tiền cọc cần thanh toán: </b>" + String.format("%,.0f", booking.getTienDatCoc().doubleValue()) + " VNĐ</p>" +
                     "<p><b>Mã đặt phòng: </b>" + maDatPhong + "</p>" +
                     "<p><b>Lưu ý:</b> Đây là tiền cọc (50%% tổng tiền phòng). Click vào nút trên để thanh toán an toàn và nhanh chóng.</p>" +
+                    "<div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
+                    "<h4 style='color: #155724; margin-top: 0;'>✅ Phí đặt cọc đã thanh toán</h4>" +
+                    "<p style='color: #155724; margin: 5px 0;'>Sau khi thanh toán thành công, phí đặt cọc sẽ được ghi nhận và đặt phòng của bạn sẽ được xác nhận tự động.</p>" +
+                    "<p style='color: #155724; margin: 5px 0; font-weight: bold;'>Số tiền cọc: " + String.format("%,.0f", booking.getTienDatCoc().doubleValue()) + " VNĐ</p>" +
+                    "</div>" +
                     "<p>Yêu cầu của bạn đang chờ xác nhận từ nhân viên. Chúng tôi sẽ gửi email xác nhận khi đặt phòng được duyệt.</p>" +
                     "<br><b>Panacea Hotel</b>";
                 

@@ -467,9 +467,10 @@
 
                     <div class="ak-height-75 ak-height-lg-30"></div>
                     <div>
-                        <h3 class="anim-title-2 ak-white-color">Review (0)</h3>
-                        <p>No Review Yet! Review box is empty</p>
-
+                        <h3 class="anim-title-2 ak-white-color">Review (<span id="review-count">0</span>)</h3>
+                        <div id="reviews-list">
+                            <p>Đang tải đánh giá...</p>
+                        </div>
                     </div>
                     <div class="ak-height-100 ak-height-lg-60"></div>
                     <div class="contact-content">
@@ -481,6 +482,9 @@
                             </div>
                             <div class="ak-height-25 ak-height-lg-20"></div>
                             <form>
+                                <!-- Hidden fields -->
+                                <input type="hidden" name="roomTypeId" id="roomTypeId" th:value="${roomType.id}">
+                                
                                 <div class="from-input">
                                         <input placeholder="Name" class="col-md-5 col-12" type="text" name="fristname"
                                             id="fristname">
@@ -1254,6 +1258,179 @@
                 console.log(`Element ${index}: id="${el.id}", text="${el.textContent}"`);
             });
     });
+
+    // ==================== XỬ LÝ ĐÁNH GIÁ ====================
+    
+    // Hàm load đánh giá
+    function loadReviews() {
+        console.log('=== loadReviews function called ===');
+        
+        // Lấy roomTypeId từ URL parameter hoặc từ hidden input
+        var urlParams = new URLSearchParams(window.location.search);
+        var roomTypeId = urlParams.get('id') || document.getElementById('roomTypeId').value;
+        console.log('Room type ID from URL:', urlParams.get('id'));
+        console.log('Room type ID from hidden input:', document.getElementById('roomTypeId') ? document.getElementById('roomTypeId').value : 'not found');
+        console.log('Final room type ID:', roomTypeId);
+        
+        if (!roomTypeId) {
+            console.log('No room type ID found!');
+            return;
+        }
+        
+        // Load danh sách đánh giá
+        console.log('Fetching reviews from /khachhang/reviews/room/' + roomTypeId);
+        fetch('/khachhang/reviews/room/' + roomTypeId)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(reviews => {
+                console.log('Reviews received:', reviews);
+                console.log('Number of reviews:', reviews ? reviews.length : 0);
+                displayReviews(reviews);
+            })
+            .catch(error => {
+                console.error('Error loading reviews:', error);
+                // Hiển thị lỗi cho user
+                var reviewsList = document.getElementById('reviews-list');
+                if (reviewsList) {
+                    reviewsList.innerHTML = '<p style="color: #ff6b6b;">Lỗi khi tải đánh giá: ' + error.message + '</p>';
+                }
+            });
+        
+        // Load điểm trung bình
+        fetch('/khachhang/reviews/room/' + roomTypeId + '/average')
+            .then(response => response.json())
+            .then(data => {
+                displayAverageRating(data.averageRating);
+            })
+            .catch(error => {
+                console.error('Error loading average rating:', error);
+            });
+    }
+
+    // Hàm hiển thị đánh giá
+    function displayReviews(reviews) {
+        console.log('=== displayReviews function called ===');
+        console.log('Reviews to display:', reviews);
+        console.log('Reviews type:', typeof reviews);
+        console.log('Reviews is array:', Array.isArray(reviews));
+        
+        var reviewsList = document.getElementById('reviews-list');
+        var reviewCount = document.getElementById('review-count');
+        
+        console.log('Reviews list found:', !!reviewsList);
+        console.log('Review count found:', !!reviewCount);
+        
+        if (!reviewsList || !reviewCount) {
+            console.log('Reviews list or review count not found!');
+            return;
+        }
+        
+        // Kiểm tra nếu reviews không phải array
+        if (!Array.isArray(reviews)) {
+            console.log('Reviews is not an array, converting...');
+            reviews = reviews || [];
+        }
+        
+        reviewCount.textContent = reviews.length;
+        console.log('Setting review count to:', reviews.length);
+        
+        if (reviews.length === 0) {
+            reviewsList.innerHTML = '<p>Chưa có đánh giá nào!</p>';
+            console.log('No reviews to display');
+            return;
+        }
+        
+        console.log('Creating HTML for reviews...');
+        var html = '';
+        reviews.forEach(function(review) {
+            console.log('Processing review:', review);
+            html += '<div class="review-item mb-3 p-3" style="border: 1px solid #ddd; border-radius: 5px; background: rgba(255,255,255,0.1); margin-bottom: 15px;">';
+            html += '<div class="d-flex justify-content-between align-items-start">';
+            html += '<div>';
+            html += '<h6 class="text-white mb-2">' + (review.customerName || 'Khách hàng') + '</h6>';
+            html += '<div class="stars mb-2">';
+            
+            // Hiển thị sao
+            var rating = review.diemTongQuan || 0;
+            for (var i = 1; i <= 5; i++) {
+                var starClass = i <= rating ? 'star-filled' : 'star-empty';
+                html += '<span class="material-icons ' + starClass + '" style="color: ' + (i <= rating ? '#FFD700' : '#ccc') + ';">star</span>';
+            }
+            
+            html += '<span class="ms-2 text-white">' + rating + '/5</span>';
+            html += '</div>';
+            html += '<p class="text-white-50 small mb-0">' + new Date(review.ngayDanhGia).toLocaleDateString('vi-VN') + '</p>';
+            html += '</div>';
+            html += '</div>';
+            if (review.binhLuan) {
+                html += '<p class="text-white mt-2 mb-0">' + review.binhLuan + '</p>';
+            }
+            html += '</div>';
+        });
+        
+        console.log('HTML created:', html);
+        reviewsList.innerHTML = html;
+        console.log('Reviews displayed successfully!');
+    }
+
+    // Hàm hiển thị điểm trung bình
+    function displayAverageRating(averageRating) {
+        console.log('Average rating:', averageRating);
+        // Có thể thêm logic hiển thị điểm trung bình ở đây nếu cần
+    }
+
+    // Load đánh giá khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== DOM READY - Loading reviews ===');
+        console.log('Current URL:', window.location.href);
+        console.log('URL search params:', window.location.search);
+        loadReviews();
+    });
+
+    // Test ngay lập tức
+    setTimeout(function() {
+        console.log('=== Timeout 1s - Loading reviews ===');
+        loadReviews();
+    }, 1000);
+
+    // Test ngay lập tức khi script load
+    console.log('=== SCRIPT LOADED - Testing immediately ===');
+    console.log('Current URL:', window.location.href);
+    console.log('URL search params:', window.location.search);
+    
+    // Test API trực tiếp
+    setTimeout(function() {
+        console.log('=== Testing API directly ===');
+        var roomTypeId = new URLSearchParams(window.location.search).get('id');
+        console.log('Room Type ID from URL:', roomTypeId);
+        
+        if (roomTypeId) {
+            console.log('Testing API call to /khachhang/reviews/room/' + roomTypeId);
+            fetch('/khachhang/reviews/room/' + roomTypeId)
+                .then(response => {
+                    console.log('API Response status:', response.status);
+                    console.log('API Response headers:', response.headers);
+                    return response.text(); // Lấy text trước để debug
+                })
+                .then(text => {
+                    console.log('API Response text:', text);
+                    try {
+                        var data = JSON.parse(text);
+                        console.log('API Response JSON:', data);
+                    } catch (e) {
+                        console.log('API Response is not JSON:', e);
+                    }
+                })
+                .catch(error => {
+                    console.error('API Error:', error);
+                });
+        }
+    }, 2000);
 
 
 </script>

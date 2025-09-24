@@ -319,6 +319,12 @@ public class QuanLyDatPhongService {
                     
                     %s
                     
+                    <div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                        <h4 style='color: #155724; margin-top: 0;'>✅ Phí đặt cọc đã thanh toán</h4>
+                        <p style='color: #155724; margin: 5px 0;'>Phí đặt cọc đã được thanh toán thành công và ghi nhận trong hệ thống.</p>
+                        <p style='color: #155724; margin: 5px 0; font-weight: bold;'>Số tiền cọc: %,.0f VNĐ</p>
+                    </div>
+                    
                     <div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;'>
                         <h3 style='color: #10b981; margin-top: 0;'>💰 Tổng thanh toán</h3>
                         <p style='font-size: 18px; font-weight: bold; color: #dc3545;'>%,.0f VND</p>
@@ -337,6 +343,7 @@ public class QuanLyDatPhongService {
                 booking.getSoNguoiLon(),
                 booking.getSoTreEm(),
                 overtimeInfo,
+                booking.getTienDatCoc() != null ? booking.getTienDatCoc().doubleValue() : 0.0,
                 booking.getTongThanhToan()
             );
             
@@ -789,8 +796,16 @@ public class QuanLyDatPhongService {
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày trả phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>👥 Số người lớn:</td><td style='padding: 8px 0;'>%d người</td></tr>" +
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>👶 Số trẻ em:</td><td style='padding: 8px 0;'>%d trẻ</td></tr>" +
-                    "<tr><td style='padding: 8px 0; font-weight: bold; color: #dc3545;'>💰 Tổng thanh toán:</td><td style='padding: 8px 0; color: #dc3545; font-weight: bold; font-size: 18px;'>%s VND</td></tr>" +
                     "</table></div>" +
+                    "<div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
+                    "<h4 style='color: #155724; margin-top: 0;'>✅ Phí đặt cọc đã thanh toán</h4>" +
+                    "<p style='color: #155724; margin: 5px 0;'>Phí đặt cọc đã được thanh toán thành công và ghi nhận trong hệ thống.</p>" +
+                    "<p style='color: #155724; margin: 5px 0; font-weight: bold;'>Số tiền cọc: %s VNĐ</p>" +
+                    "</div>" +
+                    "<div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;'>" +
+                    "<h3 style='color: #10b981; margin-top: 0;'>💰 Tổng thanh toán</h3>" +
+                    "<p style='font-size: 18px; font-weight: bold; color: #dc3545;'>%s VNĐ</p>" +
+                    "</div>" +
                     "<div style='background-color: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2c5aa0; margin: 20px 0;'>" +
                     "<p style='margin: 0; font-weight: bold;'>📝 Lưu ý quan trọng:</p>" +
                     "<p style='margin: 5px 0 0 0;'>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>" +
@@ -808,6 +823,7 @@ public class QuanLyDatPhongService {
                     booking.getNgayTraPhong(),
                     booking.getSoNguoiLon(),
                     booking.getSoTreEm(),
+                    booking.getTienDatCoc() != null ? String.format("%,.0f", booking.getTienDatCoc().doubleValue()) : "0",
                     String.format("%,.0f", booking.getTongTienPhong().doubleValue())
                 );
                 
@@ -884,8 +900,16 @@ public class QuanLyDatPhongService {
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>📅 Ngày trả phòng:</td><td style='padding: 8px 0;'>%s</td></tr>" +
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>👥 Số người lớn:</td><td style='padding: 8px 0;'>%d người</td></tr>" +
                     "<tr><td style='padding: 8px 0; font-weight: bold;'>👶 Số trẻ em:</td><td style='padding: 8px 0;'>%d trẻ</td></tr>" +
-                    "<tr><td style='padding: 8px 0; font-weight: bold; color: #dc3545;'>💰 Tổng thanh toán:</td><td style='padding: 8px 0; color: #dc3545; font-weight: bold; font-size: 18px;'>%s VND</td></tr>" +
                     "</table></div>" +
+                    "<div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin: 20px 0;'>" +
+                    "<h4 style='color: #155724; margin-top: 0;'>✅ Phí đặt cọc đã thanh toán</h4>" +
+                    "<p style='color: #155724; margin: 5px 0;'>Phí đặt cọc đã được thanh toán thành công và ghi nhận trong hệ thống.</p>" +
+                    "<p style='color: #155724; margin: 5px 0; font-weight: bold;'>Số tiền cọc: %s VNĐ</p>" +
+                    "</div>" +
+                    "<div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;'>" +
+                    "<h3 style='color: #10b981; margin-top: 0;'>💰 Tổng thanh toán</h3>" +
+                    "<p style='font-size: 18px; font-weight: bold; color: #dc3545;'>%s VNĐ</p>" +
+                    "</div>" +
                     "<div style='background-color: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2c5aa0; margin: 20px 0;'>" +
                     "<p style='margin: 0; font-weight: bold;'>📝 Lưu ý quan trọng:</p>" +
                     "<p style='margin: 5px 0 0 0;'>Vui lòng đến Panacea Hotel đúng giờ để làm thủ tục check-in. Nếu có bất kỳ thay đổi nào, vui lòng liên hệ với chúng tôi.</p>" +
@@ -902,6 +926,7 @@ public class QuanLyDatPhongService {
                     booking.getNgayTraPhong(),
                     booking.getSoNguoiLon(),
                     booking.getSoTreEm(),
+                    booking.getTienDatCoc() != null ? String.format("%,.0f", booking.getTienDatCoc().doubleValue()) : "0",
                     booking.getTongThanhToan() != null ? String.format("%,.0f", booking.getTongThanhToan().doubleValue()) : "0"
                 );
                 

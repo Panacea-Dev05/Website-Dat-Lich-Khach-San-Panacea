@@ -142,27 +142,83 @@ public class KhachHangReviewService {
     }
     
     /**
-     * Lấy danh sách đánh giá của phòng
+     * Lấy danh sách đánh giá của phòng (CHỈ HIỂN THỊ ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT)
      */
     public List<ReviewDTO> getRoomReviews(Integer roomTypeId) {
         try {
-            // Tìm tất cả booking của room type này
-            List<Booking> bookings = bookingRepository.findByRoomTypeId(roomTypeId);
-            if (bookings.isEmpty()) {
-                return List.of();
+            System.out.println("[DEBUG] ========== LẤY ĐÁNH GIÁ PHÒNG ==========");
+            System.out.println("[DEBUG] Room Type ID: " + roomTypeId);
+            
+            // Test: Kiểm tra tất cả đánh giá trong database
+            List<Review> allReviewsInDB = reviewRepository.findAll();
+            System.out.println("[DEBUG] Tổng số đánh giá trong DB: " + allReviewsInDB.size());
+            for (Review r : allReviewsInDB) {
+                System.out.println("[DEBUG] - Review ID: " + r.getId() + 
+                                 ", Trạng thái: " + r.getTrangThai() + 
+                                 ", Điểm: " + r.getDiemTongQuan() + 
+                                 ", Khách hàng: " + r.getKhachHangId());
             }
             
-            List<Integer> bookingIds = bookings.stream()
-                .map(Booking::getId)
-                .collect(Collectors.toList());
+            // Tìm tất cả booking của room type này
+            List<Booking> bookings = bookingRepository.findByRoomTypeId(roomTypeId);
+            System.out.println("[DEBUG] Tổng số booking của room type: " + bookings.size());
             
-            // Lấy đánh giá đã được duyệt
-            List<Review> reviews = reviewRepository.findByDatPhongIdInAndTrangThai(
-                bookingIds, 
-                Review.TrangThaiReview.DA_DUYET
-            );
+            // Debug: Hiển thị chi tiết từng booking
+            for (Booking b : bookings) {
+                System.out.println("[DEBUG] - Booking ID: " + b.getId() + 
+                                 ", Mã đặt phòng: " + b.getMaDatPhong() + 
+                                 ", Trạng thái: " + b.getTrangThaiDatPhong() + 
+                                 ", Room Type: " + (b.getRoomType() != null ? b.getRoomType().getTenLoaiPhong() : "null"));
+            }
             
-            return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+            List<Review> allReviews;
+            
+            if (bookings.isEmpty()) {
+                System.out.println("[DEBUG] Không có booking nào cho room type này");
+                System.out.println("[DEBUG] Sẽ lấy tất cả đánh giá đã duyệt (fallback)");
+                
+                // Fallback: Lấy tất cả đánh giá đã duyệt nếu không có booking
+                allReviews = reviewRepository.findAll().stream()
+                    .filter(review -> review.getTrangThai() == Review.TrangThaiReview.DA_DUYET)
+                    .collect(Collectors.toList());
+                System.out.println("[DEBUG] Số đánh giá đã duyệt (fallback): " + allReviews.size());
+            } else {
+                List<Integer> bookingIds = bookings.stream()
+                    .map(Booking::getId)
+                    .collect(Collectors.toList());
+                System.out.println("[DEBUG] Booking IDs: " + bookingIds);
+                
+                // Lấy TẤT CẢ đánh giá của các booking này (bao gồm cả chưa duyệt)
+                allReviews = reviewRepository.findByDatPhongIdIn(bookingIds);
+                System.out.println("[DEBUG] Tổng số đánh giá (tất cả trạng thái): " + allReviews.size());
+            }
+            
+            // Lọc chỉ đánh giá đã được duyệt (nếu chưa lọc trong fallback)
+            List<Review> approvedReviews;
+            if (bookings.isEmpty()) {
+                // Đã lọc rồi trong fallback
+                approvedReviews = allReviews;
+                System.out.println("[DEBUG] Số đánh giá đã được duyệt (fallback): " + approvedReviews.size());
+            } else {
+                // Lọc từ kết quả booking
+                approvedReviews = allReviews.stream()
+                    .filter(review -> review.getTrangThai() == Review.TrangThaiReview.DA_DUYET)
+                    .collect(Collectors.toList());
+                System.out.println("[DEBUG] Số đánh giá đã được duyệt: " + approvedReviews.size());
+            }
+            
+            // Log chi tiết từng đánh giá
+            for (Review review : approvedReviews) {
+                System.out.println("[DEBUG] - Đánh giá ID: " + review.getId() + 
+                                 ", Trạng thái: " + review.getTrangThai() + 
+                                 ", Điểm: " + review.getDiemTongQuan() + 
+                                 ", Khách hàng: " + review.getKhachHangId());
+            }
+            
+            List<ReviewDTO> result = approvedReviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+            System.out.println("[DEBUG] Kết quả trả về: " + result.size() + " đánh giá");
+            
+            return result;
             
         } catch (Exception e) {
             System.out.println("[ERROR] Lỗi khi lấy đánh giá phòng: " + e.getMessage());
