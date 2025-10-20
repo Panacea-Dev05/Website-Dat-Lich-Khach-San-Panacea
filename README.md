@@ -1,6 +1,6 @@
 # 🏨 PANACEA HOTEL BOOKING SYSTEM
 
-Website đặt lịch khách sạn **Panacea** – đồ án tốt nghiệp của nhóm sinh viên CĐ FPOLY.
+Website đặt lịch khách sạn **Panacea** – đồ án tốt nghiệp 
 
 ---
 
